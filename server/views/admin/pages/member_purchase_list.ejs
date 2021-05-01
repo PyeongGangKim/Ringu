@@ -1,0 +1,55 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h1><%=member.name%>의 구매 내역(조회: <%=total_count%>)</h1>
+        <!--/.panel-options-->
+    </div>
+    <!--/.panel-header-->
+
+    <div class="panel-body padTopNone">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#purchase</th>
+                    <th style="width: 60px;">책 이름</th>
+                    <th style="width: 120px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!purchase_list.length) { %>
+                    <tr>
+                        <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
+                    </tr>
+                <% } %>
+                <%  purchase_list.forEach(function(purchase, index) { %>
+                    <tr>
+                        <td class="text-center">
+                            <%=purchase.id%>
+                        </td>
+                        <td class="text-center">
+                            <%=purchase.book%>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/purchase/view/<%=purchase.id%>">
+                                <div class="menu-item">
+                                    보기
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!--/.panel-body-->
+
+    <div class="panel-block text-center">
+        <%- pagination_html%>
+    </div>
+    <!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<%- include("../templates/foot"); %>

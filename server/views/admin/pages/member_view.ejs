@@ -1,0 +1,405 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>회원</h1>
+	</div>
+	<!--/.panel-header-->
+
+   	<div class="panel-body padTopNone">
+	   	<div class="row-col">
+		   	<div class="col-4">
+			   <img src="" style="width: 100%;"/>
+		   	</div>
+			<!--/.col-4-->
+	   		<div class="col-2">
+                <div class="row">
+                    <label>이메일</label>
+                    <div class="input"><%=member_info["email"]%>&nbsp;</div>
+                </div>
+                <br />
+                <div class="row">
+                    <label>휴대폰번호</label>
+                    <div class="input"><%=member_info["tel"]%>&nbsp;</div>
+                </div>
+                <br />
+                <div class="row-col">
+                    <div class="col-2">
+                        <label>마지막 로그인일</label>
+                        <div class="input"><%=helper_date.getDateTime(member_info["last_login"])%></div>
+                    </div>
+                    <!--/.col-2-->
+                    <div class="col-2">
+                        <label>회원가입일</label>
+                        <div class="input"><%=helper_date.getDateTime(member_info["created_date_time"])%></div>
+                    </div>
+                    <!--/.col-2-->
+                </div>
+                <br />
+			</div>
+			<!--/.col-2-->
+		</div>
+        <!--/.row-col-->
+	</div>
+	<!--/.panel-body-->
+
+	<div class="panel-block text-left">
+		<a href="/admin/member/delete/?id=<%=helper_security.encrypt(member_info["id"])%>" onclick=" return confirm('삭제하시겠습니까?'); ">
+			<div class="btn btn-sm btn-danger">삭제</div>
+		</a>
+	</div>
+	<!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>구매 관리</h1>
+	</div>
+	<!--/.panel-header-->
+
+	<div class="panel-block">
+		<form method="POST" action="/admin/purchase/save/" autocomplete="off" onsubmit=" return checkCreate1(); ">
+            <input type="hidden" name="member_id" value="<%=helper_security.encrypt(member_info["id"])%>" />
+            <div class="row-col">
+				<div class="col-4">
+                    <label>책 ID</label>
+                    <input type="text" class="input" name="book_id" />
+				</div>
+				<!--/.col-3-->
+                <div class="col-4">
+                    <label>&nbsp;</label><br />
+                    <button type="submit" class="btn btn-primary">등록</button>
+				</div>
+				<!--/.col-3-->
+			</div>
+        </form>
+	</div>
+	<!--/.panel-block-->
+
+	<div class="panel-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th>제목</th>
+                    <th style="width: 130px;">가격</th>
+                    <th style="width: 130px;">종류</th>
+                    <th style="width: 180px;">구매일</th>
+                    <th style="width: 80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!purchase_list.length) { %>
+                    <tr>
+                        <td class="text-center" colspan="6">구매 내역이 없습니다.</td>
+                    </tr>
+                <%} %>
+                <% purchase_list.forEach(function(purchase, index) { %>
+                    <tr>
+                        <td class="text-center"><%=purchase.id%></td>
+                        <td class="text-left">
+                            <%=purchase.title%>
+                        </td>
+                        <td class="text-center">
+                            <%=purchase.price%>
+                        </td>
+                        <td class="text-center">
+
+                        </td>
+                        <td class="text-center">
+                            <%=helper_date.getDateTime(purchase.created_date_time)%>
+                        </td>
+                        <td class="menu text-center">
+                            <a href="/admin/purchase/delete/?id=<%=helper_security.encrypt(purchase.id)%>&member_id=<%=helper_security.encrypt(member_info["id"])%>" onclick=" return confirm('삭제 확실합니까?'); ">
+                                <div class="btn btn-danger">
+                                    삭제
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+	</div>
+	<!--/.panel-body-->
+</div>
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>즐겨찾기 - 작가</h1>
+	</div>
+	<!--/.panel-header-->
+
+	<div class="panel-block">
+		<form method="POST" action="/admin/favorite/author/save/" autocomplete="off" onsubmit=" return checkCreate2(); ">
+            <input type="hidden" name="member_id" value="<%=helper_security.encrypt(member_info["id"])%>" />
+            <div class="row-col">
+				<div class="col-4">
+                    <label>작가 ID</label>
+                    <input type="text" class="input" name="author_id" />
+				</div>
+				<!--/.col-3-->
+                <div class="col-4">
+                    <label>&nbsp;</label><br />
+                    <button type="submit" class="btn btn-primary">등록</button>
+				</div>
+				<!--/.col-3-->
+			</div>
+        </form>
+	</div>
+	<!--/.panel-block-->
+
+	<div class="panel-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">#</th>
+                    <th style="width: 100px;">작가</th>
+					<th style="width: 200px;">이메일</th>
+					<th style="width: 100px;">등록일</th>
+                    <th style="width: 80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!favorite_author_list.length) { %>
+                    <tr>
+                        <td class="text-center" colspan="5">즐겨찾기가 없습니다</td>
+                    </tr>
+                <%} %>
+                <% favorite_author_list.forEach(function(favorite_author, index) { %>
+                    <tr>
+                        <td class="text-center"><%=favorite_author.id%></td>
+                        <td class="text-left">
+                            <%=favorite_author.name%>
+                        </td>
+                        <td class="text-center">
+                            <%=favorite_author.email%>
+                        </td>
+
+                        <td class="text-center">
+                            <%=helper_date.getDateTime(favorite_author.created_date_time)%>
+                        </td>
+                        <td class="menu text-center">
+                            <a href="/admin/favorite/author/delete/?id=<%=helper_security.encrypt(favorite_author.id)%>&member_id=<%=helper_security.encrypt(member_info["id"])%>" onclick=" return confirm('삭제 확실합니까?'); ">
+                                <div class="btn btn-danger">
+                                    삭제
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+	</div>
+	<!--/.panel-body-->
+</div>
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>즐겨찾기 - 책</h1>
+	</div>
+	<!--/.panel-header-->
+
+	<div class="panel-block">
+		<form method="POST" action="/admin/favorite/book/save/" autocomplete="off" onsubmit=" return checkCreate3(); ">
+            <input type="hidden" name="member_id" value="<%=helper_security.encrypt(member_info["id"])%>" />
+            <div class="row-col">
+				<div class="col-4 fav">
+                    <label>책 ID</label>
+                    <input type="text" class="input" name="book_id2" />
+				</div>
+				<!--/.col-3-->
+                <div class="col-4">
+                    <label>&nbsp;</label><br />
+                    <button type="submit" class="btn btn-primary">등록</button>
+				</div>
+				<!--/.col-3-->
+			</div>
+        </form>
+	</div>
+	<!--/.panel-block-->
+
+	<div class="panel-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">#</th>
+                    <th style="width: 200px;">제목</th>
+					<th style="width: 100px;">가격</th>
+					<th style="width: 100px;">등록일</th>
+                    <th style="width: 80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!favorite_book_list.length) { %>
+                    <tr>
+                        <td class="text-center" colspan="4">즐겨찾기가 없습니다</td>
+                    </tr>
+                <%} %>
+                <% favorite_book_list.forEach(function(favorite_book, index) { %>
+                    <tr>
+                        <td class="text-center"><%=favorite_book.id%></td>
+                        <td class="text-left">
+                            <%=favorite_book.title%>
+                        </td>
+                        <td class="text-center">
+                            <%=favorite_book.price%>
+                        </td>
+
+                        <td class="text-center">
+                            <%=helper_date.getDateTime(favorite_book.created_date_time)%>
+                        </td>
+                        <td class="menu text-center">
+                            <a href="/admin/favorite/book/delete/?id=<%=helper_security.encrypt(favorite_book.id)%>&member_id=<%=helper_security.encrypt(member_info["id"])%>" onclick=" return confirm('삭제 확실합니까?'); ">
+                                <div class="btn btn-danger">
+                                    삭제
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+	</div>
+	<!--/.panel-body-->
+</div>
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>리뷰 관리</h1>
+	</div>
+	<!--/.panel-header-->
+
+	<div class="panel-block">
+		<form method="POST" action="/admin/review/save/" autocomplete="off" onsubmit=" return checkCreate4(); ">
+            <input type="hidden" name="member_id" value="<%=helper_security.encrypt(member_info["id"])%>" />
+            <div class="row-col">
+				<div class="col-4">
+                    <label>책 ID</label>
+                    <input type="text" class="input" name="book_id3" />
+				</div>
+				<!--/.col-3-->
+				<div class="col-4">
+                    <label>점수</label>
+                    <input type="text" class="input" name="score" />
+				</div>
+				<div class="col-4">
+                    <label>내용</label>
+                    <input type="text" class="input" name="description" />
+				</div>
+                <div class="col-4">
+                    <label>&nbsp;</label><br />
+                    <button type="submit" class="btn btn-primary">등록</button>
+				</div>
+				<!--/.col-3-->
+			</div>
+        </form>
+	</div>
+	<!--/.panel-block-->
+
+	<div class="panel-body">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+					<th style="width: 60px;">#</th>
+                    <th style="width: 120px;">구매자</th>
+                    <th style="width: 200px;">책</th>
+                    <th style="width: 60px;">점수</th>
+                    <th style="width: 250px;">내용</th>
+                    <th style="width: 100px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!review_list.length) { %>
+                    <tr>
+                        <td class="text-center" colspan="6">구매 내역이 없습니다.</td>
+                    </tr>
+                <%} %>
+                <% review_list.forEach(function(review, index) { %>
+                    <tr>
+                        <td class="text-center"><%=review.id%></td>
+						<td class="text-center">
+                            <%=review.reviewer%>
+                        </td>
+                        <td class="text-center">
+                            <%=review.book%>
+                        </td>
+                        <td class="text-center">
+                            <%=review.score%>
+                        </td>
+                        <td class="text-left">
+                            <%=review.description%>
+                        </td>
+                        <td class="menu text-center">
+                            <a href="/admin/review/delete/?id=<%=helper_security.encrypt(review.id)%>&member_id=<%=helper_security.encrypt(member_info["id"])%>" onclick=" return confirm('삭제 확실합니까?'); ">
+                                <div class="btn btn-danger">
+                                    삭제
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+	</div>
+	<!--/.panel-body-->
+</div>
+
+<script>
+	var checkCreate1 = function() {
+		if ( $("input[name=book_id]").val() == "") {
+			alertify.message("책 ID를 입력해주세요");
+			return false;
+		}
+
+		return true;
+	}
+
+	var checkCreate2 = function() {
+		if ( $("input[name=author_id]").val() == "") {
+			alertify.message("작가 ID를 입력해주세요");
+			return false;
+		}
+
+		return true;
+	}
+
+	var checkCreate3 = function() {
+		if ( $("input[name=book_id2]").val() == "") {
+			alertify.message("책 ID를 입력해주세요");
+			return false;
+		}
+
+		return true;
+	}
+
+	var checkCreate4 = function() {
+		if ( $("input[name=book_id3]").val() == "") {
+			alertify.message("책 ID를 입력해주세요");
+			return false;
+		}
+
+		if ( $("input[name=score]").val() == "") {
+			alertify.message("점수를 입력해주세요");
+			return false;
+		}
+
+		if ( $("input[name=description]").val() == "") {
+			alertify.message("내용을 입력해주세요");
+			return false;
+		}
+
+		return true;
+	}
+</script>
+
+<%- include("../templates/foot"); %>

@@ -1,0 +1,63 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h1>카테고리</h1>
+            <a href="/admin/category/info/create/">
+                <div class="btn" style= "float: right">카테고리 추가</div>
+            </a>
+        </form>
+        <!--/.panel-options-->
+    </div>
+
+    <div class="panel-body padTopNone">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th style="width: 120px;">카테고리 이름</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!category_list.length) { %>
+                    <tr>
+                        <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
+                    </tr>
+                <% } %>
+                <% category_list.forEach(function(category, index) { %>
+                    <tr>
+                        <td class="text-center">
+                            <%=category.id%>
+                        </td>
+                        <td class="text-center">
+                            <%=category.name%>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/category/info/update/<%=category.id%>">
+                                <div class="menu-item">
+                                    이름 변경하기
+                                </div>
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/category/delete/<%=category.id%>" onclick= "return confirm('삭제하시겠습니까?');" >
+                                <div class="menu-item">
+                                    삭제하기
+                                </div>
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!--/.panel-body-->
+
+    <div class="panel-block text-center">
+        <%- pagination_html%>
+    </div>
+    <!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<%- include("../templates/foot"); %>

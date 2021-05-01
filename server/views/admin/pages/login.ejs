@@ -1,0 +1,52 @@
+<%- include("../templates/head"); %>
+
+<style>.head { display: none !important; }</style>
+
+<div class="row text-center">
+    <img src="/logo.png" style="height: 30px; margin-top: 18px;"/>
+</div>
+
+<br /><br />
+
+<div class="panel" style="width: 400px; margin: auto;">
+    <div class="panel-header text-center">
+        <h1>로그인</h1>
+    </div>
+    <!--/.panel-header-->
+
+    <form method="POST" action="/admin/login/attempt/" onsubmit=" return checkForm(); ">
+        <input type="hidden" name="rurl" value="<%=rurl%>" />
+        <div class="panel-body padTopNone">
+            <% if (attempt) { %>
+                <div class="row">
+                    <span class="label label-danger" style="display: block;">이메일/비밀번호 일치하지 않습니다</span>
+                </div>
+                <!--/.row-->
+                <br />
+            <% } %>
+
+            <div class="row">
+                <label>이메일</label>
+                <input type="email" class="input" name="email" value="trop100@naver.com"/>
+            </div>
+            <!--/.row-->
+            <br />
+            <div class="row">
+                <label>비밀번호</label>
+                <input type="password" class="input" name="password" value="1q2w3e4r"/>
+            </div>
+            <!--/.row-->
+            <br />
+            <div class="row text-center">
+                <button type="submit" class="btn btn-primary">로그인</button>
+            </div>
+            <!--/.row-->
+        </div>
+        <!--/.panel-body-->
+    </form>
+</div>
+<!--/.panel-->
+
+<script> $(function() { $(".head").html(""); }); </script>
+
+<%- include("../templates/foot"); %>

@@ -1,0 +1,70 @@
+.book {
+    text-align: left;
+    .book-nav{
+        border-bottom: 2px solid #ccc;
+    }
+    .navitem {
+        display:inline-block;
+        padding: 15px 25px;
+        font-size: 16px;
+    }
+
+    .navitem.active{
+        font-weight: 700;
+        border-bottom: 2px solid var(--color-1);
+    }
+
+    .content {
+        a {
+            cursor: default;
+        }
+        margin: 0px;
+
+        .content-box {
+            display: flex;
+            width: 100%;
+            min-height: 150px;
+            margin: 25px 0;
+
+            .content-header{
+                width: 150px;
+                padding: 5px 15px;
+                margin-right: 80px;
+                font-size: 20px;
+            }
+            .content-value {
+                width: 100%;
+                border-bottom: 1px solid #bbb;
+            }
+
+            .content-value.book {
+                padding-bottom: 60px;
+            }
+
+            .content-value.review {
+                border: 0px;
+            }
+
+            .content-value.intro {
+                padding : 15px;
+            }
+
+            .book-list {
+                font-size: 12px;
+                padding: 20px 5px;
+
+                .book-item {
+                    padding: 4px 4px;
+                    margin: 4px 0;
+                }
+
+                .book-item.active {
+                    color: var(--color-1);
+                    font-weight: 700;
+                    border-radius: 4px;
+                    background-color: var(--color-3);
+                }
+            }
+        }
+    }
+}

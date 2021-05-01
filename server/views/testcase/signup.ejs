@@ -1,0 +1,65 @@
+<%- include('head'); %>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 id="api_member_email_check_duplicate">이메일 중복 확인	</h2>
+        <form method="POST" action="/api/member/email/check/duplicate/" onsubmit="api_member_email_check_duplicate(this); return false;">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" class="form-control" name="email" value="trop100@naver.com">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_member_email_check_duplicate = function(f) {
+                var form = $(f);
+                var payload = {
+                    "email" : form.find("input[name=email]").val()
+                };
+                $.post(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_signup_email">회원가입 (이메일)</h2>
+        <form method="POST" action="/api/auth/signup" onsubmit="api_signup_email(this); return false;">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" class="form-control" name="email" value="1@t.com" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="text" class="form-control" name="password" value="1234">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_signup_email = function(f) {
+                var form = $(f);
+                var payload = {
+                    "email" : form.find("input[name=email]").val(),
+                    "password" : form.find("input[name=password]").val()
+                };
+                $.post(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+
+<%- include('foot'); %>

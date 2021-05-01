@@ -1,0 +1,194 @@
+#signup {
+    width: 600px;
+    margin: 0 auto;
+
+    .signup-box {
+        margin-top: 40px;
+        padding: 50px 100px 60px;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+
+        .welcome-wrap {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 400px;
+            height: 400px;
+            margin: 30px auto;
+
+            .welcome-text {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 150px;
+                text-align: center;
+                font-size: 24px;
+                line-height: 2;
+                font-weight: 600;
+            }
+        }
+
+        .content-wrap {
+            .content-btn {
+                font-size: 16px;
+                margin-bottom: 10px;
+                padding: 15px 0;
+
+
+            }
+        }
+
+        .step-wrap {
+            display: flex;
+            align-items: center;
+
+            hr {
+                background-color: var(--color-1);
+                border: 0;
+                margin: 0;
+                height: 2px;
+                width: 80px;
+            }
+
+            .step-circle {
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                border: 2px solid var(--color-1);
+
+                &.active {
+                    background-color: var(--color-1);
+                    box-shadow: 0px 0px 15px rgba(92,76,229, 1);
+                }
+            }
+        }
+
+        .signup-content {
+            margin-top: 20px;
+
+            .signup-text {
+                padding: 20px 0 60px;
+                font-size: 28px;
+                font-weight: 600;
+            }
+
+            hr {
+                background-color: #ccc;
+                border: 0;
+                margin: 0;
+                height: 2px;
+                margin-bottom: 40px;
+
+            }
+
+            .sns-wrap {
+                padding-bottom: 20px;
+                .sns-btn {
+                    font-size: 18px;
+                    margin-bottom: 15px;
+
+                    .sns-content {
+                        border-radius: 4px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 60px;
+
+                        img {
+                            height: 40px;
+                            margin-right: 15px;
+                        }
+                    }
+
+                    #sns-naver {
+                        color: #fff;
+                        background-color: rgb(0,195,0);
+                    }
+
+                    #sns-kakao {
+                        background-color: rgb(248,226,0);
+                    }
+
+                    #sns-facebook {
+                        color: #fff;
+                        background-color: rgb(59,87,157);
+                    }
+
+                    #sns-google {
+                        border: 2px solid #ccc;
+                    }
+                }
+            }
+
+            .signup-btn {
+                border: 0;
+                line-height: 30px;
+                padding: 15px 0;
+                font-size: 18px;
+                font-weight: 600;
+                background-color: rgb(246, 245, 253);
+                width: 100%;
+            }
+
+            .header {
+                font-size: 20px;
+                font-weight: 600;
+                margin-bottom: 10px;
+            }
+
+            .password-wrap {
+                margin-bottom: 30px;
+            }
+
+            .terms-wrap {
+                margin-bottom: 20px;
+
+                .terms-box {
+                    border: 2px solid #ccc;
+                    border-radius: 4px;
+                    padding: 15px;
+
+                    hr {
+                        background-color: #ccc;
+                        border: 0;
+                        margin-bottom: 20px;
+                        height: 2px;
+
+                    }
+
+                    .checkbox-wrap {
+                        font-size: 14px;
+                        font-weight: 500;
+                        margin-bottom: 10px;
+
+                        .checkbox-text {
+                            padding-left: 30px;
+
+                            u {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+
+                    .checkbox-wrap.all {
+                        font-size: 18px;
+                        font-weight: 500;
+
+                        input[type="checkbox"] {
+                            width: 30px;
+                            height: 30px;
+                        }
+
+                        .checkbox-text {
+                            padding-left: 40px;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+
+
+}

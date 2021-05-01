@@ -1,0 +1,82 @@
+#login-area {
+    margin: 20px 0 0 20px;
+    display: flex;
+    align-items: center;
+
+    .login-wrap {
+        width: 400px;
+
+        .btn-login {
+            margin-top: 40px;
+            width: 100%;
+            height: 60px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            background-color: black;
+            border: 0;
+        }
+
+        .login-settings {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-signup {
+            margin-top: 40px;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-1);
+            border-width: 1px;
+            border-color: var(--color-1);
+            width: 100%;
+
+        }
+    }
+
+    .sns-wrap {
+        margin-top: 100px;
+        border-bottom: 2px solid #ccc;
+
+        .sns-text {
+            font-size: 16px;
+            font-weight:400;
+            text-align: center;
+        }
+
+        .sns-login-btn-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .btn-sns {
+                margin: 50px 0;
+                width: 65px;
+                height: 65px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                img{
+                    border-radius: 50%;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .login-bg-wrap {
+        margin-left: 120px;
+        width: 500px;
+
+        img {
+            width: 100%;
+        }
+    }
+
+}

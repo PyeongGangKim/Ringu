@@ -1,0 +1,92 @@
+#mypage {
+    .modify-btn {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--lightgray);
+    }
+    .noti-check {
+        margin-left: 100px;
+    }
+    .noti-box {
+        display: flex;
+        align-items: center;
+
+        span:nth-child(1) {
+            flex: 1 0 auto;
+        }
+
+        .noti-header {
+            text-align: center;
+            width: 58px;
+        }
+    }
+
+    #leave-area {
+        #leave-box {
+            background-color: #eee;
+            border-radius: 8px;
+            padding: 60px 70px;
+
+            .label-wrap {
+                line-height: 1.5;
+                position:relative;
+
+                .label {
+                    font-size: 16px;
+                    font-weight: 500;
+                    margin-bottom: 10px;
+                }
+
+                .sublabel {
+                    font-size: 15px;
+                    font-weight: 300;
+                    margin-bottom: 10px;
+                }
+
+                em {
+                    color: red;
+                    position: absolute;
+                    right: 10px;
+                    bottom: 0;
+                }
+            }
+
+            textarea {
+                margin-bottom: 40px;
+            }
+
+            input {
+                padding: 10px 20px;
+                font-size: 15px;
+                border: 2px solid #ddd;
+                border-radius: 4px;
+            }
+        }
+    }
+
+    .filter {
+        display:inline-block;
+        font-weight: 300;
+        font-size: 15px;
+        background: #eee;
+        border-radius: 20px;
+        padding: 4px 8px;
+        position:relative;
+        padding-right: 25px;
+        margin-left: 30px;
+        cursor: pointer;
+
+        em {
+            background-image: url("/arrow-up.png");
+            background-repeat: no-repeat;
+            background-color: unset;
+            background-size: contain;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            text-indent: -9999px;
+            top: 12px;
+            right: 8px;
+        }
+    }
+}

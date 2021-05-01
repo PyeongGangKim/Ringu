@@ -1,0 +1,167 @@
+<%- include('head'); %>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 id="api_book_get">책 가져오기</h2>
+        <form method="GET" action="/api/book" onsubmit="api_book_get(this); return false;">
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_get = function(f) {
+                var form = $(f);
+                var hello = null;
+                $.get(form.attr("action"), null, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_book_get_by_id">id로 책 정보 가져오기</h2>
+        <form method="GET" action="/api/book/" onsubmit="api_book_get_by_id(this); return false;">
+            <div class="form-group">
+                <label>Id</label>
+                <input type="text" class="form-control" name="id" value="">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_get_by_id = function(f) {
+                var form = $(f);
+                var id = form.find("input[name=id]").val();
+                
+                $.get(form.attr("action")+id, null, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_book_author_all_book">자기 책들 정보 가져오기</h2>
+        <form method="GET" action="/api/book/find/all-book/author/" onsubmit="api_book_author_all_book(this); return false;">
+            <div class="form-group">
+                <label>Memeber_id</label>
+                <input type="text" class="form-control" name="member_id" value="">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_author_all_book = function(f) {
+                var form = $(f);
+                var payload = {
+                    member_id : form.find("input[name=member_id]").val(),
+                }
+                
+                $.get(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_book_not_author_all_book">원하는 작가 책들 정보 가져오기</h2>
+        <form method="GET" action="/api/book/find/all-book/not-author/" onsubmit="api_book_not_author_all_book(this); return false;">
+            <div class="form-group">
+                <label>Memeber_id</label>
+                <input type="text" class="form-control" name="member_id" value="">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_not_author_all_book = function(f) {
+                var form = $(f);
+                var payload = {
+                    member_id : form.find("input[name=member_id]").val(),
+                }
+                
+                $.get(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_book_search_by_keyword">키워드로 책 정보 가져오기</h2>
+        <form method="GET" action="/api/book/search/keyword" onsubmit="api_book_search_by_keyword(this); return false;">
+            <div class="form-group">
+                <label>Keyword</label>
+                <input type="text" class="form-control" name="keyword" value="">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_search_by_keyword = function(f) {
+                var form = $(f);
+                var payload = {
+                    "keyword" : form.find("input[name=keyword]").val(),
+                };
+                $.get(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_book_search_by_category">카테고리 id로 책 정보 가져오기</h2>
+        <form method="GET" action="/api/book/search/category" onsubmit="api_book_search_by_category(this); return false;">
+            <div class="form-group">
+                <label>Category_id</label>
+                <input type="text" class="form-control" name="category_id" value="">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_search_by_category = function(f) {
+                var form = $(f);
+                var payload = {
+                    "category_id" : form.find("input[name=category_id]").val(),
+                };
+                $.get(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+
+<%- include('foot'); %>

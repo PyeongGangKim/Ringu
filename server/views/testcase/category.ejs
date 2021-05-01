@@ -1,0 +1,31 @@
+<%- include('head'); %>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_category_id">id로 카테고리 정보 얻기</h2>
+        <form method="get" action="/api/category/" onsubmit="api_category_id(this); return false;">
+            <div class="form-group">
+                <label>Id</label>
+                <input type="text" class="form-control" name="id" value="28912ebab3f9a6819fc99651a5d28f6866c1ac1325f316fbcc902f4b1460f3a3b8afdea7daedff163648f2507461b9c7d44fed5b40d570d125eedebc346bc554e6ec907e3bd8a8ba108efdf770e61d0932f4b517725c69005c4c7bbf7f54105bc0">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_category_id = function(f) {
+                var form = $(f);
+                var id = form.find("input[name=id]").val()
+                
+                $.get(form.attr("action") + id, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+<%- include('foot'); %>

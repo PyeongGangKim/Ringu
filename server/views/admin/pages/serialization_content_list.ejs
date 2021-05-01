@@ -1,0 +1,83 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h1><%=cover.title%>(조회: <%=total_count%>)</h1>
+        <span> 
+            <%=cover.member.name%>
+            <%=cover.category.name%>
+        </span>
+        <a class="nav-link" href="/admin/book/serialization/content/info/create/?id=<%=cover.id%>">
+            <div class="btn" id="book_register">책 등록</div>
+        </a>
+        <!--/.panel-options-->
+    </div>
+    <!--/.panel-header-->
+
+    <div class="panel-body padTopNone">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th style="width: 60px;">제목</th>
+                    <th>파일</th>
+                    <th style="width: 120px;">발간 여부</th>
+                    <th style="width: 120px;"></th>
+                    <th style="width: 120px;">다운로드</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!contents.length) { %>
+                    <tr>
+                        <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
+                    </tr>
+                <% } %>
+                <% contents.forEach(function(content, index) { %>
+                    <tr>
+                        <td class="text-center">
+                            <%=content.id%>
+                        </td>
+                        <td class="text-center">
+                            <%=content.title%>
+                        </td>
+                        <td class="text-left">
+                            <%=content.file%>
+                        </td>
+                        <td class="text-center">
+                            <% if (content.is_approved) { %>
+                                발간 완료
+                            <% } else { %>
+                                발간 전
+                            <%} %>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/serialization/content/<%=content.id%>">
+                                <div class="menu-item">
+                                    보기
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/download/<%=content.id%>">
+                                <div class="menu-item">
+                                    다운로드
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!--/.panel-body-->
+
+    <div class="panel-block text-center">
+        <%- pagination_html%>
+    </div>
+    <!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<%- include("../templates/foot"); %>

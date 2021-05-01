@@ -1,0 +1,126 @@
+#author-page {
+    .tab-wrap {
+        border-bottom: 2px solid #ccc;
+
+        .tab-nav {
+            .tab-btn {
+                display:inline-block;
+                padding: 15px 25px;
+                font-size: 21px;
+
+                &.active {
+                    font-weight: 700;
+                    border-bottom: 2px solid var(--color-1);
+                }
+            }
+        }
+    }
+
+    .tab-inner {
+        a {
+            cursor: default;
+        }
+        margin: 0px;
+
+        .inner-box {
+            display: flex;
+            width: 100%;
+            min-height: 150px;
+            margin: 25px 0;
+
+            .inner-header{
+                min-width: 170px;
+                max-width: 170px;
+                padding-left: 15px;
+                font-size: 30px;
+            }
+            .inner-content {
+                width: 100%;
+                border-bottom: 1px solid #bbb;
+
+                .intro {
+                    font-size: 20px;
+                    min-height: 150px;
+                    padding: 10px 50px;
+                }
+
+                .booklist-area {
+                    padding-bottom: 0;
+                    ul {
+                        flex-wrap: wrap;
+                    }
+                }
+            }
+
+            .final {
+                border: 0;
+            }
+
+            .review-book-list {
+                font-size: 18px;
+                padding: 20px 0;
+
+                .book-title {
+                    padding: 4px 8px;
+                    margin: 4px 0;
+                    cursor: pointer;
+                }
+
+                .book-title.active {
+                    color: var(--color-1);
+                    font-weight: 700;
+                    border-radius: 4px;
+                    background-color: var(--color-3);
+                }
+            }
+
+            .review-area {
+                margin-left: 40px;
+
+                .add-btn {
+                    margin-top: 10px;
+                    text-align: center;
+                    font-size: 20px;
+                    color: black;
+                }
+                .review-box {
+                    padding: 20px 0;
+                    min-height: 160px;
+                    border-bottom: 1px solid #bbb;
+
+                    .review-details {
+                        font-weight: 700;
+                        font-size: 15px;
+
+                        .title {
+                            font-size: 18px;
+                            margin-right: 10px;
+                        }
+
+                        .user {
+                            color: #777777;
+                        }
+
+                        .sep {
+                            margin: 0 5px;
+                            color: #aaaaaa;
+                        }
+                        .stars{
+                            color: yellow;
+                            margin: 0 5px;
+                        }
+
+                        .score {
+                        }
+
+                    }
+                    .review-content {
+                        font-size: 20px;
+                        margin-top: 30px;
+
+                    }
+                }
+            }
+        }
+    }
+}

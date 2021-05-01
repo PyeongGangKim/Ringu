@@ -1,0 +1,91 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h1>책(조회: <%=total_count%>)</h1>
+
+        <form method="GET" action="/admin/book/serialization/" class="panel-options input-inline">
+            <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
+            <input type="text" class="input" name="title" value="<%=fields.name%>" placeholder="책 이름"/>
+            <input type="text" class="input" name="price" value="<%=fields.email%>" placeholder="가격 이하"/>
+            <input type="number" class="input" name="is_approved" value="<%=fields.tel%>" placeholder="발간 여부" style="width: 100px;"/>
+            <input type="number" class="input text-center" name="limit" value="<%=fields.limit%>" placeholder="개수" style="width: 60px;"/>
+            <button type="submit" class="btn btn-success" style="height: 23px;">검색</button>
+            <a href="/admin/book/">
+                <div class="btn" id="filter-clear">초기화</div>
+            </a>
+        </form>
+        <a class="nav-link" href="/admin/book/serialization/cover/info/create">
+            <div class="btn" id="book_register">책 등록</div>
+        </a>
+        <!--/.panel-options-->
+    </div>
+    <!--/.panel-header-->
+
+    <div class="panel-body padTopNone">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#book</th>
+                    <th style="width: 60px;">작가 이름</th>
+                    <th style="width: 60px;">카테고리</th>
+                    <th style="width: 120px;">책 이름</th>
+                    <th style="width: 120px;">가격</th>
+                    <th style="width: 120px;">더 보기</th>
+                    <th style="width: 120px;">연재본</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!cover_list.length) { %>
+                    <tr>
+                        <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
+                    </tr>
+                <% } %>
+                <%  cover_list.forEach(function(cover, index) { %>
+                    <tr>
+                        <td class="text-center">
+                            <%=cover.id%>
+                        </td>
+                        <td class="text-center">
+                            <%=cover.member.name%>
+                        </td>
+                        <td class="text-center">
+                            <%=cover.category.name%>
+                        </td>
+                        <td class="text-center">
+                            <%=cover.title%>
+                        </td>
+                        <td class="text-center">
+                            <%=cover.price%>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/serialization/<%=cover.id%>">
+                                <div class="menu-item">
+                                    보기
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/serialization/content/list/?serialization_book_id=<%=cover.id%>">
+                                <div class="menu-item">
+                                    연재본 보기
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!--/.panel-body-->
+
+    <div class="panel-block text-center">
+        <%- pagination_html%>
+    </div>
+    <!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<%- include("../templates/foot"); %>

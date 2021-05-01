@@ -1,0 +1,500 @@
+#buy {
+    padding: 80px 40px;
+
+    hr {
+        background-color: #e2e2e2;
+        height: 2px;
+        border: 0;
+    }
+
+    #cartlist-area {
+        background-color: white;
+        padding: 20px 30px;
+        margin-bottom: 40px;
+        box-shadow:0 0px 30px rgba(0, 0, 0, 0.1);
+
+        .header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .product-box {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 190px;
+            padding: 20px 0 30px 0;
+
+            .img-box {
+                position: relative;
+                width: 230px;
+                height: 140px;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-right: 30px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            .details {
+                .title {
+                    display: block;
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin-bottom: 20px;
+                }
+
+                p {
+                    line-height: 25px;
+                    font-size: 15px;
+                }
+            }
+
+            .price {
+                position: absolute;
+                font-size: 24px;
+                font-weight: 700;
+                right: 30px;
+                bottom: 30px;
+            }
+        }
+    }
+
+    #buy-detail-area {
+        display: flex;
+        justify-content: space-between;
+        height: 530px;
+
+        #detail-box {
+            width: 790px;
+        }
+
+        #sum-box {
+            width: 460px;
+        }
+
+        .header {
+            font-size: 20px;
+            font-weight: 700;
+            padding-top: 20px;
+        }
+
+        .content {
+            margin: 60px;
+
+            table {
+                width:100%;
+                table-layout: fixed;
+                border-spacing: 0;
+
+                th {
+                    text-align: left;
+                    font-size: 16px;
+                    padding: 5px 0;
+                    width: 150px;
+                    height: 40px;
+                }
+                td {
+                    font-size: 16px;
+                    padding: 5px 0;
+                    vertical-align: middle;
+
+                    &:nth-child(2) {
+                        width: 250px;
+                        padding-right: 10px;
+                    }
+                }
+
+                .input-discount {
+                    display:inline-block;
+                    position: relative;
+                    vertical-align: middle;
+                    width: 100%;
+                    height: 30px;
+
+                    button {
+                        font-size: 15px;
+                        font-weight: 700;
+                    }
+
+                    input {
+                        font-size: 12px;
+                        text-align: right;
+                        padding-right: 30px;
+                        border: 1px solid #e2e2e2;
+                        border-radius: 2px;
+                        width: 100%;
+                        height: 30px;
+                    }
+
+                    .input-txt {
+                        position: absolute;
+                        font-size: 12px;
+                        right: 10px;
+                        top: 5px;
+                    }
+                }
+            }
+        }
+
+        .buy-detail-box {
+            border: 1px solid var(--color-2);
+            border-radius: 4px;
+            padding: 20px 30px;
+        }
+
+        .payment-group {
+            vertical-align: middle;
+            text-align: center;
+
+            input[type="radio"] {
+                display:inline-block;
+
+            }
+
+            label {
+                position: relative;
+                font-size: 15px;
+                border-radius: 24px;
+                padding: 10px 30px 10px 70px;
+                margin-right: 20px;
+
+                em {
+                    position: absolute;
+                    top: 6px;
+                    left: 30px;
+                    width: 30px;
+                    height: 30px;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+                }
+
+                #payment-card {
+                    background-image: url("/credit.png");
+                }
+
+                #payment-account {
+                    background-image: url("/account.png");
+                }
+
+                #payment-phone {
+                    background-image: url("/phone.png");
+                }
+            }
+        }
+
+        .detail-price {
+
+
+            dl {
+                position: relative;
+                font-weight: 700;
+                margin-bottom: 40px;
+
+                &:after {
+                    content: '';
+                    display: block;
+                    clear: both;
+                }
+
+                &:nth-child(3) {
+                    margin-bottom: 0;
+                }
+
+                dt {
+                    font-size: 20px;
+                }
+
+                dd {
+                    position: absolute;
+                    font-size: 17px;
+                    bottom:0;
+                    right: 0;
+                }
+            }
+            .total {
+                margin-top: 125px;
+
+                dd {
+                    font-size: 35px;
+                }
+            }
+        }
+
+        .agree-txt {
+            font-size: 15px;
+            margin-top: 120px;
+            margin-bottom: 30px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .payment-btn {
+            font-size: 20px;
+            border-radius: 8px;
+            width: 100%;
+        }
+    }
+}
+
+.buylist-container {
+    padding: 10px 30px 20px 30px;
+    margin: 0 0 40px 0;
+    box-shadow: 0 0px 5px rgba(0,0,0,0.12) inset;
+}
+.buy-item-container {
+    padding: 20px 0;
+    position: relative;
+
+    .buy-img {
+        padding: 10px 0;
+        display:inline-block;
+        width: 200px;
+        height: 120px;
+        vertical-align: top;
+        box-sizing:content-box;
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .buy-book {
+
+        position:relative;
+        height: 130px;
+
+        .buy-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .buy-content {
+            position:absolute;
+            bottom: 0px;
+        }
+
+        padding: 10px 10px 0 0;
+        margin-left: 20px;
+        display:inline-block;
+    }
+
+    .buy-price {
+        font-size: 18px;
+        font-weight: 700;
+        position:absolute;
+        right: 50px;
+        bottom: 20px;
+    }
+}
+.buy-detail-container{
+    position: relative;
+    height: 400px;
+
+    .check-item {
+        margin-top: 30px;
+
+        img {
+            vertical-align: middle;
+            width: 20px;
+            height: 20px;
+        }
+
+        .check-text {
+            vertical-align: middle;
+            font-weight: 700;
+            font-size: 12px;
+        }
+    }
+
+    .coupon-container {
+        margin: 20px 60px;
+        .item-container {
+            width: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .label {
+            font-size:12px;
+        }
+
+        input {
+            padding: 2px 8px;
+            font-size: 11px;
+            height: 30px;
+
+        }
+    }
+
+    .payment-container {
+        margin: 20px 60px;
+        .btn {
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 20px;
+            padding: 8px 30px;
+            img {
+                vertical-align: middle;
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
+            }
+            span {
+                vertical-align: middle;
+            }
+            border-radius: 16px;
+        }
+
+
+    }
+
+    .buy-details-container {
+        display:inline-block;
+        padding: 30px;
+        border: 1px solid var(--color-2);
+        border-radius: 4px;
+        width: 780px;
+        height: 100%;
+    }
+
+    .buy-summary-container {
+        position: absolute;
+        display:inline-block;
+        padding: 30px;
+        border: 1px solid var(--color-2);
+        border-radius: 4px;
+        right: 0;
+        width: 400px;
+        height: 100%;
+
+        .summary-item{
+            position: relative;
+            vertical-align: middle;
+
+            .value {
+                font-weight: 700;
+                position:absolute;
+                right: 0px;
+            }
+            margin-bottom: 10px;
+        }
+
+        .sum {
+            position: relative;
+            vertical-align: middle;
+            margin-top: 80px;
+            height: 32px;
+
+            .label {
+                line-height: 32px;
+            }
+
+            .value {
+                font-size: 24px;
+                font-weight: 700;
+                position:absolute;
+                right: 0px;
+            }
+        }
+
+        .buy-btn {
+            margin-top: 30px;
+            width: 100%;
+            border-radius: 4px;
+        }
+
+        .check-item {
+            margin-top: 100px;
+
+            img {
+                width: 10px;
+                height: 10px;
+            }
+
+            .check-text {
+                font-weight: 700;
+                font-size: 12px;
+            }
+        }
+    }
+
+
+}
+.complete-container {
+    h3 {
+        font-size: 20px;
+    }
+    .complete-box {
+        width: 100%;
+        height: 100%;
+        border: 2px solid var(--color-4);
+        border-radius: 8px;
+        padding: 30px 0;
+        margin-bottom: 60px;
+    }
+
+    table {
+
+        tbody {
+            width: 100%;
+        }
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid var(--color-3);
+        margin-bottom: 60px;
+
+        th, td {
+            border: 1px solid var(--color-3);
+        }
+
+        th {
+            background-color: #ddd;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            padding: 15px 0;
+            &:nth-child(1){
+                width: 200px;
+            }
+            &:nth-child(2){
+                width: 400px;
+            }
+            &:nth-child(3){
+                width: 200px;
+            }
+            &:nth-child(4){
+                width: 200px;
+            }
+            &:nth-child(5){
+                width: 200px;
+            }
+        }
+        td {
+            &:nth-child(1){
+                img {
+                    width: 180px;
+                    height: 120px;
+                }
+            }
+
+            &:nth-child(3){
+                text-align: right;
+                padding-right: 30px;
+            }
+            &:nth-child(4){
+                text-align: right;
+                padding-right: 30px;
+            }
+            &:nth-child(5){
+                text-align:center;
+            }
+        }
+    }
+}

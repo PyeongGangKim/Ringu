@@ -1,0 +1,121 @@
+.btn {
+    cursor: pointer;
+    padding: 8px 20px;
+    border: 1px solid;
+    vertical-align: middle;
+    border-radius: 4px;
+	display: inline-block;
+    text-align:center;
+}
+.btn[disabled] {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    opacity: .65;
+}
+.btn-block {
+    display: block;
+}
+
+.btn-default {
+    color: #fff;
+    background-color: #15376c;
+    border: 0;
+}
+.btn-default[disabled] {
+    background-color: #707070;
+    border-color: #707070;
+}
+
+.btn-transparent {
+    font-weight: 600;
+    color: black;
+    background-color: transparent;
+    border: 0;
+}
+.btn-transparent[disabled] {
+    background-color: #707070;
+    border-color: #707070;
+}
+
+.btn-dark {
+    color: #fff;
+    background-color: #000;
+    border: 0;
+}
+.btn-dark[disabled] {
+    background-color: #707070;
+    border-color: #707070;
+}
+
+.btn-light {
+    color: #fff;
+    background-color: #9aa0aa;
+    border-color: #9aa0aa;
+}
+.btn-light[disabled] {
+    background-color: #707070;
+    border-color: #707070;
+}
+
+.btn-white {
+    color: #435062;
+    background-color: #fff;
+    border-color: #fff;
+}
+.btn-white[disabled] {
+    background-color: #fff;
+    border-color: #fff;
+}
+
+.btn-red {
+    color: #ff2e16;
+    background-color: #fff;
+    border-color: #ff2e16;
+}
+.btn-red[disabled] {
+    background-color: #fff;
+    border-color: #fff;
+}
+
+.btn-white-blue {
+    color: #435062;
+    background-color: #fff;
+    border-color: #435062;
+}
+.btn-white-blue[disabled] {
+    background-color: #fff;
+    border-color: #435062;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.btn-color-1 {
+    color: #fff;
+    background-color: var(--color-1);
+    border: 0;
+}
+
+.btn-color-2 {
+    color: #fff;
+    background-color: var(--color-2);
+    border: 0;
+}
+
+.btn-color-4 {
+    color: black;
+    background-color: var(--color-4);
+    border: 0;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: black;
+    border-color: var(--color-2);
+}
+
+.btn-rounded {
+    border-radius: 20px !important;
+}

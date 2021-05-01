@@ -1,0 +1,107 @@
+<%- include('head'); %>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 id="api_book_title_check_duplicate">책 제목 중복 확인</h2>
+        <form method="POST" action="/api/book/title/check/duplicate/" onsubmit="api_book_title_check_duplicate(this); return false;">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" name="title" value="nodejs">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_title_check_duplicate = function(f) {
+                var form = $(f);
+                var payload = {
+                    "title" : form.find("input[name=title]").val()
+                };
+                $.post(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_create_book">책 등록</h2>
+        <form method="POST" action="/api/book/" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" name="title" value="nodejs" />
+            </div>
+            <div class="form-group">
+                <label>File Path</label>
+                <input type="file" class="form-control" name="file" value="path1">
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" class="form-control" name="price" value=10000>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <input type="number" class="form-control" name="type" value=1>
+            </div>
+            <div class="form-group">
+                <label>Category_id</label>
+                <input type="text" class="form-control" name="category_id" value="fccd11289be1df0daa6b9b092e75853d7262fb17ae7500a5af0677041d6f218a882ded96f13d9c73476f2cbe62203d11ab2b0d22484ae25399854d60a7956c2af6c10a8b65e42cd0fa5cc10f9e9f70183386c105e632d936b8f336fe15b7baa9a4f1">
+            </div>
+            <!--<div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>-->
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <!--<script>
+            var api_create_book = function(f) {
+                var form = $(f);
+                var payload = {
+                    "title" : form.find("input[name=title]").val(),
+                    "file" : form.find("input[name=file]").val(),
+                    "price" : form.find("input[name=price]").val(),
+                    "type" : form.find("input[name=type]").val(),
+                    "category_id" : form.find("input[name=category_id]").val(),
+                    "member_id" : form.find("input[name=member_id]").val()
+                };
+                $.post(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script> -->
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_book_delete">책 삭제하기</h2>
+        <form method="POST" action="/api/book/" onsubmit="api_book_delete(this); return false;">
+            <input type="hidden" name="_method" value="delete" />
+            <div class="form-group">
+                <label>Id</label>
+                <input type="text" class="form-control" name="id" value="">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_book_delete = function(f) {
+                var form = $(f);
+                var id = form.find("input[name=id]").val();
+                $.delete(form.attr("action")+id, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+<%- include('foot'); %>

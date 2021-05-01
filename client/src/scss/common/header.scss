@@ -1,0 +1,147 @@
+header {
+    background-color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 110px;
+    z-index: 1500;
+
+    #signup-header {
+        width: 100%;
+        text-align: center;
+        height: 100%;
+
+        #signup-logo {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;            
+            height: 60px;
+        }
+    }
+
+    #header {
+        position: relative;
+        margin: 0 auto;
+        width: 1360px;
+        height: 100%;
+    }
+
+    #logo {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 220px;
+        height: 70px;
+
+        a {
+            display: block;
+            width: 220px;
+            height: 70px;
+
+            background-image: url("/logo.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        img {
+            display:none;
+        }
+    }
+
+    #user-area {
+        position: absolute;
+        top: 25px;
+        right: 0;
+        width: 160px;
+        height: 60px;
+
+        #accounts {
+            display:flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            font-size: 16px;
+        }
+
+        #user-page {
+            display:flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            font-size: 15px;
+            text-align: center;
+            color: #999999;
+
+
+            #author-page {
+                width: 70px;
+                height: 100%;
+
+                img {
+                    display:block;
+                    width: 30px;
+                    height: 30px;
+                    margin: 0 auto 10px auto;
+                }
+            }
+
+            #user-nb {
+                position: relative;
+                width: 90px;
+                height: 100%;
+                cursor: pointer;
+
+                #nb-box {
+                    height: 40px;
+                    text-align:center;
+
+                    img {
+                        width: 50px;
+                        height: 30px;
+                        vertical-align: middle;
+                        margin: 0 5px;
+                    }
+                }
+
+                .nb-menu {
+                    color: black;
+                }
+
+                ul {
+                    position: absolute;
+                    left: -10px;
+                    top: 70px;
+                    width: 120px;
+                    display: none;
+                    padding: 10px 0;
+                    background-color: white;
+                    border-radius: 4px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                }
+                li {
+                    padding: 5px 0;
+
+                    button {
+                        padding: 0;
+                        font-size: 15px;
+                        font-weight: 400;
+                    }
+                }
+            }
+        }
+    }
+
+    #search-area {
+        position: absolute;
+        top: 35px;
+        right: 200px;
+        height: 40px;
+
+        .search {
+            width: 550px;
+        }
+    }
+}
