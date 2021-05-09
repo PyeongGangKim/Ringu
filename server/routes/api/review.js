@@ -1,8 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-
-var helper_api = require("../../helper/api");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 

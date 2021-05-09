@@ -11,6 +11,7 @@ var _serialization_book = require("./serialization_book");
 var _single_published_book = require("./single_pulished_book");
 let _withdrawal = require("./withdrawal");
 let _identification = require("./identification");
+let _notification = require("./notification"); 
 
 function initModels(sequelize) {
   var book = _book(sequelize, DataTypes);
@@ -25,6 +26,7 @@ function initModels(sequelize) {
   var single_published_book = _single_published_book(sequelize, DataTypes);
   let withdrawal = _withdrawal(sequelize, DataTypes);
   let identification = _identification(sequelize, DataTypes);
+  let notification = _notification(sequelize, DataTypes);
 
   favorite_author.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(favorite_author, { as: "favorite_authors", foreignKey: "member_id"});
@@ -60,6 +62,8 @@ function initModels(sequelize) {
   single_published_book.hasOne(book, { as: "book", foreignKey: "single_published_book_id"});
   withdrawal.belongsTo(author, {as: "author", foreignKey: "author_id"});
   author.hasMany(withdrawal, {as: "withdrawals", foreignKey: "author_id"});
+  notification.belongsTo(member, {as: "member", foreignKey: "member_id"});
+  member.hasMany(notification, {as: "notifications", foreignKey: "member_id"});
 
   return {
     book,
@@ -74,6 +78,7 @@ function initModels(sequelize) {
     single_published_book,
     withdrawal,
     identification,
+    notification,
   };
 }
 module.exports = initModels;
