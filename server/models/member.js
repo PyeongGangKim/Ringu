@@ -54,23 +54,23 @@ module.exports = function(sequelize, DataTypes) {
     },
     age_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: false,
+      allowNull: true,
     },
     service_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: false,
+      allowNull: true,
     },
     privacy_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: false,
+      allowNull: true,
     },
     notice_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: false,
+      allowNull: true,
     },
     account_active_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: false,
+      allowNull: true,
     },
   }, {
     sequelize,
