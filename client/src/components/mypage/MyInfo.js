@@ -18,8 +18,8 @@ class MyInfo extends Component {
 
             },
             data: {
-                id:"",
-                password:""
+                email:"",
+                nickname: "",
             },
             msg: {
 
@@ -28,12 +28,18 @@ class MyInfo extends Component {
     }
 
     componentDidMount() {
-        var userInfo = User.getInfo();
+        var state = this.state;
 
         API.sendGet(URL.api.member.get).then(res => {
-            console.log(res)
-        });
+            if(res.status === 200){
+                var user = res.data.user;
+                state.data.email = user.email;
+                state.data.nickname = user.nickname;
 
+                this.setState(state)
+            }
+
+        });
     }
 
     render() {
@@ -55,7 +61,7 @@ class MyInfo extends Component {
                     <div className="content">
                         <div className="input-box">
                             <h3 className="header"> 이메일 </h3>
-                            <input className="textbox" type="email" name="email" autoComplete="off" value="trop100@naver.com"/>
+                            <input className="textbox" type="email" name="email" autoComplete="off" value={this.state.data.email} disabled/>
                         </div>
 
                         <div className="input-box">
