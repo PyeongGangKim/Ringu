@@ -1,35 +1,42 @@
 module.exports = {
     api : {
         auth: {
-            login:       "/auth/login",
-            signup:      "/auth/signup",
+            login:          "/auth/login",
+            signup:         "/auth/signup",
             user: {
-                get:     "/auth/user",
-                edit:    "/auth/user/edit",
+                get:        "/auth/user",
+                edit:       "/auth/user/edit",
             },
-            emailcode:   "/auth/email",
-
-            eamilcheck:  "/auth/emailcheck",
+            email: {
+                code:       "/auth/email/code",
+                duplicate:  "/auth/email/duplicate",
+            },
             company: {
-                get:     "/auth/company",
-                edit:    "/auth/company/edit",
+                get:        "/auth/company",
+                edit:       "/auth/company/edit",
+            },
+            sns:{
+                naver:      "/auth/naver",
             }
         },
         member: {
             get:              "/member",
             verifyNickname:   "/member/name/duplicate",
+            password:         "/member/password",
+            passwordCheck:    "/member/password/check",
         }
     },
     service : {
         home    : "/home",
         mypage  : {
-            info        : "/mypage",
-            purchases   : "/purchases",
-            carts       : "/carts",
-            fav_author  : "/favorite/author",
-            fav_book    : "/favorite/book",
-            auth        : "/auth",
-            leave       : "/leave"
+            info            : "/mypage",
+            password_change : "/mypage/password/change",
+            leave           : "/leave",
+            purchases       : "/purchases",
+            carts           : "/carts",
+            fav_author      : "/favorite/author",
+            fav_book        : "/favorite/book",
+            auth            : "/auth",
         },
         register : {
             author      : "/register/author"
@@ -42,7 +49,11 @@ module.exports = {
             login       : "/login",
             signup      : "/signup",
             signup_step : "/signup/step",
-
-        }
+        },
+        auth: {
+            naver       : "/auth/callback/naver",
+            kakao       : "/auth/callback/kakao",
+            google      : "/auth/callback/google",
+        },
     }
 };
