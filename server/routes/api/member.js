@@ -14,7 +14,7 @@ let { member } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 const { salt } = require("../../config/salt");
 
-router.get('/', isLoggedIn, async(req, res, next) => {    
+router.get('/', isLoggedIn, async(req, res, next) => {
     var user = req.user;
 
     try{
@@ -51,11 +51,12 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
 
 })
 router.put('/password/', isLoggedIn, async (req, res, next) => {
-
-    // POST
-    let id = req.user.id;
-    let password = await bcrypt.hash(req.body.password, salt);
     try{
+        // POST
+        var id = req.user.id;
+        var salt = await bcrypt.genSalt(salt);
+        var password = await bcrypt.hash(req.body.password, salt);
+
         const result = await member.update({
             password : password
         },
@@ -76,7 +77,7 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
     }
 
     // DB LOAD
-    
+
 });
 router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     let nickname = req.body.nickname;
