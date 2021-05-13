@@ -109,10 +109,11 @@ class Login extends Component {
                         </div>
                         {/* sns-wrap */}
 
-                        <button className="btn btn-signup">
-                            회원가입하기
-                        </button>
-
+                        <Link to={URL.service.accounts.signup}>
+                            <button className="btn btn-signup">
+                                회원가입하기
+                            </button>
+                        </Link>
                     </div>
                     {/* login-wrap */}
 
