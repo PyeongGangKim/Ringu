@@ -1,59 +1,69 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('book', {
+  return sequelize.define('single_published_book', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    title: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "revised_book_title_uindex"
+    book_description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
-    file: {
+    author_description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    img: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
-    type: {
+    price: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    page_number: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    is_approved: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
-    },
     status: {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
     },
-    serialization_book_id: {
+    author_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
-        model: 'serialization_book',
+        model: 'author',
         key: 'id'
       }
     },
-    single_published_book_id: {
+    category_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
-        model: 'single_published_book',
+        model: 'category',
         key: 'id'
       }
+    },
+    preview: {
+      type: DataTypes.STRING(100),
+      allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'book',
+    tableName: 'single_published_book',
     timestamps: false,
     indexes: [
       {
@@ -65,25 +75,17 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "revised_book_title_uindex",
-        unique: true,
+        name: "single_published_book_category_id_fk",
         using: "BTREE",
         fields: [
-          { name: "title" },
+          { name: "category_id" },
         ]
       },
       {
-        name: "revised_book_serialization_book_id_fk",
+        name: "single_published_book_author_id_fk",
         using: "BTREE",
         fields: [
-          { name: "serialization_book_id" },
-        ]
-      },
-      {
-        name: "revised_book_single_published_book_id_fk",
-        using: "BTREE",
-        fields: [
-          { name: "single_published_book_id" },
+          { name: "author_id" },
         ]
       },
     ]

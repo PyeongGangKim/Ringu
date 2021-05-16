@@ -15,14 +15,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    serialization_book_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'serialization_book',
-        key: 'id'
-      }
-    },
     single_published_book_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -34,12 +26,20 @@ module.exports = function(sequelize, DataTypes) {
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     status: {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
+    },
+    serialization_book_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'serialization_book',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
@@ -62,14 +62,14 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "single_published_book_id",
+        name: "favorite_book_ibfk_2_idx",
         using: "BTREE",
         fields: [
           { name: "single_published_book_id" },
         ]
       },
       {
-        name: "serialization_book_id",
+        name: "favorite_book_serialization_book_id_fk",
         using: "BTREE",
         fields: [
           { name: "serialization_book_id" },

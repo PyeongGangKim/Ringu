@@ -7,26 +7,13 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    member_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'member',
-        key: 'id'
-      }
-    },
     title: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     content: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    created_date_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     status: {
       type: DataTypes.TINYINT,
@@ -34,13 +21,26 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: 1
     },
     is_read: {
-        type: DataTypes.TINYINT,
-        allowNull: false,
-        defaultValue: 0,
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
+    },
+    created_date_time: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     type: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    member_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'member',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
@@ -56,7 +56,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "member_id",
+        name: "notification_member_id_fk",
         using: "BTREE",
         fields: [
           { name: "member_id" },

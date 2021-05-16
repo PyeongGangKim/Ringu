@@ -19,14 +19,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'book_id',
+        model: 'book',
         key: 'id'
       }
     },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     status: {
       type: DataTypes.TINYINT,
@@ -54,7 +54,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "book_id",
+        name: "purchase_revised_book_id_fk",
         using: "BTREE",
         fields: [
           { name: "book_id" },

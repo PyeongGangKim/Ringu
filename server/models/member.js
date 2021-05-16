@@ -36,14 +36,14 @@ module.exports = function(sequelize, DataTypes) {
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     last_login: {
       type: DataTypes.DATE,
       allowNull: true
     },
     status: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: 1
     },
@@ -54,24 +54,44 @@ module.exports = function(sequelize, DataTypes) {
     },
     age_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true,
+      allowNull: true
     },
     service_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true,
+      allowNull: true
     },
     privacy_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true,
+      allowNull: true
     },
     notice_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true,
+      allowNull: true
     },
     account_active_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true,
+      allowNull: true
     },
+    kakao_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      unique: "kakao_id_UNIQUE"
+    },
+    naver_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      unique: "naver_id_UNIQUE"
+    },
+    google_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      unique: "google_id_UNIQUE"
+    },
+    facebook_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      unique: "facebook_id_UNIQUE"
+    }
   }, {
     sequelize,
     tableName: 'member',
@@ -91,6 +111,38 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "email" },
+        ]
+      },
+      {
+        name: "kakao_id_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "kakao_id" },
+        ]
+      },
+      {
+        name: "facebook_id_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "facebook_id" },
+        ]
+      },
+      {
+        name: "google_id_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "google_id" },
+        ]
+      },
+      {
+        name: "naver_id_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "naver_id" },
         ]
       },
     ]

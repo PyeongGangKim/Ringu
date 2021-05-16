@@ -34,7 +34,7 @@ module.exports = function(sequelize, DataTypes) {
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     status: {
       type: DataTypes.TINYINT,
@@ -62,7 +62,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "book_id",
+        name: "review_ibfk_2",
         using: "BTREE",
         fields: [
           { name: "book_id" },
