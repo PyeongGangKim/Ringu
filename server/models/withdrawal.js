@@ -7,9 +7,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    created_date_time: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    },
     amount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     author_id: {
       type: DataTypes.INTEGER,
@@ -18,11 +23,6 @@ module.exports = function(sequelize, DataTypes) {
         model: 'author',
         key: 'id'
       }
-    },
-    created_date_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     status: {
       type: DataTypes.TINYINT,
@@ -43,7 +43,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "author_id",
+        name: "withdrawal_author_id_fk",
         using: "BTREE",
         fields: [
           { name: "author_id" },

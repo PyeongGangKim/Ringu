@@ -9,23 +9,24 @@ module.exports = function(sequelize, DataTypes) {
     },
     title: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: false,
+      unique: "serialization_book_title_uindex"
     },
     serialization_day: {
-        type: DataTypes.STRING(50),
-        allowNull: false
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     book_description: {
       type: DataTypes.TEXT,
       allowNull: true
     },
     author_description: {
-        type: DataTypes.TEXT,
-        allowNull: true
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     img: {
       type: DataTypes.STRING(100),
-      allowNull: true,
+      allowNull: true
     },
     price: {
       type: DataTypes.INTEGER,
@@ -34,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     is_finished_serialization: {
       type: DataTypes.TINYINT,
@@ -76,10 +77,11 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "author_id",
+        name: "serialization_book_title_uindex",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "author_id" },
+          { name: "title" },
         ]
       },
       {
@@ -87,6 +89,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "category_id" },
+        ]
+      },
+      {
+        name: "serialization_book_author_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "author_id" },
         ]
       },
     ]

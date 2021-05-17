@@ -136,13 +136,22 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
 );
 
 //naver login
-router.get('/naver', passport.authenticate('naver', {
-    session: false,
-    scope: ['profile', 'email'],
-  }),
-);
+router.get('/naver', passport.authenticate('naver', {session: false}),
+    function(req, res) {
+        const token = jwt.sign({
+            id: req.user.id
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
+        });
 
-router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
+        res.status(200).json({token: token});
+    }
+)
+
+
+
+/*router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
   function (req, res) {
       const token = jwt.sign({
            id: req.user.id
@@ -155,7 +164,38 @@ router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: 
         }
         res.cookie('token', token).redirect(home);
   },
-);
+);*/
+
+router.get('/naver/callback', function(req, res) {
+    try {
+        var token = req.query.token;
+        var header = "Bearer " + token; // Bearer 다음에 공백 추가
+
+        var api_url = 'https://openapi.naver.com/v1/nid/me';
+        var request = require('request');
+        var options = {
+            url: api_url,
+            headers: {'Authorization': header}
+        }
+
+        request.get(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
+                res.end(body);
+            } else {
+                if(response != null) {
+                    console.log('error = ' + response.statusCode);
+                    res.status(response.statusCode).end(body);
+
+                }
+            }
+        });
+    } catch(err) {
+        console.log(err);
+        res.status(response.statusCode).end();
+    }
+
+})
 //kakao login
 router.get('/kakao', passport.authenticate('kakao', {
     session: false,
@@ -299,7 +339,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
     }
 })    
 
-router.post('/email/identification/number', async (req, res, next) => {//email 인증번호 보내는 api
+router.post('/email/code', async (req, res, next) => {//email 인증번호 보내는 api
     const number = generateRandom(111111,999999);
     const email = req.body.email;
     
