@@ -21,13 +21,13 @@ router.post('/serialization', isLoggedIn,async (req, res, next) => {
                 status : 1,
             }
         })
-        if(duplicate_result){ 
+        if(duplicate_result){
             res.json({
                 status: "error",
                 reason: "duplicate"
             });
         }
-    
+
         else{
             const result = await favorite_book.create({
                 member_id : member_id,
@@ -59,13 +59,13 @@ router.post('/singlePublished', isLoggedIn,async (req, res, next) => {
                 status : 1,
             }
         })
-        if(duplicate_result){ 
+        if(duplicate_result){
             res.json({
                 status: "error",
                 reason: "duplicate"
             });
         }
-    
+
         else{
             const result = await favorite_book.create({
                 member_id : member_id,
@@ -84,8 +84,8 @@ router.post('/singlePublished', isLoggedIn,async (req, res, next) => {
 });
 
 router.get('/', isLoggedIn,async (req, res, next) => {
-    var member_id = req.query.member_id;
-    
+    var member_id = req.user.id;
+
     try{
         const result = await favorite_book.findAll({
             where : {
@@ -104,7 +104,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
 });
 
 router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
-    
+
     var id = req.params.favoriteBookId;
 
     try{

@@ -10,7 +10,7 @@ const { secretKey } = require('../../config/jwt_secret');
 
 const { identification, member } = require("../../models");
 const { isLoggedIn } = require('../../middlewares/auth');
-const { home, sns_signup } = require('../../config/url');
+const { redirect_url } = require('../../config/url');
 const { ncp } = require("../../config/naver_sms");
 
 router.post("/signup", async (req, res, next) => {
@@ -22,16 +22,18 @@ router.post("/signup", async (req, res, next) => {
         let salt = await bcrypt.genSalt(parseInt(salt_num));
         let hashed_password = await bcrypt.hash(payload.password, salt);
         payload.password = hashed_password;
+        console.log(payload)
         let result = await member.create({
             email: payload.email,
             password: payload.password,
-            nicknmae: payload.nickname,
-            age_terms_agreement: payload.age_terms_agreement,
-            service_terms_agreement: payload.service_terms_agreement,
-            privacy_terms_agreement: payload.privacy_terms_agreement,
+            nickname: payload.nickname,
+            age_terms_agreement: true,//payload.age_terms_agreement,
+            service_terms_agreement: true,//payload.service_terms_agreement,
+            privacy_terms_agreement: true,//payload.privacy_terms_agreement,
             notice_terms_agreement: payload.notice_terms_agreement,
             account_active_terms_agreement: payload.account_active_terms_agreement,
         });
+        console.log(result)
         const token = jwt.sign({
             id: result.id
         }, secretKey, {
@@ -44,36 +46,39 @@ router.post("/signup", async (req, res, next) => {
         res.json({status:'error', reason:'signup fails'})
     }
 });
-router.put('/sns/singup', isLoggedIn, async(req, res, next) => {
-    let payload = req.body;
+
+router.post("/signup/sns", async (req, res, next) => {
+    var payload = req.body;
+
     try{
-        member.update({
-            nicknmae: payload.nickname,
+        let user = {
+            email: payload.email,
+            nickname: payload.nickname,
             age_terms_agreement: payload.age_terms_agreement,
             service_terms_agreement: payload.service_terms_agreement,
             privacy_terms_agreement: payload.privacy_terms_agreement,
             notice_terms_agreement: payload.notice_terms_agreement,
             account_active_terms_agreement: payload.account_active_terms_agreement,
-        },
-        {
-            where: {
-                id: user.id,
-            }
+        }
+        user[`${payload.sns}_id`] = payload.id;
+
+        let result = await member.create(user);
+        const token = jwt.sign({
+            id: result.id
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
         });
-        res.json({
-            status: "ok",
-        })
-    }
-    catch(err){
+        res.status(200).json({status:"ok", token: token});
+    } catch(err) {
         console.error(err);
-        res.json({
-            status: "error",
-        })
+        res.json({status:'error', reason:'signup fails'})
     }
 });
 
-router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
+router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
     let nickname = req.body.nickname;
+    console.log(nickname)
     try{
         const result = await member.findAll({
             where: {
@@ -132,17 +137,14 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
                 expiresIn: '12h',
                 issuer: 'ringu',
             });
-        console.log(req.user);
-        if(req.user.isFirst){
-            res.cookie('token', token).redirect(sns_signup);
-        }
-        res.cookie('token', token).redirect(home);
+        res.cookie('token', token).redirect(redirect_url);
     },
 );
 
 //naver login
 router.get('/naver', passport.authenticate('naver', {session: false}),
     function(req, res) {
+        console.log(req.user)
         const token = jwt.sign({
             id: req.user.id
         }, secretKey, {
@@ -164,10 +166,7 @@ router.get('/naver', passport.authenticate('naver', {session: false}),
               expiresIn: '12h',
               issuer: 'ringu',
           });
-        if(req.user.isFirst){
-            res.cookie('token', token).redirect(sns_signup);
-        }
-        res.cookie('token', token).redirect(home);
+      res.cookie('token', token).redirect(redirect_url);
   },
 );*/
 
@@ -191,7 +190,6 @@ router.get('/naver/callback', function(req, res) {
                 if(response != null) {
                     console.log('error = ' + response.statusCode);
                     res.status(response.statusCode).end(body);
-
                 }
             }
         });
@@ -216,10 +214,7 @@ router.get( '/kakao/callback',passport.authenticate('kakao', { failureRedirect: 
               expiresIn: '12h',
               issuer: 'ringu',
           });
-        if(req.user.isFirst){
-            res.cookie('token', token).redirect(sns_signup);
-        }
-        res.cookie('token', token).redirect(home);
+      res.cookie('token', token).redirect(redirect_url);
   },
 );
 
@@ -238,10 +233,7 @@ router.get( '/facebook/callback',passport.authenticate('facebook', { failureRedi
               expiresIn: '12h',
               issuer: 'ringu',
           });
-        if(req.user.isFirst){
-            res.cookie('token', token).redirect(sns_signup);
-        }
-        res.cookie('token', token).redirect(home);
+      res.cookie('token', token).redirect(redirect_url);
   },
 );
 

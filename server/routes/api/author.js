@@ -30,7 +30,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 type: 1,
             },{
                 where : {
-                     id : req.user.id       
+                     id : req.user.id
                 }
             });
             if(changedMeberType){
@@ -46,17 +46,17 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     }
 
 })
-router.get('/:authorId', isLoggedIn, isAuthor,async (req, res, next) => {
+router.get('/:authorId', isLoggedIn, async (req, res, next) => {
 
     let id = req.params.authorId;
     try{
         const result = await author.findOne({
-    
+
             attributes: [
                 "id",
                 "description",
                 "member_id",
-                [sequelize.literal("member.name"),"name"],
+                [sequelize.literal("author.name"),"name"],
             ],
             where: {
                 id : id
@@ -76,7 +76,7 @@ router.get('/:authorId', isLoggedIn, isAuthor,async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-    }    
+    }
 });
 router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => {
 
@@ -117,7 +117,7 @@ router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => 
                             ]
                         },
                     ],
-                },  
+                },
             ],
             group: ["serialization_books.id"],
         });
@@ -147,14 +147,14 @@ router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => 
                             attributes: [],
                             include: [
                                 {
-                                    model: purchase,  
+                                    model: purchase,
                                     as : "purchases",
                                     attributes:[],
                                 }
                             ]
                         },
                     ],
-                },  
+                },
             ],
             group: ["single_published_books.id"],
         });
@@ -181,7 +181,7 @@ router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => 
             ],
         });
         console.log(author_revenue);
-        
+
         let sp_amount = 0;
         let serial_amount = 0;
         for(let i = 0 ; i < signle_published_revenue.length ; i++){
@@ -198,6 +198,6 @@ router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => 
     catch(err){
         res.json({status: "error", reason: "fail to get author revenue information"});
         console.error(err);
-    }    
+    }
 });
 module.exports = router;
