@@ -16,30 +16,64 @@ module.exports = {
                 edit:       "/auth/company/edit",
             },
             sns:{
-                naver:      "/auth/naver",
-            }
+                naver_callback: "/auth/naver/callback",
+                signup:         "/auth/signup/sns",
+                naver:          "/auth/naver",
+                kakao:          "/auth/kakao",
+            },
+            verify_nickname:  "/auth/nickname/duplicate",
         },
         member: {
             get:              "/member",
-            verifyNickname:   "/member/name/duplicate",
+            verify_nickname:  "/member/nickname/duplicate",
             password:         "/member/password",
             passwordCheck:    "/member/password/check",
+        },
+        cart: {
+            list:               "/cart",
+            delete:             "/cart/",
+        },
+        purchase: {
+            list:               "/purchase",
+        },
+
+        book: {
+            singlePublished:    "/book/singlePublished/",
+            serialization:      "/book/serialization/cover/",
+        },
+        author: {
+            get:                "/author/",
+        },
+        favorite: {
+            author: {
+                list:           "/favorite_author",
+                delete:         "/favorite_author/",
+            },
+            book: {
+                list:           "/favorite_book",
+                delete:         "/favorite_book/",
+            },
+        },
+        review: {
+            getByMember:        "/review/member",
         }
     },
     service : {
         home    : "/home",
         mypage  : {
-            info            : "/mypage",
-            password_change : "/mypage/password/change",
-            leave           : "/leave",
-            purchases       : "/purchases",
-            carts           : "/carts",
-            fav_author      : "/favorite/author",
-            fav_book        : "/favorite/book",
-            auth            : "/auth",
+            info                : "/mypage",
+            password_change     : "/mypage/password/update",
+            notification_change : "/mypage/notification/update",
+            leave               : "/leave",
+            purchases           : "/purchases",
+            carts               : "/carts",
+            fav_author          : "/favorite/author",
+            fav_book            : "/favorite/book",
+            auth                : "/auth",
         },
+        author                  : "/author",
         register : {
-            author      : "/register/author"
+            author      : "/register/author",
         },
         buy : {
             buy         : "/buy",
@@ -49,6 +83,7 @@ module.exports = {
             login       : "/login",
             signup      : "/signup",
             signup_step : "/signup/step",
+            welcome     : "/welcome",
         },
         auth: {
             naver       : "/auth/callback/naver",
