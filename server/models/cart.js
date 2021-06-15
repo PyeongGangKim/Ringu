@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('favorite_book', {
+  return sequelize.define('cart', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -15,11 +15,11 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    single_published_book_id: {
+    book_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
-        model: 'single_published_book',
+        model: 'book',
         key: 'id'
       }
     },
@@ -32,18 +32,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
-    },
-    serialization_book_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'serialization_book',
-        key: 'id'
-      }
     }
   }, {
     sequelize,
-    tableName: 'favorite_book',
+    tableName: 'cart',
     timestamps: false,
     indexes: [
       {
@@ -62,17 +54,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "favorite_book_ibfk_2_idx",
+        name: "cart_revised_book_id_fk",
         using: "BTREE",
         fields: [
-          { name: "single_published_book_id" },
-        ]
-      },
-      {
-        name: "favorite_book_serialization_book_id_fk",
-        using: "BTREE",
-        fields: [
-          { name: "serialization_book_id" },
+          { name: "book_id" },
         ]
       },
     ]

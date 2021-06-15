@@ -17,21 +17,23 @@ router.post("/signup", async (req, res, next) => {
 
     var payload = req.body;
     payload.password = payload.password.toString();
-  
+
     try{
         let salt = await bcrypt.genSalt(parseInt(salt_num));
         let hashed_password = await bcrypt.hash(payload.password, salt);
         payload.password = hashed_password;
+        console.log(payload)
         let result = await member.create({
             email: payload.email,
             password: payload.password,
-            nicknmae: payload.nickname,
-            age_terms_agreement: payload.age_terms_agreement,
-            service_terms_agreement: payload.service_terms_agreement,
-            privacy_terms_agreement: payload.privacy_terms_agreement,
+            nickname: payload.nickname,
+            age_terms_agreement: true,//payload.age_terms_agreement,
+            service_terms_agreement: true,//payload.service_terms_agreement,
+            privacy_terms_agreement: true,//payload.privacy_terms_agreement,
             notice_terms_agreement: payload.notice_terms_agreement,
             account_active_terms_agreement: payload.account_active_terms_agreement,
         });
+        console.log(result)
         const token = jwt.sign({
             id: result.id
         }, secretKey, {
@@ -45,8 +47,38 @@ router.post("/signup", async (req, res, next) => {
     }
 });
 
-router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
+router.post("/signup/sns", async (req, res, next) => {
+    var payload = req.body;
+
+    try{
+        let user = {
+            email: payload.email,
+            nickname: payload.nickname,
+            age_terms_agreement: payload.age_terms_agreement,
+            service_terms_agreement: payload.service_terms_agreement,
+            privacy_terms_agreement: payload.privacy_terms_agreement,
+            notice_terms_agreement: payload.notice_terms_agreement,
+            account_active_terms_agreement: payload.account_active_terms_agreement,
+        }
+        user[`${payload.sns}_id`] = payload.id;
+
+        let result = await member.create(user);
+        const token = jwt.sign({
+            id: result.id
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
+        });
+        res.status(200).json({status:"ok", token: token});
+    } catch(err) {
+        console.error(err);
+        res.json({status:'error', reason:'signup fails'})
+    }
+});
+
+router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
     let nickname = req.body.nickname;
+    console.log(nickname)
     try{
         const result = await member.findAll({
             where: {
@@ -66,6 +98,8 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => { // 회
 });
 
 router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크하는 api
+    var email = req.query.email;
+
     try{
         const result = await member.findOne({
             where : {
@@ -75,6 +109,9 @@ router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크
 
         if(result){
             res.json({status: 'error', reason: 'duplicate email'});
+            return;
+        } else {
+            res.json({status: 'ok'});
             return;
         }
     }
@@ -105,13 +142,23 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
 );
 
 //naver login
-router.get('/naver', passport.authenticate('naver', {
-    session: false,
-    scope: ['profile', 'email'],
-  }),
-);
+router.get('/naver', passport.authenticate('naver', {session: false}),
+    function(req, res) {
+        console.log(req.user)
+        const token = jwt.sign({
+            id: req.user.id
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
+        });
 
-router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
+        res.status(200).json({token: token});
+    }
+)
+
+
+
+/*router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
   function (req, res) {
       const token = jwt.sign({
            id: req.user.id
@@ -121,7 +168,37 @@ router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: 
           });
       res.cookie('token', token).redirect(redirect_url);
   },
-);
+);*/
+
+router.get('/naver/callback', function(req, res) {
+    try {
+        var token = req.query.token;
+        var header = "Bearer " + token; // Bearer 다음에 공백 추가
+
+        var api_url = 'https://openapi.naver.com/v1/nid/me';
+        var request = require('request');
+        var options = {
+            url: api_url,
+            headers: {'Authorization': header}
+        }
+
+        request.get(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
+                res.end(body);
+            } else {
+                if(response != null) {
+                    console.log('error = ' + response.statusCode);
+                    res.status(response.statusCode).end(body);
+                }
+            }
+        });
+    } catch(err) {
+        console.log(err);
+        res.status(response.statusCode).end();
+    }
+
+})
 //kakao login
 router.get('/kakao', passport.authenticate('kakao', {
     session: false,
@@ -211,7 +288,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
             raw: true,
             attributes : [
                 "id",
-                ["identification_info","email"] , 
+                ["identification_info","email"] ,
                 "identification_number",
                 "created_date_time",
             ],
@@ -246,23 +323,23 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
                 reason: "time over",
             });
             return;
-        } 
+        }
         res.json({
             status: "ok",
             message: "correct",
         });
-        
+
     }
     catch(err){
         console.log(err);
         res.json({status: 'error'});
     }
-})    
+})
 
-router.post('/email/identification/number', async (req, res, next) => {//email 인증번호 보내는 api
+router.post('/email/code', async (req, res, next) => {//email 인증번호 보내는 api
     const number = generateRandom(111111,999999);
     const email = req.body.email;
-    
+
     const mailOptions = {
         from: "RINGU",
         to: email,
@@ -336,7 +413,7 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
             raw: true,
             attributes : [
                 "id",
-                ["identification_info","phone"] , 
+                ["identification_info","phone"] ,
                 "identification_number",
                 "created_date_time",
             ],
@@ -371,19 +448,19 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
                 reason: "time over",
             });
         }
-        else{ 
+        else{
             res.json({
                 status: "ok",
                 message: "correct",
             });
         }
-        
+
     }
     catch(err){
         console.log(err);
         res.json({status: 'error'});
     }
-});    
+});
 
 
 module.exports = router;

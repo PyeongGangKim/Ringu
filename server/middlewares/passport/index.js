@@ -10,6 +10,8 @@ const { ExtractJwt , Strategy: JWTStrategy } = require('passport-jwt');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
 const { Strategy : KakaoStrategy } = require('passport-kakao');
 const { Strategy : FacebookStrategy } = require('passport-facebook');
+const { Strategy : CustomStrategy } = require('passport-custom');
+
 //sns config
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL } = require('../../config/google_auth');
 const { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, NAVER_CALLBACK_URL } = require('../../config/naver_auth');
@@ -41,7 +43,7 @@ async function localVerify(email, password, done) {
         else{
             done(null, false, {message: "가입되지 않은 회원입니다."});
         }
-        
+
     }
     catch(err){
         console.error(err);
@@ -70,15 +72,36 @@ async function JWTVerify({id}, done) {
         return done(err);
     }
 }
+
+async function SNSVerify(req, done) {
+    try{
+        var {id, email, sns} = req.query;
+        const user = await member.findOne({ where : {email: email} });
+
+        if(user && user[`${sns}_id`] === id){
+            return done(null, user);
+        }
+
+        // email이 등록이 안 되어 있는 경우
+        else {
+            return done(null, user);
+        }
+    }
+    catch(err){
+        console.log(err);
+        done(err);
+    }
+}
+
 const facebookOptions = getOption(FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, FACEBOOK_CALLBACK_URL);
 facebookOptions.profileFields = ['id','name','email'];
- 
+
 module.exports = () => {
     passport.use("local", new LocalStrategy(localStrategyOption, localVerify));
     passport.use("jwt", new JWTStrategy(JWTStrategyOption, JWTVerify));
     passport.use("google", new GoogleStrategy(getOption(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_CALLBACK_URL), verify));
-    passport.use("naver", new NaverStrategy(getOption(NAVER_CLIENT_ID,NAVER_CLIENT_SECRET,NAVER_CALLBACK_URL), verify));
-    passport.use("kakao", new KakaoStrategy(getOption(KAKAO_CLIENT_ID, KAKAO_CLIENT_SECRET, KAKAO_CALLBACK_URL), verify));
+    //passport.use("naver", new NaverStrategy(getOption(NAVER_CLIENT_ID,NAVER_CLIENT_SECRET,NAVER_CALLBACK_URL), verify));
+    passport.use("naver", new CustomStrategy(SNSVerify));
+    passport.use("kakao", new CustomStrategy(SNSVerify));
     passport.use("facebook", new FacebookStrategy(facebookOptions, verify));
 };
-        

@@ -31,6 +31,7 @@
     "node-sens": "^1.3.0",
     "nodemailer": "^6.4.18",
     "passport": "^0.4.1",
+    "passport-custom": "^1.1.1",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
@@ -38,8 +39,11 @@
     "passport-local": "^1.0.0",
     "passport-naver": "^1.0.6",
     "random-number": "0.0.9",
+    "react-facebook-login": "^4.1.1",
+    "react-kakao-login": "^2.1.0",
+    "request": "^2.88.2",
     "sequelize": "^6.5.0",
-    "sequelize-auto": "^0.7.10",
+    "sequelize-auto": "^0.7.11",
     "sequelize-cli": "^6.2.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
@@ -47,5 +51,8 @@
   "main": "index.js",
   "author": "ringu",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
 }
