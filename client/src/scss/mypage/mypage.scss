@@ -17,6 +17,9 @@
         font-weight: 400;
         color: var(--lightgray);
     }
+    .modify {
+
+    }
     .noti-check {
         margin-left: 100px;
     }
@@ -69,6 +72,8 @@
             }
 
             input {
+
+                width: 100%;
                 padding: 10px 20px;
                 font-size: 15px;
                 border: 2px solid #ddd;
