@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import Timer from '../common/Timer';
 
 import '../../scss/common/main.scss'
 import '../../scss/common/common.scss'
@@ -8,13 +9,14 @@ import '../../scss/accounts/signup.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
+import NAVER from '../../config/naver_auth';
 
 class SignupDetail extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            email: {val: "", msg: "", clear: false, class: "form-control", btn: false},
+            email: {val: "22@ss.com", msg: "", clear: false, class: "form-control", btn: false},
             emailCode: {val: "", msg: "", clear: false, class: "form-control", visible: false},
             nickname: {val: "", msg: "", clear: false, class: "form-control", visible: false},
             password: {val: "", msg: "", clear: false, class: "form-control"},
@@ -25,14 +27,22 @@ class SignupDetail extends Component {
             infoAgree: false,
             eventAgree: false,
             activeAgree: false,
+            timer: {min: 0, sec:0, active: false, clear: false},
+            naver: null,
         };
     }
 
+    componentDidMount() {
+
+    }
+
     handleEmailChange = evt => {
-        var state = this.state;
+        var state = JSON.parse(JSON.stringify(this.state));
+
         state.email.val = evt.target.value;
         state.email.clear = false;
         state.emailCode.visible = false;
+        state.timer.active = false;
 
         if(evt.target.value === "") {
             state.email.btn = false;
@@ -54,6 +64,41 @@ class SignupDetail extends Component {
         }
 
         this.setState(state);
+    }
+
+    verifyEmail = async(evt) => {
+        var state = this.state;
+
+        var params = {
+            email: state.email.val,
+        }
+
+        const res = await API.sendGet(URL.api.auth.email.duplicate, params)
+
+        if(res.data.status === "ok"){
+            const res = await API.sendPost(URL.api.auth.email.code, params)
+            var status = res.data.status;
+
+            if(status === "ok") {
+                this.setState({
+                    emailCode: {...state.emailCode, visible: true},
+                    email: {...state.email, btn:false},
+                    timer: {...state.timer, active:true},
+                });
+            } else {
+
+            }
+
+
+        } else {
+            if(res.reason === "duplicate email")
+            state.email.class = "form-control error";
+            state.email.clear = false;
+            state.email.btn = false;
+            state.email.msg = "이미 가입되어 있는 이메일입니다";
+
+            this.setState(state);
+        }
     }
 
     handleEmailCodeChange = evt => {
@@ -180,32 +225,6 @@ class SignupDetail extends Component {
         this.setState(state);
     }
 
-    verifyEmail = evt => {
-        var state = this.state;
-
-        var params = {
-            email: state.email.val,
-        }
-
-        API.sendPost(URL.api.auth.emailcode, params).then(res => {
-            var status = res.data.status;
-
-            if(status === "ok") {
-                state.emailCode.visible = true;
-                state.email.btn = false;
-
-            } else {
-                if(res.reason === "duplicate email")
-                state.email.class = "form-control error";
-                state.email.clear = false;
-                state.email.btn = false;
-                state.email.msg = "이미 가입되어 있는 이메일입니다";
-            }
-
-            this.setState(state);
-        })
-    }
-
     verifyEmailCode = evt => {
         var state = this.state;
         state.emailCode.clear = true;
@@ -218,10 +237,10 @@ class SignupDetail extends Component {
         var state = this.state;
 
         var params = {
-            name: state.nickname.val,
+            nickname: state.nickname.val,
         }
 
-        API.sendPost(URL.api.member.verifyNickname, params).then(res => {
+        API.sendPost(URL.api.auth.verify_nickname, params).then(res => {
             var status = res.data.status;
 
             if(status === "ok") {
@@ -245,7 +264,7 @@ class SignupDetail extends Component {
         var params = {
             email: state.email.val,
             password: state.password.val,
-            name: state.nickname.val
+            nickname: state.nickname.val
         }
         API.sendPost(URL.api.auth.signup, params).then(res => {
             var status = res.data.status;
@@ -295,6 +314,7 @@ class SignupDetail extends Component {
                                     this.state.emailCode.clear === true ? "인증완료" : "인증하기"
                                 }
                             </button>
+                            <Timer mm={0} ss={11} active={this.state.timer.active}/>
                             {
                                 this.state.emailCode.msg &&
                                 <div className="error-wrap">
@@ -411,7 +431,8 @@ class SignupDetail extends Component {
                 </div>
 
                 <a href="/welcome">
-                    <button className="btn signup-btn" disabled={!(this.state.email.clear && this.state.emailCode.clear && this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>
+                    {/*<button className="btn signup-btn" disabled={!(this.state.email.clear && this.state.emailCode.clear && this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>*/}
+                    <button className="btn signup-btn" disabled={!(this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>
                         가입완료!
                     </button>
                 </a>

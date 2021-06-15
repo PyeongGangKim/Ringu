@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import ReactDOM from "react-dom";
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+
 
 import '../../scss/common/main.scss'
 import '../../scss/common/common.scss'
@@ -10,6 +12,11 @@ import '../../scss/accounts/login.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
+import NAVER from '../../config/naver_auth';
+import KAKAO from '../../config/kakao_auth';
+import FACEBOOK from '../../config/facebook_auth';
+
+const {Kakao} = window;
 
 class Login extends Component {
     constructor(props) {
@@ -27,6 +34,25 @@ class Login extends Component {
 
             }
         };
+    }
+
+    componentDidMount() {
+        this.initializeNaverLogin();
+    }
+
+    initializeNaverLogin = () => {
+        var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.CALLBACK_URL);
+        var state = naver_id_login.getUniqState();
+        naver_id_login.setButton("green", 1, 65);
+        naver_id_login.setDomain("http://3.36.58.100:3000");
+        naver_id_login.setState(state);
+        naver_id_login.init_naver_id_login();
+    }
+
+    handleKaKaoLogin = () => {
+        Kakao.Auth.authorize({
+            redirectUri: KAKAO.CALLBACK_URL,
+        })
     }
 
     handleLogin = (event) => {
@@ -50,6 +76,10 @@ class Login extends Component {
                 alert('회원정보가 일치하지 않습니다.');
             }
         })
+    }
+
+    handleFacebook = (response) => {
+        console.log(response)
     }
 
     render() {
@@ -93,15 +123,26 @@ class Login extends Component {
                         <div className="sns-wrap">
                             <p className="sns-text">SNS계정으로 간단히 로그인하세요.</p>
                             <div className="sns-login-btn-wrap">
-                                <a href="" id="naver-login" className="btn-sns">
+                                <div id="naver_id_login"/>
+                                {/*<a href="" id="naver-login" className="btn-sns">
                                     <img src="/naver.png"/>
-                                </a>
-                                <a href="" id="kakao-login" className="btn-sns">
+                                </a>*/}
+                                <a id="kakao-login" className="btn-sns" onClick={this.handleKaKaoLogin}>
                                     <img src="/kakao.jpg"/>
                                 </a>
-                                <a href="" id="facebook-login" className="btn-sns">
-                                    <img src="/facebook.jpg"/>
-                                </a>
+                                <FacebookLogin
+                                    appId={FACEBOOK.APP_ID}
+                                    autoLoad={false}
+                                    fields="email"
+                                    disableMobileRedirect={true}
+                                    redirectUri={"/signup/facebook/callback"}
+                                    render={(renderProps) => (
+                                        <button id="facebook-login" className="btn-sns" onClick={renderProps.onClick}>
+                                            <img src="/facebook.jpg"/>
+                                        </button>
+                                    )}
+                                />
+
                                 <a href="" id="google-login" className="btn-sns">
                                     <img src="/google.png"/>
                                 </a>

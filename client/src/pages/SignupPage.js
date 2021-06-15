@@ -8,14 +8,11 @@ class SignupPage extends Component {
     }
 
     render() {
-        const signup = this.props.location.pathname === '/signup';
-        const welcome = this.props.location.pathname === '/welcome';
-
         return (
             <Fragment>
                 <SignupHeader></SignupHeader>
                 <div id="wrap">
-                    <Signup signup={signup} welcome={welcome}/>
+                    <Signup location={this.props.location}/>
                 </div>
             </Fragment>
         )
