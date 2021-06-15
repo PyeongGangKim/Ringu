@@ -1,6 +1,7 @@
 var DataTypes = require("sequelize").DataTypes;
 var _author = require("./author");
 var _book = require("./book");
+var _cart = require("./cart");
 var _category = require("./category");
 var _favorite_author = require("./favorite_author");
 var _favorite_book = require("./favorite_book");
@@ -16,6 +17,7 @@ var _withdrawal = require("./withdrawal");
 function initModels(sequelize) {
   var author = _author(sequelize, DataTypes);
   var book = _book(sequelize, DataTypes);
+  var cart = _cart(sequelize, DataTypes);
   var category = _category(sequelize, DataTypes);
   var favorite_author = _favorite_author(sequelize, DataTypes);
   var favorite_book = _favorite_book(sequelize, DataTypes);
@@ -36,6 +38,8 @@ function initModels(sequelize) {
   author.hasMany(single_published_book, { as: "single_published_books", foreignKey: "author_id"});
   withdrawal.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
+  cart.belongsTo(book, { as: "book", foreignKey: "book_id"});
+  book.hasMany(cart, { as: "carts", foreignKey: "book_id"});
   purchase.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(purchase, { as: "purchases", foreignKey: "book_id"});
   review.belongsTo(book, { as: "book", foreignKey: "book_id"});
@@ -46,6 +50,8 @@ function initModels(sequelize) {
   category.hasMany(single_published_book, { as: "single_published_books", foreignKey: "category_id"});
   author.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasOne(author, { as: "author", foreignKey: "member_id"});
+  cart.belongsTo(member, { as: "member", foreignKey: "member_id"});
+  member.hasMany(cart, { as: "carts", foreignKey: "member_id"});
   favorite_author.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(favorite_author, { as: "favorite_authors", foreignKey: "member_id"});
   favorite_book.belongsTo(member, { as: "member", foreignKey: "member_id"});
@@ -61,13 +67,14 @@ function initModels(sequelize) {
   favorite_book.belongsTo(serialization_book, { as: "serialization_book", foreignKey: "serialization_book_id"});
   serialization_book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "serialization_book_id"});
   book.belongsTo(single_published_book, { as: "single_published_book", foreignKey: "single_published_book_id"});
-  single_published_book.hasMany(book, { as: "books", foreignKey: "single_published_book_id"});
+  single_published_book.hasMany(book, { as: "book", foreignKey: "single_published_book_id"});
   favorite_book.belongsTo(single_published_book, { as: "single_published_book", foreignKey: "single_published_book_id"});
   single_published_book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "single_published_book_id"});
 
   return {
     author,
     book,
+    cart,
     category,
     favorite_author,
     favorite_book,
