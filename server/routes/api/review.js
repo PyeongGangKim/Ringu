@@ -10,7 +10,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {
 
     let member_id = req.body.member_id;
     let book_id = req.body.book_id;
-    console.log(req.body); 
+
     try{
         const duplicate_result = await review.findOne({
             where : {
@@ -33,7 +33,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {
             description : description,
         });
         res.json({status: "ok", result});
-        
+
     }
     catch(err){
         res.json({
@@ -52,7 +52,7 @@ router.get('/member', isLoggedIn, async (req, res, next) => {
                 member_id : member_id,
                 status : 1,
             },
-            include : { 
+            include : {
                 model : book,
                 as : 'book',
             }
@@ -105,7 +105,7 @@ router.get('/book', async (req, res, next) => {
     }
 });
 router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
-    
+
 
     var id = req.params.reviewId;
 
@@ -116,7 +116,7 @@ router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없
             }
         })
         res.json({status: "ok"});
-    
+
     }
     catch(err){
         res.json({

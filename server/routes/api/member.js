@@ -35,9 +35,11 @@ router.get('/', isLoggedIn, async(req, res, next) => {
     }
 })
 router.post('/password/check', isLoggedIn, async(req, res, next) => {
-    let password = req.body.password;
     try{
+        let password = req.body.password;
+
         const result = await bcrypt.compare(password, req.user.password);
+
         if(result){
             res.json({status: "ok", result: true});
         }
@@ -59,12 +61,12 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
 
         const result = await member.update({
             password : password
-        },
-        {
+        },{
             where: {
                 id : id
             },
         });
+
         if(result){
             res.json({status : "ok", result});
         }
