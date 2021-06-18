@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Switch, Route ,Redirect } from 'react-router-dom';
 
-import { Home, NotFound, MyPage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegister, AuthorPage, BookPage, RegisterPage, BuyPage, BuyCompletePage, SearchPage} from '../pages';
-import { LoginPage, SignupPage, SignupDetailPage } from '../pages';
+import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegister, AuthorPage, BookPage, RegisterPage, BuyPage, BuyCompletePage, SearchPage} from '../pages';
+import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage } from '../pages';
 import { ReviewPage } from '../pages';
 
 class App extends Component {
@@ -15,6 +15,8 @@ class App extends Component {
         return (
             <Switch>
                 <Route exact path="/home" component={Home} />{}
+                <Route path="/mypage/password/update" component={PasswordChangePage} />{}
+                <Route path="/mypage/notification/update" component={NotificationChangePage} />{}
                 <Route path="/mypage" component={MyPage} />{}
                 <Route path="/leave" component={LeavePage} />{}
                 <Route path="/purchases" component={Purchases} />{}
@@ -29,6 +31,7 @@ class App extends Component {
                 <Route path="/buy" component={BuyPage} />{}
                 <Route path="/search" component={SearchPage} />{}
                 <Route path="/login" component={LoginPage} />{}
+                <Route path="/signup/:sns/callback" component={SignupCallbackPage} />{}
                 <Route path="/signup" component={SignupPage} />{}
                 <Route path="/signup-step" component={SignupPage} />{}
                 <Route path="/welcome" component={SignupPage} />{}

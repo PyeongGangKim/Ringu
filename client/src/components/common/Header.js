@@ -87,7 +87,7 @@ class Header extends Component {
                             this.state.login == 'Y'
                             ?
                             <div id="user-page">
-                                <Link to="" id="author-page">
+                                <Link to={helper_url.service.author} id="author-page">
                                     <img src="/author.png"/>
                                     <span>작가 공간</span>
                                 </Link>

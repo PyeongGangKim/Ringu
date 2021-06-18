@@ -51,8 +51,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 });
 
 router.get('/', isLoggedIn, async (req, res, next) => {
-
-    var member_id = req.query.member_id;
+    var member_id = req.user.id;
     try{
         const result = await favorite_author.findAll({
             attributes : [

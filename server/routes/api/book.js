@@ -4,7 +4,7 @@ var router = express.Router();
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
- 
+
 const {purchase ,author ,sequelize,category, book, single_published_book, serialization_book, member, review, Sequelize: {Op} } = require("../../models");
 
 
@@ -20,7 +20,7 @@ router.get('/', async(req, res, next) => {
                 "img",
                 "author_id",
                 "preview",
-                [sequelize.literal("sum( `book->reviews`.score) / count(`book->reviews`.id)"),"review_score"],            
+                [sequelize.literal("sum( `book->reviews`.score) / count(`book->reviews`.id)"),"review_score"],
                 [sequelize.literal("author.name"), "author"],
                 [sequelize.literal("category.name"), "category"],
                 [sequelize.literal("book.title"),"title"],
@@ -77,11 +77,11 @@ router.get('/', async(req, res, next) => {
             ],
             group: ["book.id"],
         });
-        
+
         const serializationBook = await serialization_book.findAll({
             attributes: [
                 "id",
-                "title", 
+                "title",
                 "price",
                 "img",
                 "author_id",
@@ -124,7 +124,7 @@ router.get('/', async(req, res, next) => {
                 {
                     model : book,
                     as : "books",
-                    attributes: [], 
+                    attributes: [],
                     include : [
                         {
                             model: review,
@@ -133,7 +133,7 @@ router.get('/', async(req, res, next) => {
                             attributes: [],
                         },
                     ],
-                    
+
                 },
             ],
             group: ["serialization_book.id"],
@@ -156,7 +156,7 @@ router.get('/serialization', async(req, res, next) =>{
         const serializationBook = await serialization_book.findAll({
             attributes: [
                 "id",
-                "title", 
+                "title",
                 "price",
                 "img",
                 "author_id",
@@ -185,7 +185,7 @@ router.get('/serialization', async(req, res, next) =>{
                 {
                     model : book,
                     as : "books",
-                    attributes: [], 
+                    attributes: [],
                     include : [
                         {
                             model: review,
@@ -194,12 +194,12 @@ router.get('/serialization', async(req, res, next) =>{
                             attributes: [],
                         },
                     ],
-                    
+
                 },
             ],
             group: ["serialization_book.id"],
         });
-        
+
         res.json({status: "ok", serializationBook});
     }
     catch(err){
@@ -210,7 +210,7 @@ router.get('/serialization', async(req, res, next) =>{
         });
         console.error(err);
     }
-    
+
 });
 router.get('/serialization/contents/:serializationId', async(req, res, next) => {
     let serializationId = req.params.serializationId;
@@ -218,7 +218,7 @@ router.get('/serialization/contents/:serializationId', async(req, res, next) => 
         const contents = await serialization_book.findAll({
             attributes: [
                 "id",
-                "title", 
+                "title",
                 "price",
                 "img",
                 "author_id",
@@ -253,7 +253,7 @@ router.get('/serialization/contents/:serializationId', async(req, res, next) => 
                     order: [
                         ["books.created_date_time", "ASC"]
                     ],
-                    attributes: [], 
+                    attributes: [],
                     include : [
                         {
                             model: review,
@@ -265,7 +265,7 @@ router.get('/serialization/contents/:serializationId', async(req, res, next) => 
                 },
             ],
             group: ["books.id"],
-            
+
         });
         res.json({status: "ok", contents});
     }
@@ -284,7 +284,7 @@ router.get('/serialization/cover/:serializationId', async(req, res, next) => {
         const cover = await serialization_book.findOne({
             attributes : [
                 "id",
-                "title", 
+                "title",
                 "price",
                 "img",
                 "serialization_day",
@@ -313,7 +313,7 @@ router.get('/serialization/cover/:serializationId', async(req, res, next) => {
                 {
                     model : book,
                     as : "books",
-                    attributes: [], 
+                    attributes: [],
                     include : [
                         {
                             model: review,
@@ -322,7 +322,7 @@ router.get('/serialization/cover/:serializationId', async(req, res, next) => {
                             attributes: [],
                         },
                     ],
-                    
+
                 },
             ],
             group: ["serialization_book.id"],
@@ -345,7 +345,7 @@ router.post('/serialization/cover', isLoggedIn, isAuthor, uploadFile, async(req,
     let price = req.body.price;
     let author_id = req.body.author_id;
     let author_description = req.body.author_description;
-    let book_description = req.body.book_description; 
+    let book_description = req.body.book_description;
     let img = req.files.img[0].location;
     let category_id = req.body.category_id;
     try{
@@ -357,7 +357,7 @@ router.post('/serialization/cover', isLoggedIn, isAuthor, uploadFile, async(req,
             author_description: author_description,
             book_description: book_description,
             img: img,
-            category_id: category_id, 
+            category_id: category_id,
         });
         res.json({
             status: "ok",
@@ -407,7 +407,7 @@ router.get('/singlePublished', async(req, res, next) => {
                 "book_id",
                 "author_id",
                 "preview",
-                [sequelize.literal("sum( `book->reviews`.score) / count(`book->reviews`.id)"),"review_score"],            
+                [sequelize.literal("sum( `book->reviews`.score) / count(`book->reviews`.id)"),"review_score"],
                 [sequelize.literal("author.name"), "author"],
                 [sequelize.literal("category.name"), "category"],
                 [sequelize.literal("book.title"),"title"],
@@ -454,6 +454,7 @@ router.get('/singlePublished', async(req, res, next) => {
 });
 router.get('/singlePublished/:singlePublishedId', async (req,res,next) => {
     let singlePublishedId = req.params.singlePublishedId;
+
     try{
         const singlePublishedBook = await single_published_book.findOne({
             attributes : [
@@ -464,7 +465,7 @@ router.get('/singlePublished/:singlePublishedId', async (req,res,next) => {
                 "book_description",
                 "author_description",
                 "preview",
-                [sequelize.literal("sum(`book->reviews`.score) / count(`book->reviews`.id)"),"review_score"],            
+                [sequelize.literal("sum(`book->reviews`.score) / count(`book->reviews`.id)"),"review_score"],
                 [sequelize.literal("author.name"), "author"],
                 [sequelize.literal("category.name"), "category"],
                 [sequelize.literal("book.title"),"title"],
@@ -478,7 +479,8 @@ router.get('/singlePublished/:singlePublishedId', async (req,res,next) => {
                 {
                     model : author,
                     as : "author",
-                    attributes: []
+                    attributes: [],
+                    required: true,                    
                 },
                 {
                     model : book,
@@ -493,7 +495,8 @@ router.get('/singlePublished/:singlePublishedId', async (req,res,next) => {
                 {
                     model : category,
                     as : "category",
-                    attributes : []
+                    attributes : [],
+                    required: true,
                 }
             ]
         });
@@ -582,7 +585,7 @@ router.get('/download/:bookId', isLoggedIn, async (req,res,next) => {
         const fileUrlLength = fileUrl.length;
         const fileName = fileUrl[fileUrlLength - 1];
         const url = downloadFile(fileName);
-        
+
         res.json({status: "ok", url});
     }
     catch(err){

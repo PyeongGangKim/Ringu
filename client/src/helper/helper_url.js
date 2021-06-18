@@ -1,38 +1,79 @@
 module.exports = {
     api : {
         auth: {
-            login:       "/auth/login",
-            signup:      "/auth/signup",
+            login:          "/auth/login",
+            signup:         "/auth/signup",
             user: {
-                get:     "/auth/user",
-                edit:    "/auth/user/edit",
+                get:        "/auth/user",
+                edit:       "/auth/user/edit",
             },
-            emailcode:   "/auth/email",
-
-            eamilcheck:  "/auth/emailcheck",
+            email: {
+                code:       "/auth/email/code",
+                duplicate:  "/auth/email/duplicate",
+            },
             company: {
-                get:     "/auth/company",
-                edit:    "/auth/company/edit",
-            }
+                get:        "/auth/company",
+                edit:       "/auth/company/edit",
+            },
+            sns:{
+                naver_callback: "/auth/naver/callback",
+                signup:         "/auth/signup/sns",
+                naver:          "/auth/naver",
+                kakao:          "/auth/kakao",
+            },
+            verify_nickname:  "/auth/nickname/duplicate",
         },
         member: {
             get:              "/member",
-            verifyNickname:   "/member/name/duplicate",
+            verify_nickname:  "/member/nickname/duplicate",
+            password:         "/member/password",
+            passwordCheck:    "/member/password/check",
+        },
+        cart: {
+            list:               "/cart",
+            delete:             "/cart/",
+        },
+        purchase: {
+            list:               "/purchase",
+        },
+
+        book: {
+            singlePublished:    "/book/singlePublished/",
+            serialization:      "/book/serialization/cover/",
+        },
+        author: {
+            get:                "/author/",
+        },
+        favorite: {
+            author: {
+                list:           "/favorite_author",
+                delete:         "/favorite_author/",
+            },
+            book: {
+                list:           "/favorite_book",
+                delete:         "/favorite_book/",
+            },
+        },
+        review: {
+            getByMember:        "/review/member",
         }
     },
     service : {
         home    : "/home",
         mypage  : {
-            info        : "/mypage",
-            purchases   : "/purchases",
-            carts       : "/carts",
-            fav_author  : "/favorite/author",
-            fav_book    : "/favorite/book",
-            auth        : "/auth",
-            leave       : "/leave"
+            info                : "/mypage",
+            password_change     : "/mypage/password/update",
+            notification_change : "/mypage/notification/update",
+            leave               : "/leave",
+            purchases           : "/purchases",
+            carts               : "/carts",
+            fav_author          : "/favorite/author",
+            fav_book            : "/favorite/book",
+            auth                : "/auth",
         },
+        author                  : "/author",
         register : {
-            author      : "/register/author"
+            author      : "/register/author",
         },
         buy : {
             buy         : "/buy",
@@ -42,7 +83,12 @@ module.exports = {
             login       : "/login",
             signup      : "/signup",
             signup_step : "/signup/step",
-
-        }
+            welcome     : "/welcome",
+        },
+        auth: {
+            naver       : "/auth/callback/naver",
+            kakao       : "/auth/callback/kakao",
+            google      : "/auth/callback/google",
+        },
     }
 };

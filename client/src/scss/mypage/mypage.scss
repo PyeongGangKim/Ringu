@@ -1,8 +1,24 @@
 #mypage {
+    .form-group {
+        margin-left: 50px;
+        margin-bottom: 30px;
+
+        .form-control {
+            font-size: 15px;
+            padding: 10px 20px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            line-height: normal;
+            height: auto;
+        }
+    }
     .modify-btn {
         font-size: 14px;
         font-weight: 400;
         color: var(--lightgray);
+    }
+    .modify {
+
     }
     .noti-check {
         margin-left: 100px;
@@ -56,6 +72,8 @@
             }
 
             input {
+
+                width: 100%;
                 padding: 10px 20px;
                 font-size: 15px;
                 border: 2px solid #ddd;

@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('book', {
+  return sequelize.define('book_detail', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -35,25 +35,21 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 1
     },
-    serialization_book_id: {
+    page_number : {
       type: DataTypes.INTEGER,
       allowNull: true,
-      references: {
-        model: 'serialization_book',
-        key: 'id'
-      }
     },
-    single_published_book_id: {
+    book_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'single_published_book',
+        model: 'book',
         key: 'id'
       }
     }
   }, {
     sequelize,
-    tableName: 'book',
+    tableName: 'book_detail',
     timestamps: false,
     indexes: [
       {
@@ -62,28 +58,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-        ]
-      },
-      {
-        name: "revised_book_title_uindex",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "title" },
-        ]
-      },
-      {
-        name: "revised_book_serialization_book_id_fk",
-        using: "BTREE",
-        fields: [
-          { name: "serialization_book_id" },
-        ]
-      },
-      {
-        name: "revised_book_single_published_book_id_fk",
-        using: "BTREE",
-        fields: [
-          { name: "single_published_book_id" },
         ]
       },
     ]

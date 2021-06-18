@@ -16,4 +16,7 @@ export { default as BuyCompletePage } from './BuyCompletePage';
 export { default as SearchPage } from './SearchPage';
 export { default as LoginPage } from './LoginPage';
 export { default as SignupPage } from './SignupPage';
+export { default as SignupCallbackPage } from './SignupCallbackPage';
 export { default as ReviewPage } from './ReviewPage';
+export { default as PasswordChangePage } from './PasswordChangePage';
+export { default as NotificationChangePage } from './NotificationChangePage';

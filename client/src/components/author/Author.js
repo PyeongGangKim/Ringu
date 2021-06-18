@@ -9,6 +9,11 @@ import '../../scss/common/button.scss';
 import '../../scss/author/author.scss';
 import '../../scss/book/book.scss';
 
+import date from '../../helper/date';
+import parse from '../../helper/parse';
+import URL from '../../helper/helper_url';
+import API from '../../utils/apiutils';
+
 class Author extends Component {
     constructor(props) {
         super(props)

@@ -37,6 +37,7 @@ var api_memberRouter = require('./routes/api/member');
 var api_favoriteAuthorRouter = require('./routes/api/favorite_author');
 var api_favoriteBookRouter = require('./routes/api/favorite_book');
 var api_purchaseRouter = require('./routes/api/purchase');
+let api_cartRouter = require('./routes/api/cart');
 var api_categoryRouter = require('./routes/api/category');
 var api_authorRouter = require('./routes/api/author');
 let api_reviewRouter = require('./routes/api/review');
@@ -60,6 +61,7 @@ app.use(session({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('jwt-secret', secretKey);
+
 app.use(cors());
 //app.use(logger('dev'));
 app.use(express.json());
@@ -95,6 +97,7 @@ app.use('/api/member', api_memberRouter);
 app.use('/api/favorite_author', api_favoriteAuthorRouter);
 app.use('/api/favorite_book', api_favoriteBookRouter);
 app.use('/api/purchase', api_purchaseRouter);
+app.use('/api/cart', api_cartRouter);
 app.use('/api/category', api_categoryRouter);
 app.use('/api/author', api_authorRouter);
 app.use('/api/review', api_reviewRouter);
@@ -123,4 +126,5 @@ app.use(function(err, req, res, next) {
 app.use(passport.initialize());
 passportConfig();
 //console.log(passportConfig);
+
 module.exports = app;

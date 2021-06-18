@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     nickname: {
       type: DataTypes.STRING(20),
-      allowNull: true
+      allowNull: false
     },
     tel: {
       type: DataTypes.STRING(10),
@@ -54,15 +54,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     age_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true
+      allowNull: false
     },
     service_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true
+      allowNull: false
     },
     privacy_terms_agreement: {
       type: DataTypes.TINYINT,
-      allowNull: true
+      allowNull: false
     },
     notice_terms_agreement: {
       type: DataTypes.TINYINT,

@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('single_published_book', {
+  return sequelize.define('book', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -11,9 +11,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    author_description: {
-      type: DataTypes.TEXT,
-      allowNull: true
+    title: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    type : {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     img: {
       type: DataTypes.STRING(100),
@@ -30,6 +34,14 @@ module.exports = function(sequelize, DataTypes) {
     content: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    is_finished_serialization: {
+      type: DataTypes.TINYINT,
+      allowNull : false,
+    },
+    serialization_day : {
+      type: DataTypes.STRING(100),
+      allowNull: true,
     },
     created_date_time: {
       type: DataTypes.DATE,

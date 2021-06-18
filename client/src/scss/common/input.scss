@@ -86,6 +86,15 @@ input {
         }
     }
 
+    .timer {
+        position:absolute;
+        right: 115px;
+        top: 16px;
+        font-size: 16px;
+        font-weight: 500;
+        color: red;
+    }
+
     .btn {
         position:absolute;
         right: 10px;

@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import SignupSelect from './SignupSelect'
 import SignupDetail from './SignupDetail'
+import SignupDetailSNS from './SignupDetailSNS';
+
 
 import '../../scss/common/main.scss'
 import '../../scss/common/common.scss'
@@ -18,11 +20,13 @@ class Signup extends Component {
     }
 
     render() {
-        const signup = this.props.signup;
-        const welcome = this.props.welcome;
+        const signup = this.props.location.pathname === '/signup';
+        const welcome = this.props.location.pathname === '/welcome';
+        const location = this.props.location;
+        const search = this.props.location.search !== '';
 
         return (
-            <div id="signup">                
+            <div id="signup">
                 {
                     welcome ?
                     <div className="signup-box">
@@ -42,6 +46,9 @@ class Signup extends Component {
                         {
                             signup ?
                                 <SignupSelect />
+                                :
+                                search ?
+                                <SignupDetailSNS location={location} />
                                 :
                                 <SignupDetail />
                         }

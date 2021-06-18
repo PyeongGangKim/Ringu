@@ -17,7 +17,7 @@ class Review extends Component {
         let state = this.state
 
         return (
-            <div id="review-area" className="page3">
+            <div id="review" className="page3">
                 <div>
                     <div className="review-box">
                         <div className="thumbnail-box">
