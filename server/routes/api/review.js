@@ -8,7 +8,7 @@ const { isLoggedIn } = require("../../middlewares/auth");
 const { book_detail,review_statistics ,sequelize,review , author, book, Sequelize : {Op}} = require("../../models");
 
 
-router.post('/' ,isLoggedIn, async (req, res, next) => {
+router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
     let member_id = req.body.member_id;
     let book_detail_id = req.body.book_detail_id;
@@ -64,7 +64,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {
     }
 });
 
-router.get('/', isLoggedIn, async (req, res, next) => {
+router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     var member_id = req.user.id;
     try{
         const review_list = await review.findAll({
