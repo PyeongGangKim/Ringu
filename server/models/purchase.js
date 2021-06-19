@@ -23,6 +23,10 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
