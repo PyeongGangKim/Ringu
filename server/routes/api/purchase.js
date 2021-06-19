@@ -61,16 +61,24 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
 
 router.get('/', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
-    
+
     try{
-        const buying_list = await purchase.findAll({
+        const purchaseList = await purchase.findAll({
             attributes: [
                 "id",
                 "created_date_time",
-                "price",
-                [sequelize.literal("book_detail.title"), "title"],
-                [sequelize.literal("`book_detail->book`.type"), "type"],
                 [sequelize.literal("book_detail.file"), "file"],
+                [sequelize.literal("book_detail.title"), "book_detail_title"],
+
+                // 임시
+                [sequelize.literal("`book_detail->book`.title"), "book_title"],
+                [sequelize.literal("`book_detail->book`.type"), "type"],
+                [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished"],
+                [sequelize.literal("`book_detail->book`.description"), "book_description"],
+                [sequelize.literal("`book_detail->book`.serialization_day"), "serialization_day"],
+                [sequelize.literal("`book_detail->book`.title"), "book_title"],
+                [sequelize.literal("`book_detail->book`.price"), "price"],
+                [sequelize.literal("`book_detail->book->author`.nickname"), "author_name"],
                 //[sequelize.literal]
             ],
             where: {
@@ -80,32 +88,27 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             include : {
                 model : book_detail,
                 as : 'book_detail',
-                attributes : [],
                 include : [
                     {
                         model: book,
                         as : 'book',
-                        attributes: [],
-                        icnlude : [
+                        include : [
                             {
-                                model: author,
+                                model: member,
                                 as : 'author',
-                                attributes: [],
                             }
                         ]
                     }
                 ]
             }
         });
-        console.log("check: "+buying_list.length)
-        if(buying_list.length == 0){
-            console.log(buying_list);
+        console.log("check: "+purchaseList.length)
+        if(purchaseList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
-        else{
-            console.log(buying_list);
+        else{            
             res.status(StatusCodes.OK).json({
-                buying_list : buying_list,
+                purchaseList : purchaseList,
             });
         }
     }
@@ -162,7 +165,7 @@ router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => {
                 selling_list : selling_list,
             });
         }
-        
+
     }
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

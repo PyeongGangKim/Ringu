@@ -31,9 +31,9 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 1
     },
-    page_number : {
+    page_number: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: true
     },
     book_id: {
       type: DataTypes.INTEGER,
@@ -54,6 +54,21 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "revised_book_title_uindex",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "title" },
+        ]
+      },
+      {
+        name: "book_detail_book_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "book_id" },
         ]
       },
     ]

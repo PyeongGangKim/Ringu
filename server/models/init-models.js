@@ -11,12 +11,13 @@ var _member = require("./member");
 var _notification = require("./notification");
 var _purchase = require("./purchase");
 var _review = require("./review");
-var _withdrawal = require("./withdrawal");
 var _review_statistics = require("./review_statistics");
+var _withdrawal = require("./withdrawal");
 
 function initModels(sequelize) {
   var author = _author(sequelize, DataTypes);
   var book = _book(sequelize, DataTypes);
+  var book_detail = _book_detail(sequelize, DataTypes);
   var cart = _cart(sequelize, DataTypes);
   var category = _category(sequelize, DataTypes);
   var favorite_author = _favorite_author(sequelize, DataTypes);
@@ -26,26 +27,31 @@ function initModels(sequelize) {
   var notification = _notification(sequelize, DataTypes);
   var purchase = _purchase(sequelize, DataTypes);
   var review = _review(sequelize, DataTypes);
-  var book_detail = _book_detail(sequelize, DataTypes);
-  var withdrawal = _withdrawal(sequelize, DataTypes);
   var review_statistics = _review_statistics(sequelize, DataTypes);
+  var withdrawal = _withdrawal(sequelize, DataTypes);
 
   favorite_author.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(favorite_author, { as: "favorite_authors", foreignKey: "author_id"});
-  book.belongsTo(author, { as: "author", foreignKey: "author_id"});
-  author.hasMany(book, { as: "books", foreignKey: "author_id"});
   withdrawal.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
+  book_detail.belongsTo(book, { as: "book", foreignKey: "book_id"});
+  book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
+  favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
+  book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "book_id"});
   cart.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
   book_detail.hasMany(cart, { as: "carts", foreignKey: "book_detail_id"});
   purchase.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
   book_detail.hasMany(purchase, { as: "purchases", foreignKey: "book_detail_id"});
   review.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
   book_detail.hasMany(review, { as: "reviews", foreignKey: "book_detail_id"});
+  review_statistics.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
+  book_detail.hasMany(review_statistics, { as: "review_statistics", foreignKey: "book_detail_id"});
   book.belongsTo(category, { as: "category", foreignKey: "category_id"});
   category.hasMany(book, { as: "books", foreignKey: "category_id"});
   author.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasOne(author, { as: "author", foreignKey: "member_id"});
+  book.belongsTo(member, { as: "author", foreignKey: "author_id"});
+  member.hasMany(book, { as: "books", foreignKey: "author_id"});
   cart.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(cart, { as: "carts", foreignKey: "member_id"});
   favorite_author.belongsTo(member, { as: "member", foreignKey: "member_id"});
@@ -58,16 +64,11 @@ function initModels(sequelize) {
   member.hasMany(purchase, { as: "purchases", foreignKey: "member_id"});
   review.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(review, { as: "reviews", foreignKey: "member_id"});
-  book_detail.belongsTo(book, { as: "book", foreignKey: "book_id"});
-  book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
-  favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
-  book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "book_id"});
-  review_statistics.belongsTo(book_detail, {as : "book_detail", foreignKey: "book_detail_id"});
-  book_detail.hasOne(review_statistics, {as : "review_statistics", foreignKey: "book_detail_id"});
 
   return {
     author,
     book,
+    book_detail,
     cart,
     category,
     favorite_author,
@@ -77,9 +78,8 @@ function initModels(sequelize) {
     notification,
     purchase,
     review,
-    book_detail,
+    review_statistics,
     withdrawal,
-    review_statistics
   };
 }
 module.exports = initModels;

@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     book_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'book',
         key: 'id'
@@ -51,6 +51,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "member_id" },
+        ]
+      },
+      {
+        name: "favorite_book_book_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "book_id" },
         ]
       },
     ]

@@ -8,40 +8,36 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     title: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    type: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    author_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: "revised_book_title_uindex"
+      references: {
+        model: 'member',
+        key: 'id'
+      }
     },
     img: {
       type: DataTypes.STRING(100),
-      allowNull: true,
+      allowNull: true
     },
-    price:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
+    is_finished_serialization: {
+      type: DataTypes.TINYINT,
+      allowNull: false
     },
-    type: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    author_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'author',
-            key: 'id'
-        }
-    },
-    is_finished_serialization : {
-        type: DataTypes.TINYINT,
-        allowNull: false,
-    },
-    serialization_day : {
-        type: DataTypes.STRING(100),
-        allowNull: true,
-    },
-    book_description : {
-        type: DataTypes.TEXT,
-        allowNull: true,
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     created_date_time: {
       type: DataTypes.DATE,
@@ -49,26 +45,30 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
     category_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'category',
-            key: 'id',
-        }
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'category',
+        key: 'id'
+      }
+    },
+    serialization_day: {
+      type: DataTypes.STRING(100),
+      allowNull: true
     },
     content: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     preview: {
-        type: DataTypes.STRING(100),
-        allowNull: true,
+      type: DataTypes.STRING(100),
+      allowNull: true
     },
     status: {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
-    },
+    }
   }, {
     sequelize,
     tableName: 'book',
@@ -80,6 +80,20 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "book_category_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "category_id" },
+        ]
+      },
+      {
+        name: "book_author_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "author_id" },
         ]
       },
     ]

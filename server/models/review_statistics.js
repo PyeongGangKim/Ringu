@@ -19,15 +19,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    person_number : {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+    person_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     created_date_time: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
-    },
+    }
   }, {
     sequelize,
     tableName: 'review_statistics',
@@ -39,6 +39,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "review_statistics_book_detail_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "book_detail_id" },
         ]
       },
     ]

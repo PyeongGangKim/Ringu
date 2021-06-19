@@ -23,10 +23,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -36,6 +32,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   }, {
     sequelize,
@@ -55,6 +55,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "member_id" },
+        ]
+      },
+      {
+        name: "purchase_book_detail_id_fk",
+        using: "BTREE",
+        fields: [
+          { name: "book_detail_id" },
         ]
       },
     ]
