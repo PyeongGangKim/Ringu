@@ -12,6 +12,7 @@ var _notification = require("./notification");
 var _purchase = require("./purchase");
 var _review = require("./review");
 var _withdrawal = require("./withdrawal");
+let _review_statistics = require('./review_statistics');
 
 function initModels(sequelize) {
   var author = _author(sequelize, DataTypes);
@@ -27,6 +28,7 @@ function initModels(sequelize) {
   var review = _review(sequelize, DataTypes);
   var book_detail = _book_detail(sequelize, DataTypes);
   var withdrawal = _withdrawal(sequelize, DataTypes);
+  let review_statistics = _review_statistics(sequelize, DataTypes);
 
   favorite_author.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(favorite_author, { as: "favorite_authors", foreignKey: "author_id"});
@@ -60,6 +62,8 @@ function initModels(sequelize) {
   book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
   favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "book_id"});
+  review_statistics.belongsTo(book_detail, {as : "book_detail", foreignKey: "book_id"});
+  book_detail.hasOne(review_statistics, {as : "review_statistics", foreignKey: "book_id"});
 
   return {
     author,
