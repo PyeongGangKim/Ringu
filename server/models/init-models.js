@@ -59,7 +59,7 @@ function initModels(sequelize) {
   book_detail.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
   favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
-  book.hasMany(favorite_book, { as: "book", foreignKey: "book_id"});
+  book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "book_id"});
 
   return {
     author,

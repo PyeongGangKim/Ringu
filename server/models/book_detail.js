@@ -16,10 +16,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: false
     },
-    type: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
