@@ -61,7 +61,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         });
         if(book_cover_list.length == 0){
             console.log(book_cover_list);
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
             res.status(StatusCodes.OK).json({
@@ -125,7 +125,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
         });
         if(book_detail_info.length == 0){
             console.log(book_detail);
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
             res.status(StatusCodes.OK).json({
