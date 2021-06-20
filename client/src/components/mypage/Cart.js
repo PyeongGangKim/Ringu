@@ -36,10 +36,10 @@ class Cart extends Component {
     async componentDidMount() {
         var state = this.state;
         const res = await API.sendGet(URL.api.cart.list)
+        console.log(res)
+        var cartList = res.data.cartList
 
-        var cartList = res.data.result
-
-        for(var i=0; i<cartList.length; i++) {
+        /*for(var i=0; i<cartList.length; i++) {
             cartList[i].book = {}
 
             var book;
@@ -54,10 +54,12 @@ class Cart extends Component {
 
             const author = await API.sendGet(URL.api.author.get + cartList[i].book.author_id)
             cartList[i].author = author.data.result;
-        }
+        }*/
+
+
 
         state.data.cartList = cartList
-
+        console.log(cartList)
         this.sum(cartList);
 
 
@@ -68,7 +70,7 @@ class Cart extends Component {
         var state = this.state
         var sum = 0;
         for(var i=0; i < list.length; i++) {
-            sum += list[i].book.price
+            sum += list[i].price
         }
 
         state.data.price = sum;
@@ -119,10 +121,10 @@ class Cart extends Component {
                                     <input type="checkbox" id="cb1"/>
                                     <img src="/travel.jpg"/>
                                     <div className="details">
-                                        <h3 className="title">{item.title}</h3>
+                                        <h3 className="title">{item.book_detail_title}</h3>
                                         <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
                                     </div>
-                                    <strong className="price"> {parse.numberWithCommas(item.book.price)} 원</strong>
+                                    <strong className="price"> {parse.numberWithCommas(item.price)} 원</strong>
                                     <div className="del" onClick={() => this.handleDelete(item.id)}>X</div>
                                 </div>
                             )

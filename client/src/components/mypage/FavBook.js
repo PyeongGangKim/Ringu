@@ -33,11 +33,12 @@ class FavBook extends Component {
 
     async componentDidMount() {
         var state = this.state;
+
         const res = await API.sendGet(URL.api.favorite.book.list)
+        var favoriteList = res.data.favoriteBookList
+        console.log(res)
 
-        var favoriteList = res.data.result
-
-        for(var i=0; i<favoriteList.length; i++) {
+        /*for(var i=0; i<favoriteList.length; i++) {
             favoriteList[i].book = {}
 
             var book;
@@ -54,8 +55,8 @@ class FavBook extends Component {
 
             const author = await API.sendGet(URL.api.author.get + favoriteList[i].book.author_id)
             favoriteList[i].author = author.data.result;
-        }
-
+        }*/
+        console.log()
         state.data.favoriteList = favoriteList
 
         this.setState(state)
@@ -89,7 +90,7 @@ class FavBook extends Component {
                     <div id="favbooklist-area" className="booklist-area">
                         <ul>
                             {
-                                favoriteList.filter(item=> item.single_published_book_id !== null).map(item => {
+                                favoriteList.map(item => {
 
                                     return (
                                         <li key={item.id} className="book-box">
@@ -103,15 +104,15 @@ class FavBook extends Component {
                                             </div>
 
                                             <div className="book-info">
-                                                <span className="price">{parse.numberWithCommas(item.book.price)} 원</span>
+                                                <span className="price">{parse.numberWithCommas(item.price)} 원</span>
                                                 <div className="details">
                                                     <div className="author-info">
                                                         <span className="author-label"> 작가 </span>
-                                                        <span> {item.author.name} </span>
+                                                        <span> {item.author_nickname} </span>
                                                     </div>
                                                     <div className="review-info">
                                                         <span className="star"> ★ </span>
-                                                        <span> {item.book.review_score ? item.book.review_score : 0} </span>
+                                                        <span> {/*item.book.review_score ? item.book.review_score : 0*/} </span>
                                                     </div>
                                                 </div>
                                             </div>

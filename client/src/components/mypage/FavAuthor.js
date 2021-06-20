@@ -24,14 +24,17 @@ class FavAuthor extends Component {
 
     async componentDidMount() {
         var state = this.state;
+
         const res = await API.sendGet(URL.api.favorite.author.list)
 
-        var favoriteList = res.data.result
+        var favoriteList = res.data.favoriteAuthorList
 
-        for(var i=0; i<favoriteList.length; i++) {
+
+
+        /*for(var i=0; i<favoriteList.length; i++) {
             const author = await API.sendGet(URL.api.author.get + favoriteList[i].author_id)
             favoriteList[i].author = author.data.result;
-        }
+        }*/
 
         this.setState({favoriteList: favoriteList})
     }
@@ -72,7 +75,7 @@ class FavAuthor extends Component {
                                                 <img src="/blank.jpg"/>
                                             </div>
 
-                                            <span className="author-name">{item.author.name}</span>
+                                            <span className="author-name">{item.author_nickname}</span>
                                             &nbsp;작가
                                         </div>
 
@@ -100,7 +103,7 @@ class FavAuthor extends Component {
                                                 <span className="tip">#자기계발</span>
                                             </div>
                                             <p className="description">
-                                                {item.author.description}
+                                                {item.author_description}
                                             </p>
                                         </div>
 
