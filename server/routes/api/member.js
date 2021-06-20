@@ -15,9 +15,15 @@ const { isLoggedIn } = require("../../middlewares/auth");
 const { salt } = require("../../config/salt");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
-    var user = req.user;
+    var id = req.query.id;
 
     try{
+        const user = await member.findOne({
+            where : {
+                id: id
+            }
+        });
+
         if(user){
             res.json({status: "ok", user});
         }
