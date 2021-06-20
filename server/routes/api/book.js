@@ -6,15 +6,16 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
-const { author ,sequelize,category, book, book_detail, member, review, Sequelize: {Op} } = require("../../models");
+const { sequelize, category, book, book_detail, member, review, Sequelize: {Op} } = require("../../models");
 
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
     let author_id = req.query.author_id;
     let category_id = req.query.category_id;
     let keyword = req.query.keyword;
+
     try{
-        const book_cover_list = await book.findAll({
+        const bookList = await book.findAll({
             attributes: [
                 "id",
                 "price",
@@ -22,7 +23,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 "title",
                 "type",//type 1이 연재본, 2가 단행본.
                 //[sequelize.literal("")] 리뷰 평균 가져오기.
-                [sequelize.literal("author.name"), "author"],
+                [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("category.name"), "category"],
             ],
             where: {
@@ -40,7 +41,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                     '$book.title$' : {
                         [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
                     },
-                    '$author.name$' : {
+                    '$author.nickname$' : {
                         [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
                     },
                 },
@@ -52,28 +53,28 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                     attributes : [],
                 },
                 {
-                    model : author,
+                    model : member,
                     as : 'author',
                     attributes: [],
                 },
             ],
-            
+
         });
-        if(book_cover_list.length == 0){
-            console.log(book_cover_list);
+        if(bookList.length == 0){
+            console.log(bookList);
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
             res.status(StatusCodes.OK).json({
-                "book_cover_list": book_cover_list,
+                bookList: bookList,
             });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
@@ -132,7 +133,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 "book": book_detail_info,
             });
         }
-        
+
     }
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -154,7 +155,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     let serialization_day = req.body.serialization_day;
     console.log(serialization_day);
     let img = req.files.img[0].location;
-    let preview = (req.files.preview == null) ? null : req.files.preview[0].location; 
+    let preview = (req.files.preview == null) ? null : req.files.preview[0].location;
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;

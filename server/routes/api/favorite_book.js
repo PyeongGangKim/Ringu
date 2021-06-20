@@ -3,7 +3,7 @@ var router = express.Router();
 
 const {StatusCodes} = require("http-status-codes");
 
-const {favorite_book, author ,book, book_detail, Sequelize: {Op}, sequelize } = require("../../models");
+const {favorite_book, member ,book, book_detail, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -46,50 +46,49 @@ router.get('/', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
 
     try{
-        const favorite_books = await favorite_book.findAll({
+        const favoriteBookList = await favorite_book.findAll({
             where : {
                 member_id : member_id,
             },
             attributes : [
                 [sequelize.literal("book.title"), "title"],
                 [sequelize.literal("book.price"), "price"],
-                [sequelize.literal("`book->author`.name"),"author"],
+                [sequelize.literal("`book->author`.nickname"),"author_nickname"],
             ],
             include : [
                 {
                     model : book,
                     as : "book",
-                    attributes: [],
+                    attributes: [
+                        "title",
+                        "price"
+                    ],
                     include: [
                         {
-                            model: author,
+                            model: member,
                             as : "author",
-                            attributes: [],
-
+                            attributes: [
+                                "nickname",
+                            ],
                         },
-                        {
-                            model: book_detail,
-                            as : "book_details",
-                            attributes: [],
-                        }
                     ]
                 }
             ]
         });
-        if(favorite_books.length == 0){
+        if(favoriteBookList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("no content");
         }
         else{
             res.status(StatusCodes.OK).json({
-                favorite_books: favorite_books
+                favoriteBookList: favoriteBookList
             });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
