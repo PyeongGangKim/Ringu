@@ -17,7 +17,7 @@ router.post("/signup", async (req, res, next) => {
 
     var payload = req.body;
     payload.password = payload.password.toString();
-
+  
     try{
         let salt = await bcrypt.genSalt(parseInt(salt_num));
         let hashed_password = await bcrypt.hash(payload.password, salt);
@@ -69,6 +69,7 @@ router.post("/signup/sns", async (req, res, next) => {
             expiresIn: '12h',
             issuer: 'ringu',
         });
+
         res.status(200).json({status:"ok", token: token});
     } catch(err) {
         console.error(err);
@@ -98,8 +99,6 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
 });
 
 router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크하는 api
-    var email = req.query.email;
-
     try{
         const result = await member.findOne({
             where : {
@@ -109,9 +108,6 @@ router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크
 
         if(result){
             res.json({status: 'error', reason: 'duplicate email'});
-            return;
-        } else {
-            res.json({status: 'ok'});
             return;
         }
     }
@@ -156,19 +152,6 @@ router.get('/naver', passport.authenticate('naver', {session: false}),
     }
 )
 
-
-
-/*router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
-  function (req, res) {
-      const token = jwt.sign({
-           id: req.user.id
-          }, secretKey, {
-              expiresIn: '12h',
-              issuer: 'ringu',
-          });
-      res.cookie('token', token).redirect(redirect_url);
-  },
-);*/
 
 router.get('/naver/callback', function(req, res) {
     try {
@@ -288,7 +271,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
             raw: true,
             attributes : [
                 "id",
-                ["identification_info","email"] ,
+                ["identification_info","email"] , 
                 "identification_number",
                 "created_date_time",
             ],
@@ -323,23 +306,23 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
                 reason: "time over",
             });
             return;
-        }
+        } 
         res.json({
             status: "ok",
             message: "correct",
         });
-
+        
     }
     catch(err){
         console.log(err);
         res.json({status: 'error'});
     }
-})
+})    
 
 router.post('/email/code', async (req, res, next) => {//email 인증번호 보내는 api
     const number = generateRandom(111111,999999);
     const email = req.body.email;
-
+    
     const mailOptions = {
         from: "RINGU",
         to: email,
@@ -413,7 +396,7 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
             raw: true,
             attributes : [
                 "id",
-                ["identification_info","phone"] ,
+                ["identification_info","phone"] , 
                 "identification_number",
                 "created_date_time",
             ],
@@ -448,19 +431,19 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
                 reason: "time over",
             });
         }
-        else{
+        else{ 
             res.json({
                 status: "ok",
                 message: "correct",
             });
         }
-
+        
     }
     catch(err){
         console.log(err);
         res.json({status: 'error'});
     }
-});
+});    
 
 
 module.exports = router;

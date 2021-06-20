@@ -5,7 +5,7 @@ var router = express.Router();
 var helper_api = require("../../helper/api");
 
 
-const {sequelize ,author ,favorite_author, Sequelize: {Op} } = require("../../models");
+const {sequelize ,member ,favorite_author, Sequelize: {Op} } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -53,27 +53,29 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 router.get('/', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
     try{
-        const result = await favorite_author.findAll({
+        const favoriteAuthorList = await favorite_author.findAll({
             attributes : [
                 "id",
                 "author_id",
-                [sequelize.literal("author.name"),"author"],
-            ],
-            include : [
-                {
-                    model : author,
-                    as : "author",
-                    attributes : [],
-                }
+                [sequelize.literal("author.nickname"), "author_nickname"],
+                [sequelize.literal("author.description"), "author_description"],
             ],
             where: {
                 member_id : member_id,
                 status : 1,
             },
+            include : [
+                {
+                    model : member,
+                    as : "author",
+                }
+            ],
         });
-        res.json({status: "ok", result});
+
+        res.json({status: "ok", favoriteAuthorList});
     }
     catch(err){
+        console.log(err)
         res.json({
             status: "error",
             error: err,

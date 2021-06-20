@@ -1,107 +1,116 @@
 var express = require("express");
 var router = express.Router();
 
+const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
-const {sequelize,review , member, book, Sequelize : {Op}} = require("../../models");
+const { book_detail,review_statistics ,sequelize,review , author, book, Sequelize : {Op}} = require("../../models");
 
-router.post('/' ,isLoggedIn, async (req, res, next) => {
+
+router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
     let member_id = req.body.member_id;
-    let book_id = req.body.book_id;
+    let book_detail_id = req.body.book_detail_id;
+    let score = req.body.score;
+    let description = req.body.description;
 
     try{
         const duplicate_result = await review.findOne({
             where : {
                 member_id : member_id,
-                book_id : book_id,
+                book_detail_id : book_detail_id,
                 status : 1,
             }
         });
         if(duplicate_result){
-            res.json({
-                status: "error",
-                reason: "duplicate"
-            });
+            res.status(StatusCodes.CONFLICT).send("Duplicate");
             return;
         }
-        const result = await review.create({
+        await review.create({
             member_id : member_id,
-            book_id : book_id,
+            book_detail_id : book_detail_id,
             score : score,
             description : description,
         });
-        res.json({status: "ok", result});
+        const [statistics, created] = await review_statistics.findOrCreate({
+            where: {
+                book_detail_id: book_detail_id,
+            },
+            defaults: {
+                book_detail_id: book_detail_id,
+                score_amount: 0,
+                person_number: 0,
+            }
+        });
+        await review_statistics.update(
+            {
+                score_amount : statistics.score_amount + Number(score),
+                person_number : statistics.person_number + 1,
+            },
+            {
+                where:{
+                    id: statistics.id,
+            },
+        });
+        res.status(StatusCodes.CREATED).send("review CREATED");
 
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to write the review"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 
-router.get('/member', isLoggedIn, async (req, res, next) => {
-    var member_id = req.query.member_id;
+router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
+    var member_id = req.user.id;
     try{
-        const member_reviews = await review.findAll({
+        const review_list = await review.findAll({
+            attributes: [
+                "score",
+                "description",
+                "created_date_time",
+                [sequelize.literal("book_detail.title"),"title"],
+                //[sequelize.literal("`book->author`.name"),"author"],
+
+            ],
             where: {
                 member_id : member_id,
                 status : 1,
             },
-            include : {
-                model : book,
-                as : 'book',
-            }
-        });
-        res.json({status: "ok", member_reviews});
-    }
-    catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get review list"
-        });
-    }
-});
-router.get('/book', async (req, res, next) => {
-    let book_id = req.query.book_id;
-    try{
-        const book_reviews = await review.findAll({
-            attributes: [
-                "score",
-                "description",
-                [sequelize.literal("member.name"),"reviewer"],
-                [sequelize.literal("book.title"), "title"],
-            ],
-            where: {
-                book_id : book_id,
-                status : 1,
-            },
             include : [
                 {
-                    model : book,
-                    as : "book",
+                    model : book_detail,
+                    as : 'book_detail',
                     attributes: [],
+                    include: [
+                        {
+                            model: book,
+                            as : 'book',
+                            attributes : [],
+                        }
+                    ]
                 },
-                {
-                    model : member,
-                    as : "member",
-                    attributes: [],
-                }
+                
             ]
         });
-        res.json({status: "ok", book_reviews});
+        if(review_list.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("no review");
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                review_list : review_list,
+            });
+        }
+        
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get review list"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯

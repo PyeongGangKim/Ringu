@@ -1,85 +1,44 @@
 var express = require("express");
 var router = express.Router();
 
-var helper_api = require("../../helper/api");
+const {StatusCodes} = require("http-status-codes");
 
-const {favorite_book, serialization_book, single_published_book, Sequelize: {Op} } = require("../../models");
+const {favorite_book, member ,book, book_detail, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
-router.post('/serialization', isLoggedIn,async (req, res, next) => {
 
+router.post('/', isLoggedIn,async (req, res, next) => {
 
-    var member_id = req.body.member_id;
-    var serialization_book_id = req.body.book_id;
-
-    try{
-        const duplicate_result = await favorite_book.findOne({
-            where: {
-                member_id : member_id,
-                serialization_book_id : serialization_book_id,
-                status : 1,
-            }
-        })
-        if(duplicate_result){
-            res.json({
-                status: "error",
-                reason: "duplicate"
-            });
-        }
-
-        else{
-            const result = await favorite_book.create({
-                member_id : member_id,
-                serialization_book_id : serialization_book_id,
-            });
-            res.json({status: "ok", result});
-        }
-    }
-    catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to like book"
-        });
-    }
-});
-
-router.post('/singlePublished', isLoggedIn,async (req, res, next) => {
-
-
-    var member_id = req.body.member_id;
-    var single_published_book_id = req.body.book_id;
+    var member_id = req.user.id;
+    var book_id = req.body.book_id;
 
     try{
         const duplicate_result = await favorite_book.findOne({
             where: {
                 member_id : member_id,
-                single_published_book_id : single_published_book_id,
+                book_id : book_id,
                 status : 1,
             }
         })
         if(duplicate_result){
-            res.json({
-                status: "error",
-                reason: "duplicate"
-            });
+            res.status(StatusCodes.CONFLICT).send("Duplicate");
+            return;
         }
 
         else{
-            const result = await favorite_book.create({
+            await favorite_book.create({
                 member_id : member_id,
-                single_published_book_id : single_published_book_id,
+                book_id : book_id,
             });
-            res.json({status: "ok", result});
+            res.status(StatusCodes.CREATED).send("success like");
         }
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to like book"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 
@@ -87,18 +46,48 @@ router.get('/', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
 
     try{
-        const result = await favorite_book.findAll({
+        const favoriteBookList = await favorite_book.findAll({
             where : {
                 member_id : member_id,
-            }
+            },
+            attributes : [
+                [sequelize.literal("book.title"), "title"],
+                [sequelize.literal("book.price"), "price"],
+                [sequelize.literal("`book->author`.nickname"),"author_nickname"],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: [
+                        "title",
+                        "price"
+                    ],
+                    include: [
+                        {
+                            model: member,
+                            as : "author",
+                            attributes: [
+                                "nickname",
+                            ],
+                        },
+                    ]
+                }
+            ]
         });
-        res.json({status: "ok", result});
+        if(favoriteBookList.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("no content");
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                favoriteBookList: favoriteBookList
+            });
+        }
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get the favorite_book list"
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
     }
 });

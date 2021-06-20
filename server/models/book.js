@@ -8,48 +8,66 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     title: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "revised_book_title_uindex"
-    },
-    file: {
       type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    price: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     type: {
       type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    author_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'member',
+        key: 'id'
+      }
+    },
+    img: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    is_finished_serialization: {
+      type: DataTypes.TINYINT,
       allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    is_approved: {
-      type: DataTypes.TINYINT,
+    category_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      references: {
+        model: 'category',
+        key: 'id'
+      }
+    },
+    serialization_day: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    preview: {
+      type: DataTypes.STRING(100),
+      allowNull: true
     },
     status: {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
-    },
-    serialization_book_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'serialization_book',
-        key: 'id'
-      }
-    },
-    single_published_book_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'single_published_book',
-        key: 'id'
-      }
     }
   }, {
     sequelize,
@@ -65,25 +83,17 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "revised_book_title_uindex",
-        unique: true,
+        name: "book_category_id_fk",
         using: "BTREE",
         fields: [
-          { name: "title" },
+          { name: "category_id" },
         ]
       },
       {
-        name: "revised_book_serialization_book_id_fk",
+        name: "book_author_id_fk",
         using: "BTREE",
         fields: [
-          { name: "serialization_book_id" },
-        ]
-      },
-      {
-        name: "revised_book_single_published_book_id_fk",
-        using: "BTREE",
-        fields: [
-          { name: "single_published_book_id" },
+          { name: "author_id" },
         ]
       },
     ]

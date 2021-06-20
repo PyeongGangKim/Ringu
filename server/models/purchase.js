@@ -15,11 +15,11 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    book_id: {
+    book_detail_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'book',
+        model: 'book_detail',
         key: 'id'
       }
     },
@@ -32,6 +32,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   }, {
     sequelize,
@@ -54,10 +58,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "purchase_revised_book_id_fk",
+        name: "purchase_book_detail_id_fk",
         using: "BTREE",
         fields: [
-          { name: "book_id" },
+          { name: "book_detail_id" },
         ]
       },
     ]

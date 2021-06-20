@@ -1,47 +1,45 @@
 var express = require("express");
 var router = express.Router();
 
-
-var helper_api = require("../../helper/api");
+const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
-const {single_published_book, serialization_book, sequelize, author, member, purchase, book, Sequelize : {Op}} = require("../../models");
+const {book_detail, sequelize, author, member, purchase, book, Sequelize : {Op}} = require("../../models");
 
 
 
 
-router.post('/' ,isLoggedIn, async (req, res, next) => {
-    var member_id = req.body.member_id;
-    var book_id = req.body.book_id;
+router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
+    let member_id = req.body.member_id;
+    let book_detail_id = req.body.book_detail_id;
+    let price = req.body.price;
     try{
         const duplicate_result = await purchase.findOne({
             where : {
                 member_id : member_id,
-                book_id : book_id,
+                book_detail_id : book_detail_id,
                 status: 1,
             }
         });
         if(duplicate_result){
-            res.json({
-                status: "error",
-                reason: "duplicate"
-            });
+            res.status(StatusCodes.CONFLICT).send("Duplicate");
             return;
         }
         const result = await purchase.create({
             member_id : member_id,
-            book_id : book_id,
+            book_detail_id : book_detail_id,
+            price: price,
         })
-        res.json({status: "ok", result});
+        console.log(result);
+        res.status(StatusCodes.OK).send("success purchasing");
 
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to purchase"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
@@ -50,61 +48,86 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
         const result = await purchase.bulkCreate(
             purchaseList,
         );
-        res.json({status: "ok", result});
+        console.log(result);
+        res.status(StatusCodes.OK).send("success purchasing");
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to purchase"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 
 router.get('/', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
-    
+
     try{
-        const result = await purchase.findAll({
+        const purchaseList = await purchase.findAll({
             attributes: [
                 "id",
-                [sequelize.literal("book.title"), "title"],
-                [sequelize.literal("book.type"), "type"],
-                [sequelize.literal("book.created_date_time"), "created_date_time"],
-                [sequelize.literal("book.serialization_book_id"), "serialization_book_id"],
-                [sequelize.literal("book.single_published_book_id"), "single_published_book_id"],
+                "created_date_time",
+                [sequelize.literal("book_detail.file"), "file"],
+                [sequelize.literal("book_detail.title"), "book_detail_title"],
+
+                // 임시
+                [sequelize.literal("`book_detail->book`.title"), "book_title"],
+                [sequelize.literal("`book_detail->book`.type"), "type"],
+                [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished"],
+                [sequelize.literal("`book_detail->book`.description"), "book_description"],
+                [sequelize.literal("`book_detail->book`.serialization_day"), "serialization_day"],
+                [sequelize.literal("`book_detail->book`.title"), "book_title"],
+                [sequelize.literal("`book_detail->book`.price"), "price"],
+                [sequelize.literal("`book_detail->book->author`.nickname"), "author_name"],
+                //[sequelize.literal]
             ],
             where: {
                 member_id : member_id,
                 status : 1,
             },
             include : {
-                model : book,
-                as : 'book',
-                attributes : [],
+                model : book_detail,
+                as : 'book_detail',
+                include : [
+                    {
+                        model: book,
+                        as : 'book',
+                        include : [
+                            {
+                                model: member,
+                                as : 'author',
+                            }
+                        ]
+                    }
+                ]
             }
         });
-        res.json({status: "ok", result});
+        console.log("check: "+purchaseList.length)
+        if(purchaseList.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");
+        }
+        else{            
+            res.status(StatusCodes.OK).json({
+                purchaseList : purchaseList,
+            });
+        }
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get purchasing list"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => {
     var author_id = req.query.author_id;
     try{
-        const serialization_book_selling_list = await purchase.findAll({
+        const selling_list = await purchase.findAll({
             attributes: [
                 "id",
                 "created_date_time",
-                "member_id",
-                "book_id",
-                [sequelize.literal("book.title"), "title"],
-                [sequelize.literal("`book->serialization_book`.price"),"price"],
+                "price",
+                [sequelize.literal("book_detail.title"), "title"],
                 [sequelize.literal("member.name"), "buyer_name"],
             ],
             where: {
@@ -112,14 +135,14 @@ router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => {
             },
             include : [
                 {
-                    model : book,
-                    as : "book",
+                    model : book_detail,
+                    as : "book_detail",
                     attributes : [],
                     required: true,
                     include : [
                         {
-                            model: serialization_book,
-                            as : "serialization_book",
+                            model: book,
+                            as : "book",
                             where : {author_id: author_id},
                             attributes: [],
                         }
@@ -132,50 +155,23 @@ router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => {
                 }
             ],
         });
-        const single_published_book_selling_list = await purchase.findAll({
-            attributes: [
-                "id",
-                "created_date_time",
-                "book_id",
-                "member_id",
-                [sequelize.literal("book.title"), "title"],
-                [sequelize.literal("`book->single_published_book`.price"),"price"],
-                [sequelize.literal("member.name"), "buyer_name"],
-            ],
-            where: {
-                status : 1,
-            },
-            include : [
-                {
-                    model : book,
-                    as : "book",
-                    attributes : [],
-                    required: true,
-                    include : [
-                        {
-                            model: single_published_book,
-                            as : "single_published_book",
-                            where : {author_id: author_id},
-                            attributes: [],
-                        }
-                    ]
-                },
-                {
-                    model : member,
-                    as: "member",
-                    attributes : [],
-                }
-            ],
+        if(selling_list.length == 0){
+            console.log(selling_list);
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            console.log(selling_list);
+            res.status(StatusCodes.OK).json({
+                selling_list : selling_list,
+            });
+        }
 
-        });
-        res.json({status: "ok", serialization_book_selling_list, single_published_book_selling_list});
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get selling list"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
         });
+        console.error(err);
     }
 });
 
