@@ -30,8 +30,6 @@ function initModels(sequelize) {
   var review_statistics = _review_statistics(sequelize, DataTypes);
   var withdrawal = _withdrawal(sequelize, DataTypes);
 
-  favorite_author.belongsTo(author, { as: "author", foreignKey: "author_id"});
-  author.hasMany(favorite_author, { as: "favorite_authors", foreignKey: "author_id"});
   withdrawal.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
   book_detail.belongsTo(book, { as: "book", foreignKey: "book_id"});
@@ -56,6 +54,8 @@ function initModels(sequelize) {
   member.hasMany(cart, { as: "carts", foreignKey: "member_id"});
   favorite_author.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(favorite_author, { as: "favorite_authors", foreignKey: "member_id"});
+  favorite_author.belongsTo(member, { as: "author", foreignKey: "author_id"});
+  member.hasMany(favorite_author, { as: "author_favorite_authors", foreignKey: "author_id"});
   favorite_book.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(favorite_book, { as: "favorite_books", foreignKey: "member_id"});
   notification.belongsTo(member, { as: "member", foreignKey: "member_id"});
