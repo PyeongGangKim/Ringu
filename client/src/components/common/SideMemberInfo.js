@@ -31,9 +31,9 @@ class SideMemberInfo extends Component {
         const carts = await API.sendGet(URL.api.cart.list)
 
         this.setState({
-            favorites: fav1.data.result.length + fav2.data.result.length,
-            purchases: purchases.data.result.length,
-            carts: carts.data.result.length,
+            favorites: fav1.data.favoriteBookList.length + fav2.data.favoriteAuthorList.length,
+            purchases: purchases.data.purchaseList.length,
+            carts: carts.data.cartList.length,
         })
     }
 

@@ -18,12 +18,55 @@ class Author extends Component {
     constructor(props) {
         super(props)
         let userInfo = User.getInfo();
+        console.log(userInfo)
+
         this.state = {
             hash: props.hash.substring(1, props.hash.length),
+            bookList:[],
+            user: {},
         }
     }
 
+    async componentDidMount() {
+        var state = this.state;
+
+        var params = {
+            author_id: User.getInfo().id,
+        }
+
+        const res = await API.sendGet(URL.api.book.list, params = params)
+        var bookList = res.data.bookList
+
+        const userRes = await API.sendGet(URL.api.member.get, params = {id: User.getInfo().id})
+        var user = userRes.data.user
+
+        /*for(var i=0; i<favoriteList.length; i++) {
+            favoriteList[i].book = {}
+
+            var book;
+
+            if(favoriteList[i].type === 1) {
+                book = await API.sendGet(URL.api.book.serialization + favoriteList[i].serialization_book_id)
+                favoriteList[i].book = book.data.serializationBook;
+            } else {
+                book = await API.sendGet(URL.api.book.singlePublished + favoriteList[i].single_published_book_id)
+                favoriteList[i].book = book.data.singlePublishedBook;
+            }
+
+
+
+            const author = await API.sendGet(URL.api.author.get + favoriteList[i].book.author_id)
+            favoriteList[i].author = author.data.result;
+        }*/
+
+        state.bookList = bookList
+        state.user = user
+
+        this.setState(state)
+    }
+
     render() {
+        var bookList = this.state.bookList
         var state = this.state;
 
         return (
@@ -41,7 +84,7 @@ class Author extends Component {
                         <div className="inner-header"> 소개</div>
                         <div className="inner-content">
                             <div className="intro">
-                                소개창입니다
+                                {state.user.description ? state.user.description : "" }
                             </div>
                         </div>
 
@@ -52,135 +95,36 @@ class Author extends Component {
                         <div className="inner-content">
                             <div className="booklist-area">
                                 <ul>
-                                    <li className="book-box">
-                                        <div className="thumbnail-box">
-                                            <div className="img-area">
-                                                <img src="/travel.jpg"/>
-                                            </div>
+                                    {
+                                        bookList.map(item => {
+                                            return (
+                                                <li className="book-box">
+                                                    <div className="thumbnail-box">
+                                                        <div className="img-area">
+                                                            <img src="/travel.jpg"/>
+                                                        </div>
 
-                                            <h3 className="title">책 제목입니다</h3>
-                                        </div>
+                                                        <h3 className="title">{item.title}</h3>
+                                                    </div>
 
-                                        <div className="book-info">
-                                            <span className="price">{"9,000"}원</span>
-                                            <div className="details">
-                                                <div className="author-info">
-                                                    <span className="author-label"> 작가 </span>
-                                                    <span> 홍이 </span>
-                                                </div>
-                                                <div className="review-info">
-                                                    <span className="star"> ★ </span>
-                                                    <span> 5.0 </span>
-                                                </div>
+                                                    <div className="book-info">
+                                                        <span className="price">{parse.numberWithCommas(item.price)}원</span>
+                                                        <div className="details">
+                                                            <div className="author-info">
+                                                                <span className="author-label"> 작가 </span>
+                                                                <span> {item.author_nickname} </span>
+                                                            </div>
+                                                            <div className="review-info">
+                                                                <span className="star"> ★ </span>
+                                                                <span> 5.0 </span>
+                                                            </div>
+                                                        </div>
 
-                                            </div>
-
-                                        </div>
-                                    </li>
-
-                                    <li className="book-box">
-                                        <div className="thumbnail-box">
-                                            <div className="img-area">
-                                                <img src="/travel.jpg"/>
-                                            </div>
-
-                                            <h3 className="title">책 제목입니다</h3>
-                                        </div>
-
-                                        <div className="book-info">
-                                            <span className="price">{"9,000"}원</span>
-                                            <div className="details">
-                                                <div className="author-info">
-                                                    <span className="author-label"> 작가 </span>
-                                                    <span> 홍이 </span>
-                                                </div>
-                                                <div className="review-info">
-                                                    <span className="star"> ★ </span>
-                                                    <span> 5.0 </span>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </li>
-
-                                    <li className="book-box">
-                                        <div className="thumbnail-box">
-                                            <div className="img-area">
-                                                <img src="/travel.jpg"/>
-                                            </div>
-
-                                            <h3 className="title">책 제목입니다</h3>
-                                        </div>
-
-                                        <div className="book-info">
-                                            <span className="price">{"9,000"}원</span>
-                                            <div className="details">
-                                                <div className="author-info">
-                                                    <span className="author-label"> 작가 </span>
-                                                    <span> 홍이 </span>
-                                                </div>
-                                                <div className="review-info">
-                                                    <span className="star"> ★ </span>
-                                                    <span> 5.0 </span>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </li>
-
-                                    <li className="book-box">
-                                        <div className="thumbnail-box">
-                                            <div className="img-area">
-                                                <img src="/travel.jpg"/>
-                                            </div>
-
-                                            <h3 className="title">책 제목입니다</h3>
-                                        </div>
-
-                                        <div className="book-info">
-                                            <span className="price">{"9,000"}원</span>
-                                            <div className="details">
-                                                <div className="author-info">
-                                                    <span className="author-label"> 작가 </span>
-                                                    <span> 홍이 </span>
-                                                </div>
-                                                <div className="review-info">
-                                                    <span className="star"> ★ </span>
-                                                    <span> 5.0 </span>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </li>
-
-                                    <li className="book-box">
-                                        <div className="thumbnail-box">
-                                            <div className="img-area">
-                                                <img src="/travel.jpg"/>
-                                            </div>
-
-                                            <h3 className="title">책 제목입니다</h3>
-                                        </div>
-
-                                        <div className="book-info">
-                                            <span className="price">{"9,000"}원</span>
-                                            <div className="details">
-                                                <div className="author-info">
-                                                    <span className="author-label"> 작가 </span>
-                                                    <span> 홍이 </span>
-                                                </div>
-                                                <div className="review-info">
-                                                    <span className="star"> ★ </span>
-                                                    <span> 5.0 </span>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </li>
+                                                    </div>
+                                                </li>
+                                            )
+                                        })
+                                    }
                                 </ul>
                             </div>
 
