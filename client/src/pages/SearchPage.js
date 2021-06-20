@@ -5,13 +5,17 @@ import Header from '../components/common/Header';
 class SearchPage extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            search:props.location.search,
+        };
     }
 
     render() {
         return (
             <Fragment>
-                <Header></Header>
-                <Search></Search>
+                <Header search={this.state.search} history={this.props.history}></Header>
+                <Search search={this.state.search}></Search>
             </Fragment>
         )
     }

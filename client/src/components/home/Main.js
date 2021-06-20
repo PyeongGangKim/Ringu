@@ -6,14 +6,33 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/button.scss'
 
+import date from '../../helper/date';
+import parse from '../../helper/parse';
+import URL from '../../helper/helper_url';
+import API from '../../utils/apiutils';
 
 class Main extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            showModal: false
+            showModal: false,
+            keyword: "",
         };
+    }
+
+    async componentDidMount() {
+        var state = this.state;
+    }
+
+    handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
+    handleSearchClick = () => {
+        if(!this.state.keyword) {
+            alert("검색어를 입력해주세요.")
+            return;
+        }
+
+        this.props.history.push(URL.service.search + "?keyword=" + this.state.keyword)
     }
 
     render() {
@@ -26,11 +45,12 @@ class Main extends Component {
                             <strong>당신이 찾는 모든 것들의 공간</strong>
                             <p>당신이 찾는 모든 것들의 공간</p>
                             <div className="search">
-                                <input type="text" maxLength="15" autocomplete="off"/>
-                                <button type="submit"> 검색 </button>
+                                <input type="text" maxLength="15" autocomplete="off" value={this.state.keyword} onChange={this.handleKeywordChange}/>
+                                <button type="submit" onClick={this.handleSearchClick}>
+                                    검색
+                                </button>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
 
