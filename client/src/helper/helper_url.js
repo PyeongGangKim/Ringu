@@ -38,8 +38,7 @@ module.exports = {
         },
 
         book: {
-            singlePublished:    "/book/singlePublished/",
-            serialization:      "/book/serialization/cover/",
+            list:               "/book",
         },
         author: {
             get:                "/author/",
@@ -90,5 +89,6 @@ module.exports = {
             kakao       : "/auth/callback/kakao",
             google      : "/auth/callback/google",
         },
+        search          : "/search",
     }
 };
