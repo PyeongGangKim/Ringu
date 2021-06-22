@@ -5,7 +5,7 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
-const {book_detail, sequelize, author, member, purchase, book, Sequelize : {Op}} = require("../../models");
+const {book_detail, sequelize, member, purchase, book, Sequelize : {Op}} = require("../../models");
 
 
 
@@ -59,56 +59,56 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
     }
 });
 
-router.get('/', isLoggedIn, async (req, res, next) => {
+router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 가져오기
     var member_id = req.user.id;
-
+    
     try{
-        const purchaseList = await purchase.findAll({
+        const buying_list = await purchase.findAll({
             attributes: [
                 "id",
                 "created_date_time",
-                [sequelize.literal("book_detail.file"), "file"],
-                [sequelize.literal("book_detail.title"), "book_detail_title"],
-
-                // 임시
-                [sequelize.literal("`book_detail->book`.title"), "book_title"],
+                "price",
+                [sequelize.literal("book_detail.title"), "title"],
                 [sequelize.literal("`book_detail->book`.type"), "type"],
-                [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished"],
-                [sequelize.literal("`book_detail->book`.description"), "book_description"],
-                [sequelize.literal("`book_detail->book`.serialization_day"), "serialization_day"],
-                [sequelize.literal("`book_detail->book`.title"), "book_title"],
-                [sequelize.literal("`book_detail->book`.price"), "price"],
-                [sequelize.literal("`book_detail->book->author`.nickname"), "author_name"],
-                //[sequelize.literal]
+                [sequelize.literal("book_detail.file"), "file"],
+                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
             ],
             where: {
                 member_id : member_id,
                 status : 1,
             },
-            include : {
-                model : book_detail,
-                as : 'book_detail',
-                include : [
-                    {
-                        model: book,
-                        as : 'book',
-                        include : [
-                            {
-                                model: member,
-                                as : 'author',
-                            }
-                        ]
-                    }
-                ]
-            }
+            include : [
+                {
+                    model : book_detail,
+                    as : 'book_detail',
+                    attributes: [],
+                    include: [
+                        {
+                            model: book,
+                            as : 'book',
+                            attributes : [],
+                            include : [
+                                {
+                                    model: member,
+                                    as: 'author',
+                                    attributes: [],
+                                }
+                            ]
+                        }
+                    ]
+                },
+                
+            ]
         });
-        console.log("check: "+purchaseList.length)
-        if(purchaseList.length == 0){
+        console.log("check: "+buying_list.length)
+        if(buying_list.length == 0){
+            console.log(buying_list);
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
-        else{            
+        else{
+            console.log(buying_list);
             res.status(StatusCodes.OK).json({
-                purchaseList : purchaseList,
+                buying_list : buying_list,
             });
         }
     }
@@ -119,7 +119,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         console.error(err);
     }
 });
-router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => {
+router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
     var author_id = req.query.author_id;
     try{
         const selling_list = await purchase.findAll({
@@ -165,7 +165,7 @@ router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => {
                 selling_list : selling_list,
             });
         }
-
+        
     }
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

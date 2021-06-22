@@ -5,7 +5,7 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
-const { book_detail,review_statistics ,sequelize,review , author, book, Sequelize : {Op}} = require("../../models");
+const { book_detail,review_statistics ,sequelize,review , member, book, Sequelize : {Op}} = require("../../models");
 
 
 router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
@@ -73,7 +73,7 @@ router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review 
                 "description",
                 "created_date_time",
                 [sequelize.literal("book_detail.title"),"title"],
-                //[sequelize.literal("`book->author`.name"),"author"],
+                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
 
             ],
             where: {
@@ -90,6 +90,13 @@ router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review 
                             model: book,
                             as : 'book',
                             attributes : [],
+                            include : [
+                                {
+                                    model: member,
+                                    as: 'author',
+                                    attributes: [],
+                                }
+                            ]
                         }
                     ]
                 },

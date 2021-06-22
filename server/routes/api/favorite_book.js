@@ -60,15 +60,15 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                     model : book,
                     as : "book",
                     attributes: [
-                        "title",
-                        "price"
+                        //"title",
+                        //"price"
                     ],
                     include: [
                         {
                             model: member,
                             as : "author",
                             attributes: [
-                                "nickname",
+                                //"nickname",
                             ],
                         },
                     ]

@@ -68,6 +68,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 {
                     model : member,
                     as : "author",
+                    attributes : [],
                 }
             ],
         });
