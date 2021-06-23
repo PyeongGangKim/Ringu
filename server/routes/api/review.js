@@ -10,7 +10,7 @@ const { book_detail,review_statistics ,sequelize,review , member, book, Sequeliz
 
 router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
-    let member_id = req.body.member_id;
+    let member_id = req.user.id;
     let book_detail_id = req.body.book_detail_id;
     let score = req.body.score;
     let description = req.body.description;

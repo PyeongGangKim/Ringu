@@ -31,6 +31,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 1
     },
+    round : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     page_number: {
       type: DataTypes.INTEGER,
       allowNull: true
