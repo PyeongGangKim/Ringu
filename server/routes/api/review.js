@@ -27,33 +27,36 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
             res.status(StatusCodes.CONFLICT).send("Duplicate");
             return;
         }
-        await review.create({
-            member_id : member_id,
-            book_detail_id : book_detail_id,
-            score : score,
-            description : description,
+        const result = await sequelize.transaction(async (t) => {
+            await review.create({
+                member_id : member_id,
+                book_detail_id : book_detail_id,
+                score : score,
+                description : description,
+            });
+            const [statistics, created] = await review_statistics.findOrCreate({
+                where: {
+                    book_detail_id: book_detail_id,
+                },
+                defaults: {
+                    book_detail_id: book_detail_id,
+                    score_amount: 0,
+                    person_number: 0,
+                }
+            });
+            await review_statistics.update(
+                {
+                    score_amount : statistics.score_amount + Number(score),
+                    person_number : statistics.person_number + 1,
+                },
+                {
+                    where:{
+                        id: statistics.id,
+                },
+            });
+            res.status(StatusCodes.CREATED).send("review CREATED");
         });
-        const [statistics, created] = await review_statistics.findOrCreate({
-            where: {
-                book_detail_id: book_detail_id,
-            },
-            defaults: {
-                book_detail_id: book_detail_id,
-                score_amount: 0,
-                person_number: 0,
-            }
-        });
-        await review_statistics.update(
-            {
-                score_amount : statistics.score_amount + Number(score),
-                person_number : statistics.person_number + 1,
-            },
-            {
-                where:{
-                    id: statistics.id,
-            },
-        });
-        res.status(StatusCodes.CREATED).send("review CREATED");
+        
 
     }
     catch(err){
@@ -61,6 +64,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
             "error": "server error"
         });
         console.error(err);
+        await t.rollback();
     }
 });
 
