@@ -102,11 +102,11 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 ]
             }
         });
-        console.log("check: "+purchaseList.length)
+        
         if(purchaseList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
-        else{            
+        else{
             res.status(StatusCodes.OK).json({
                 purchaseList : purchaseList,
             });
