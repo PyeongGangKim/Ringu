@@ -29,8 +29,11 @@ class MyInfo extends Component {
 
     componentDidMount() {
         var state = this.state;
+        var params = {
+            id: User.getInfo().id,
+        }
 
-        API.sendGet(URL.api.member.get).then(res => {
+        API.sendGet(URL.api.member.get, params).then(res => {
             if(res.status === 200){
                 var user = res.data.user;
                 state.data.email = user.email;

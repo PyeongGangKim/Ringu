@@ -5,12 +5,12 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
-const { book_detail,review_statistics ,sequelize,review , author, book, Sequelize : {Op}} = require("../../models");
+const { book_detail,review_statistics ,sequelize,review , member, book, Sequelize : {Op}} = require("../../models");
 
 
 router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
-    let member_id = req.body.member_id;
+    let member_id = req.user.id;
     let book_detail_id = req.body.book_detail_id;
     let score = req.body.score;
     let description = req.body.description;
@@ -27,33 +27,36 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
             res.status(StatusCodes.CONFLICT).send("Duplicate");
             return;
         }
-        await review.create({
-            member_id : member_id,
-            book_detail_id : book_detail_id,
-            score : score,
-            description : description,
+        const result = await sequelize.transaction(async (t) => {
+            await review.create({
+                member_id : member_id,
+                book_detail_id : book_detail_id,
+                score : score,
+                description : description,
+            });
+            const [statistics, created] = await review_statistics.findOrCreate({
+                where: {
+                    book_detail_id: book_detail_id,
+                },
+                defaults: {
+                    book_detail_id: book_detail_id,
+                    score_amount: 0,
+                    person_number: 0,
+                }
+            });
+            await review_statistics.update(
+                {
+                    score_amount : statistics.score_amount + Number(score),
+                    person_number : statistics.person_number + 1,
+                },
+                {
+                    where:{
+                        id: statistics.id,
+                },
+            });
+            res.status(StatusCodes.CREATED).send("review CREATED");
         });
-        const [statistics, created] = await review_statistics.findOrCreate({
-            where: {
-                book_detail_id: book_detail_id,
-            },
-            defaults: {
-                book_detail_id: book_detail_id,
-                score_amount: 0,
-                person_number: 0,
-            }
-        });
-        await review_statistics.update(
-            {
-                score_amount : statistics.score_amount + Number(score),
-                person_number : statistics.person_number + 1,
-            },
-            {
-                where:{
-                    id: statistics.id,
-            },
-        });
-        res.status(StatusCodes.CREATED).send("review CREATED");
+        
 
     }
     catch(err){
@@ -61,6 +64,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
             "error": "server error"
         });
         console.error(err);
+        await t.rollback();
     }
 });
 
@@ -73,7 +77,7 @@ router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review 
                 "description",
                 "created_date_time",
                 [sequelize.literal("book_detail.title"),"title"],
-                //[sequelize.literal("`book->author`.name"),"author"],
+                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
 
             ],
             where: {
@@ -90,6 +94,13 @@ router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review 
                             model: book,
                             as : 'book',
                             attributes : [],
+                            include : [
+                                {
+                                    model: member,
+                                    as: 'author',
+                                    attributes: [],
+                                }
+                            ]
                         }
                     ]
                 },

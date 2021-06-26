@@ -33,28 +33,27 @@ class Purchase extends Component {
     async componentDidMount() {
         var state = this.state;
 
-
         const res = await API.sendGet(URL.api.purchase.list)
-        var purchaseListRes = res.data.result
+        var purchaseList = res.data.purchaseList
 
-        for(var i=0; i<purchaseListRes.length; i++) {
-            purchaseListRes[i].book = {}
+        /*for(var i=0; i<purchaseList.length; i++) {
+            purchaseList[i].book = {}
 
             var book;
 
-            if(purchaseListRes[i].type === 1) {
-                book = await API.sendGet(URL.api.book.serialization + purchaseListRes[i].serialization_book_id)
-                purchaseListRes[i].book = book.data.serializationBook;
+            if(purchaseList[i].type === 1) {
+                book = await API.sendGet(URL.api.book.serialization + purchaseList[i].serialization_book_id)
+                purchaseList[i].book = book.data.serializationBook;
             } else {
-                book = await API.sendGet(URL.api.book.singlePublished + purchaseListRes[i].single_published_book_id)
-                purchaseListRes[i].book = book.data.singlePublishedBook;
+                book = await API.sendGet(URL.api.book.singlePublished + purchaseList[i].single_published_book_id)
+                purchaseList[i].book = book.data.singlePublishedBook;
             }
 
-            const author = await API.sendGet(URL.api.author.get + purchaseListRes[i].book.author_id)
-            purchaseListRes[i].author = author.data.result;
-        }
+            const author = await API.sendGet(URL.api.author.get + purchaseList[i].book.author_id)
+            purchaseList[i].author = author.data.result;
+        }*/
 
-        state.data.purchaseList = purchaseListRes
+        state.data.purchaseList = purchaseList
         this.setState(state)
     }
 
@@ -81,12 +80,12 @@ class Purchase extends Component {
                                     <div className="purchase-box">
                                         <div className="book-info">
                                             <div className="title-wrap">
-                                                <h3 className="title">{item.title}</h3>
-                                                <span className="review-point"><em>star</em>{item.book.review_score ? item.book.review_score : 0}</span>
+                                                <h3 className="title">{item.book_title}</h3>
+                                                <span className="review-point"><em>star</em>{/*item.book.review_score ? item.book.review_score : 0*/}</span>
                                             </div>
                                             <div className="info">
                                                 <span className="label">작가</span>
-                                                <strong className="value">{item.author.name}</strong>
+                                                <strong className="value">{item.author_name}</strong>
 
                                                 <span className="label">출간방식</span>
                                                 <strong className="value">{item.type === 1 ? "연재본" : "단행본"}</strong>
@@ -111,7 +110,7 @@ class Purchase extends Component {
                                                         <img src="download.png"/>
                                                     </button>
                                                 </td>
-                                                <td className="value">{parse.numberWithCommas(item.book.price)} 원</td>
+                                                <td className="value">{parse.numberWithCommas(item.price)} 원</td>
                                                 <td className="value">{date.format(item.created_date_time)}</td>
                                             </tr>
                                         </table>

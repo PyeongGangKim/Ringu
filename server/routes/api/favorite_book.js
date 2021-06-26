@@ -3,7 +3,7 @@ var router = express.Router();
 
 const {StatusCodes} = require("http-status-codes");
 
-const {favorite_book, member ,book, book_detail, Sequelize: {Op}, sequelize } = require("../../models");
+const {favorite_book, favorite_book_statistics, member ,book, book_detail, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -27,11 +27,31 @@ router.post('/', isLoggedIn,async (req, res, next) => {
         }
 
         else{
-            await favorite_book.create({
-                member_id : member_id,
-                book_id : book_id,
+            const result = await sequelize.transaction(async (t) => {
+                await favorite_book.create({
+                    member_id : member_id,
+                    book_id : book_id,
+                });
+                const [statistics, created] = await favorite_book_statistics.findOrCreate({
+                    where: {
+                        book_id: book_id,
+                    },
+                    defaults: {
+                        book_id: book_id,
+                        favorite_person_number: 0,
+                    }
+                });
+                await favorite_book_statistics.update(
+                    {
+                        favorite_person_number : statistics.favorite_person_number + 1,
+                    },
+                    {
+                        where:{
+                            id: statistics.id,
+                    },
+                });
+                res.status(StatusCodes.CREATED).send("success like");
             });
-            res.status(StatusCodes.CREATED).send("success like");
         }
     }
     catch(err){
@@ -60,15 +80,12 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                     model : book,
                     as : "book",
                     attributes: [
-                        "title",
-                        "price"
                     ],
                     include: [
                         {
                             model: member,
                             as : "author",
                             attributes: [
-                                "nickname",
                             ],
                         },
                     ]

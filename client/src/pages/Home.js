@@ -11,7 +11,7 @@ class Home extends Component {
         return (
             <Fragment>
                 <Header visible={false}></Header>
-                <Main></Main>
+                <Main history={this.props.history}></Main>
             </Fragment>
         )
     }

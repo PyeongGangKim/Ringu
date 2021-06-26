@@ -6,6 +6,7 @@ var _cart = require("./cart");
 var _category = require("./category");
 var _favorite_author = require("./favorite_author");
 var _favorite_book = require("./favorite_book");
+let _favorite_book_statistics = require("./favorite_book_statistics");
 var _identification = require("./identification");
 var _member = require("./member");
 var _notification = require("./notification");
@@ -22,6 +23,7 @@ function initModels(sequelize) {
   var category = _category(sequelize, DataTypes);
   var favorite_author = _favorite_author(sequelize, DataTypes);
   var favorite_book = _favorite_book(sequelize, DataTypes);
+  let favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
   var identification = _identification(sequelize, DataTypes);
   var member = _member(sequelize, DataTypes);
   var notification = _notification(sequelize, DataTypes);
@@ -64,6 +66,8 @@ function initModels(sequelize) {
   member.hasMany(purchase, { as: "purchases", foreignKey: "member_id"});
   review.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(review, { as: "reviews", foreignKey: "member_id"});
+  favorite_book_statistics.belongsTo(book, {as : "book", foreignKey: "book_id"});
+  book.hasOne(favorite_book_statistics, {as: "favorite_book_statistics", foreignKey: "book_id"});
 
   return {
     author,
@@ -80,6 +84,7 @@ function initModels(sequelize) {
     review,
     review_statistics,
     withdrawal,
+    favorite_book_statistics,
   };
 }
 module.exports = initModels;
