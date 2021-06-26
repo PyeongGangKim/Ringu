@@ -6,13 +6,14 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
-const { sequelize, category, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
+const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
 
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
     let author_id = req.query.author_id;
     let category_id = req.query.category_id;
     let keyword = req.query.keyword;
+    let member_id = req.query.member_id;
 
     try{
         const bookList = await book.findAll({
@@ -22,6 +23,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 "img",
                 "title",
                 "type",//type 1이 연재본, 2가 단행본.
+                [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"mean_score" ],
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("category.name"), "category"],
@@ -68,6 +70,17 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                             attributes: [],
                         }
                     ]
+                },
+                {
+                    model : favorite_book,
+                    as: 'favorite_books',
+                    attributes: [],
+                    required: false,
+                    where: {
+                        member_id : {
+                            [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
+                        }
+                    } 
                 }
             ],
             group: 'id', 
@@ -91,6 +104,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 });
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
+    let member_id = req.query.member_id;
     try{
         const book_detail_info = await book.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
@@ -107,11 +121,23 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 "description",
                 "content",
                 "preview",
+                [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("author.nickname"), "author"],
                 [sequelize.literal("category.name"), "category"],
                 [sequelize.literal("`book_details->review_statistics`.score_amount / `book_details->review_statistics`.person_number"),"score"],
             ],
             include : [
+                {
+                    model : favorite_book,
+                    as: 'favorite_books',
+                    attributes: [],
+                    required: false,
+                    where: {
+                        member_id : {
+                            [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
+                        }
+                    } 
+                },
                 {
                     model : member,
                     as : "author",
