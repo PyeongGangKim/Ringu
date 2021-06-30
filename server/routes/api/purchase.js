@@ -15,6 +15,28 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
     let book_detail_id = req.body.book_detail_id;
     let price = req.body.price;
     try{
+        const result = await purchase.create({
+            member_id : member_id,
+            book_detail_id : book_detail_id,
+            price: price,
+        })
+        console.log(result);
+        res.status(StatusCodes.OK).send("success purchasing");
+
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
+router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+    
+    let member_id = req.body.member_id;
+    let book_detail_id = req.body.book_detail_id;
+
+    try{
         const duplicate_result = await purchase.findOne({
             where : {
                 member_id : member_id,
@@ -24,16 +46,10 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
         });
         if(duplicate_result){
             res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
         }
-        const result = await purchase.create({
-            member_id : member_id,
-            book_detail_id : book_detail_id,
-            price: price,
-        })
-        console.log(result);
-        res.status(StatusCodes.OK).send("success purchasing");
-
+        else{
+            res.status(StatusCodes.OK).send("No Duplicate");
+        }
     }
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
