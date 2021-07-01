@@ -284,33 +284,23 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     }
 });
 
-router.get('/download/:bookId', isLoggedIn, async (req,res,next) => {
-    const bookId = req.params.bookId;
+router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
+    const bookDetailId = req.params.bookDetailId;
     try{
-        /*const checkPurchase = await purchase.findOne({
+        const result = await book_detail.findOne({
             where : {
-                book_id : bookId,
-                member_id : req.user.id,
-            }
-        });
-        if(checkPurchase == null){
-            res.json({
-                status: "err",
-                reason: "you have to purchase this book",
-            });
-            return ;
-        }*/
-        const result = await book.findOne({
-            where : {
-                id : bookId,
+                id : bookDetailId,
             }
         });
         const fileUrl = result.file.split('/');
         const fileUrlLength = fileUrl.length;
         const fileName = fileUrl[fileUrlLength - 1];
         const url = downloadFile(fileName);
+        console.log(fileName);
 
-        res.json({status: "ok", url});
+        res.status(StatusCodes.OK).json({
+            "url" : url,
+        });
     }
     catch(err){
         console.error(err);

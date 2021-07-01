@@ -4,6 +4,7 @@ var router = express.Router();
 
 var helper_api = require("../../helper/api");
 
+const {StatusCodes} = require("http-status-codes");
 
 const {sequelize ,member ,favorite_author, Sequelize: {Op} } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
@@ -11,14 +12,28 @@ const { isLoggedIn } = require("../../middlewares/auth");
 
 
 router.post('/', isLoggedIn, async (req, res, next) => {
-    if(!helper_api.required(req, ['member_id', 'author_id'])){
-        var names = helper_api(req,['member_id','author_id'],true);
-        helper_api.missing(res, names);
-        return;
-    }
+    
 
     var member_id = req.body.member_id;
     var author_id = req.body.author_id;
+    try{
+        await favorite_author.create({
+                member_id : member_id,
+                author_id : author_id,
+        });
+        res.status(StatusCodes.OK).send("success like");
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
+router.post('/duplicate', isLoggedIn, async (req, res, next) => {
+    var member_id = req.body.member_id;
+    var author_id = req.body.author_id;
+
     try{
         const duplicate_result = await favorite_author.findOne({
             where: {
@@ -28,17 +43,10 @@ router.post('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(duplicate_result){
-            res.json({
-                status: "error",
-                reason: "duplicate",
-            })
+            res.status(StatusCodes.CONFLICT).send("Duplicate");
         }
         else{
-            const result = await favorite_author.create({
-                member_id : member_id,
-                author_id : author_id,
-            })
-            res.json({status: "ok", result});
+            res.status(StatusCodes.OK).send("No Duplicate");
         }
     }
     catch(err){
@@ -48,6 +56,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
             reason: "fail to like author"
         })
     }
+    
 });
 
 router.get('/', isLoggedIn, async (req, res, next) => {
@@ -72,16 +81,20 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 }
             ],
         });
-
-        res.json({status: "ok", favoriteAuthorList});
+        if(favoriteAuthorList.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("no content");
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                "favoriteAuthorList": favoriteAuthorList
+            });
+        }
     }
     catch(err){
-        console.log(err)
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get the favorite author's list"
-        })
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
     }
 });
 
