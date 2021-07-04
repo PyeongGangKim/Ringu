@@ -5,7 +5,7 @@ var router = express.Router();
 var helper_api = require("../../helper/api");
 
 
-const {sequelize ,member ,favorite_author, Sequelize: {Op} } = require("../../models");
+const {sequelize ,member ,favorite_author, review_statistics, Sequelize: {Op} } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -59,6 +59,9 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 "author_id",
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("author.description"), "author_description"],
+
+                [sequelize.literal("SUM(`author->review_statistics`.score_amount)"), "review_score"],
+                [sequelize.literal("SUM(`author->review_statistics`.person_number)"), "review_count"],
             ],
             where: {
                 member_id : member_id,
@@ -68,9 +71,24 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 {
                     model : member,
                     as : "author",
-                    attributes : [],
-                }
+                    attributes : [
+                        "id",
+                        "nickname",
+                        "description",
+                    ],
+                    include: [
+                        {
+                            model: review_statistics,
+                            as : "review_statistics",
+                            attributes : [
+                                "score_amount",
+                                "person_number",
+                            ],
+                        },
+                    ],
+                },
             ],
+            group: "author.id"
         });
 
         res.json({status: "ok", favoriteAuthorList});
