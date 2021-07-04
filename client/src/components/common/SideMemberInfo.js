@@ -8,6 +8,7 @@ import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
+import axios from 'axios';
 
 class SideMemberInfo extends Component {
     constructor(props) {
@@ -20,29 +21,62 @@ class SideMemberInfo extends Component {
             favorites: 0,
             purchases: 0,
             carts: 0,
+            profile: "",
         }
     }
 
     async componentDidMount() {
         var state = this.state;
+        var favoriteBookList = []
+        var favoriteAuthorList = []
+        var purchaseList = []
+        var cartList = []
+
         const fav1 = await API.sendGet(URL.api.favorite.book.list)
+        if(fav1.status === 200) {
+            favoriteBookList = fav1.data.favoriteBookList
+        }
+
         const fav2 = await API.sendGet(URL.api.favorite.author.list)
+        if(fav2.status === 200) {
+            favoriteAuthorList = fav2.data.favoriteAuthorList
+        }
+
         const purchases = await API.sendGet(URL.api.purchase.list)
+        if(purchases.status === 200) {
+            purchaseList = purchases.data.purchaseList
+        }
+
         const carts = await API.sendGet(URL.api.cart.list)
+        if(carts.status === 200) {
+            cartList = carts.data.cartList
+        }
 
         this.setState({
-            favorites: fav1.data.favoriteBookList.length + fav2.data.favoriteAuthorList.length,
-            purchases: purchases.data.purchaseList.length,
-            carts: carts.data.cartList.length,
+            favorites: favoriteBookList.length + favoriteAuthorList.length,
+            purchases: purchaseList.length,
+            carts: cartList.length,
         })
+    }
+
+    handleProfileChange = async(e) => {
+        const data = new FormData()
+        data.append('file', e.target.files[0])        
+
+        const res = await API.sendData(URL.api.member.upload_profile, data)
     }
 
     render() {
         return (
             <div className="side-info">
-                <div className="img-area">
-                    <img src="/blank.jpg"/>
-                </div>
+                <form>
+                    <div className="img-area">
+                        <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
+                        <label for="profile">
+                            <img src="/blank.jpg"/>
+                        </label>
+                    </div>
+                </form>
 
                 <strong className="name">임유빈</strong>
 
