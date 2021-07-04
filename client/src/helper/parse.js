@@ -1,6 +1,13 @@
 module.exports = {
     numberWithCommas: (x) => {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        try {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        } catch (e) {
+            return 0;
+        }
+
+
+
     },
     searchToDict: (search) => {
         var dict = {}
