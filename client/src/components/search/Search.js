@@ -34,7 +34,7 @@ class Search extends Component {
             keyword: keyword,
         }
 
-        const res = await API.sendGet(URL.api.book.list, params = params)        
+        const res = await API.sendGet(URL.api.book.list, params = params)
         if(res.status === 200) {
             var searchList = res.data.bookList
 
