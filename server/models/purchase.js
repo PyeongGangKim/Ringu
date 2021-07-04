@@ -32,10 +32,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
-    },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     }
   }, {
     sequelize,
