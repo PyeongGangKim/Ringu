@@ -80,10 +80,10 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                         member_id : {
                             [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
                         }
-                    } 
+                    }
                 }
             ],
-            group: 'id', 
+            group: 'id',
         });
         if(bookList.length == 0){
             console.log(bookList);
@@ -106,7 +106,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
     let book_id = req.params.bookId;
     let member_id = req.query.member_id;
     try{
-        const book_detail_info = await book.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
+        const book_detail_info = await book.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
                 id: book_id,
             },
@@ -122,9 +122,12 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 "content",
                 "preview",
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
-                [sequelize.literal("author.nickname"), "author"],
+                [sequelize.literal("author.id"), "author_id"],
+                [sequelize.literal("author.nickname"), "author_nickname"],
+                [sequelize.literal("author.description"), "author_description"],
                 [sequelize.literal("category.name"), "category"],
-                [sequelize.literal("`book_details->review_statistics`.score_amount / `book_details->review_statistics`.person_number"),"score"],
+                [sequelize.literal("`book_details->review_statistics`.score_amount"),"review_score"],
+                [sequelize.literal("`book_details->review_statistics`.person_number"),"review_count"],
             ],
             include : [
                 {
@@ -136,7 +139,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                         member_id : {
                             [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
                         }
-                    } 
+                    }
                 },
                 {
                     model : member,
@@ -170,7 +173,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                                 "score",
                             ],
                             include : [
-                                {   
+                                {
                                     model: member,
                                     as : "member",
                                     attributes: ["nickname"],
@@ -189,6 +192,71 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
         });
         if(book_detail_info.length == 0){
             console.log(book_detail);
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                "book": book_detail_info,
+            });
+        }
+
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
+
+router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
+    let book_detail_id = req.params.bookId;
+
+    try{
+        const book_detail_info = await book_detail.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
+            where : {
+                id: book_detail_id,
+            },
+            attributes : [
+                "id",
+                [sequelize.literal("book_detail.title"),"subtitle"],
+                [sequelize.literal("`book->author`.nickname"),"author"],
+                [sequelize.literal("book.price"),"price"],
+                [sequelize.literal("book.type"),"type"],
+                [sequelize.literal("book.title"),"title"],
+            ],
+
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: [
+                        "title",
+                        "price",
+                        "type",
+
+                    ],
+                    include: [
+                        {
+                            model : member,
+                            as : "author",
+                            attributes: [
+                                "nickname",
+                            ],
+                        },
+                        {
+                            model : category,
+                            as : "category",
+                            attributes : [
+
+                            ],
+                        },
+                    ]
+                },
+            ],
+        });
+
+        if(book_detail_info.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
