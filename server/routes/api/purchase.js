@@ -11,7 +11,7 @@ const {book_detail, sequelize, member, purchase, book, Sequelize : {Op}} = requi
 
 
 router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
-    let member_id = req.body.member_id;
+    let member_id = req.user.id;
     let book_detail_id = req.body.book_detail_id;
     let price = req.body.price;
     try{
@@ -84,6 +84,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                 "id",
                 "created_date_time",
                 "price",
+                "book_detail_id",
                 [sequelize.literal("book_detail.title"), "title"],
                 [sequelize.literal("`book_detail->book`.type"), "type"],
                 [sequelize.literal("book_detail.file"), "file"],

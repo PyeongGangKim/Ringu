@@ -10,15 +10,32 @@ const s3 = new AWS.S3({
     region: REGION,
 });
 
+const uploadFileFormat = async (file, dirName) => {
+    try{
+        const url = await s3.getSignedUrl('putObject', {
+            Bucket: BUCKET + "/" + dirName,
+            Key: file,
+            //ContentType: req.body.contentType,
+        });
+        return url;
+    
+    }
+    catch(err){
+        console.log(err);
+    }
+    
+}
+
 const storage = multerS3({
     s3: s3,
     bucket: BUCKET+"/" + DIRNAME,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
+    //contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
         cb(null, file.originalname)
     }, // 파일 이름
-    acl: 'public-read-write',
-})
+    acl: 'public-read',
+});
+
 const upload = multer({
     storage: storage,
     //limits: { fileSize: 5 * 1024 * 1024 }, // 용량 제한
@@ -29,6 +46,7 @@ const uploadFile = upload.fields([
     {name: 'img', maxCount: 1},
     {name: 'preview', maxCount: 1},
 ]);
+
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;
     console.log(id);
@@ -86,4 +104,5 @@ module.exports = {
     uploadFile,
     deleteFile,
     downloadFile,
+    uploadFileFormat,
 }

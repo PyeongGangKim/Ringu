@@ -11,6 +11,8 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+var axios = require('axios');
+
 class Purchase extends Component {
     constructor(props) {
         super(props)
@@ -54,9 +56,18 @@ class Purchase extends Component {
         }*/
 
         state.data.purchaseList = purchaseList
+        console.log(purchaseList);
         this.setState(state)
     }
-
+    async downloadAction(book_detail_id, e){
+        console.log(e);
+        console.log(book_detail_id);
+        const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id);
+        let downloadUrl = res.data.url;
+        console.log(downloadUrl);
+        window.open(downloadUrl, '다운로드', 'width=0, height=0');
+        
+    }
     render() {
         var purchaseList = this.state.data.purchaseList
         return (
@@ -98,7 +109,7 @@ class Purchase extends Component {
                                                 <th className="label">구매가격</th>
                                                 <th className="label">구매일</th>
                                                 <td rowSpan="2">
-                                                    <button className="btn btn-rounded btn-color-2">
+                                                    <button className="btn btn-rounded btn-color-2" >
                                                         리뷰쓰기
                                                     </button>
                                                 </td>
@@ -106,7 +117,9 @@ class Purchase extends Component {
 
                                             <tr>
                                                 <td>
-                                                    <button>
+                                                    <button onClick = {
+                                                        () => console.log("실행"),this.downloadAction.bind(this, item.book_detail_id)
+                                                    }>
                                                         <img src="download.png"/>
                                                     </button>
                                                 </td>

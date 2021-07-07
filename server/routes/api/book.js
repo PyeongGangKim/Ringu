@@ -4,7 +4,7 @@ var router = express.Router();
 const {StatusCodes} = require("http-status-codes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
+const { uploadFile, deleteFile, downloadFile, uploadFileFormat } = require("../../middlewares/third_party/aws");
 
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
 
@@ -265,13 +265,14 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     let file = req.files.file[0].location;
     let book_id = req.body.book_id;
     let title = req.body.title;
-
+    let round = req.body.round;
     try{
         const new_round_book = book_detail.create({
             title: title,
             book_id : book_id,
             page_number : page_number,
             file : file,
+            round: round
         });
         console.log(new_round_book);
         res.status(StatusCodes.CREATED).send("new round serialization_book created");

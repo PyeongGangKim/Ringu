@@ -39,6 +39,7 @@ module.exports = {
 
         book: {
             list:               "/book",
+            dowload:            "/book/download"
         },
         author: {
             get:                "/author/",

@@ -14,7 +14,7 @@ const { isLoggedIn } = require("../../middlewares/auth");
 router.post('/', isLoggedIn, async (req, res, next) => {
     
 
-    var member_id = req.body.member_id;
+    var member_id = req.user.id;
     var author_id = req.body.author_id;
     try{
         await favorite_author.create({
@@ -31,7 +31,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
     }
 });
 router.post('/duplicate', isLoggedIn, async (req, res, next) => {
-    var member_id = req.body.member_id;
+    var member_id = req.user.id;
     var author_id = req.body.author_id;
 
     try{
