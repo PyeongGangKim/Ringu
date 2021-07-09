@@ -12,23 +12,36 @@ const s3 = new AWS.S3({
 
 const storage = multerS3({
     s3: s3,
-    bucket: BUCKET+"/" + DIRNAME,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
+    
+    bucket: function(req,file, cb){
+        cb(null, BUCKET+ "/" + file.fieldname);
+    },
+    contentType: function(req, file, cb){
+        let fieldName = file.fieldname;
+        if(fieldName == "img"){
+            cb(null,file.mimetype);
+        }
+        else cb(null, "application/octet-stream");
+    },
+
     key: function (req, file, cb) {
-        cb(null, file.originalname)
+        const fileNameSplit = file.originalname.split('.');
+        const fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[1];
+        cb(null, fileName);
     }, // 파일 이름
-    acl: 'public-read-write',
-})
-const upload = multer({
-    storage: storage,
-    //limits: { fileSize: 5 * 1024 * 1024 }, // 용량 제한
+    acl: 'public-read',
 });
+
+const upload = multer({
+    storage: storage
+})
 
 const uploadFile = upload.fields([
     {name: 'file', maxCount: 1},
     {name: 'img', maxCount: 1},
     {name: 'preview', maxCount: 1},
 ]);
+
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;
     console.log(id);
@@ -71,19 +84,29 @@ const deleteFile = async (req, res, next) =>{
         console.error(err);
     }
 }
-const downloadFile = (fileName) => {
+const downloadFile = (fieldName ,fileName) => {
     const signedUrlExpireSeconds = 60 * 5;
-    const fileKey = 'book/' + fileName;
+    const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
         Bucket: BUCKET,
         Key: fileKey,
         Expires: signedUrlExpireSeconds,
     });
-
     return url
+}
+const imageLoad = (imgName) => {
+    const signedUrlExpireSeconds = 3600 * 24;
+    const fileKey = "img/" + imgName;
+    const url = s3.getSignedUrl('getObject', {
+        Bucket: BUCKET,
+        Key: fileKey,
+        Expires: signedUrlExpireSeconds
+    });
+    return url;
 }
 module.exports = {
     uploadFile,
     deleteFile,
     downloadFile,
+    imageLoad,
 }

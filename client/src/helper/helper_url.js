@@ -41,7 +41,9 @@ module.exports = {
         book: {
             get:                "/book/",
             list:               "/book",
+            dowload:            "/book/download",
             getByDetail:        "/book/detail/",
+
         },
         author: {
             get:                "/author/",

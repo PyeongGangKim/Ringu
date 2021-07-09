@@ -6,14 +6,37 @@ const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
 const {book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
+const {imageLoad} = require("../../middlewares/third_party/aws.js");
 
 
 
 
 router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
-    let member_id = req.body.member_id;
+    let member_id = req.user.id;
     let book_detail_id = req.body.book_detail_id;
     let price = req.body.price;
+    try{
+        const result = await purchase.create({
+            member_id : member_id,
+            book_detail_id : book_detail_id,
+            price: price,
+        })
+        console.log(result);
+        res.status(StatusCodes.OK).send("success purchasing");
+
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
+router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+    
+    let member_id = req.body.member_id;
+    let book_detail_id = req.body.book_detail_id;
+
     try{
         const duplicate_result = await purchase.findOne({
             where : {
@@ -24,16 +47,10 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
         });
         if(duplicate_result){
             res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
         }
-        const result = await purchase.create({
-            member_id : member_id,
-            book_detail_id : book_detail_id,
-            price: price,
-        })
-        console.log(result);
-        res.status(StatusCodes.OK).send("success purchasing");
-
+        else{
+            res.status(StatusCodes.OK).send("No Duplicate");
+        }
     }
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -78,7 +95,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                 [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
 
                 [sequelize.literal("`book_detail->reviews`.id"), "review"],
-
+                [sequelize.literal("`book_detail->book`.img"), "img"],
                 [sequelize.literal("`book_detail->review_statistics`.score_amount / `book_detail->review_statistics`.person_number"),"review_score"],
             ],
             where: {
@@ -90,34 +107,38 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                     model : book_detail,
                     as : 'book_detail',
                     attributes: [
+                        /*
                         "id",
                         "title",
-                        "file",
+                        "file",*/
                     ],
                     include: [
                         {
                             model: book,
                             as : 'book',
                             attributes : [
+                                /*
                                 "title",
                                 "price",
-                                "type",
+                                "type",*/
                             ],
                             include : [
                                 {
                                     model: member,
                                     as: 'author',
                                     attributes: [
-                                        "nickname",
+                                        /*
+                                        "nickname",*/
                                     ],
                                 }
                             ]
                         },
-                        {
+                        {   //review가 필요한가?
                             model: review,
                             as : "reviews",
                             attributes: [
-                                "id",
+                                /*
+                                "id",*/
                             ],
                             required: false,
                             where: {
@@ -128,8 +149,9 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                             model: review_statistics,
                             as : "review_statistics",
                             attributes : [
+                                /*
                                 "score_amount",
-                                "person_number",
+                                "person_number",*/
                             ],
                         }
                     ]
@@ -141,6 +163,11 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
+            for(let i = 0 ; i < purchaseList.length ; i++){
+                console.log(purchaseList[i].dataValues.img);
+                if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
+                purchaseList[i].dataValues.img = await imageLoad(purchaseList[i].dataValues.img);
+            }
             res.status(StatusCodes.OK).json({
                 purchaseList : purchaseList,
             });

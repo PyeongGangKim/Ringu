@@ -18,17 +18,6 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
     let description = req.body.description;
 
     try{
-        const duplicate_result = await review.findOne({
-            where : {
-                member_id : member_id,
-                book_detail_id : book_detail_id,
-                status : 1,
-            }
-        });
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
-        }
         const result = await sequelize.transaction(async (t) => {
             await review.create({
                 member_id : member_id,
@@ -69,10 +58,34 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
             "error": "server error"
         });
         console.error(err);
-        await t.rollback();
     }
 });
-
+router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+    let member_id = req.user.id;
+    let book_detail_id = req.body.book_detail_id;
+    try{
+        const duplicate_result = await review.findOne({
+            where : {
+                member_id : member_id,
+                book_detail_id : book_detail_id,
+                status : 1,
+            }
+        });
+        if(duplicate_result){
+            res.status(StatusCodes.CONFLICT).send("Duplicate");
+            return;
+        }
+        else{
+            res.status(StatusCodes.OK).send("No Duplicate");
+        }
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
 router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     var member_id = req.user.id;
     try{

@@ -4,7 +4,7 @@ var router = express.Router();
 const {StatusCodes} = require("http-status-codes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
+const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
 
@@ -90,6 +90,11 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            for(let i = 0 ; i < bookList.length ; i++){
+                console.log(bookList[i].dataValues.img);
+                if(bookList[i].dataValues.img == null || bookList[i].dataValues.img[0] == 'h') continue;
+                bookList[i].dataValues.img = await imageLoad(bookList[i].dataValues.img);
+            }
             res.status(StatusCodes.OK).json({
                 bookList: bookList,
             });
@@ -104,7 +109,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 });
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
-    let member_id = req.query.member_id;
+    let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
     try{
         const book_detail_info = await book.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
@@ -156,6 +161,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     as : "book_details",
                     required: false,
                     attributes: [
+                        
                         "title",
                         "file",
                         "round",
@@ -176,7 +182,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                                 {
                                     model: member,
                                     as : "member",
-                                    attributes: ["nickname"],
+                                    attributes: [
+                                        
+                                        "nickname"
+                                    ],
                                     required : false,
                                 }
                             ]
@@ -195,6 +204,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            book_detail_info.dataValues.img = await imageLoad(book_detail_info.dataValues.img);
             res.status(StatusCodes.OK).json({
                 "book": book_detail_info,
             });
@@ -284,13 +294,12 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     let type = req.body.type;
     let is_finished_serialization = (type == 2) ? 1 : 0;
     let serialization_day = req.body.serialization_day;
-    console.log(serialization_day);
-    let img = req.files.img[0].location;
-    let preview = (req.files.preview == null) ? null : req.files.preview[0].location;
+    let img = req.files.img[0].key;
+    let preview = (req.files.preview == null) ? null : req.files.preview[0].key;
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
-    let file = (req.files.file == null ) ? null : req.files.file[0].location;
+    let file = (req.files.file == null ) ? null : req.files.file[0].key;
 
     try{
         const new_book = await book.create({
@@ -333,13 +342,14 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     let file = req.files.file[0].location;
     let book_id = req.body.book_id;
     let title = req.body.title;
-
+    let round = req.body.round;
     try{
         const new_round_book = book_detail.create({
             title: title,
             book_id : book_id,
             page_number : page_number,
             file : file,
+            round: round
         });
         console.log(new_round_book);
         res.status(StatusCodes.CREATED).send("new round serialization_book created");
@@ -352,33 +362,22 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     }
 });
 
-router.get('/download/:bookId', isLoggedIn, async (req,res,next) => {
-    const bookId = req.params.bookId;
+router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
+    const bookDetailId = req.params.bookDetailId;
+    const type = req.query.type;
     try{
-        /*const checkPurchase = await purchase.findOne({
+        const result = await book_detail.findOne({
             where : {
-                book_id : bookId,
-                member_id : req.user.id,
+                id : bookDetailId,
             }
         });
-        if(checkPurchase == null){
-            res.json({
-                status: "err",
-                reason: "you have to purchase this book",
-            });
-            return ;
-        }*/
-        const result = await book.findOne({
-            where : {
-                id : bookId,
-            }
-        });
-        const fileUrl = result.file.split('/');
-        const fileUrlLength = fileUrl.length;
-        const fileName = fileUrl[fileUrlLength - 1];
-        const url = downloadFile(fileName);
+        console.log(type);
+        const url = downloadFile(type, result.file);
+        console.log(result.file);
 
-        res.json({status: "ok", url});
+        res.status(StatusCodes.OK).json({
+            "url" : url,
+        });
     }
     catch(err){
         console.error(err);

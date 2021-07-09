@@ -14,6 +14,45 @@ router.post('/', isLoggedIn,async (req, res, next) => {
     var book_id = req.body.book_id;
 
     try{
+        const result = await sequelize.transaction(async (t) => {
+            await favorite_book.create({
+                member_id : member_id,
+                book_id : book_id,
+            });
+            const [statistics, created] = await favorite_book_statistics.findOrCreate({
+                where: {
+                    book_id: book_id,
+                },
+                defaults: {
+                    book_id: book_id,
+                    favorite_person_number: 0,
+                }
+            });
+            await favorite_book_statistics.update(
+                {
+                    favorite_person_number : statistics.favorite_person_number + 1,
+                },
+                {
+                    where:{
+                        id: statistics.id,
+                },
+            });
+            res.status(StatusCodes.CREATED).send("success like");
+        });
+    }
+    
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
+router.post('/duplicate', isLoggedIn,async (req, res, next) => {
+    var member_id = req.user.id;
+    var book_id = req.body.book_id;
+
+    try{
         const duplicate_result = await favorite_book.findOne({
             where: {
                 member_id : member_id,
@@ -25,33 +64,8 @@ router.post('/', isLoggedIn,async (req, res, next) => {
             res.status(StatusCodes.CONFLICT).send("Duplicate");
             return;
         }
-
         else{
-            const result = await sequelize.transaction(async (t) => {
-                await favorite_book.create({
-                    member_id : member_id,
-                    book_id : book_id,
-                });
-                const [statistics, created] = await favorite_book_statistics.findOrCreate({
-                    where: {
-                        book_id: book_id,
-                    },
-                    defaults: {
-                        book_id: book_id,
-                        favorite_person_number: 0,
-                    }
-                });
-                await favorite_book_statistics.update(
-                    {
-                        favorite_person_number : statistics.favorite_person_number + 1,
-                    },
-                    {
-                        where:{
-                            id: statistics.id,
-                    },
-                });
-                res.status(StatusCodes.CREATED).send("success like");
-            });
+            res.status(StatusCodes.OK).send("No Duplicate");
         }
     }
     catch(err){
