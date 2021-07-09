@@ -4,7 +4,7 @@ var router = express.Router();
 const {StatusCodes} = require("http-status-codes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { uploadFile, deleteFile, downloadFile, uploadFileFormat } = require("../../middlewares/third_party/aws");
+const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
 
@@ -90,6 +90,11 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            for(let i = 0 ; i < bookList.length ; i++){
+                console.log(bookList[i].img);
+                if(bookList[i].img == null || bookList[i].img[0] == 'h') continue;
+                bookList[i].img = await imageLoad(bookList[i].img);
+            }
             res.status(StatusCodes.OK).json({
                 bookList: bookList,
             });
@@ -104,9 +109,9 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 });
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
-    let member_id = req.query.member_id;
+    let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
     try{
-        const book_detail_info = await book.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
+        const book_detail_info = await book.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
                 id: book_id,
             },
@@ -153,6 +158,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     as : "book_details",
                     required: false,
                     attributes: [
+                        
                         "title",
                         "file",
                         "round",
@@ -173,7 +179,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                                 {   
                                     model: member,
                                     as : "member",
-                                    attributes: ["nickname"],
+                                    attributes: [
+                                        
+                                        "nickname"
+                                    ],
                                     required : false,
                                 }
                             ]
@@ -192,6 +201,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            book_detail_info.img = await imageLoad(book_detail_info.img);
             res.status(StatusCodes.OK).json({
                 "book": book_detail_info,
             });
@@ -286,17 +296,16 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
 
 router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
     const bookDetailId = req.params.bookDetailId;
+    const type = req.query.type;
     try{
         const result = await book_detail.findOne({
             where : {
                 id : bookDetailId,
             }
         });
-        const fileUrl = result.file.split('/');
-        const fileUrlLength = fileUrl.length;
-        const fileName = fileUrl[fileUrlLength - 1];
-        const url = downloadFile(fileName);
-        console.log(fileName);
+        console.log(type);
+        const url = downloadFile(type, result.file);
+        console.log(result.file);
 
         res.status(StatusCodes.OK).json({
             "url" : url,

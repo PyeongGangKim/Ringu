@@ -60,9 +60,8 @@ class Purchase extends Component {
         this.setState(state)
     }
     async downloadAction(book_detail_id, e){
-        console.log(e);
-        console.log(book_detail_id);
-        const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id);
+        console.log(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");
+        const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");
         let downloadUrl = res.data.url;
         console.log(downloadUrl);
         window.open(downloadUrl, '다운로드', 'width=0, height=0');

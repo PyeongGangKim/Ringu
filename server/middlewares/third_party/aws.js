@@ -25,7 +25,9 @@ const storage = multerS3({
     },
 
     key: function (req, file, cb) {
-        cb(null, file.originalname + Date.now().toString());
+        const fileNameSplit = file.originalname.split('.');
+        const fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[1];
+        cb(null, fileName);
     }, // 파일 이름
     acl: 'public-read',
 });
@@ -82,19 +84,29 @@ const deleteFile = async (req, res, next) =>{
         console.error(err);
     }
 }
-const downloadFile = (fileName) => {
+const downloadFile = (fieldName ,fileName) => {
     const signedUrlExpireSeconds = 60 * 5;
-    const fileKey = 'book/' + fileName;
+    const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
         Bucket: BUCKET,
         Key: fileKey,
         Expires: signedUrlExpireSeconds,
     });
-
     return url
+}
+const imageLoad = (imgName) => {
+    const signedUrlExpireSeconds = 3600 * 24;
+    const fileKey = "img/" + imgName;
+    const url = s3.getSignedUrl('getObject', {
+        Bucket: BUCKET,
+        Key: fileKey,
+        Expires: signedUrlExpireSeconds
+    });
+    return url;
 }
 module.exports = {
     uploadFile,
     deleteFile,
     downloadFile,
+    imageLoad,
 }
