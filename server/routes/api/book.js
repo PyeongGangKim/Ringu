@@ -216,13 +216,12 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     let type = req.body.type;
     let is_finished_serialization = (type == 2) ? 1 : 0;
     let serialization_day = req.body.serialization_day;
-    console.log(serialization_day);
-    let img = req.files.img[0].location;
-    let preview = (req.files.preview == null) ? null : req.files.preview[0].location;
+    let img = req.files.img[0].key;
+    let preview = (req.files.preview == null) ? null : req.files.preview[0].key;
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
-    let file = (req.files.file == null ) ? null : req.files.file[0].location;
+    let file = (req.files.file == null ) ? null : req.files.file[0].key;
 
     try{
         const new_book = await book.create({
