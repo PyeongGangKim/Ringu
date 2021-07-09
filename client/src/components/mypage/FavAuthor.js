@@ -26,7 +26,7 @@ class FavAuthor extends Component {
         var state = this.state;
 
         const res = await API.sendGet(URL.api.favorite.author.list)
-
+        console.log(res)
         var favoriteList = res.data.favoriteAuthorList
 
 
@@ -88,12 +88,12 @@ class FavAuthor extends Component {
                                                 |
                                                 <span  className="stat">
                                                     <em className="star"/>
-                                                    4.9
+                                                    {(item.review_score && item.review_count) ? (item.review_score / item.review_count).toFixed(1) : "0.0"}
                                                 </span>
                                                 |
                                                 <span  className="stat">
                                                     <em className="review"/>
-                                                    11개
+                                                    {item.review_count ? item.review_count : 0}개
                                                 </span>
                                             </div>
 

@@ -33,7 +33,17 @@
             font-size: 18px;
             font-weight: 500;
             margin-left: 0;
+        }
+
+        .subtitle {
+            color: var(--lightgray);
+            font-weight: 400;
+            font-size: 14px;
+            overflow:hidden;
+            text-overflow: ellipsis;
+            margin: 0;
             margin-bottom: 10px;
+            padding-right: 20px;
         }
 
         .price {
@@ -69,10 +79,49 @@
             margin-right: 60px;
         }
 
-        img {
+        .score {
+            margin-left: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        em {
             width: 30px;
             height: 30px;
             margin-right: 10px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            cursor: pointer;
+
+            &.off {
+                background-image: url("/star-off.png");
+            }
+
+            &.on {
+                background-image: url("/star.png");
+            }
+
+        }
+
+        &.buttons {
+            margin-top: 150px;
+            justify-content: space-between;
+
+            .btn {
+                font-size: 14px;
+                font-weight: 500;
+                padding: 15px 30px;
+            }
+
+            .back {
+                border-color: var(--lightgray);
+                border-radius: 30px;
+            }
+
+            .register {
+                width: 200px;
+            }
         }
 
         textarea {

@@ -3,7 +3,7 @@ var router = express.Router();
 
 const {StatusCodes} = require("http-status-codes");
 
-const {favorite_book, favorite_book_statistics, member ,book, book_detail, Sequelize: {Op}, sequelize } = require("../../models");
+const {favorite_book, favorite_book_statistics, member ,book, book_detail, review_statistics, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -85,27 +85,44 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                 member_id : member_id,
             },
             attributes : [
+                "id",
                 [sequelize.literal("book.title"), "title"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("`book->author`.nickname"),"author_nickname"],
+
+                [sequelize.literal("SUM(`book->review_statistics`.score_amount) / SUM(`book->review_statistics`.person_number)"),"review_score"],
             ],
             include : [
                 {
                     model : book,
                     as : "book",
                     attributes: [
+                        "title",
+                        "price",
                     ],
+
                     include: [
                         {
                             model: member,
                             as : "author",
                             attributes: [
+                                "nickname",
+                            ],
+                        },
+                        {
+                            model: review_statistics,
+                            as : "review_statistics",
+                            attributes : [
+                                "score_amount",
+                                "person_number",
                             ],
                         },
                     ]
                 }
-            ]
+            ],
+            group: "book.id"
         });
+
         if(favoriteBookList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("no content");
         }

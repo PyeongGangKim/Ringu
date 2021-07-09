@@ -28,6 +28,7 @@ module.exports = {
             verify_nickname:  "/member/nickname/duplicate",
             password:         "/member/password",
             passwordCheck:    "/member/password/check",
+            upload_profile:   "/member/upload_profile",
         },
         cart: {
             list:               "/cart",
@@ -38,8 +39,11 @@ module.exports = {
         },
 
         book: {
+            get:                "/book/",
             list:               "/book",
-            dowload:            "/book/download"
+            dowload:            "/book/download",
+            getByDetail:        "/book/detail/",
+
         },
         author: {
             get:                "/author/",
@@ -55,7 +59,11 @@ module.exports = {
             },
         },
         review: {
-            getByMember:        "/review/member",
+            getReivewList:      "/review",
+            getByMember:        "/review/member/",
+            getByAuthor:        "/review/author/",
+            getByBook:          "/review/book/",
+            register:           "/review",
         }
     },
     service : {
@@ -71,7 +79,7 @@ module.exports = {
             fav_book            : "/favorite/book",
             auth                : "/auth",
         },
-        author                  : "/author",
+        author                  : "/author/",
         register : {
             author      : "/register/author",
         },
@@ -91,5 +99,6 @@ module.exports = {
             google      : "/auth/callback/google",
         },
         search          : "/search",
+        review          : "/review/",
     }
 };

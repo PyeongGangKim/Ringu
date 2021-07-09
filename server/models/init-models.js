@@ -6,7 +6,7 @@ var _cart = require("./cart");
 var _category = require("./category");
 var _favorite_author = require("./favorite_author");
 var _favorite_book = require("./favorite_book");
-let _favorite_book_statistics = require("./favorite_book_statistics");
+var _favorite_book_statistics = require("./favorite_book_statistics");
 var _identification = require("./identification");
 var _member = require("./member");
 var _notification = require("./notification");
@@ -23,7 +23,7 @@ function initModels(sequelize) {
   var category = _category(sequelize, DataTypes);
   var favorite_author = _favorite_author(sequelize, DataTypes);
   var favorite_book = _favorite_book(sequelize, DataTypes);
-  let favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
+  var favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
   var identification = _identification(sequelize, DataTypes);
   var member = _member(sequelize, DataTypes);
   var notification = _notification(sequelize, DataTypes);
@@ -38,6 +38,10 @@ function initModels(sequelize) {
   book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
   favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "book_id"});
+  favorite_book_statistics.belongsTo(book, { as: "book", foreignKey: "book_id"});
+  book.hasMany(favorite_book_statistics, { as: "favorite_book_statistics", foreignKey: "book_id"});
+  review_statistics.belongsTo(book, { as: "book", foreignKey: "book_id"});
+  book.hasMany(review_statistics, { as: "review_statistics", foreignKey: "book_id"});
   cart.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
   book_detail.hasMany(cart, { as: "carts", foreignKey: "book_detail_id"});
   purchase.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
@@ -66,8 +70,8 @@ function initModels(sequelize) {
   member.hasMany(purchase, { as: "purchases", foreignKey: "member_id"});
   review.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(review, { as: "reviews", foreignKey: "member_id"});
-  favorite_book_statistics.belongsTo(book, {as : "book", foreignKey: "book_id"});
-  book.hasOne(favorite_book_statistics, {as: "favorite_book_statistics", foreignKey: "book_id"});
+  review_statistics.belongsTo(member, { as: "author", foreignKey: "author_id"});
+  member.hasMany(review_statistics, { as: "review_statistics", foreignKey: "author_id"});
 
   return {
     author,
@@ -77,6 +81,7 @@ function initModels(sequelize) {
     category,
     favorite_author,
     favorite_book,
+    favorite_book_statistics,
     identification,
     member,
     notification,
@@ -84,7 +89,6 @@ function initModels(sequelize) {
     review,
     review_statistics,
     withdrawal,
-    favorite_book_statistics,
   };
 }
 module.exports = initModels;

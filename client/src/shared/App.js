@@ -25,7 +25,7 @@ class App extends Component {
                 <Route path="/favorite/author" component={FavAuthorPage} />{}
                 <Route path="/register/author" component={AuthorRegister} />{}
                 <Route path="/author" component={AuthorPage} />{}
-                <Route path="/book" component={BookPage} />
+                <Route path="/book/:book" component={BookPage} />
                 <Route path="/register" component={RegisterPage} /> {}
                 <Route path="/complete" component={BuyCompletePage} />{}
                 <Route path="/buy" component={BuyPage} />{}
@@ -35,7 +35,7 @@ class App extends Component {
                 <Route path="/signup" component={SignupPage} />{}
                 <Route path="/signup-step" component={SignupPage} />{}
                 <Route path="/welcome" component={SignupPage} />{}
-                <Route path="/review" component={ReviewPage} />{}
+                <Route path="/review/:book_detail" component={ReviewPage} />{}
                 <Route component={NotFound} />
             </Switch>
         );

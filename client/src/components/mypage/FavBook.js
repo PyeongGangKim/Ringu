@@ -35,34 +35,19 @@ class FavBook extends Component {
         var state = this.state;
 
         const res = await API.sendGet(URL.api.favorite.book.list)
-        var favoriteList = res.data.favoriteBookList
         console.log(res)
+        if(res.status === 200) {
+            var favoriteList = res.data.favoriteBookList
+            state.data.favoriteList = favoriteList
 
-        /*for(var i=0; i<favoriteList.length; i++) {
-            favoriteList[i].book = {}
-
-            var book;
-
-            if(favoriteList[i].type === 1) {
-                book = await API.sendGet(URL.api.book.serialization + favoriteList[i].serialization_book_id)
-                favoriteList[i].book = book.data.serializationBook;
-            } else {
-                book = await API.sendGet(URL.api.book.singlePublished + favoriteList[i].single_published_book_id)
-                favoriteList[i].book = book.data.singlePublishedBook;
-            }
+            this.setState(state)
+        }
 
 
-
-            const author = await API.sendGet(URL.api.author.get + favoriteList[i].book.author_id)
-            favoriteList[i].author = author.data.result;
-        }*/
-        console.log()
-        state.data.favoriteList = favoriteList
-
-        this.setState(state)
     }
 
     handleDelete = async(id) => {
+        console.log(id)
         var state = this.state
         const res = await API.sendDelete(URL.api.favorite.book.delete + id)
 
@@ -91,7 +76,6 @@ class FavBook extends Component {
                         <ul>
                             {
                                 favoriteList.map(item => {
-
                                     return (
                                         <li key={item.id} className="book-box">
                                             <div className="thumbnail-box">
@@ -112,7 +96,7 @@ class FavBook extends Component {
                                                     </div>
                                                     <div className="review-info">
                                                         <span className="star"> ★ </span>
-                                                        <span> {/*item.book.review_score ? item.book.review_score : 0*/} </span>
+                                                        <span> {item.review_score ? parseFloat(item.review_score).toFixed(1) : "0.0"} </span>
                                                     </div>
                                                 </div>
                                             </div>

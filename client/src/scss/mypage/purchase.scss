@@ -16,7 +16,7 @@
 
         .label {
             font-size: 15px;
-            font-weight: 300;
+            font-weight: 400;
         }
         .value {
             font-size: 15px;
@@ -80,6 +80,17 @@
                 margin: 0;
                 padding-right: 20px;
             }
+
+            .subtitle {
+                color: var(--lightgray);
+                font-weight: 400;
+                font-size: 14px;
+                overflow:hidden;
+                text-overflow: ellipsis;
+                margin: 0;
+                padding-right: 20px;
+            }
+
             .review-point {
                 position:relative;
                 font-size: 14px;

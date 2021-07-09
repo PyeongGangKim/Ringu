@@ -5,7 +5,8 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
-const {book_detail, sequelize, member, purchase, book, Sequelize : {Op}} = require("../../models");
+const {book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
+const {imageLoad} = require("../../middlewares/third_party/aws.js");
 
 
 
@@ -83,12 +84,19 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
             attributes: [
                 "id",
                 "created_date_time",
-                "price",
-                "book_detail_id",
-                [sequelize.literal("book_detail.title"), "title"],
-                [sequelize.literal("`book_detail->book`.type"), "type"],
+                [sequelize.literal("book_detail.id"), "book_detail_id"],
+                [sequelize.literal("book_detail.title"), "subtitle"],
                 [sequelize.literal("book_detail.file"), "file"],
+
+                [sequelize.literal("`book_detail->book`.title"), "title"],
+                [sequelize.literal("`book_detail->book`.price"), "price"],
+                [sequelize.literal("`book_detail->book`.type"), "type"],
+
                 [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
+
+                [sequelize.literal("`book_detail->reviews`.id"), "review"],
+                [sequelize.literal("`book_detail->book`.img"), "img"],
+                [sequelize.literal("`book_detail->review_statistics`.score_amount / `book_detail->review_statistics`.person_number"),"review_score"],
             ],
             where: {
                 member_id : member_id,
@@ -98,23 +106,56 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                 {
                     model : book_detail,
                     as : 'book_detail',
-                    attributes: [],
+                    attributes: [
+                        /*
+                        "id",
+                        "title",
+                        "file",*/
+                    ],
                     include: [
                         {
                             model: book,
                             as : 'book',
-                            attributes : [],
+                            attributes : [
+                                /*
+                                "title",
+                                "price",
+                                "type",*/
+                            ],
                             include : [
                                 {
                                     model: member,
                                     as: 'author',
-                                    attributes: [],
+                                    attributes: [
+                                        /*
+                                        "nickname",*/
+                                    ],
                                 }
                             ]
+                        },
+                        {   //review가 필요한가?
+                            model: review,
+                            as : "reviews",
+                            attributes: [
+                                /*
+                                "id",*/
+                            ],
+                            required: false,
+                            where: {
+                                member_id: member_id,
+                            },
+                        },
+                        {
+                            model: review_statistics,
+                            as : "review_statistics",
+                            attributes : [
+                                /*
+                                "score_amount",
+                                "person_number",*/
+                            ],
                         }
                     ]
                 },
-
             ]
         });
 
@@ -122,6 +163,11 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
+            for(let i = 0 ; i < purchaseList.length ; i++){
+                console.log(purchaseList[i].dataValues.img);
+                if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
+                purchaseList[i].dataValues.img = await imageLoad(purchaseList[i].dataValues.img);
+            }
             res.status(StatusCodes.OK).json({
                 purchaseList : purchaseList,
             });

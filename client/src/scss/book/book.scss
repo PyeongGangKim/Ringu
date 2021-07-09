@@ -1,20 +1,65 @@
-.book {
-    text-align: left;
+#book {
+    .book-content {
+        .book-info {
+            width: 600px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+            .book-thumbnail-box {
+                position: relative;
+                overflow: hidden;
+                width: 100%;
+                height: 400px;
+                border-radius: 20px;
+
+                img {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    width: 100%;
+                    margin: auto;
+                }
+            }
+
+            .book-detail-box{
+                margin-top: 10px;
+
+                .book-detail {
+                    color: var(--color-1);
+                    font-size: 12px;
+                    margin-right: 30px;
+                    font-weight: 500;
+                }
+
+            }
+
+            .book-title {
+                margin-top: 10px;
+                font-size: 24px;
+                font-weight: 700;
+            }
+        }
+    }
+
     .book-nav{
         border-bottom: 2px solid #ccc;
-    }
-    .navitem {
-        display:inline-block;
-        padding: 15px 25px;
-        font-size: 16px;
+
+        .navitem {
+            display:inline-block;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .navitem.active{
+            font-weight: 700;
+            border-bottom: 2px solid var(--color-1);
+        }
     }
 
-    .navitem.active{
-        font-weight: 700;
-        border-bottom: 2px solid var(--color-1);
-    }
 
-    .content {
+    .book-content {
         a {
             cursor: default;
         }
@@ -30,11 +75,12 @@
                 width: 150px;
                 padding: 5px 15px;
                 margin-right: 80px;
-                font-size: 20px;
+                font-size: 18px;
+                font-weight: 500;
             }
             .content-value {
                 width: 100%;
-                border-bottom: 1px solid #bbb;
+                border-bottom: 2px solid #bbb;
             }
 
             .content-value.book {
@@ -43,10 +89,100 @@
 
             .content-value.review {
                 border: 0px;
+
+                em {
+                    display:inline-block;
+                    width: 25px;
+                    height: 25px;
+                    margin-right: 15px;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+
+                    &.off {
+                        background-image: url(/star-off.png);
+                    }
+
+                    &.on {
+                        background-image: url(/star.png);
+                    }
+                }
+
+                .review-header {
+                    background-color:var(--color-4);
+                    border-radius:8px;
+                    width:100%;
+                    padding: 30px;
+                    text-align: center;
+                    display:flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    .review-score {
+                        font-size: 40px;
+                        font-weight: 700;
+                        margin-right: 20px;
+                    }
+
+                    .review-star {
+                        font-size: 16px;
+                        font-weight: 500;
+                        text-align: left;
+                    }
+                }
+
+                .review-box {
+                    .review-item {
+                        border-bottom: 1px solid #ccc;
+                        padding: 15px 0 25px 0;
+                        
+                        em {
+                            width: 10px;
+                            height: 10px;
+                            margin-right: 5px;
+                        }
+                    }
+                }
+
+                .btn-box {
+                    text-align:center;
+                    margin: 30px 0;
+
+                    button {
+                        font-weight: 700;
+                        font-size: 14px;
+                    }
+                }
             }
 
             .content-value.intro {
                 padding : 15px;
+            }
+
+            .content-value.author {
+                .author-box {
+                    display: flex;
+
+                    .author-profile {
+                        .author-thumbnail-box {
+
+                        }
+
+                        .btn {
+                            font-size: 12px;
+                            margin: 0 auto;
+                            padding: 4px;
+                            margin-top: 5px;
+                            width: 70px;
+                        }
+                    }
+
+                    .author-description {
+                        display:inline-block;
+                        vertical-align: top;
+                        margin-left:20px;
+                    }
+                }
             }
 
             .book-list {

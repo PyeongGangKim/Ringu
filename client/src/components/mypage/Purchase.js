@@ -54,6 +54,7 @@ class Purchase extends Component {
             const author = await API.sendGet(URL.api.author.get + purchaseList[i].book.author_id)
             purchaseList[i].author = author.data.result;
         }*/
+        console.log(purchaseList)
 
         state.data.purchaseList = purchaseList
         console.log(purchaseList);
@@ -90,12 +91,19 @@ class Purchase extends Component {
                                     <div className="purchase-box">
                                         <div className="book-info">
                                             <div className="title-wrap">
-                                                <h3 className="title">{item.book_title}</h3>
-                                                <span className="review-point"><em>star</em>{/*item.book.review_score ? item.book.review_score : 0*/}</span>
+                                                <h3 className="title">{item.title}</h3>
+                                                <span className="review-point"><em>star</em>{item.review_score ? parseFloat(item.review_score).toFixed(1) : 0}</span>
                                             </div>
+                                            {
+                                                (item.type === 1) &&
+                                                <div className="title-wrap">
+                                                    <h3 className="subtitle">{item.title}</h3>
+                                                </div>
+                                            }
+
                                             <div className="info">
                                                 <span className="label">작가</span>
-                                                <strong className="value">{item.author_name}</strong>
+                                                <strong className="value">{item.author}</strong>
 
                                                 <span className="label">출간방식</span>
                                                 <strong className="value">{item.type === 1 ? "연재본" : "단행본"}</strong>
@@ -108,9 +116,20 @@ class Purchase extends Component {
                                                 <th className="label">구매가격</th>
                                                 <th className="label">구매일</th>
                                                 <td rowSpan="2">
-                                                    <button className="btn btn-rounded btn-color-2" >
-                                                        리뷰쓰기
-                                                    </button>
+
+                                                    {
+                                                        item.review ?
+                                                        <button disabled className="btn btn-rounded btn-color-2">
+                                                            리뷰완료
+                                                        </button>
+                                                        :
+                                                        <Link to={URL.service.review + item.book_detail_id}>
+                                                            <button className="btn btn-rounded btn-color-2">
+                                                                리뷰쓰기
+                                                            </button>
+                                                        </Link>
+                                                    }
+
                                                 </td>
                                             </tr>
 

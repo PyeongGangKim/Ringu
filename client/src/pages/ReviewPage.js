@@ -6,6 +6,9 @@ import Header from '../components/common/Header';
 class ReviewPage extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            book_detail: this.props.match.params.book_detail,
+        }
     }
 
     render() {
@@ -13,7 +16,7 @@ class ReviewPage extends Component {
             <Fragment>
                 <Header></Header>
                 <div id="wrap">
-                    <Review/>
+                    <Review book_detail={this.state.book_detail}/>
                 </div>
             </Fragment>
         )

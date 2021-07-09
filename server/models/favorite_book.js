@@ -15,6 +15,14 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
+    book_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'book',
+        key: 'id'
+      }
+    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -24,14 +32,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
-    },
-    book_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'book',
-        key: 'id'
-      }
     }
   }, {
     sequelize,
