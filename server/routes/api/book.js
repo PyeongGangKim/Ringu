@@ -339,7 +339,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
 });
 router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
     let page_number = req.body.page_number;
-    let file = req.files.file[0].location;
+    let file = req.files.file[0].key;
     let book_id = req.body.book_id;
     let title = req.body.title;
     let round = req.body.round;
