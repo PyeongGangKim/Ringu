@@ -4,7 +4,7 @@
     <div class="panel-header">
         <h1>책(조회: <%=total_count%>)</h1>
 
-        <form method="GET" action="/admin/book/serialization/" class="panel-options input-inline">
+        <form method="GET" action="/admin/book/serialization/cover" class="panel-options input-inline">
             <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
             <input type="text" class="input" name="title" value="<%=fields.name%>" placeholder="책 이름"/>
             <input type="text" class="input" name="price" value="<%=fields.email%>" placeholder="가격 이하"/>
@@ -36,18 +36,18 @@
                 </tr>
             </thead>
             <tbody>
-                <% if (!cover_list.length) { %>
+                <% if (!book_list.length) { %>
                     <tr>
                         <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
                     </tr>
                 <% } %>
-                <%  cover_list.forEach(function(cover, index) { %>
+                <%  book_list.forEach(function(cover, index) { %>
                     <tr>
                         <td class="text-center">
                             <%=cover.id%>
                         </td>
                         <td class="text-center">
-                            <%=cover.member.name%>
+                            <%=cover.author.nickname%>
                         </td>
                         <td class="text-center">
                             <%=cover.category.name%>

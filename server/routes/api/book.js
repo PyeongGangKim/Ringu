@@ -287,7 +287,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     //book table 에 넣는 attribute
     let price = req.body.price;
     let content = req.body.content;
-    let book_description = req.body.book_description;
+    let description = req.body.description;
     let author_id = req.body.author_id;
     let category_id = req.body.category_id;
     let title = req.body.title;
@@ -296,6 +296,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     let serialization_day = req.body.serialization_day;
     let img = req.files.img[0].key;
     let preview = (req.files.preview == null) ? null : req.files.preview[0].key;
+
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
@@ -306,7 +307,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             title: title,
             price: price,
             content: content,
-            book_description: book_description,
+            description: description,
             author_id : author_id,
             img : img,
             category_id : category_id,

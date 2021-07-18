@@ -4,7 +4,7 @@
     <div class="panel-header">
         <h1>단행본(조회: <%=total_count%>)</h1>
 
-        <form method="GET" action="/admin/book/singlePublished" class="panel-options input-inline">
+        <form method="GET" action="/admin/book/singlePublished/" class="panel-options input-inline">
             <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
             <input type="text" class="input" name="title" value="<%=fields.name%>" placeholder="책 이름"/>
             <input type="text" class="input" name="price" value="<%=fields.email%>" placeholder="가격 이하"/>
@@ -30,7 +30,6 @@
                     <th style="width: 60px;">작가 이름</th>
                     <th style="width: 60px;">카테고리</th>
                     <th style="width: 120px;">책 이름</th>
-                    <th>파일</th>
                     <th style="width: 120px;">가격</th>
                     <th style="width: 120px;">발간 여부</th>
                     <th style="width: 120px;"></th>
@@ -49,22 +48,19 @@
                             <%=singlePublishedBook.id%>
                         </td>
                         <td class="text-center">
-                            <%=singlePublishedBook.member.name%>
+                            <%=singlePublishedBook.author.nickname%>
                         </td>
                         <td class="text-center">
                             <%=singlePublishedBook.category.name%>
                         </td>
                         <td class="text-center">
-                            <%=singlePublishedBook.book.title%>
-                        </td>
-                        <td class="text-left">
-                            <%=singlePublishedBook.book.file%>
+                            <%=singlePublishedBook.title%>  
                         </td>
                         <td class="text-center">
                             <%=singlePublishedBook.price%>
                         </td>
                         <td class="text-center">
-                            <% if (singlePublishedBook.book.is_approved) { %>
+                            <% if (singlePublishedBook.book_details[0].is_approved) { %>
                                 발간 완료
                             <% } else { %>
                                 발간 전

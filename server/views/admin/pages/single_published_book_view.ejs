@@ -15,34 +15,24 @@
 	   		<div class="col-2">
                 <div class="row">
                     <label>title</label>
-                    <div class="input"><%=book.book.title%>&nbsp;</div>
+                    <div class="input"><%=book.title%>&nbsp;</div>
                 </div>
                 <br />
                 <div class="row-col">
                     <div class="col-2">
                         <label>작가</label>
-                        <div class="input"><%=book.member.name%></div>
+                        <div class="input"><%=book.author%></div>
                     </div>
                     <!--/.col-2-->
                     <div class="col-2">
                         <label>카테고리</label>
-                        <div class="input"><%=book.category.name%></div>
+                        <div class="input"><%=book.category%></div>
                      </div>
                 </div>
                 <br />
                 <div class="row">
-                    <label>파일 경로</label>
-                    <div class="input"><%=book.book.file%>&nbsp;</div>
-                </div>
-                <br />
-                <div class="row">
                     <label>책 설명</label>
-                    <div class="input"><%=book.book_description%></div>
-                </div>
-                <br />
-                <div class="row">
-                    <label>작가 설명</label>
-                    <div class="input"><%=book.author_description%></div>
+                    <div class="input"><%=book.description%></div>
                 </div>
                 <br />
                 <div class="row-col">
@@ -73,7 +63,7 @@
         <a href="/admin/book/delete/<%=book["id"]%>" onclick=" return confirm('삭제하시겠습니까?'); ">
             <div class="btn btn-sm btn-danger">삭제</div>
         </a>
-        <a href="/admin/book/approved/<%=book["id"]%>" onclick=" return confirm('발간하시겠습니까?'); ">
+        <a href="/admin/book/approved/<%=book["book_details_id"]%>" onclick=" return confirm('발간하시겠습니까?'); ">
             <div class="btn btn-sm btn-success">발간하기</div>
         </a>
     </div>
