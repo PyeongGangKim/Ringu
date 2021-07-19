@@ -7,7 +7,9 @@ const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 const {book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
 const {imageLoad} = require("../../middlewares/third_party/aws.js");
-
+const {kakaopay} = require("../../config/pay.js");
+const url = require("../../config/url.js");
+const request = require("request");
 
 
 
@@ -32,6 +34,45 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
         console.error(err);
     }
 });
+router.post('/kakaopay', isLoggedIn, async(req, res, next) => {
+    let cid = kakaopay.cid;
+    let partner_order_id = 1;
+    let partner_user_id = req.user.id;
+    let item_name = req.body.item_name;
+    let quantity = req.body.quantity;
+    let amount = req.body.amount;
+    let tax_free_amount = 0;
+    let approval_url = url.home;
+    let cancel_url = url.home;
+    let fail_url = url.home;
+    const options = {
+        uri: "https://kapi.kakao.com/v1/payment/ready",
+        method : "POST",
+        host : "kapi.kakao.com",
+        form : {
+            cid : cid,
+            partner_order_id : partner_order_id,
+            partner_user_id : partner_user_id,
+            item_name : item_name,
+            quantity : quantity,
+            total_amount : amount,
+            tax_free_amount : tax_free_amount,
+            approval_url : approval_url,
+            cancel_url : cancel_url,
+            fail_url: fail_url,
+        },
+        headers: {
+            Authorization: "KakaoAK " + kakaopay.adminkey,
+            //'Content-Type': "application/x-www-form-urlencoded;charset=utf-8"
+        },
+        json: true,
+    };
+    request.post(options, function(err, response, body){
+        //console.log(body);
+        console.log(response.body);
+        console.log(response.statusCode);
+    })
+})
 router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
     
     let member_id = req.body.member_id;
