@@ -39,7 +39,7 @@
                     <tr>
                         <td class="text-center"><%=review.id%></td>
                         <td class="text-center">
-                            <%=review.member%>
+                            <%=review.reviewer%>
                         </td>
                         <td class="text-center">
                             <%=review.book%>
@@ -52,7 +52,7 @@
                         </td>
 
                         <td class="menu">
-                            <a href="/admin/review/view/?id=<%=helper_security.encrypt(review.id)%>">
+                            <a href="/admin/review/view/<%=review.id%>">
                                 <div class="menu-item">
                                     보기
                                 </div>
