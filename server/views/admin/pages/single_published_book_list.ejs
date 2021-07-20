@@ -33,7 +33,8 @@
                     <th style="width: 120px;">가격</th>
                     <th style="width: 120px;">발간 여부</th>
                     <th style="width: 120px;"></th>
-                    <th style="width: 120px;">다운로드</th>
+                    <th style="width: 120px;">파일 다운로드</th>
+                    <th style="width: 120px;">미리보기 다운로드</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,9 +76,17 @@
                             </a>
                         </td>
                         <td class="menu">
-                            <a href="/admin/book/download/<%=singlePublishedBook.id%>">
+                            <a href="/admin/book/download/<%=singlePublishedBook.book_details[0].id%>?type=file">
                                 <div class="menu-item">
-                                    다운로드
+                                    파일 다운로드
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/download/<%=singlePublishedBook.book_details[0].id%>?type=preview">
+                                <div class="menu-item">
+                                    미리보기 다운로드
                                 </div>
                                 <!--/.menu-item-->
                             </a>

@@ -571,6 +571,7 @@ router.get('/download/:bookDetailId', async (req,res,next) => {
     
     
     const book_detail_id = req.params.bookDetailId;
+    const type = req.query.type;
     try{
         const result = await book_detail.findOne({
             where : {
@@ -578,6 +579,7 @@ router.get('/download/:bookDetailId', async (req,res,next) => {
             }
         });
         const url = downloadFile(type, result.file);
+        console.log(url);
         res.redirect(url);
 
     }

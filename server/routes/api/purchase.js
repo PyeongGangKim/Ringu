@@ -68,9 +68,20 @@ router.post('/kakaopay', isLoggedIn, async(req, res, next) => {
         json: true,
     };
     request.post(options, function(err, response, body){
-        //console.log(body);
-        console.log(response.body);
-        console.log(response.statusCode);
+        if(err == null){
+            console.error(err);
+        }
+        else{
+            if(response.statusCode == 200){
+                console.log(response.body.tid); // 저장 필요
+                res.redirect(response.body.next_redirect_pc_url);
+            }
+            else{
+                console.error(response.body);
+            }
+        }
+        
+        
     })
 })
 router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크

@@ -24,7 +24,6 @@
                     <th>구매자</th>
                     <th>제목</th>
                     <th style="width: 130px;">가격</th>
-                    <th style="width: 130px;">종류</th>
                     <th style="width: 180px;">구매일</th>
                 </tr>
             </thead>
@@ -45,9 +44,6 @@
                         </td>
                         <td class="text-center">
                             <%=purchase.price%>
-                        </td>
-                        <td class="text-center">
-
                         </td>
                         <td class="text-center">
                             <%=helper_date.getDateTime(purchase.created_date_time)%>
