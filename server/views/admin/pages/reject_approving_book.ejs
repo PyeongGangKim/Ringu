@@ -1,0 +1,17 @@
+<%- include("../templates/head"); %>
+<div class="row">
+    <div class="col-lg-12">
+        <hr />
+        <h2 id="api_create_book"><%=book.title%> 발간 거절 하기</h2>
+        <form method="POST" action="/admin/book/unapproved/<%=book.id%>" enctype ="multipart/form-data">
+            <div class="form-group">
+                <label>Reason</label>
+                <input type="text" class="form-control" name="description" value="" style="width:600;height:150px;word-break:normal;">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+
+<%- include("../templates/foot"); %>

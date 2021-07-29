@@ -11,8 +11,87 @@ const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/thir
 
 const { book, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
 
+router.get("/book_detail", async (req, res, next) => {
+    //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
+    //book_detail에서, where문으로 is_approved 확인하기.
+    //book join해주고, book안에 category, author 조인 해준다.
+    //근데 nested할 때, where문을 어떻게 쓰느냐가 중요함.
+    checkLogin(req, res, "/admin/book_detail/" + "?is_approved="+ req.query.is_approved);
 
-router.get("/serialization/cover", async (req, res, next) => {//연재본, 단행본 둘다 불러올 때는 해당 api사용.
+    
+    let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
+    let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "DESC";
+    let limit           = ("limit" in req.query && req.query.limit) ? parseInt(req.query.limit) : 10;
+    let page            = ("page" in req.query) ? req.query.page : 1;
+    let offset          = parseInt(limit) * (parseInt(page)-1);
+
+    let fields = {
+        "title"         : ("title" in req.query) ? req.query.title : "",
+        "price"         : ("price" in req.query) ? req.query.price : "",
+        "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
+        "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
+        "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
+        "is_approved"   : req.query.is_approved,
+    }
+
+    try{
+        const {count, rows} = await book_detail.findAndCountAll({
+            where: {
+                [Op.and] : {
+                    is_approved : fields.is_approved,
+                    '$book.price$' : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
+                    '$book.category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
+                    title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
+                    '$book.author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                },
+                status : 1,
+            },
+            limit : limit,
+            offset : offset,
+            order : [
+                [sort_by, sort_direction],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes : ['price','type'],
+                    include : [
+                        {
+                            model : category,
+                            as : "category",
+                            attributes: ['name'],
+                        },
+                        {
+                            model : member,
+                            as : "author",
+                            attributes: ['nickname'],
+                        },
+                    ]
+                }
+                
+            ]
+        });
+        console.log(rows[0].book.author.nickname);
+        let total_count = count;
+        let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
+        console.log(renderingPage);
+        let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/book_detail/" + fields.is_approved, page, limit, total_count, fields);
+        res.render(renderingPage , {
+            "fields"      : fields,
+            "book_list"       : rows,
+            "total_count"       : total_count,
+            "pagination_html"   : pagination_html,
+            "limit"             : limit,
+        });
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+
+router.get("/serialization/cover", async (req, res, next) => {//연재본 커버만 보여주기.
     
     checkLogin(req, res, "/admin/book/serialization/" );
 
@@ -538,6 +617,40 @@ router.get("/finishedSerializing/:serializationId", async (req, res, next) => {
                 id: id,
             }
         });
+    }
+    catch(err){
+        console.error(err);
+    }
+});
+router.get("/unapproved/reason", async (req, res, next) => {
+    checkLogin(req, res, "/unapproved/reason");
+    const book_detail_id = req.query.book_detail_id;
+    try{
+        const rejecting_book_detail = await book_detail.findOne({
+            where: {
+                id : book_detail_id
+            }
+        });
+        res.render("admin/pages/reject_approving_book",{
+            "book"                  : rejecting_book_detail,
+            "helper_date"           : helper_date,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
+});
+router.post("/unapproved/:bookDetailId", async(req, res, next) => {
+    // book_detail model에 is_approved 를 -1 로 바꿔준다.
+    // 그리고 notification 해줘야 된다.
+    // notification 
+    checkLogin(req, res, "/unapproved/" + req.params.bookDetailId);
+    const book_detail_id = req.params.bookDetailId;
+    const reason = req.body.reason;
+
+    try{
+        // const result = 
+        //const 
     }
     catch(err){
         console.error(err);

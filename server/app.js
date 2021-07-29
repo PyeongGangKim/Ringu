@@ -34,15 +34,16 @@ var admin_authorRouter = require('./routes/admin/author');
 var api_authRouter = require('./routes/api/auth');
 var api_bookRouter = require('./routes/api/book');
 var api_memberRouter = require('./routes/api/member');
-var api_favoriteAuthorRouter = require('./routes/api/favorite_author');
-var api_favoriteBookRouter = require('./routes/api/favorite_book');
-var api_purchaseRouter = require('./routes/api/purchase');
+let api_favoriteAuthorRouter = require('./routes/api/favorite_author');
+let api_favoriteBookRouter = require('./routes/api/favorite_book');
+let api_purchaseRouter = require('./routes/api/purchase');
 let api_cartRouter = require('./routes/api/cart');
-var api_categoryRouter = require('./routes/api/category');
-var api_authorRouter = require('./routes/api/author');
+let api_categoryRouter = require('./routes/api/category');
+let api_authorRouter = require('./routes/api/author');
 let api_reviewRouter = require('./routes/api/review');
 let api_withdrawalRouter = require('./routes/api/withdrawal');
 let api_notificationRouter = require('./routes/api/notification');
+let api_payRouter = require('./routes/api/pay');
 
 let app = express();
 
@@ -103,6 +104,7 @@ app.use('/api/author', api_authorRouter);
 app.use('/api/review', api_reviewRouter);
 app.use('/api/withdrawal', api_withdrawalRouter);
 app.use('/api/notification', api_notificationRouter);
+app.use('/api/pay',api_payRouter);
 //app.use('/api/upload', api_uploadRouter);
 
 
