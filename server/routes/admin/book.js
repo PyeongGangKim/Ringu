@@ -9,7 +9,8 @@ const { checkLogin } = require("../../helper/activity");
 
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
-const { book, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
+const { book, notiCount, notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
+const { StatusCodes } = require("http-status-codes");
 
 router.get("/book_detail", async (req, res, next) => {
     //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
@@ -643,14 +644,75 @@ router.get("/unapproved/reason", async (req, res, next) => {
 router.post("/unapproved/:bookDetailId", async(req, res, next) => {
     // book_detail model에 is_approved 를 -1 로 바꿔준다.
     // 그리고 notification 해줘야 된다.
-    // notification 
-    checkLogin(req, res, "/unapproved/" + req.params.bookDetailId);
+    // notification에 넣어줄 때, type을 출간 거절로 넣어주고
+    //checkLogin(req, res, "/unapproved/" + req.params.bookDetailId);
     const book_detail_id = req.params.bookDetailId;
     const reason = req.body.reason;
-
+    const t = await sequelize.transaction();
     try{
-        // const result = 
-        //const 
+        await book_detail.update({
+            is_approved : -1
+        },
+        {
+            where: {
+                id : book_detail_id,
+            }
+        });
+        const getMemberByBook = await book_detail.findOne({//해당 책에 작가의 member_id를 알아와야됨.
+            where: {
+                id: book_detail_id,
+            },
+            include: [
+                {
+                    model: book,
+                    as: 'book',
+                    include : [
+                        {
+                            model: member,
+                            as : 'author',
+                            attributes: ['id'],
+                        }
+                    ]
+                }
+            ]
+        });
+        let notiMember = getMemberByBook.book.author.id;
+        let title = getMemberByBook.title + "이 출간 거부 됐습니다."
+        try{
+            const noti = await notification.create({
+                title: title,
+                content: reason,
+                member_id : notiMember,
+                type: 1, // 책 출간에 관한 건 type 1
+            },{transaction: t});
+
+            const [notiC, created] = await notiCount.findOrCreate({
+                where: {
+                    member_id : notiMember,
+                },
+                defaults: {
+                    member_id: notiMember,
+                    count: 0,
+                },
+                transaction : t,
+            });
+            await notiC.update({
+                count : notiC.count + 1,
+            },
+            {
+                where:{
+                    id : notiC.id,
+                },
+                transaction: t
+            });
+            await t.commit();
+            res.redirect("/admin/book/book_detail?is_approved=0");
+            
+        }
+        catch(err){
+            await t.rollback();
+            console.error(err);
+        }
     }
     catch(err){
         console.error(err);
