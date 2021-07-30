@@ -1,36 +1,38 @@
-var DataTypes = require("sequelize").DataTypes;
-var _author = require("./author");
-var _book = require("./book");
-var _book_detail = require("./book_detail");
-var _cart = require("./cart");
-var _category = require("./category");
-var _favorite_author = require("./favorite_author");
-var _favorite_book = require("./favorite_book");
-var _favorite_book_statistics = require("./favorite_book_statistics");
-var _identification = require("./identification");
-var _member = require("./member");
-var _notification = require("./notification");
-var _purchase = require("./purchase");
-var _review = require("./review");
-var _review_statistics = require("./review_statistics");
-var _withdrawal = require("./withdrawal");
+let DataTypes = require("sequelize").DataTypes;
+let _author = require("./author");
+let _book = require("./book");
+let _book_detail = require("./book_detail");
+let _cart = require("./cart");
+let _category = require("./category");
+let _favorite_author = require("./favorite_author");
+let _favorite_book = require("./favorite_book");
+let _favorite_book_statistics = require("./favorite_book_statistics");
+let _identification = require("./identification");
+let _member = require("./member");
+let _notification = require("./notification");
+let _purchase = require("./purchase");
+let _review = require("./review");
+let _review_statistics = require("./review_statistics");
+let _withdrawal = require("./withdrawal");
+let _notiCount = require("./notiCount");
 
 function initModels(sequelize) {
-  var author = _author(sequelize, DataTypes);
-  var book = _book(sequelize, DataTypes);
-  var book_detail = _book_detail(sequelize, DataTypes);
-  var cart = _cart(sequelize, DataTypes);
-  var category = _category(sequelize, DataTypes);
-  var favorite_author = _favorite_author(sequelize, DataTypes);
-  var favorite_book = _favorite_book(sequelize, DataTypes);
-  var favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
-  var identification = _identification(sequelize, DataTypes);
-  var member = _member(sequelize, DataTypes);
-  var notification = _notification(sequelize, DataTypes);
-  var purchase = _purchase(sequelize, DataTypes);
-  var review = _review(sequelize, DataTypes);
-  var review_statistics = _review_statistics(sequelize, DataTypes);
-  var withdrawal = _withdrawal(sequelize, DataTypes);
+  let author = _author(sequelize, DataTypes);
+  let book = _book(sequelize, DataTypes);
+  let book_detail = _book_detail(sequelize, DataTypes);
+  let cart = _cart(sequelize, DataTypes);
+  let category = _category(sequelize, DataTypes);
+  let favorite_author = _favorite_author(sequelize, DataTypes);
+  let favorite_book = _favorite_book(sequelize, DataTypes);
+  let favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
+  let identification = _identification(sequelize, DataTypes);
+  let member = _member(sequelize, DataTypes);
+  let notification = _notification(sequelize, DataTypes);
+  let purchase = _purchase(sequelize, DataTypes);
+  let review = _review(sequelize, DataTypes);
+  let review_statistics = _review_statistics(sequelize, DataTypes);
+  let withdrawal = _withdrawal(sequelize, DataTypes);
+  let notiCount = _notiCount(sequelize, DataTypes);
 
   withdrawal.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
@@ -72,6 +74,8 @@ function initModels(sequelize) {
   member.hasMany(review, { as: "reviews", foreignKey: "member_id"});
   review_statistics.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(review_statistics, { as: "review_statistics", foreignKey: "author_id"});
+  notiCount.belongsTo(member, {as: "member", foreignKey: "member_id"});
+  member.hasOne(notiCount, {as: "notiCount", foreignKey: "member_id"});
 
   return {
     author,
@@ -89,6 +93,7 @@ function initModels(sequelize) {
     review,
     review_statistics,
     withdrawal,
+    notiCount,
   };
 }
 module.exports = initModels;
