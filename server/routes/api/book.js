@@ -87,7 +87,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         });
         if(bookList.length == 0){
             console.log(bookList);
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
             for(let i = 0 ; i < bookList.length ; i++){

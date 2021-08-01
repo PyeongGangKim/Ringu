@@ -17,7 +17,7 @@ router.get("/book_detail", async (req, res, next) => {
     //book_detail에서, where문으로 is_approved 확인하기.
     //book join해주고, book안에 category, author 조인 해준다.
     //근데 nested할 때, where문을 어떻게 쓰느냐가 중요함.
-    checkLogin(req, res, "/admin/book_detail/" + "?is_approved="+ req.query.is_approved);
+    checkLogin(req, res, "/admin/book/book_detail/" + "?is_approved="+ req.query.is_approved);
 
     
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
@@ -696,7 +696,7 @@ router.post("/unapproved/:bookDetailId", async(req, res, next) => {
                 },
                 transaction : t,
             });
-            await notiC.update({
+            await notiCount.update({
                 count : notiC.count + 1,
             },
             {
