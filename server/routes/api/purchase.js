@@ -300,15 +300,12 @@ router.delete('/:purchaseId', isLoggedIn, async (req, res, next) => { // 필요�
                 id : id,
             }
         })
-        res.json({status: "ok"});
+        res.status(StatusCodes.OK);
 
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to cancel purchasing"
-        });
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 
