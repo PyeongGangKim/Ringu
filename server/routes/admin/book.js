@@ -9,7 +9,7 @@ const { checkLogin } = require("../../helper/activity");
 
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
-const { book, notiCount, notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
+const { book, notiCount, favorite_author ,notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 
 router.get("/book_detail", async (req, res, next) => {
@@ -32,7 +32,6 @@ router.get("/book_detail", async (req, res, next) => {
         "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
         "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
-        "is_approved"   : req.query.is_approved,
     }
 
     try{
@@ -444,9 +443,6 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
                 }
             ]
         });
-        for(let i = 0 ; i < rows.length ; i++){
-            console.log(rows[i].book_details);
-        }
         var total_count = count;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/singlePublished", page, limit, total_count, fields);
         res.render("admin/pages/single_published_book_list", {
@@ -720,7 +716,7 @@ router.post("/unapproved/:bookDetailId", async(req, res, next) => {
 });
 
 router.get("/approved/:bookDetailId", async (req,res,next) => {
-
+    // approved로 book의 author를 얻어 내서 해당 author를 팔로우 한 친구들한테만 Notify하기
     checkLogin(req, res, "/admin/member/");
 
 
@@ -734,7 +730,87 @@ router.get("/approved/:bookDetailId", async (req,res,next) => {
                 id : id
             } 
         });
-        res.redirect("/admin/member/");
+    }
+    catch(err){
+        console.log(err);
+    }
+    try{
+        let approved_book = await book_detail.findOne({
+            where: {
+                id: id
+            },
+            include : [
+                {
+                    model: book,
+                    as : "book",
+                    include : [
+                        {
+                            model: member,
+                            as : "author",
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // 해당 작가를 follow 하고 있는 모든 데이터 얻어내기
+        let followed_author_id =  approved_book.book.author_id;
+        let followed_author_name = approved_book.book.author.nickname;
+        let book_title = approved_book.title;
+        let following_members = await favorite_author.findAll({
+            attributes: [
+                "member_id",
+            ],
+            where: {
+                author_id : followed_author_id,
+                status: 1,
+            }
+        });
+        const t = await sequelize.transaction();
+        let noti_title = followed_author_name + "작가님의 " + book_title + " 책이 출간되었습니다.";
+        let noti_content = "지금 바로 확인해 보세요!";
+        let insert_noti = [];
+        for(let following_member of following_members){
+            insert_noti.push({
+                member_id : following_member.member_id,
+                content: noti_content,
+                title: noti_title,
+                type : 4,
+            })
+        }
+        try{
+            await notification.bulkCreate(insert_noti,{
+                transaction: t,
+            });
+            for(let following_member of following_members){
+                let [notiC, created] = await notiCount.findOrCreate({
+                    where: {
+                        member_id: following_member.member_id,
+                    },
+                    defaults: {
+                        member_id: following_member.member_id,
+                        count: 0,
+                    },
+                    transaction: t,
+                });
+                await notiCount.update({
+                    count : notiC.count + 1,
+                },
+                {
+                    where : {
+                        id : notiC.id,
+                    },
+                    transaction: t,
+                });
+            }
+            await t.commit();
+            res.redirect("/admin/member/");
+        }
+        catch(err){
+            await t.rollback();
+            console.error(err);
+        }
+        
     }
     catch(err){
         console.log(err);

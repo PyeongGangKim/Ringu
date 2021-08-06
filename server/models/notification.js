@@ -23,7 +23,6 @@ module.exports = function(sequelize, DataTypes) {
     read_date_time: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: 0
     },
     created_date_time: {
       type: DataTypes.DATE,
