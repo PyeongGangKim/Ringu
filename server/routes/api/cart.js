@@ -55,10 +55,10 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
-            for(let i = 0 ; i < cartList.length ; i++){
-                console.log(cartList[i].dataValues.img);
-                if(cartList[i].dataValues.img== null || cartList[i].dataValues.img[0] == 'h') continue;
-                cartList[i].dataValues.img = await imageLoad(cartList[i].dataValues.img);
+            for(let aCart of cartList){
+                console.log(aCart.dataValues.img);
+                if(aCart.dataValues.img== null || aCart.dataValues.img[0] == 'h') continue;
+                aCart.dataValues.img = await imageLoad(aCart.dataValues.img);
             }
             res.status(StatusCodes.OK).json({
                 cartList : cartList,
@@ -94,15 +94,11 @@ router.delete('/:cartId', isLoggedIn, async (req, res, next) => { // 필요없�
                 id : id,
             }
         })
-        res.json({status: "ok"});
+        res.status(StatusCodes.OK);
 
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to cancel purchasing"
-        });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 
