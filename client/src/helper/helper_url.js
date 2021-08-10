@@ -29,6 +29,7 @@ module.exports = {
             password:         "/member/password",
             passwordCheck:    "/member/password/check",
             upload_profile:   "/member/upload_profile",
+            profile:          "/member/profile/",
         },
         cart: {
             list:               "/cart",
@@ -42,8 +43,12 @@ module.exports = {
             get:                "/book/",
             list:               "/book",
             dowload:            "/book/download",
-            getByDetail:        "/book/detail/",
+            getDetailList:      "/book/detail/",
+            main:               "/book/main",
 
+        },
+        book_detail: {
+            get:                "/book_detail/",
         },
         author: {
             get:                "/author/",
@@ -64,6 +69,9 @@ module.exports = {
             getByAuthor:        "/review/author/",
             getByBook:          "/review/book/",
             register:           "/review",
+        },
+        register: {
+            book:               "/book",
         }
     },
     service : {
@@ -82,7 +90,9 @@ module.exports = {
         author                  : "/author/",
         register : {
             author      : "/register/author",
+            book        : "/register",
         },
+        book: "/book/",
         buy : {
             buy         : "/buy",
             complete    : "/complete",
