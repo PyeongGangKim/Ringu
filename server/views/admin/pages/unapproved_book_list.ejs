@@ -2,7 +2,7 @@
 
 <div class="panel">
     <div class="panel-header">
-        <h1>단행본(조회: <%=total_count%>)</h1>
+        <h1>출간 안된 책(조회: <%=total_count%>)</h1>
 
         <form method="GET" action="/admin/book/singlePublished/" class="panel-options input-inline">
             <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
@@ -15,9 +15,6 @@
                 <div class="btn" id="filter-clear">초기화</div>
             </a>
         </form>
-        <a class="nav-link" href="/admin/book/singlePublished/info/create">
-            <div class="btn" id="book_register">책 등록</div>
-        </a>
         <!--/.panel-options-->
     </div>
     <!--/.panel-header-->
@@ -30,11 +27,11 @@
                     <th style="width: 60px;">작가 이름</th>
                     <th style="width: 60px;">카테고리</th>
                     <th style="width: 120px;">책 이름</th>
-                    <th style="width: 120px;">가격</th>
-                    <th style="width: 120px;">발간 여부</th>
-                    <th style="width: 120px;"></th>
-                    <th style="width: 120px;">파일 다운로드</th>
-                    <th style="width: 120px;">미리보기 다운로드</th>
+                    <th style="width: 80px;">가격</th>
+                    <th style="width: 80px;">파일 다운로드</th>
+                    <th style="width: 80px;">미리보기 다운로드</th>
+                    <th style="width: 80px;">발간 버튼</th>
+                    <th style="width: 80px;">발간 거부 버튼</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,40 +40,25 @@
                         <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
                     </tr>
                 <% } %>
-                <% book_list.forEach(function(singlePublishedBook, index) { %>
+                <% book_list.forEach(function(book, index) { %>
                     <tr>
                         <td class="text-center">
-                            <%=singlePublishedBook.id%>
+                            <%=book.id%>
                         </td>
                         <td class="text-center">
-                            <%=singlePublishedBook.author.nickname%>
+                            <%=book.book.author.nickname%>
                         </td>
                         <td class="text-center">
-                            <%=singlePublishedBook.category.name%>
+                            <%=book.book.category.name%>
                         </td>
                         <td class="text-center">
-                            <%=singlePublishedBook.title%>  
+                            <%=book.title%>  
                         </td>
                         <td class="text-center">
-                            <%=singlePublishedBook.price%>
-                        </td>
-                        <td class="text-center">
-                            <% if (singlePublishedBook.book_details[0].is_approved) { %>
-                                발간 완료
-                            <% } else { %>
-                                발간 전
-                            <%} %>
+                            <%=book.book.price%>
                         </td>
                         <td class="menu">
-                            <a href="/admin/book/singlePublished/<%=singlePublishedBook.id%>">
-                                <div class="menu-item">
-                                    보기
-                                </div>
-                                <!--/.menu-item-->
-                            </a>
-                        </td>
-                        <td class="menu">
-                            <a href="/admin/book/download/<%=singlePublishedBook.book_details[0].id%>?type=file">
+                            <a href="/admin/book/download/<%=book.id%>/?type=file">
                                 <div class="menu-item">
                                     파일 다운로드
                                 </div>
@@ -84,11 +66,21 @@
                             </a>
                         </td>
                         <td class="menu">
-                            <a href="/admin/book/download/<%=singlePublishedBook.book_details[0].id%>?type=preview">
+                            <a href="/admin/book/download/<%=book.id%>/?type=preview">
                                 <div class="menu-item">
                                     미리보기 다운로드
                                 </div>
                                 <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/approved/<%=book.id%>">
+                                <div class="btn btn-sm btn-success">발간 하기</div>
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/unapproved/reason/?book_detail_id=<%=book.id%>">
+                                <div class="btn btn-sm btn-fail">발간 거부하기</div>
                             </a>
                         </td>
                     </tr>
@@ -104,5 +96,7 @@
     <!--/.panel-block-->
 </div>
 <!--/.panel-->
+<script >
 
+</script>
 <%- include("../templates/foot"); %>

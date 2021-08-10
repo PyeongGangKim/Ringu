@@ -1,10 +1,10 @@
 var express = require("express");
 var router = express.Router();
-
+const {StatusCodes} = require("http-status-codes");
 
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { sequelize, single_published_book, serialization_book, book, purchase, withdrawal, member, author } = require("../../models");
+const { sequelize, book_detail ,book, purchase, withdrawal, member, author } = require("../../models");
 
 router.post('/', isLoggedIn, async(req, res, next) => {
     let name = req.body.name;
@@ -34,15 +34,17 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 }
             });
             if(changedMeberType){
-                res.json({status : "ok", result});
+                res.status(StatusCodes.CREATED).json({
+                    author: result,
+                });
             }
-        }
-        else{
-            res.json({status: "error"});
         }
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
     }
 
 })
@@ -68,97 +70,57 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.json({status : "ok", result});
+            res.status(StatusCodes.OK).json({
+                author: result,
+            });
         }
         else{
-            res.json({status: "error", reason: "fail to get author information"});
+            res.status(StatusCodes.NO_CONTENT)
+            
         }
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
-router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => {
+router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
+    // book 이랑 member(작가)와 관계가 있다.
+    // purchase book_detail이랑 관계가 있음.
+    // athor_id가 해당 user.id와 동일한 책만 가져오기.
+    let member_id = req.user.id;
+    let author_id = req.params.authorId;
 
-    let id = req.params.authorId;
     try{
-        const serialization_publised_revenue = await author.findAll({
+        const revenues = await book.findAll({
             raw: true,
-            attributes : [
-                "id",
-                [sequelize.literal("serialization_books.id"),"serialization_book_id"],
-                [sequelize.literal("serialization_books.price"),"price"],
-                [sequelize.literal("`serialization_books->books->purchases`.id"),"purchase_id"],
-                [sequelize.literal("count(`serialization_books->books->purchases`.id)"), "selled_count"],
-            ],
-            include: [
-                {
-                    model: serialization_book,
-                    as : "serialization_books",
-                    attributes : [],
-                    where : {
-                        author_id : id,
-                    },
-                    include: [
-                        {
-                            model: book,
-                            as : "books",
-                            attributes: [],
-                            where: {
-                                status: 1,
-                            },
-                            include: [
-                                {
-                                    model: purchase,
-                                    as : "purchases",
-                                    attributes:[],
-                                    where: {status: 1}
-                                }
-                            ]
-                        },
-                    ],
-                },
-            ],
-            group: ["serialization_books.id"],
-        });
-        console.log(serialization_publised_revenue);
-        const signle_published_revenue = await author.findAll({
-            raw: true,
-            attributes : [
-                "id",
-                [sequelize.literal("single_published_books.id"),"single_published_book_id"],
-                [sequelize.literal("single_published_books.price"),"price"],
-                [sequelize.literal("`single_published_books->book->purchases`.id"),"purchase_id"],
-                [sequelize.literal("count(`single_published_books->book->purchases`.id)"), "selled_count"],
-            ],
-            where : {
-                id : id,
+            where: {
+                author_id : member_id,
             },
+            attributes : [
+                "id",
+                "price",
+                [sequelize.literal("`book_details->purchases`.id"),"purchase_id"],
+                [sequelize.literal("count(`book_details->purchases`.id)"), "selled_count"],
+            ],
             include: [
                 {
-                    model: single_published_book,
-                    as : "single_published_books",
+                    model: book_detail,
+                    as : "book_details",
                     attributes : [],
                     include: [
                         {
-                            model: book,
-                            as : "book",
-                            required: true,
-                            attributes: [],
-                            include: [
-                                {
-                                    model: purchase,
-                                    as : "purchases",
-                                    attributes:[],
-                                }
-                            ]
-                        },
+                            model: purchase,
+                            as : "purchases",
+                            attributes:[],
+                            where: {status: 1}
+                        }
                     ],
                 },
             ],
-            group: ["single_published_books.id"],
+            group: ["book_details.id"],
         });
-        console.log(signle_published_revenue);
+        console.log(revenues);
         const author_revenue = await author.findOne({
             raw: true,
             attributes: [
@@ -170,7 +132,7 @@ router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => 
                 [sequelize.literal("sum( withdrawals.amount )"), "withdrawal_amount"],
             ],
             where: {
-                id : id
+                id : author_id,
             },
             include :[
                 {
@@ -184,20 +146,19 @@ router.get('/revenue/:authorId', isLoggedIn, isAuthor,async (req, res, next) => 
 
         let sp_amount = 0;
         let serial_amount = 0;
-        for(let i = 0 ; i < signle_published_revenue.length ; i++){
-            sp_amount += signle_published_revenue[i].selled_count*signle_published_revenue[i].price;
-        }
-        for(let i = 0 ; i < serialization_publised_revenue.length ; i++){
-            serial_amount += serialization_publised_revenue[i].selled_count * serialization_publised_revenue[i].price;
+        for(const revenue of revenues){
+            sp_amount += revenue.selled_count*revenue.price;
         }
         author_revenue.withdrawable_amount = serial_amount + sp_amount - author_revenue.withdrawal_amount;
         delete author_revenue.withdrawal_amount;
         console.log(author_revenue);
-        res.json({status : "ok", author_revenue});
+        res.status(StatusCodes.OK).json({
+            author_revenue : author_revenue,
+        })
     }
     catch(err){
-        res.json({status: "error", reason: "fail to get author revenue information"});
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 module.exports = router;

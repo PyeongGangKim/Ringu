@@ -12,10 +12,11 @@ const s3 = new AWS.S3({
 
 const storage = multerS3({
     s3: s3,
-    
+
     bucket: function(req,file, cb){
         cb(null, BUCKET+ "/" + file.fieldname);
     },
+    
     contentType: function(req, file, cb){
         let fieldName = file.fieldname;
         if(fieldName == "img"){
@@ -26,7 +27,12 @@ const storage = multerS3({
 
     key: function (req, file, cb) {
         const fileNameSplit = file.originalname.split('.');
-        const fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[1];
+        var fileName = ""
+        for(var i=0; i < fileNameSplit.length-1; i++) {
+            fileName += fileNameSplit[i]
+        }
+        fileName += "_" + Date.now().toString() + "." + fileNameSplit[fileNameSplit.length-1]
+
         cb(null, fileName);
     }, // 파일 이름
     acl: 'public-read',
@@ -65,7 +71,7 @@ const deleteFile = async (req, res, next) =>{
                         Key: DIRNAME + "/" + delFileName,
                     },
                     {
-                        Key: DIRNAME+ "/" + delImgNmae, 
+                        Key: DIRNAME+ "/" + delImgNmae,
                     }
                 ]
             }
@@ -85,7 +91,7 @@ const deleteFile = async (req, res, next) =>{
     }
 }
 const downloadFile = (fieldName ,fileName) => {
-    const signedUrlExpireSeconds = 60 * 5;
+    const signedUrlExpireSeconds = 60 * 1;
     const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
         Bucket: BUCKET,

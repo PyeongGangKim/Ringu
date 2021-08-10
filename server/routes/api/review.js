@@ -256,10 +256,10 @@ router.get('/book/:book_id', async (req, res, next) => { // 자기가 쓴 review
 
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
@@ -275,15 +275,12 @@ router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없
                 id : id,
             }
         })
-        res.json({status: "ok"});
+        res.status(StatusCodes.OK);
 
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to cancel purchasing"
-        });
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 

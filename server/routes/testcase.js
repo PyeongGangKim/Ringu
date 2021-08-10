@@ -28,5 +28,8 @@ router.get('/category/', function(req, res, next){
 });
 router.get('/upload/', function(req, res, next){
     res.render('testcase/upload');
+});
+router.get('/pay/', function(req, res, next){
+    res.render('testcase/pay');
 })
 module.exports = router;

@@ -9,13 +9,91 @@ const { checkLogin } = require("../../helper/activity");
 
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
-const { book, category, member, serialization_book, single_published_book, Sequelize : { Op } } = require("../../models/index");
+const { book, notiCount, favorite_author ,notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
+const { StatusCodes } = require("http-status-codes");
 
+router.get("/book_detail", async (req, res, next) => {
+    //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
+    //book_detail에서, where문으로 is_approved 확인하기.
+    //book join해주고, book안에 category, author 조인 해준다.
+    //근데 nested할 때, where문을 어떻게 쓰느냐가 중요함.
+    checkLogin(req, res, "/admin/book/book_detail/" + "?is_approved="+ req.query.is_approved);
 
-router.get("/serialization", async (req, res, next) => {//cover들 모두 가져오기.
-
-    checkLogin(req, res, "/admin/book/serialization/");
     
+    let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
+    let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "DESC";
+    let limit           = ("limit" in req.query && req.query.limit) ? parseInt(req.query.limit) : 10;
+    let page            = ("page" in req.query) ? req.query.page : 1;
+    let offset          = parseInt(limit) * (parseInt(page)-1);
+
+    let fields = {
+        "title"         : ("title" in req.query) ? req.query.title : "",
+        "price"         : ("price" in req.query) ? req.query.price : "",
+        "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
+        "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
+        "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
+    }
+
+    try{
+        const {count, rows} = await book_detail.findAndCountAll({
+            where: {
+                [Op.and] : {
+                    is_approved : fields.is_approved,
+                    '$book.price$' : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
+                    '$book.category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
+                    title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
+                    '$book.author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                },
+                status : 1,
+            },
+            limit : limit,
+            offset : offset,
+            order : [
+                [sort_by, sort_direction],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes : ['price','type'],
+                    include : [
+                        {
+                            model : category,
+                            as : "category",
+                            attributes: ['name'],
+                        },
+                        {
+                            model : member,
+                            as : "author",
+                            attributes: ['nickname'],
+                        },
+                    ]
+                }
+                
+            ]
+        });
+        console.log(rows[0].book.author.nickname);
+        let total_count = count;
+        let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
+        console.log(renderingPage);
+        let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/book_detail/" + fields.is_approved, page, limit, total_count, fields);
+        res.render(renderingPage , {
+            "fields"      : fields,
+            "book_list"       : rows,
+            "total_count"       : total_count,
+            "pagination_html"   : pagination_html,
+            "limit"             : limit,
+        });
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+
+router.get("/serialization/cover", async (req, res, next) => {//연재본 커버만 보여주기.
+    
+    checkLogin(req, res, "/admin/book/serialization/" );
 
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
     let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "DESC";
@@ -27,18 +105,19 @@ router.get("/serialization", async (req, res, next) => {//cover들 모두 가져
         "title"         : ("title" in req.query) ? req.query.title : "",
         "price"         : ("price" in req.query) ? req.query.price : "",
         "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
-        "category_name"   : ("category_name" in req.query) ? req.query.category_name : "",
+        "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
     }
 
     try{
-        const {count, rows} = await serialization_book.findAndCountAll({
+        const {count, rows} = await book.findAndCountAll({
             where: {
                 [Op.and] : {
+                    type: 1,
                     price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
                     '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
                     title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
-                    '$member.name$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                    '$author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
                 },
                 status : 1,
             },
@@ -55,16 +134,17 @@ router.get("/serialization", async (req, res, next) => {//cover들 모두 가져
                 },
                 {
                     model : member,
-                    as : "member",
-                    attributes: ['name'],
+                    as : "author",
+                    attributes: ['nickname'],
                 },
             ]
         });
+        console.log(rows);
         var total_count = count;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization", page, limit, total_count, fields);
-        res.render("admin/pages/serialization_cover_list", {
+        res.render("admin/pages/serialization_cover_list" , {
             "fields"      : fields,
-            "cover_list"       : rows,
+            "book_list"       : rows,
             "total_count"       : total_count,
             "pagination_html"   : pagination_html,
             "limit"             : limit,
@@ -81,15 +161,15 @@ router.get("/serialization/:serializationId", async(req, res, next) => {//cover 
     let id = req.params.serializationId;
 
     try{
-        const findedBook = await serialization_book.findOne({
+        const findedBook = await book.findOne({
             where: {
                 id : id
             },
             include : [
                 {
                     model: member,
-                    as: 'member',
-                    attributes : ['name'],
+                    as: 'author',
+                    attributes : ['nickname'],
                 },
                 {
                     model: category,
@@ -118,27 +198,27 @@ router.get("/serialization/content/list", async(req, res, next) => {//content �
     let offset          = parseInt(limit) * (parseInt(page)-1);
     try{
         console.log(serialization_book_id);
-        const {count, rows} = await book.findAndCountAll({
+        const {count, rows} = await book_detail.findAndCountAll({
             where : {
-                serialization_book_id : serialization_book_id,
+                book_id : serialization_book_id,
                 status: 1,
             },
             limit : limit,
             offset : offset,
             order : [
-                ['created_date_time' ,'DESC']
+                ['round' ,'DESC']
             ],
 
         });
-        const cover = await serialization_book.findOne({
+        const cover = await book.findOne({
             where: {
                 id: serialization_book_id,
             },
             include : [
                 {
                     model: member,
-                    as: "member",
-                    attributes: ['name'],
+                    as: "author",
+                    attributes: ['nickname'],
                 },
                 {
                     model: category,
@@ -169,7 +249,7 @@ router.get("/serialization/content/:bookId", async (req, res, next) => {//conten
     let id = req.params.bookId;
 
     try{
-        const findedBook = await book.findOne({
+        const findedBook = await book_detail.findOne({
             where: {
                 id : id,
             }
@@ -190,42 +270,44 @@ router.get("/serialization/cover/info/create/", (req, res, next) => {
     res.render("admin/pages/serialization_cover_create");
 });
 
-router.post("/serialization/cover", uploadFile, async (req, res, next) => {
+router.post("/serialization/cover", uploadFile, async (req, res, next) => {//생성하는 페이지가 다르니 굳이 붙여서 할 필요는 없을 듯, 연재본 페이지
     checkLogin(req, res, "/admin/book/serialization/");
     
     let title = req.body.title;
     let serialization_day = req.body.serialization_day;
     let price = req.body.price;
     let member_id = req.body.member_id;
-    let author_description = req.body.author_description;
-    let book_description = req.body.book_description; 
-    let img = req.files.img[0].location;
+    let description = req.body.description; 
+    let img = req.files.img[0].key;
     let category_name = req.body.category_name;
+    let content = req.body.content;
     try{
         const bookCategory = await category.findOne({
             where: {
                 name : category_name,
             }
         });
-        const serializationCover = await serialization_book.create({
+        const serializationCover = await book.create({
             title : title,
             price : price,
             serialization_day : serialization_day,
-            author_description : author_description,
-            book_description : book_description,
-            member_id : member_id,
+            description : description,
+            author_id : member_id,
             img : img,
             category_id : bookCategory.id,
+            content : content,
+            is_finished_serialization: 1,
+            type: 1,
         });
-        const result = await serialization_book.findOne({
+        const result = await book.findOne({
             where: {
                 id : serializationCover.id,
             },
             include : [
                 {
                     model : member,
-                    as : "member",
-                    attributes: ['name'],
+                    as : "author",
+                    attributes: ['nickname'],
                 },
                 {
                     model : category,
@@ -254,16 +336,28 @@ router.get("/serialization/content/info/create/", (req, res, next) => {
 router.post("/serialization/content", uploadFile, async (req, res, next) => {
     checkLogin(req, res, "/admin/book/serialization/");
     
-    let serialization_book_id = req.body.serialization_book_id;
-    let file = req.files.file[0].location;
+    let serialization_book_id = req.body.book_id;
+    let round = req.body.round;
+    let page_number = req.body.page_number;
+    let file = req.files.file[0].key;
     let title = req.body.title;
     try{
-        const result = await book.create({
-            serialization_book_id : serialization_book_id,
+        const result = await book_detail.create({
+            book_id : serialization_book_id,
             file : file,
             title : title,
-            type : 1,
+            round : round,
+            page_number: page_number,
         });
+        if(round == 1){
+            await book.update({
+                preview: file,
+            },{
+                where: {
+                    id: book_id,
+                }
+            });
+        }
         res.render("admin/pages/serialization_content_view",{
             "book"                  : result,
             "helper_date"           : helper_date,
@@ -294,13 +388,32 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
     }
 
     try{
-        const {count, rows} = await single_published_book.findAndCountAll({
+        const {count, rows} = await book.findAndCountAll({
+            /*raw: true,
+            attributes: [
+                "id",
+                "price",
+                "title",
+                "content",
+                "description",
+                [sequelize.literal("author.nickname"), "author"],
+                [sequelize.literal("category.name"), "category"],
+                [sequelize.literal("book_details.is_approved"), "is_approved"],
+                [sequelize.literal("book_details.id"), "book_details_id"],
+            ],*/
             where: {
                 [Op.and] : {
+                    type: 2,
                     price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
-                    '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
-                    '$book.title$' : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
-                    '$member.name$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                    '$category.name$' : {
+                        [Op.like ] : (fields.category_name != "") ? ("%"+fields.category_name+"%")  : ("%%")
+                    },
+                    title : {
+                        [Op.like] : (fields.title != "") ? ("%"+fields.title+"%") : ("%%")
+                    },
+                    '$author.nickname$' : {
+                        [Op.like] : (fields.title != "") ? ("%"+fields.member_name+"%") : ("%%")
+                    }
                 },
                 status : 1,
             },
@@ -313,14 +426,20 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
                 {
                     model : category,
                     as : "category",
+                    attributes: ['name'],
+                    required: true,
                 },
                 {
                     model : member,
-                    as : "member",
+                    as : "author",
+                    attributes: ['nickname'],
+                    required: true,
                 },
                 {
-                    model : book,
-                    as : "book",
+                    model: book_detail,
+                    as : "book_details",
+                    //attribute: ['is_approved', 'id',],
+                    required: true,
                 }
             ]
         });
@@ -345,15 +464,28 @@ router.get("/singlePublished/:singlePublished", async (req, res, next) => {
     let id = req.params.singlePublished;
 
     try{
-        const findedBook = await single_published_book.findOne({
+        const findedBook = await book.findOne({
+            attributes: [
+                "id",
+                "price",
+                "title",
+                "content",
+                "description",
+                [sequelize.literal("author.nickname"), "author"],
+                [sequelize.literal("category.name"), "category"],
+                [sequelize.literal("book_details.page_number"), "page_number"],
+                [sequelize.literal("book_details.is_approved"), "is_approved"],
+                [sequelize.literal("book_details.id"), "book_details_id"],
+            ],
+            raw: true,
             where: {
                 id : id,
             },
             include: [
                 {
                     model: member,
-                    as : "member",
-                    attributes : ['name'],
+                    as : "author",
+                    attributes : ['nickname'],
                 },
                 {
                     model : category,
@@ -361,11 +493,12 @@ router.get("/singlePublished/:singlePublished", async (req, res, next) => {
                     attributes : ['name'],
                 },
                 {
-                    model : book,
-                    as : "book",
+                    model : book_detail,
+                    as : "book_details",
                 }
             ]
         });
+        console.log(findedBook);
         res.render("admin/pages/single_published_book_view", {
                 "book"                  : findedBook,
                 "helper_date"           : helper_date,
@@ -386,11 +519,11 @@ router.post("/singlePublished", uploadFile, async (req, res, next) => {
     let price = req.body.price;
     let content = req.body.content;
     let page_number = req.body.page_number;
-    let author_description = req.body.author_description;
-    let book_description = req.body.book_description;
-    let member_id = req.body.member_id;
-    let file = req.files.file[0].location;
-    let img = req.files.img[0].location;
+    let description = req.body.description;
+    let author_id = req.body.author_id;
+    let file = req.files.file[0].key;
+    let img = req.files.img[0].key;
+    let preview = req.files.preview[0].key;
     let category_name = req.body.category_name;
     let title = req.body.title;
     try{
@@ -399,15 +532,15 @@ router.post("/singlePublished", uploadFile, async (req, res, next) => {
                 name : category_name,
             }
         });
-        const singlePublished = await single_published_book.create({
+        const singlePublished = await book.create({
             price : price,
             content : content,
             page_number : page_number,
-            author_description : author_description,
-            book_description : book_description,
-            member_id : member_id,
+            description : description,
+            author_id : author_id,
             img : img,
             category_id : bookCategory.id,
+            preview : preview,
         });
         await book.create({
             file : file,
@@ -431,8 +564,8 @@ router.post("/singlePublished", uploadFile, async (req, res, next) => {
                 },
                 {
                     model: member,
-                    as : "member",
-                    attributes: ['name'],
+                    as : "author",
+                    attributes: ['nickname'],
                 }
             ]
         })
@@ -486,49 +619,222 @@ router.get("/finishedSerializing/:serializationId", async (req, res, next) => {
         console.error(err);
     }
 });
-
-router.get("/approved/:bookId", async (req,res,next) => {
-
-    checkLogin(req, res, "/admin/member/");
-    
-
-    let id = req.params.bookId;
-
+router.get("/unapproved/reason", async (req, res, next) => {
+    checkLogin(req, res, "/unapproved/reason");
+    const book_detail_id = req.query.book_detail_id;
     try{
-        await book.update({
+        const rejecting_book_detail = await book_detail.findOne({
+            where: {
+                id : book_detail_id
+            }
+        });
+        res.render("admin/pages/reject_approving_book",{
+            "book"                  : rejecting_book_detail,
+            "helper_date"           : helper_date,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
+});
+router.post("/unapproved/:bookDetailId", async(req, res, next) => {
+    // book_detail model에 is_approved 를 -1 로 바꿔준다.
+    // 그리고 notification 해줘야 된다.
+    // notification에 넣어줄 때, type을 출간 거절로 넣어주고
+    //checkLogin(req, res, "/unapproved/" + req.params.bookDetailId);
+    const book_detail_id = req.params.bookDetailId;
+    const reason = req.body.reason;
+    const t = await sequelize.transaction();
+    try{
+        await book_detail.update({
+            is_approved : -1
+        },
+        {
+            where: {
+                id : book_detail_id,
+            }
+        });
+        const getMemberByBook = await book_detail.findOne({//해당 책에 작가의 member_id를 알아와야됨.
+            where: {
+                id: book_detail_id,
+            },
+            include: [
+                {
+                    model: book,
+                    as: 'book',
+                    include : [
+                        {
+                            model: member,
+                            as : 'author',
+                            attributes: ['id'],
+                        }
+                    ]
+                }
+            ]
+        });
+        let notiMember = getMemberByBook.book.author.id;
+        let title = getMemberByBook.title + "이 출간 거부 됐습니다."
+        try{
+            const noti = await notification.create({
+                title: title,
+                content: reason,
+                member_id : notiMember,
+                type: 1, // 책 출간에 관한 건 type 1
+            },{transaction: t});
+
+            const [notiC, created] = await notiCount.findOrCreate({
+                where: {
+                    member_id : notiMember,
+                },
+                defaults: {
+                    member_id: notiMember,
+                    count: 0,
+                },
+                transaction : t,
+            });
+            await notiCount.update({
+                count : notiC.count + 1,
+            },
+            {
+                where:{
+                    id : notiC.id,
+                },
+                transaction: t
+            });
+            await t.commit();
+            res.redirect("/admin/book/book_detail?is_approved=0");
+            
+        }
+        catch(err){
+            await t.rollback();
+            console.error(err);
+        }
+    }
+    catch(err){
+        console.error(err);
+    }
+});
+
+router.get("/approved/:bookDetailId", async (req,res,next) => {
+    // approved로 book의 author를 얻어 내서 해당 author를 팔로우 한 친구들한테만 Notify하기
+    checkLogin(req, res, "/admin/member/");
+
+
+    let id = req.params.bookDetailId;
+    console.log(id);
+    try{
+        await book_detail.update({
             is_approved : 1
         },{
             where: {
                 id : id
             } 
         });
-        res.redirect("/admin/member/");
+    }
+    catch(err){
+        console.log(err);
+    }
+    try{
+        let approved_book = await book_detail.findOne({
+            where: {
+                id: id
+            },
+            include : [
+                {
+                    model: book,
+                    as : "book",
+                    include : [
+                        {
+                            model: member,
+                            as : "author",
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // 해당 작가를 follow 하고 있는 모든 데이터 얻어내기
+        let followed_author_id =  approved_book.book.author_id;
+        let followed_author_name = approved_book.book.author.nickname;
+        let book_title = approved_book.title;
+        let following_members = await favorite_author.findAll({
+            attributes: [
+                "member_id",
+            ],
+            where: {
+                author_id : followed_author_id,
+                status: 1,
+            }
+        });
+        const t = await sequelize.transaction();
+        let noti_title = followed_author_name + "작가님의 " + book_title + " 책이 출간되었습니다.";
+        let noti_content = "지금 바로 확인해 보세요!";
+        let insert_noti = [];
+        for(let following_member of following_members){
+            insert_noti.push({
+                member_id : following_member.member_id,
+                content: noti_content,
+                title: noti_title,
+                type : 4,
+            })
+        }
+        try{
+            await notification.bulkCreate(insert_noti,{
+                transaction: t,
+            });
+            for(let following_member of following_members){
+                let [notiC, created] = await notiCount.findOrCreate({
+                    where: {
+                        member_id: following_member.member_id,
+                    },
+                    defaults: {
+                        member_id: following_member.member_id,
+                        count: 0,
+                    },
+                    transaction: t,
+                });
+                await notiCount.update({
+                    count : notiC.count + 1,
+                },
+                {
+                    where : {
+                        id : notiC.id,
+                    },
+                    transaction: t,
+                });
+            }
+            await t.commit();
+            res.redirect("/admin/member/");
+        }
+        catch(err){
+            await t.rollback();
+            console.error(err);
+        }
+        
     }
     catch(err){
         console.log(err);
     }
 });
 
-router.get('/download/:bookId', async (req,res,next) => {
+router.get('/download/:bookDetailId', async (req,res,next) => {
     checkLogin(req, res, "/admin/book/");
     
     
-    const bookId = req.params.bookId;
+    const book_detail_id = req.params.bookDetailId;
+    const type = req.query.type;
     try{
-        const result = await book.findOne({
+        const result = await book_detail.findOne({
             where : {
-                id : bookId,
+                id : book_detail_id,
             }
         });
-        const fileUrl = result.file.split('/');
-        const fileUrlLength = fileUrl.length;
-        const fileName = fileUrl[fileUrlLength - 1];
-        console.log(fileName);
-        const url = downloadFile(fileName);
+        const url = downloadFile(type, result.file);
+        console.log(url);
         res.redirect(url);
 
     }
-    catch(err){
+    catch(err){ 
         console.error(err);
     }
 });

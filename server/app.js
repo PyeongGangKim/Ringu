@@ -17,6 +17,7 @@ const passportConfig = require('./middlewares/passport');
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
 
+<<<<<<< HEAD
 var testcaseRouter = require('./routes/testcase');
 
 var admin_loginRouter = require('./routes/admin/login');
@@ -30,19 +31,22 @@ var admin_favoriteAuthorRouter = require('./routes/admin/favorite_author');
 var admin_favoriteBookRouter = require('./routes/admin/favorite_book');
 var admin_categoryRouter = require('./routes/admin/category');
 var admin_authorRouter = require('./routes/admin/author');
+let admin_notification = require('./routes/admin/notification');
 
 var api_authRouter = require('./routes/api/auth');
 var api_bookRouter = require('./routes/api/book');
+var api_bookDetailRouter = require('./routes/api/book_detail');
 var api_memberRouter = require('./routes/api/member');
 var api_favoriteAuthorRouter = require('./routes/api/favorite_author');
 var api_favoriteBookRouter = require('./routes/api/favorite_book');
 var api_purchaseRouter = require('./routes/api/purchase');
 let api_cartRouter = require('./routes/api/cart');
-var api_categoryRouter = require('./routes/api/category');
-var api_authorRouter = require('./routes/api/author');
+let api_categoryRouter = require('./routes/api/category');
+let api_authorRouter = require('./routes/api/author');
 let api_reviewRouter = require('./routes/api/review');
 let api_withdrawalRouter = require('./routes/api/withdrawal');
 let api_notificationRouter = require('./routes/api/notification');
+let api_payRouter = require('./routes/api/pay');
 
 let app = express();
 
@@ -89,10 +93,11 @@ app.use('/admin/favorite/author', admin_favoriteAuthorRouter);
 app.use('/admin/favorite/book', admin_favoriteBookRouter);
 app.use('/admin/category', admin_categoryRouter);
 app.use('/admin/author', admin_authorRouter);
+app.use('/admin/notification', admin_notification);
 
 app.use('/api/auth', api_authRouter);
 app.use('/api/book', api_bookRouter);
-
+app.use('/api/book_detail', api_bookDetailRouter);
 app.use('/api/member', api_memberRouter);
 app.use('/api/favorite_author', api_favoriteAuthorRouter);
 app.use('/api/favorite_book', api_favoriteBookRouter);
@@ -103,6 +108,7 @@ app.use('/api/author', api_authorRouter);
 app.use('/api/review', api_reviewRouter);
 app.use('/api/withdrawal', api_withdrawalRouter);
 app.use('/api/notification', api_notificationRouter);
+app.use('/api/pay',api_payRouter);
 //app.use('/api/upload', api_uploadRouter);
 
 
