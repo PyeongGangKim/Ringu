@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const {StatusCodes} = require("http-status-codes");
-
+const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const {favorite_book, favorite_book_statistics, member ,book, book_detail, review_statistics, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
@@ -40,7 +40,7 @@ router.post('/', isLoggedIn,async (req, res, next) => {
             res.status(StatusCodes.CREATED).send("success like");
         });
     }
-    
+
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
@@ -86,6 +86,8 @@ router.get('/', isLoggedIn,async (req, res, next) => {
             },
             attributes : [
                 "id",
+                [sequelize.literal("book.id"), "book_id"],
+                [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.title"), "title"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("`book->author`.nickname"),"author_nickname"],
@@ -97,6 +99,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                     model : book,
                     as : "book",
                     attributes: [
+                        "img",
                         "title",
                         "price",
                     ],
@@ -127,6 +130,11 @@ router.get('/', isLoggedIn,async (req, res, next) => {
             res.status(StatusCodes.NO_CONTENT).send("no content");
         }
         else{
+            for(let i = 0 ; i < favoriteBookList.length ; i++){
+                if(favoriteBookList[i].dataValues.img == null || favoriteBookList[i].dataValues.img[0] == 'h') continue;
+                favoriteBookList[i].dataValues.img = await imageLoad(favoriteBookList[i].dataValues.img);
+            }
+
             res.status(StatusCodes.OK).json({
                 favoriteBookList: favoriteBookList
             });
