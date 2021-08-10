@@ -6,7 +6,7 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
-const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
+const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
@@ -86,12 +86,10 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             group: 'id',
         });
         if(bookList.length == 0){
-            console.log(bookList);
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
             for(let i = 0 ; i < bookList.length ; i++){
-                console.log(bookList[i].dataValues.img);
                 if(bookList[i].dataValues.img == null || bookList[i].dataValues.img[0] == 'h') continue;
                 bookList[i].dataValues.img = await imageLoad(bookList[i].dataValues.img);
             }
@@ -107,6 +105,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         });
     }
 });
+
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
     let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
@@ -131,6 +130,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("author.description"), "author_description"],
                 [sequelize.literal("category.name"), "category"],
+                [sequelize.literal("`book_details`.page_number"),"page_number"],
                 [sequelize.literal("`book_details->review_statistics`.score_amount"),"review_score"],
                 [sequelize.literal("`book_details->review_statistics`.person_number"),"review_count"],
             ],
@@ -161,7 +161,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     as : "book_details",
                     required: false,
                     attributes: [
-                        
+
                         "title",
                         "file",
                         "round",
@@ -183,7 +183,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                                     model: member,
                                     as : "member",
                                     attributes: [
-                                        
+
                                         "nickname"
                                     ],
                                     required : false,
@@ -219,59 +219,39 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
     }
 });
 
-router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
-    let book_detail_id = req.params.bookId;
+router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail list를 join해서 가져오는 api
+    let book_id = req.params.bookId;
+    let member_id = req.query.member_id;
 
     try{
-        const book_detail_info = await book_detail.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
+        const detailList = await book_detail.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
-                id: book_detail_id,
+                book_id: book_id,
             },
             attributes : [
                 "id",
-                [sequelize.literal("book_detail.title"),"subtitle"],
-                [sequelize.literal("`book->author`.nickname"),"author"],
-                [sequelize.literal("book.price"),"price"],
-                [sequelize.literal("book.type"),"type"],
-                [sequelize.literal("book.title"),"title"],
+                "title",
+                "file",
             ],
 
             include : [
                 {
-                    model : book,
-                    as : "book",
-                    attributes: [
-                        "title",
-                        "price",
-                        "type",
-
-                    ],
-                    include: [
-                        {
-                            model : member,
-                            as : "author",
-                            attributes: [
-                                "nickname",
-                            ],
-                        },
-                        {
-                            model : category,
-                            as : "category",
-                            attributes : [
-
-                            ],
-                        },
-                    ]
-                },
-            ],
+                    model: purchase,
+                    as : "purchases",
+                    required: false,
+                    where: {
+                        member_id: member_id,
+                    }
+                }
+            ]
         });
 
-        if(book_detail_info.length == 0){
+        if(detailList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
             res.status(StatusCodes.OK).json({
-                "book": book_detail_info,
+                "detailList": detailList,
             });
         }
 
@@ -284,12 +264,12 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     }
 });
 router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
-    //book table 에 넣는 attribute
+    //book table 에 넣는 attribute    
     let price = req.body.price;
     let content = req.body.content;
     let book_description = req.body.book_description;
-    let author_id = req.body.author_id;
-    let category_id = req.body.category_id;
+    let author_id = req.user.id;
+    let category_id = req.body.category_id ? 1: 1;
     let title = req.body.title;
     let type = req.body.type;
     let is_finished_serialization = (type == 2) ? 1 : 0;
