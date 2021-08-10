@@ -23,6 +23,7 @@ class Cart extends Component {
             },
             data: {
                 cartList:[],
+                selectedList:{},
                 price: 0,
                 discount: 0,
                 total: 0,
@@ -36,32 +37,14 @@ class Cart extends Component {
     async componentDidMount() {
         var state = this.state;
         const res = await API.sendGet(URL.api.cart.list)
-        console.log(res)
-        var cartList = res.data.cartList
 
-        /*for(var i=0; i<cartList.length; i++) {
-            cartList[i].book = {}
+        if(res.status === 200) {
+            var cartList = res.data.cartList
+            state.data.cartList = cartList
+        }
 
-            var book;
-
-            if(cartList[i].type === 1) {
-                book = await API.sendGet(URL.api.book.serialization + cartList[i].serialization_book_id)
-                cartList[i].book = book.data.serializationBook;
-            } else {
-                book = await API.sendGet(URL.api.book.singlePublished + cartList[i].single_published_book_id)
-                cartList[i].book = book.data.singlePublishedBook;
-            }
-
-            const author = await API.sendGet(URL.api.author.get + cartList[i].book.author_id)
-            cartList[i].author = author.data.result;
-        }*/
-
-
-
-        state.data.cartList = cartList
-        console.log(cartList)
-        this.sum(cartList);
-
+        if (cartList)
+            this.sum(cartList);
 
         this.setState(state)
     }
@@ -92,6 +75,31 @@ class Cart extends Component {
         }
     }
 
+    handleSelect = evt => {
+        var state = this.state;
+        var cartList = state.data.cartList;
+        var selectedList = state.data.selectedList;
+        var value = parseInt(evt.target.value)
+        var id = cartList[value]["id"]
+
+        if(evt.target.checked === true) {
+            selectedList[id] = cartList[value]
+        } else {
+            delete selectedList[id]
+        }
+
+        state.data.selectedList = selectedList;
+        this.setState(state);
+    }
+
+    isSelectedEmpty = evt => {
+        if(this.state.selectedList.length === 0) {
+            alert("선택된 상품이 없습니다.")
+            evt.preventDefault();
+            return false;
+        }
+    }
+
     render() {
         var cartList = this.state.data.cartList
         var state = this.state;
@@ -105,8 +113,8 @@ class Cart extends Component {
                 <hr/>
 
                 <div className="container">
-                    <div className="del-btn">
-                        <em> s</em>
+                    <div className="del-select-btn">
+                        <em> </em>
                         선택작품 삭제
 
                     </div>
@@ -114,18 +122,17 @@ class Cart extends Component {
 
                 <div id="cartlist-area">
                     {
-                        cartList.map(item => {
-                            console.log(item)
+                        cartList.map((item,i) => {
                             return (
                                 <div key={item.id} className="cart-box">
-                                    <input type="checkbox" id="cb1"/>
-                                    <img src="/travel.jpg"/>
+                                    <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onClick={this.handleSelect} value={i}/>
+                                    <img src={item.img}/>
                                     <div className="details">
                                         <h3 className="title">{item.book_detail_title}</h3>
                                         <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
                                     </div>
                                     <strong className="price"> {parse.numberWithCommas(item.price)} 원</strong>
-                                    <div className="del" onClick={() => this.handleDelete(item.id)}>X</div>
+                                    <button className="del-btn" onClick={() => this.handleDelete(item.id)}><em className="del"/></button>
                                 </div>
                             )
                         })
@@ -145,10 +152,34 @@ class Cart extends Component {
                             <span> {parse.numberWithCommas(state.data.total)} 원</span>
                         </div>
                     </div>
+                    <div className="button-wrap">
+                        <button className="cont-btn btn btn-rounded">
+                            <em className="left_arrow"/> 책 계속 둘러보기
+                        </button>
 
-                    <button className="cont-btn btn btn-rounded">
-                        &#60; &nbsp; 책 계속 둘러보기
-                    </button>
+                        <div className="buy-btn">
+                            <Link to={{
+                                pathname : URL.service.buy.buy,
+                                state : {
+                                    cartList : state.data.selectedList,
+                                }}} onClick={this.isSelectedEmpty}>
+                                <button className="btn selected">
+                                    선택 상품 구매
+                                </button>
+                            </Link>
+
+                            <Link to={{
+                                pathname : URL.service.buy.buy,
+                                state : {
+                                    cartList : true,
+                                }}} onClick={this.isSelectedEmpty}>
+                                <button className="btn all">
+                                    전체 상품 구매
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         )
