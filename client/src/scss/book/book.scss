@@ -87,6 +87,59 @@
                 padding-bottom: 60px;
             }
 
+            table {
+                margin-bottom: 30px;
+                border-collapse: collapse;
+
+                tr {
+                    height: 50px;
+                    border-bottom: 2px solid #bbb;
+
+                    td {
+                        font-weight: 500;
+                    }
+
+                    td:nth-child(1) {
+                        width: 80px;
+                        padding: 10px 15px ;
+                        text-align: right;
+                        font-weight: 600;
+                    }
+
+                    td:nth-child(2) {
+                        padding: 10px;
+                        text-align: left;
+
+                    }
+
+                    td:nth-child(3) {
+                        width: 50px;
+                        padding: 5px;
+                        text-align: center;
+
+                        em {
+                            cursor: pointer;
+                            display:inline-block;
+                            width: 20px;
+                            height: 20px;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+
+                            &.lock {
+                                background-image: url(/locked.png);
+                            }
+
+                            &.download {
+                                background-image: url(/download_naive.png);
+                            }
+
+                        }
+                    }
+
+                }
+            }
+
             .content-value.review {
                 border: 0px;
 
@@ -135,7 +188,7 @@
                     .review-item {
                         border-bottom: 1px solid #ccc;
                         padding: 15px 0 25px 0;
-                        
+
                         em {
                             width: 10px;
                             height: 10px;
