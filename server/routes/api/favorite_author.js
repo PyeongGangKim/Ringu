@@ -5,14 +5,14 @@ var router = express.Router();
 var helper_api = require("../../helper/api");
 
 const {StatusCodes} = require("http-status-codes");
-
+const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const {sequelize ,member ,favorite_author, review_statistics, Sequelize: {Op} } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
 
 router.post('/', isLoggedIn, async (req, res, next) => {
-    
+
 
     var member_id = req.user.id;
     var author_id = req.body.author_id;
@@ -56,7 +56,7 @@ router.post('/duplicate', isLoggedIn, async (req, res, next) => {
             reason: "fail to like author"
         })
     }
-    
+
 });
 
 router.get('/', isLoggedIn, async (req, res, next) => {
@@ -68,7 +68,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 "author_id",
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("author.description"), "author_description"],
-
+                [sequelize.literal("author.profile"), "profile"],
                 [sequelize.literal("SUM(`author->review_statistics`.score_amount)"), "review_score"],
                 [sequelize.literal("SUM(`author->review_statistics`.person_number)"), "review_count"],
             ],
@@ -83,6 +83,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                     attributes : [
                         "id",
                         "nickname",
+                        "profile",
                         "description",
                     ],
                     include: [
@@ -103,6 +104,10 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             res.status(StatusCodes.NO_CONTENT).send("no content");
         }
         else{
+            for(let i = 0 ; i < favoriteAuthorList.length ; i++){
+                if(favoriteAuthorList[i].dataValues.profile == null || favoriteAuthorList[i].dataValues.profile[0] == 'h') continue;
+                favoriteAuthorList[i].dataValues.profile = await imageLoad(favoriteAuthorList[i].dataValues.profile);
+            }
             res.status(StatusCodes.OK).json({
                 "favoriteAuthorList": favoriteAuthorList
             });
