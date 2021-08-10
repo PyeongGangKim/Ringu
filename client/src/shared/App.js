@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch, Route ,Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch, Route ,Redirect } from 'react-router-dom';
 
 import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegister, AuthorPage, BookPage, RegisterPage, BuyPage, BuyCompletePage, SearchPage} from '../pages';
 import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage } from '../pages';
