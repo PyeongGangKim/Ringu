@@ -3,6 +3,7 @@ var router = express.Router();
 
 const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn } = require("../../middlewares/auth");
+const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const { sequelize, cart, book, book_detail, purchase, withdrawal, member, author } = require("../../models");
 
 
@@ -56,7 +57,6 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         }
         else{
             for(let i = 0 ; i < cartList.length ; i++){
-                console.log(cartList[i].dataValues.img);
                 if(cartList[i].dataValues.img== null || cartList[i].dataValues.img[0] == 'h') continue;
                 cartList[i].dataValues.img = await imageLoad(cartList[i].dataValues.img);
             }
