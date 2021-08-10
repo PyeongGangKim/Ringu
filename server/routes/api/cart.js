@@ -3,6 +3,7 @@ var router = express.Router();
 
 const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn } = require("../../middlewares/auth");
+const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const { sequelize, cart, book, book_detail, purchase, withdrawal, member, author } = require("../../models");
 
 
@@ -55,10 +56,9 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
-            for(let aCart of cartList){
-                console.log(aCart.dataValues.img);
-                if(aCart.dataValues.img== null || aCart.dataValues.img[0] == 'h') continue;
-                aCart.dataValues.img = await imageLoad(aCart.dataValues.img);
+            for(let cart of cartList){
+                if(cart.dataValues.img== null || cart.dataValues.img[0] == 'h') continue;
+                cart.dataValues.img = await imageLoad(cart.dataValues.img);
             }
             res.status(StatusCodes.OK).json({
                 cartList : cartList,

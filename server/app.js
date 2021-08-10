@@ -17,27 +17,29 @@ const passportConfig = require('./middlewares/passport');
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
 
-let testcaseRouter = require('./routes/testcase');
+<<<<<<< HEAD
+var testcaseRouter = require('./routes/testcase');
 
-let admin_loginRouter = require('./routes/admin/login');
-let admin_logoutRouter = require('./routes/admin/logout');
-let admin_bookRouter = require('./routes/admin/book');
-let admin_memberRouter = require('./routes/admin/member');
+var admin_loginRouter = require('./routes/admin/login');
+var admin_logoutRouter = require('./routes/admin/logout');
+var admin_bookRouter = require('./routes/admin/book');
+var admin_memberRouter = require('./routes/admin/member');
 
-let admin_reviewRouter = require('./routes/admin/review');
-let admin_purchaseRouter = require('./routes/admin/purchase');
-let admin_favoriteAuthorRouter = require('./routes/admin/favorite_author');
-let admin_favoriteBookRouter = require('./routes/admin/favorite_book');
-let admin_categoryRouter = require('./routes/admin/category');
-let admin_authorRouter = require('./routes/admin/author');
+var admin_reviewRouter = require('./routes/admin/review');
+var admin_purchaseRouter = require('./routes/admin/purchase');
+var admin_favoriteAuthorRouter = require('./routes/admin/favorite_author');
+var admin_favoriteBookRouter = require('./routes/admin/favorite_book');
+var admin_categoryRouter = require('./routes/admin/category');
+var admin_authorRouter = require('./routes/admin/author');
 let admin_notification = require('./routes/admin/notification');
 
-let api_authRouter = require('./routes/api/auth');
-let api_bookRouter = require('./routes/api/book');
-let api_memberRouter = require('./routes/api/member');
-let api_favoriteAuthorRouter = require('./routes/api/favorite_author');
-let api_favoriteBookRouter = require('./routes/api/favorite_book');
-let api_purchaseRouter = require('./routes/api/purchase');
+var api_authRouter = require('./routes/api/auth');
+var api_bookRouter = require('./routes/api/book');
+var api_bookDetailRouter = require('./routes/api/book_detail');
+var api_memberRouter = require('./routes/api/member');
+var api_favoriteAuthorRouter = require('./routes/api/favorite_author');
+var api_favoriteBookRouter = require('./routes/api/favorite_book');
+var api_purchaseRouter = require('./routes/api/purchase');
 let api_cartRouter = require('./routes/api/cart');
 let api_categoryRouter = require('./routes/api/category');
 let api_authorRouter = require('./routes/api/author');
@@ -95,7 +97,7 @@ app.use('/admin/notification', admin_notification);
 
 app.use('/api/auth', api_authRouter);
 app.use('/api/book', api_bookRouter);
-
+app.use('/api/book_detail', api_bookDetailRouter);
 app.use('/api/member', api_memberRouter);
 app.use('/api/favorite_author', api_favoriteAuthorRouter);
 app.use('/api/favorite_book', api_favoriteBookRouter);
