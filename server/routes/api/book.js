@@ -106,6 +106,84 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
     }
 });
 
+router.get('/main', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
+    let member_id = req.query.member_id;
+
+    try{
+        const bookList = await book.findAll({
+            order: [sequelize.random()],
+            attributes: [
+                "id",
+                "price",
+                "img",
+                "title",
+                "type",//type 1이 연재본, 2가 단행본.
+                [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
+                [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"mean_score" ],
+                [sequelize.literal("author.nickname"), "author_nickname"],
+                [sequelize.literal("category.name"), "category"],
+            ],
+            where: {
+                status: 1,
+            },
+            include : [
+                {
+                    model : category,
+                    as : 'category',
+                    attributes : [],
+                },
+                {
+                    model : member,
+                    as : 'author',
+                    attributes: [],
+                },
+                {
+                    model : book_detail,
+                    as : 'book_details',
+                    attributes: [],
+                    include : [
+                        {
+                            model : review_statistics,
+                            as : 'review_statistics',
+                            attributes: [],
+                        }
+                    ]
+                },
+                {
+                    model : favorite_book,
+                    as: 'favorite_books',
+                    attributes: [],
+                    required: false,
+                    where: {
+                        member_id : {
+                            [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
+                        }
+                    }
+                }
+            ],
+            group: 'id',
+        });
+        if(bookList.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            for(let i = 0 ; i < bookList.length ; i++){
+                if(bookList[i].dataValues.img == null || bookList[i].dataValues.img[0] == 'h') continue;
+                bookList[i].dataValues.img = await imageLoad(bookList[i].dataValues.img);
+            }
+            res.status(StatusCodes.OK).json({
+                bookList: bookList,
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
     let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
@@ -219,7 +297,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
     }
 });
 
-router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail list를 join해서 가져오는 api
+router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
     let member_id = req.query.member_id;
 
@@ -264,7 +342,8 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     }
 });
 router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
-    //book table 에 넣는 attribute    
+    //book table 에 넣는 attribute
+    console.log(req)
     let price = req.body.price;
     let content = req.body.content;
     let book_description = req.body.book_description;
