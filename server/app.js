@@ -33,6 +33,7 @@ var admin_authorRouter = require('./routes/admin/author');
 
 var api_authRouter = require('./routes/api/auth');
 var api_bookRouter = require('./routes/api/book');
+var api_bookDetailRouter = require('./routes/api/book_detail');
 var api_memberRouter = require('./routes/api/member');
 var api_favoriteAuthorRouter = require('./routes/api/favorite_author');
 var api_favoriteBookRouter = require('./routes/api/favorite_book');
@@ -92,7 +93,7 @@ app.use('/admin/author', admin_authorRouter);
 
 app.use('/api/auth', api_authRouter);
 app.use('/api/book', api_bookRouter);
-
+app.use('/api/book_detail', api_bookDetailRouter);
 app.use('/api/member', api_memberRouter);
 app.use('/api/favorite_author', api_favoriteAuthorRouter);
 app.use('/api/favorite_book', api_favoriteBookRouter);
