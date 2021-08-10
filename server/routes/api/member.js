@@ -1,18 +1,26 @@
 var express = require("express");
 var router = express.Router();
 
-var config_url = require("../../config/url");
+const {StatusCodes} = require("http-status-codes");
+const bcrypt = require('bcrypt');
+const multer = require("multer");
 
 var helper_api = require("../../helper/api");
 var helper_security = require("../../helper/security");
 //var helper_email = require("../../helper/email");
 var helper_random = require("../../helper/random");
 var helper_date = require("../../helper/date");
-const bcrypt = require('bcrypt');
+
 
 let { member } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
+const { uploadFile, imageLoad } = require("../../middlewares/third_party/aws");
+
+const { upload } = require('../../utils/aws');
+
+
 const { salt } = require("../../config/salt");
+const aws = require("../../utils/aws");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
     var id = req.query.id;
@@ -40,6 +48,29 @@ router.get('/', isLoggedIn, async(req, res, next) => {
         });
     }
 })
+
+router.get('/profile/:memberId', isLoggedIn, async(req, res, next) => {
+    var id = req.params.memberId
+
+    try {
+        const result = await member.findOne({
+            where: {
+                id: id,
+            }
+        });
+
+        const url = imageLoad(result.profile)
+
+        console.log(url)
+        res.status(StatusCodes.OK).json({
+            "url" : url,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
+})
+
 router.post('/password/check', isLoggedIn, async(req, res, next) => {
     try{
         let password = req.body.password;
@@ -132,6 +163,32 @@ router.put('/nickname', isLoggedIn, async (req, res, next) => {
     }
 
 });
+
+router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => {
+    let id = req.user.id;
+    let profile = req.files.img[0].key;
+
+    try{
+        const result = await member.update({
+            profile : profile,
+        },
+        {
+            where : {
+                id : id,
+            }
+        });
+        if(result){
+            res.json({status: "ok", result});
+        }
+        else{
+            res.json({status: "error", reason: "name update error"});
+        }
+    }
+    catch(err){
+        console.error(err);
+    }
+
+})
 
 router.delete('/', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;
