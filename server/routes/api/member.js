@@ -7,6 +7,7 @@ const multer = require("multer");
 
 var helper_api = require("../../helper/api");
 var helper_security = require("../../helper/security");
+const {StatusCodes} = require("http-status-codes");
 //var helper_email = require("../../helper/email");
 var helper_random = require("../../helper/random");
 var helper_date = require("../../helper/date");
@@ -33,19 +34,17 @@ router.get('/', isLoggedIn, async(req, res, next) => {
         });
 
         if(user){
-            res.json({status: "ok", user});
+            res.status(StatusCodes.OK).json({
+                user: user,
+            })
         }
         else {
-            res.json({status: "error", reason: "not matching"});
+            res.status(StatusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "api error",
-        });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -78,23 +77,28 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         const result = await bcrypt.compare(password, req.user.password);
 
         if(result){
-            res.json({status: "ok", result: true});
+            res.status(StatusCodes.OK).json({
+                check: true,
+            });
         }
         else{
-            res.json({status: "error", reason: "wrong password", result: false});
+            res.status(StatusCodes.OK).json({
+                check: false,    
+            });
         }
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
 })
 router.put('/password/', isLoggedIn, async (req, res, next) => {
     try{
-        // POST
+        // patch로 바꿔야됨
         var id = req.user.id;
-        var salt = await bcrypt.genSalt(salt);
-        var password = await bcrypt.hash(req.body.password, salt);
+        let _salt = await bcrypt.genSalt(salt);
+        var password = await bcrypt.hash(req.body.password, _salt);
 
         const result = await member.update({
             password : password
@@ -104,15 +108,13 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
             },
         });
 
-        if(result){
-            res.json({status : "ok", result});
-        }
-        else{
-            res.json({status: "error", reason: "password update error"});
-        }
+        res.status(StatusCodes.OK).json({
+            member: result
+        })
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
     // DB LOAD
@@ -127,21 +129,24 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
             }
         });
         if(result.length != 0){
-            res.json({status: "error", reason: "duplicate"});
+            res.status(StatusCodes.CONFLICT).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.json({status: "ok"});
+            res.status(StatusCodes.OK);
         }
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 
 router.put('/nickname', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;
     let nickname = req.body.nickname;
-
+    // patch로 변경필요
     try{
         const result = await member.update({
             nickname : nickname,
@@ -152,14 +157,15 @@ router.put('/nickname', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.json({status: "ok", result});
+            res.status(StatusCodes.OK).json({
+                "member" : result,
+            });
         }
-        else{
-            res.json({status: "error", reason: "name update error"});
-        }
+        
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
 });
@@ -203,14 +209,12 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.json({status : "ok"});
-        }
-        else{
-            res.json({status: "error", reason: "user delete error"});
+            res.status(StatusCodes.OK);
         }
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 

@@ -1,35 +1,18 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('notification', {
+  return sequelize.define('notiCount', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    title: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    status: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 1
-    },
-    read_date_time: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    type: {
+    count: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -43,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'notification',
+    tableName: 'notiCount',
     timestamps: false,
     indexes: [
       {
@@ -55,7 +38,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "notification_member_id_fk",
+        name: "notiCount_member_id_fk",
         using: "BTREE",
         fields: [
           { name: "member_id" },

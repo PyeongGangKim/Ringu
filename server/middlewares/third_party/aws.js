@@ -16,6 +16,7 @@ const storage = multerS3({
     bucket: function(req,file, cb){
         cb(null, BUCKET+ "/" + file.fieldname);
     },
+    
     contentType: function(req, file, cb){
         let fieldName = file.fieldname;
         if(fieldName == "img"){
@@ -90,7 +91,7 @@ const deleteFile = async (req, res, next) =>{
     }
 }
 const downloadFile = (fieldName ,fileName) => {
-    const signedUrlExpireSeconds = 60 * 5;
+    const signedUrlExpireSeconds = 60 * 1;
     const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
         Bucket: BUCKET,

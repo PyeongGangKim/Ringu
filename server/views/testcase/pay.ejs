@@ -1,0 +1,46 @@
+<%- include('head'); %>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 id="api_kakaopay">카카오 페이</h2>
+        <form method="POST" action="/api/pay/kakaopay" onsubmit="api_kakaopay(this); return false;">
+            <div class="form-group">
+                <label>Member_id</label>
+                <input type="text" class="form-control" name="member_id" value="4c88f4d2df15406beefec4b6d27ec2d7b347e2a26f685013e7e47b00ee00b29479a70527487ccb605eaa2be985b3bdf06569dd97ab5321236840251e31782f94da3bd20e01315a995f6c37937d6d4b5dcb0c06ba07cf956fdff459e0a2ada15b93">
+            </div>
+            <div class="form-group">
+                <label>item_name</label>
+                <input type="text" class="form-control" name="item_name" value="4d053d782bfa76c4174c6ae5477c36f921944b297cf0b2f961dbf57f769d217e0f303b9569a0aa67b9113009d29b13c604d6ff193077ea4c22b219f726d910bba9f9152e395fec222e75b4dc30f8259159c5808e8d358be5326a9f2e62860a9ac6">
+            </div>
+            <div class="form-group">
+                <label>quantity</label>
+                <input type="number" class="form-control" name="quantity" value="4d053d782bfa76c4174c6ae5477c36f921944b297cf0b2f961dbf57f769d217e0f303b9569a0aa67b9113009d29b13c604d6ff193077ea4c22b219f726d910bba9f9152e395fec222e75b4dc30f8259159c5808e8d358be5326a9f2e62860a9ac6">
+            </div>
+            <div class="form-group">
+                <label>amount</label>
+                <input type="number" class="form-control" name="amount" value="4d053d782bfa76c4174c6ae5477c36f921944b297cf0b2f961dbf57f769d217e0f303b9569a0aa67b9113009d29b13c604d6ff193077ea4c22b219f726d910bba9f9152e395fec222e75b4dc30f8259159c5808e8d358be5326a9f2e62860a9ac6">
+            </div>
+            <div class="form-group">
+                <label>Result</label>
+                <textarea class="form-control" readonly></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script>
+            var api_kakaopay = function(f) {
+                var form = $(f);
+                var payload = {
+                    "member_id" : form.find("input[name=member_id]").val(),
+                    "item_name" : form.find("input[name=item_name]").val(),
+                    "quantity" : form.find("input[name=quantity]").val(),
+                    "amount" : form.find("input[name=amount]").val(),
+                };
+                $.post(form.attr("action"), payload, function(result) { form.find("textarea").val(JSON.stringify(result)); }).fail(function(result) {
+                    form.find("textarea").val(JSON.stringify(result));
+                });
+            };
+        </script>
+    </div>
+</div>
+
+<%- include('foot'); %>

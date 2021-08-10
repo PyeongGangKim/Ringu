@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const {StatusCodes} = require("http-status-codes");
 
 
 const {category, Sequelize: {Op} } = require("../../models");
@@ -14,7 +15,9 @@ router.get("/:categoryId", async (req, res, next) => {//카테고리 정보 얻�
                 id : id,
             }
         });
-        res.json({status: "ok", result});
+        res.status(StatusCodes.OK).json({
+            category: result,
+        })
         
     }
     catch(err){

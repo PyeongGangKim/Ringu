@@ -10,9 +10,8 @@ var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
 var helper_activity = require("../../helper/activity");
 
-//var purchase_m = require("../../model/purchase");
 
-const {purchase,book,member, single_published_book, serialization_book} = require("../../models");
+const {purchase, book, member, book_detail} = require("../../models");
 
 router.get("/", async(req, res, next) => {
 
@@ -27,12 +26,13 @@ router.get("/", async(req, res, next) => {
 
     try {
         const result = await purchase.findAndCountAll({
-            /*attributes: [
-                'id', 'created_date_time',
-                [sequelize.col('member.name'), 'buyer'],
-                [sequelize.col('book.title'), 'title'],
-                [sequelize.col('book.type'),'type']
-            ],*/
+            attributes: [
+                'id', 'created_date_time','price',
+                [sequelize.col('member.nickname'), 'buyer'],
+                [sequelize.col('book_detail.title'), 'title'],
+
+                
+            ],
             include:[
                 { 
                     model: member, 
@@ -42,8 +42,8 @@ router.get("/", async(req, res, next) => {
                     subQuery: false,
                 },
                 { 
-                    model: book, 
-                    as: 'book',
+                    model: book_detail, 
+                    as: 'book_detail',
                     required: true, 
                     attributes: [],
                     subQuery: false,
@@ -93,11 +93,6 @@ router.get('/list/user', async(req, res, next) => {
 
     try{
         const result = await purchase.findAndCountAll({
-            /*attributes : [
-                'id', 'created_date_time',
-                [sequelize.col('member.name'), 'consumer'],
-                [sequelize.col('book.title'), 'book'],
-            ],*/
             where: {
                 member_id : member_id,
                 status : 1,
@@ -107,11 +102,11 @@ router.get('/list/user', async(req, res, next) => {
                 {
                     model : member,
                     as : "member",
-                    attributes : ['name'],
+                    attributes : ['nickname'],
                 },
                 {
-                    model : book,
-                    as : "book",
+                    model : book_detail, 
+                    as : "book_detail",
                     attributes : ['title'],
                 }
             ]
@@ -123,7 +118,6 @@ router.get('/list/user', async(req, res, next) => {
         });
         const purchase_list = result.rows;
         const total_count = result.count;
-        console.log(purchase_list);
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/purchase/list/user", page, limit, total_count, {member_id:member_id});
         res.render("admin/pages/member_purchase_list", {
             "purchase_list" : purchase_list,
@@ -139,38 +133,22 @@ router.get('/list/user', async(req, res, next) => {
     }
 });
 /*
-router.get("/view/", async(req, res, next) => {
-    helper_activity.checkLogin(req, res, "/admin/purchase/view/?id=" + req.query["id"]);
-
-    var id = helper_security.decrypt(req.query["id"]);
-
-    var payload = {
-        member_id: id,
-        order_by: "id",
-        order_direction: "asc",
-        limit: 0,
-        offset: 0
-    }
-
-    try {
-        const purchase_list           = await purchase_m.getList(payload, false);
-        const favorite_author_list    = await favorite_author_m.getList(payload, false);
-        const favorite_book_list      = await favorite_book_m.getList(payload, false);
-        const member                  = await member_m.get({id:id});
-
-        res.render("admin/pages/member_view", {
-                    "member"                : member[0],
-                    "purchase_list"         : purchase_list,
-                    "favorite_author_list"  : favorite_author_list,
-                    "favorite_book_list"    : favorite_book_list,
-                    "helper_date"           : helper_date,
-                    "helper_security"       : helper_security
+router.get("/:puchaseId", async(req, res, next) => {
+    helper_activity.checkLogin(req, res, "/admin/purchase/");
+    let purchaseId = req.params.purchaseId;
+    try{
+        const result = await purchase.findOne({
+            where: {
+                id: purchaseId,
+            }
         });
-    } catch(err) {
-
+        res.render("admin/pages/")
     }
-});*/
-
+    catch(err){
+        console.error(err);
+    }
+})
+*/
 router.post("/save/", async(req, res, next) => {
 
     var member_id  = helper_security.decrypt(req.body["member_id"]);

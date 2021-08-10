@@ -86,7 +86,12 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             group: 'id',
         });
         if(bookList.length == 0){
+<<<<<<< HEAD
             res.status(StatusCodes.NO_CONTENT).send("No content");;
+=======
+            console.log(bookList);
+            res.status(StatusCodes.NO_CONTENT).send("No content");
+>>>>>>> 98d2f0ac96d84cd423ce0fac13316964734c31d9
         }
         else{
             for(let i = 0 ; i < bookList.length ; i++){
@@ -342,19 +347,20 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     }
 });
 router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
-    //book table 에 넣는 attribute
-    console.log(req)
+    //book table 에 넣는 attribute    
     let price = req.body.price;
     let content = req.body.content;
     let book_description = req.body.book_description;
     let author_id = req.user.id;
     let category_id = req.body.category_id ? 1: 1;
+
     let title = req.body.title;
     let type = req.body.type;
     let is_finished_serialization = (type == 2) ? 1 : 0;
     let serialization_day = req.body.serialization_day;
     let img = req.files.img[0].key;
     let preview = (req.files.preview == null) ? null : req.files.preview[0].key;
+
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
@@ -365,7 +371,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             title: title,
             price: price,
             content: content,
-            book_description: book_description,
+            description: description,
             author_id : author_id,
             img : img,
             category_id : category_id,
@@ -398,7 +404,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
 });
 router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
     let page_number = req.body.page_number;
-    let file = req.files.file[0].location;
+    let file = req.files.file[0].key;
     let book_id = req.body.book_id;
     let title = req.body.title;
     let round = req.body.round;

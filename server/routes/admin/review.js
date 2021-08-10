@@ -10,11 +10,8 @@ var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
 var helper_activity = require("../../helper/activity");
 
-//var review_m = require("../../model/review");
+const { review, book_detail, book, member, review_statistic} = require("../../models");
 
-var review = require("../../models").review;
-var book = require("../../models").book;
-var member = require("../../models").member;
 
 router.get("/", async(req, res, next) => {
 
@@ -30,20 +27,20 @@ router.get("/", async(req, res, next) => {
 
     try {
         const result = await review.findAndCountAll({
-            /*attributes: [
+            attributes: [
                 'id', 'created_date_time', 'score', 'description',
-                [sequelize.col('member.name'), 'reviewer'],
-                [sequelize.col('book.title'), 'book'],
-            ],*/
+                [sequelize.col('member.nickname'), 'reviewer'],
+                [sequelize.col('book_detail.title'), 'book'],
+            ],
             include : [ 
                 {
                     model : member,
                     as : "member",
-                    attributes : ['name'],
+                    attributes : ['nickname'],
                 },
                 {
-                    model : book,
-                    as : "book",
+                    model : book_detail,
+                    as : "book_detail",
                     attributes : ['title'],
                 }
             ],
@@ -90,11 +87,11 @@ router.get('/list/user', async(req, res, next) => {
 
     try{
         const result = await review.findAndCountAll({
-            /*attributes : [
-                'id', 'created_date_time', 'score', 'description','book'
-                [sequelize.col('member.name'), 'reviewer'],
-                [sequelize.col('book.title'), 'book'],
-            ],*/
+            attributes : [
+                'id', 'created_date_time', 'score', 'description',
+                [sequelize.col('member.nickname'), 'reviewer'],
+                [sequelize.col('book_detail.title'), 'book'],
+            ],
             where: {
                 member_id : member_id,
                 status : 1,
@@ -104,11 +101,11 @@ router.get('/list/user', async(req, res, next) => {
                 {
                     model : member,
                     as : "member",
-                    attributes : ['name'],
+                    attributes : ['nickname'],
                 },
                 {
-                    model : book,
-                    as : "book",
+                    model : book_detail,
+                    as : "book_detail",
                     attributes : ['title'],
                 }
             ]
@@ -145,12 +142,12 @@ router.get("/view/:reviewId", async(req, res, next) => {
         const review_info = await review.findOne({
             attributes: [
                 'id', 'created_date_time', 'score', 'description',
-                [sequelize.col('member.name'), 'reviewer'],
-                [sequelize.col('book.title'), 'book'],
+                [sequelize.col('member.nickname'), 'reviewer'],
+                [sequelize.col('book_detail.title'), 'book'],
             ],
             include:[
                 { model: member, as: 'member', required: true, attributes: [] },
-                { model: book, as: 'book', required: true, attributes: []}
+                { model: book_detail, as: 'book_detail', required: true, attributes: []}
             ],
             where:{
                 status: 1,
