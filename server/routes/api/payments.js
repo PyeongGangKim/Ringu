@@ -17,7 +17,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     try {
         var data = req.body
 
-        const impData = async iamporter.findByImpUid(data.imp_uid)
+        const impData = async iamporter.findByImpUid(data.imp_uid);
         var impUid = impData.data.imp_uid;
         if (data.imp_uid !== impUid || (Number(data.paid_amount) !== Number(impData.data.amount))) {
             return res.json({status: 'error', reason: "IMPUID_NOT_MATCH"})

@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
 const bcrypt = require('bcrypt');
 const multer = require("multer");
 
