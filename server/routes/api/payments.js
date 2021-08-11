@@ -34,7 +34,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         }
 
         const new_payment = await payment.create({
-            # TODO
+            // TODO
         })
 
 

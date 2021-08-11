@@ -88,7 +88,9 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 })
@@ -113,7 +115,9 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
     // DB LOAD
@@ -133,12 +137,16 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
             });
         }
         else{
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 
@@ -164,7 +172,9 @@ router.put('/nickname', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 });
@@ -183,10 +193,9 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.json({status: "ok", result});
-        }
-        else{
-            res.json({status: "error", reason: "name update error"});
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
@@ -208,12 +217,16 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 

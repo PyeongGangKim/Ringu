@@ -158,7 +158,9 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
                 id : id,
             }
         });
-        res.status(StatusCodes.OK);
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
     }
     catch(err){
         console.error(err);

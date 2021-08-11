@@ -75,7 +75,9 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
             });
         }
         else{
-            res.status(StatusCodes.NO_CONTENT)
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
             
         }
     }

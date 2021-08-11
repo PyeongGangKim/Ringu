@@ -98,7 +98,9 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
             });
         }
         else{
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });;
         }
     }
     catch(err){
@@ -116,14 +118,17 @@ router.post('/email/duplicate', async(req, res, next) => {//email duplicate체�
                 email: email
             }
         });
-
+        console.log(result);
         if(result){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "Duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK);
+            console.log(result);
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
