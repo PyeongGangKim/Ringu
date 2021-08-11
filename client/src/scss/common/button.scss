@@ -119,3 +119,12 @@
 .btn-rounded {
     border-radius: 20px
 }
+
+em.right_arrow {
+    width: 20px;
+    height: 40px;
+    background-repeat: no-repeat;
+    background-color: unset;
+    background-size: contain;
+    background-image: url(/right_arrow.png)
+}

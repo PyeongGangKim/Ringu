@@ -36,6 +36,7 @@ class Author extends Component {
 
         const res = await API.sendGet(URL.api.book.list, params = params)
         var bookList = res.data.bookList
+        console.log(bookList)
 
         const userRes = await API.sendGet(URL.api.member.get, params = {id: User.getInfo().id})
         var user = userRes.data.user
@@ -99,13 +100,15 @@ class Author extends Component {
                                         bookList.map(item => {
                                             return (
                                                 <li className="book-box">
-                                                    <div className="thumbnail-box">
-                                                        <div className="img-area">
-                                                            <img src="/travel.jpg"/>
-                                                        </div>
+                                                    <Link  to={URL.service.book + item.id}>
+                                                        <div className="thumbnail-box">
+                                                            <div className="img-area">
+                                                                <img src={item.img}/>
+                                                            </div>
 
-                                                        <h3 className="title">{item.title}</h3>
-                                                    </div>
+                                                            <h3 className="title">{item.title}</h3>
+                                                        </div>
+                                                    </Link>
 
                                                     <div className="book-info">
                                                         <span className="price">{parse.numberWithCommas(item.price)}원</span>

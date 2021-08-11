@@ -72,7 +72,7 @@ class FavAuthor extends Component {
                                     <div key={item.id} className="fa-box">
                                         <div className="profile">
                                             <div>
-                                                <img src="/blank.jpg"/>
+                                                <img src={item.profile ? item.profile : "/blank.jpg"}/>
                                             </div>
 
                                             <span className="author-name">{item.author_nickname}</span>
@@ -113,9 +113,11 @@ class FavAuthor extends Component {
                                             </button>
                                         </div>
 
-                                        <div className="detail">
-                                        >
-                                        </div>
+                                        <Link to={URL.service.author + item.author_id}>
+                                            <div className="detail">
+                                                <em className="right_arrow"/>
+                                            </div>
+                                        </Link>
                                     </div>
 
                                 )
