@@ -84,6 +84,8 @@ function initModels(sequelize) {
   book_detail.hasMany(payment, {as : "payments", foreignKey: "book_detail_id"});
   payment.belongsTo(book, {as : "book", foreignKey: "book_id"});
   book.hasMany(payment, {as : "payments", foreignKey: "book_id"});
+  payment.hasOne(purchase, {as : "purchase", foreignKey: "payment_id"});
+  purchase.belongsTo(payment, {as: "payment", foreignKey: "payment_id"});
 
   return {
     author,
@@ -102,6 +104,7 @@ function initModels(sequelize) {
     review_statistics,
     withdrawal,
     notiCount,
+    payment,
   };
 }
 module.exports = initModels;

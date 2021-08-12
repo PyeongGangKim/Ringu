@@ -23,6 +23,14 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
+    payment_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'payment',
+        key: 'id'
+      }
+    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
