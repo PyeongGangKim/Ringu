@@ -46,6 +46,11 @@ module.exports = function(sequelize, DataTypes) {
     round: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    charge : {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 10,
     }
   }, {
     sequelize,
