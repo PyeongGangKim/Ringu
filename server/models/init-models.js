@@ -16,6 +16,7 @@ let _review_statistics = require("./review_statistics");
 let _withdrawal = require("./withdrawal");
 let _notiCount = require("./notiCount");
 let _payment = require("./payment");
+let _account = require("./account");
 
 function initModels(sequelize) {
   let author = _author(sequelize, DataTypes);
@@ -35,6 +36,7 @@ function initModels(sequelize) {
   let withdrawal = _withdrawal(sequelize, DataTypes);
   let notiCount = _notiCount(sequelize, DataTypes);
   let payment = _payment(sequelize, DataTypes);
+  let account = _account(sequelize, DataTypes);
 
   withdrawal.belongsTo(author, { as: "author", foreignKey: "author_id"});
   author.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
@@ -86,6 +88,8 @@ function initModels(sequelize) {
   book.hasMany(payment, {as : "payments", foreignKey: "book_id"});
   payment.hasOne(purchase, {as : "purchase", foreignKey: "payment_id"});
   purchase.belongsTo(payment, {as: "payment", foreignKey: "payment_id"});
+  account.belongsTo(author, {as : "author", foreignKey: "author_id"});
+  author.hasOne(account, {as : "account", foreignKey: "author_id"});
 
   return {
     author,
@@ -105,6 +109,7 @@ function initModels(sequelize) {
     withdrawal,
     notiCount,
     payment,
+    account,
   };
 }
 module.exports = initModels;
