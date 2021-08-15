@@ -86,12 +86,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             group: 'id',
         });
         if(bookList.length == 0){
-<<<<<<< HEAD
             res.status(StatusCodes.NO_CONTENT).send("No content");;
-=======
-            console.log(bookList);
-            res.status(StatusCodes.NO_CONTENT).send("No content");
->>>>>>> 98d2f0ac96d84cd423ce0fac13316964734c31d9
         }
         else{
             for(let i = 0 ; i < bookList.length ; i++){
@@ -347,7 +342,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     }
 });
 router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
-    //book table 에 넣는 attribute    
+    //book table 에 넣는 attribute
     let price = req.body.price;
     let content = req.body.content;
     let book_description = req.body.book_description;

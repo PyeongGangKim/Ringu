@@ -7,7 +7,6 @@ const multer = require("multer");
 
 var helper_api = require("../../helper/api");
 var helper_security = require("../../helper/security");
-const {StatusCodes} = require("http-status-codes");
 //var helper_email = require("../../helper/email");
 var helper_random = require("../../helper/random");
 var helper_date = require("../../helper/date");
@@ -83,7 +82,7 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         }
         else{
             res.status(StatusCodes.OK).json({
-                check: false,    
+                check: false,
             });
         }
     }
@@ -161,7 +160,7 @@ router.put('/nickname', isLoggedIn, async (req, res, next) => {
                 "member" : result,
             });
         }
-        
+
     }
     catch(err){
         console.error(err);

@@ -17,7 +17,6 @@ const passportConfig = require('./middlewares/passport');
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
 
-<<<<<<< HEAD
 var testcaseRouter = require('./routes/testcase');
 
 var admin_loginRouter = require('./routes/admin/login');
