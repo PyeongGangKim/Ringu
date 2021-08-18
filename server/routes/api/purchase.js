@@ -5,7 +5,7 @@ const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
-const {book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
+const {account ,book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
 const {imageLoad} = require("../../middlewares/third_party/aws.js");
 const {kakaopay} = require("../../config/pay.js");
 const url = require("../../config/url.js");
@@ -14,20 +14,87 @@ const request = require("request");
 
 
 router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
-    let member_id = req.user.id;
+    
     let book_detail_id = req.body.book_detail_id;
-    let price = req.body.price;
+    let payment_id = req.body.payment_id;
+    
+    
+    const t = await sequelize.transaction();
     try{
-        const result = await purchase.create({
-            member_id : member_id,
+        //book_detail_id로 수수료 가져와서 purchase할 때, withdrawal에 저장.
+        //purchase 만들고, 그리고 해당 purchase에 대한 내용 transaction 사용해서, account에 추가
+
+        const purchased_book = await book_detail.findOne({
+            attributes : [
+                "id",
+                "charge",
+                [sequelize.literal("book.price"), "price"],
+                [sequelize.literal("book.author_id"), "author_id"],
+            ],
+            where: {
+                id : book_detail_id,
+            },
+            include: [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: []
+                }
+                
+            ],
+            transaction: t,
+        });
+        console.log(purchased_book);
+        let author_id = purchased_book.dataValues.author_id;
+        let price = purchased_book.dataValues.price;
+        let charge = purchased_book.dataValues.charge;
+        console.log(author_id, price, charge);
+    
+        await purchase.create({
+            member_id : author_id,
             book_detail_id : book_detail_id,
             price: price,
-        })
-        console.log(result);
+            payment_id : payment_id,
+        },
+        {
+            transaction: t,
+        });
+        let earned_money = price - (price * (charge / 100));
+        
+        let [author_account, created] = await account.findOrCreate({
+            where : {
+                author_id : author_id,
+            },
+            defaults : {
+                author_id : author_id,
+                total_earned_money : earned_money,
+                total_withdrawal_amount: 0,
+                amount_available_withdrawal: earned_money
+            },
+            transaction : t,
+        });
+        console.log(created);
+        console.log(author_account);
+        if(!created){
+            let update_total_earned_money = author_account.total_earned_money + earned_money;
+            let update_amount_available_withdrawal = author_account.amount_available_withdrawal + earned_money;
+            await account.update({
+                total_earned_money: update_total_earned_money,
+                amount_available_withdrawal : update_amount_available_withdrawal,
+            },
+            {
+                where: {
+                    id: author_account.id,
+                },
+                transaction: t,
+            });
+        }
+        await t.commit();
         res.status(StatusCodes.OK).send("success purchasing");
 
     }
     catch(err){
+        await t.rollback();
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });

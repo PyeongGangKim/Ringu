@@ -405,7 +405,7 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     let title = req.body.title;
     let round = req.body.round;
     try{
-        const new_round_book = book_detail.create({
+        const new_round_book = await book_detail.create({
             title: title,
             book_id : book_id,
             page_number : page_number,

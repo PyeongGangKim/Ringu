@@ -38,8 +38,8 @@ function initModels(sequelize) {
   let payment = _payment(sequelize, DataTypes);
   let account = _account(sequelize, DataTypes);
 
-  withdrawal.belongsTo(author, { as: "author", foreignKey: "author_id"});
-  author.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
+  withdrawal.belongsTo(member, { as: "author", foreignKey: "author_id"});
+  member.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
   book_detail.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
   favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
@@ -88,8 +88,8 @@ function initModels(sequelize) {
   book.hasMany(payment, {as : "payments", foreignKey: "book_id"});
   payment.hasOne(purchase, {as : "purchase", foreignKey: "payment_id"});
   purchase.belongsTo(payment, {as: "payment", foreignKey: "payment_id"});
-  account.belongsTo(author, {as : "author", foreignKey: "author_id"});
-  author.hasOne(account, {as : "account", foreignKey: "author_id"});
+  account.belongsTo(member, {as : "author", foreignKey: "author_id"});
+  member.hasOne(account, {as : "account", foreignKey: "author_id"});
 
   return {
     author,

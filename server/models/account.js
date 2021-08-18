@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'author',
+        model: 'member',
         key: 'id'
       }
     },
@@ -26,6 +26,11 @@ module.exports = function(sequelize, DataTypes) {
     amount_available_withdrawal: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    request_withdrawal_amount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
     },
     created_date_time: {
       type: DataTypes.DATE,
