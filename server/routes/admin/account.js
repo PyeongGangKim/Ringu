@@ -74,7 +74,7 @@ router.get("/", async (req, res, next) => {
 });
 
 
-router.post("/:accountId/transfer", async (req, res, next) => {
+router.get("/:accountId/transfer", async (req, res, next) => {
     
     checkLogin(req, res, "/admin/account");
     let account_id = req.params.accountId;
@@ -90,6 +90,11 @@ router.post("/:accountId/transfer", async (req, res, next) => {
             request_withdrawal_amount : update_request_withdrawal_amount,
             total_withdrawal_amount : update_total_withdrawal_amount,
             
+        },
+        {
+            where: {
+                id: account_id,
+            }
         });
             
         res.redirect(config_url.base_url + "admin/account");
