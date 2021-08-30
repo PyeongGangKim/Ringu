@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    book_id: {
+    author_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
