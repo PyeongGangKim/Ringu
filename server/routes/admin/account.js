@@ -23,8 +23,8 @@ router.get("/", async (req, res, next) => {
     let offset          = parseInt(limit) * (parseInt(page)-1);
 
     let fields = {
-        "name"         : ("name" in req.query) ? req.query.title : "",
-        "nickname"         : ("nicknmae" in req.query) ? req.query.price : "",
+        "name"         : ("name" in req.query) ? req.query.name : "",
+        "nickname"         : ("nicknmae" in req.query) ? req.query.nickname : "",
         
     }
 
@@ -72,38 +72,6 @@ router.get("/", async (req, res, next) => {
         console.log(err);
     }
 });
-
-
-router.get("/:accountId/transfer", async (req, res, next) => {
-    
-    checkLogin(req, res, "/admin/account");
-    let account_id = req.params.accountId;
-    try{
-        const curAccount = await account.findOne({
-            where: {
-                id: account_id,
-            }
-        });
-        let update_request_withdrawal_amount = 0;
-        let update_total_withdrawal_amount = curAccount.request_withdrawal_amount*1 + curAccount.total_withdrawal_amount*1 ; 
-        await account.update({
-            request_withdrawal_amount : update_request_withdrawal_amount,
-            total_withdrawal_amount : update_total_withdrawal_amount,
-            
-        },
-        {
-            where: {
-                id: account_id,
-            }
-        });
-            
-        res.redirect(config_url.base_url + "admin/account");
-    }
-    catch(err){
-        console.log(err);
-    }
-});
-
 
 
 module.exports = router;
