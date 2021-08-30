@@ -14,6 +14,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
     try{
         const notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -35,7 +36,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
             ],
         });
         res.status(StatusCodes.OK).json({
-            "notification_list" : notifications
+            "notification_list" : notifications,
         });
     }
     catch(err){
@@ -45,12 +46,32 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
         });
     }
 });
-
+router.get('/newNotiCount', isLoggedIn, async(req, res, next) => {
+    let member_id = req.user.id;
+    try{
+        const newNotiCount = await notiCount.findOne({
+            where : {
+                member_id : member_id
+            }
+        });
+        console.log(newNotiCount.count);
+        res.status(StatusCodes.OK).json({
+            new_notification_count: newNotiCount.count,
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
 router.get('/book', isLoggedIn, async (req, res, next) => {
-    var member_id = req.user.id;
+    let member_id = req.user.id;
     try{
         const book_notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -71,8 +92,17 @@ router.get('/book', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
+        const unread_cnt = await notification.count({
+            where : {
+                member_id : member_id,
+                status : 1,
+                type: 1,
+                is_read : 0,
+            }   
+        });
         res.status(StatusCodes.OK).json({
-            "book_notification_list": book_notifications
+            book_notification_list: book_notifications,
+            unread_count : unread_cnt
         });
     }
     catch(err){
@@ -87,6 +117,7 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
     try{
         const withdrawal_notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -96,7 +127,7 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
             where: {
                 member_id : member_id,
                 status : 1,
-                type: 2,
+                type: 4,
             },
             include : {
                 as: "member",
@@ -107,9 +138,19 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
-        res.status(StatusCodes.OK).json({
-            "withdrawal_notification": withdrawal_notifications,
+        const unread_cnt = await notification.count({
+            where : {
+                member_id : member_id,
+                status : 1,
+                type: 4,
+                is_read : 0,
+            }   
         });
+        res.status(StatusCodes.OK).json({
+            withdrawal_notification_list: withdrawal_notifications,
+            unread_count : unread_cnt
+        });
+
     }
     catch(err){
         console.error(err);
@@ -123,6 +164,7 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
     try{
         const notice_notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -143,8 +185,17 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
+        const unread_cnt = await notification.count({
+            where : {
+                member_id : member_id,
+                status : 1,
+                type: 2,
+                is_read : 0,
+            }   
+        });
         res.status(StatusCodes.OK).json({
-            "normal_notification_list" : notice_notifications,
+            normal_notification_list : notice_notifications,
+            unread_count : unread_cnt
         });
     }
     catch(err){
