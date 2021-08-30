@@ -1,46 +1,32 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('withdrawal', {
+  return sequelize.define('favorite_author_statistics', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
+    book_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'author',
+        key: 'id'
+      }
+    },
+    favorite_person_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    amount: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    author_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'member',
-        key: 'id'
-      }
-    },
-    status: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 1
-    },
-    remitted_date_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    is_remittance: {
-      type: DataTypes.TINYINT,
-      allowNull : false,
-      defaultValue: 1,
     }
   }, {
     sequelize,
-    tableName: 'withdrawal',
+    tableName: 'favorite_author_statistics',
     timestamps: false,
     indexes: [
       {
@@ -52,7 +38,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "withdrawal_author_id_fk",
+        name: "favorite_author_statistics_author_id_fk",
         using: "BTREE",
         fields: [
           { name: "author_id" },

@@ -5,6 +5,7 @@ let _book_detail = require("./book_detail");
 let _cart = require("./cart");
 let _category = require("./category");
 let _favorite_author = require("./favorite_author");
+let _favorite_author_statistics = require("./favorite_author_statistics");
 let _favorite_book = require("./favorite_book");
 let _favorite_book_statistics = require("./favorite_book_statistics");
 let _identification = require("./identification");
@@ -25,6 +26,7 @@ function initModels(sequelize) {
   let cart = _cart(sequelize, DataTypes);
   let category = _category(sequelize, DataTypes);
   let favorite_author = _favorite_author(sequelize, DataTypes);
+  let favorite_author_statistics = _favorite_author_statistics(sequelize, DataTypes);
   let favorite_book = _favorite_book(sequelize, DataTypes);
   let favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
   let identification = _identification(sequelize, DataTypes);
@@ -90,6 +92,8 @@ function initModels(sequelize) {
   purchase.belongsTo(payment, {as: "payment", foreignKey: "payment_id"});
   account.belongsTo(member, {as : "author", foreignKey: "author_id"});
   member.hasOne(account, {as : "account", foreignKey: "author_id"});
+  favorite_author_statistics.belongsTo(member, {as : "author", foreignKey: "author_id"});
+  member.hasOne(favorite_author_statistics, {as : "favorite_author_statistics", foreignKey: "author_id"});
 
   return {
     author,
@@ -98,6 +102,7 @@ function initModels(sequelize) {
     cart,
     category,
     favorite_author,
+    favorite_author_statistics,
     favorite_book,
     favorite_book_statistics,
     identification,
