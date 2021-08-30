@@ -14,7 +14,9 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
     let category_id = req.query.category_id;
     let keyword = req.query.keyword;
     let member_id = req.query.member_id;
-
+    let is_approved = (req.query.is_approved) ? [req.query.is_approved] : [0,1];
+    
+    //where에 is_approved추가하기
     try{
         const bookList = await book.findAll({
             attributes: [
@@ -30,6 +32,9 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             ],
             where: {
                 status: 1,
+                is_approved : {
+                    [Op.in] : is_approved
+                },
                 author_id : {
                     [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
                 },
@@ -109,7 +114,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
 router.get('/main', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
     let member_id = req.query.member_id;
-
+    let is_approved = (req.query.is_approved) ? [req.query.is_approved] : [0,1];
     try{
         const bookList = await book.findAll({
             order: [sequelize.random()],
@@ -126,6 +131,9 @@ router.get('/main', async(req, res, next) => { // 커버만 가져오는 api, �
             ],
             where: {
                 status: 1,
+                is_approved : {
+                    [Op.in] : is_approved
+                },
             },
             include : [
                 {
@@ -306,6 +314,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
         const detailList = await book_detail.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
                 book_id: book_id,
+                status: 1,
             },
             attributes : [
                 "id",
@@ -422,6 +431,67 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
         console.error(err);
     }
 });
+router.delete('/:bookId', isLoggedIn, async(req, res, next) => {
+    const bookId = req.params.bookId;
+    const t = await sequelize.transaction();
+    try{
+        const delete_book_details = await book_detail.findAll({
+            where : {
+                book_id : bookId,
+            }
+        });
+        for(let delete_book_detail of delete_book_details){
+            await book_detail.update({
+                status : 0 
+            },{
+                where : {
+                    id : delete_book_detail.id
+                },
+                transaction: t
+            });
+        }
+        await book.update({
+            status: 0,
+        },{
+            where : {
+                id : bookId,
+            },
+            transaction: t
+        });
+        await t.commit();
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
+    }    
+    catch(err){
+        console.error(err);
+        await t.rollback();
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server_error",
+        });
+    }
+})
+router.delete('/round/:bookDetailId', isLoggedIn, async(req, res, next) => {
+    const bookDetailId = req.params.bookDetailId;
+    try{
+        const result = await book_detail.update({
+            status: 0,
+        },{
+            where: {
+                id: bookDetailId,
+            }
+        });
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server_error",
+        });
+    }
+})
 
 router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
     const bookDetailId = req.params.bookDetailId;
