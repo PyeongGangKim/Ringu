@@ -28,7 +28,8 @@ async function localVerify(email, password, done) {
     try{
         const exMember = await member.findOne({
             where : {
-                email: email
+                email: email,
+                status: 1,
             }
         });
         if(exMember){
@@ -61,7 +62,7 @@ const JWTStrategyOption = {
 }
 async function JWTVerify({id}, done) {
     try{
-        const result = await member.findOne({ where : {id: id} });
+        const result = await member.findOne({ where : {id: id, status: 1} });
         if(!result){
             return done(null, false, '');
         }
@@ -76,7 +77,7 @@ async function JWTVerify({id}, done) {
 async function SNSVerify(req, done) {
     try{
         var {id, email, sns} = req.query;
-        const user = await member.findOne({ where : {email: email} });
+        const user = await member.findOne({ where : {email: email, status: 1} });
 
         if(user && user[`${sns}_id`] === id){
             return done(null, user);
