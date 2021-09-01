@@ -8,8 +8,6 @@ const { smtpTransport } = require('../../config/email');
 var { generateRandom } = require('../../utils/random_number');
 const { secretKey } = require('../../config/jwt_secret');
 const {StatusCodes} = require("http-status-codes");
-
-const {StatusCodes} = require("http-status-codes");
 const { identification, member } = require("../../models");
 const { isLoggedIn } = require('../../middlewares/auth');
 const { redirect_url } = require('../../config/url');
