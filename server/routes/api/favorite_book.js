@@ -62,17 +62,16 @@ router.post('/duplicate', isLoggedIn,async (req, res, next) => {
         })
         if(duplicate_result){
             res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
         }
         else{
             res.status(StatusCodes.OK).send("No Duplicate");
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
@@ -87,11 +86,12 @@ router.get('/', isLoggedIn,async (req, res, next) => {
             attributes : [
                 "id",
                 [sequelize.literal("book.id"), "book_id"],
+                [sequelize.literal("book.type"), "type"],
+                [sequelize.literal("book.is_finished_serialization"), "is_finished"],
                 [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.title"), "title"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("`book->author`.nickname"),"author_nickname"],
-
                 [sequelize.literal("SUM(`book->review_statistics`.score_amount) / SUM(`book->review_statistics`.person_number)"),"review_score"],
             ],
             include : [
@@ -99,9 +99,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                     model : book,
                     as : "book",
                     attributes: [
-                        "img",
-                        "title",
-                        "price",
+
                     ],
 
                     include: [
@@ -109,15 +107,14 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                             model: member,
                             as : "author",
                             attributes: [
-                                "nickname",
+
                             ],
                         },
                         {
                             model: review_statistics,
                             as : "review_statistics",
                             attributes : [
-                                "score_amount",
-                                "person_number",
+
                             ],
                         },
                     ]
@@ -158,11 +155,12 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
                 id : id,
             }
         });
-        res.status(StatusCodes.OK);
+
+        res.status(StatusCodes.OK).send("deleted");
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
     }
 });
 
