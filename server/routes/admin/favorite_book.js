@@ -15,7 +15,7 @@ var favorite_book = require("../../models").favorite_book;
 router.post("/save/", async(req, res, next) =>  {
 
     var member_id  = helper_security.decrypt(req.body["member_id"]);
-    var book_id  = req.body["book_id2"];
+    var book_id  = req.body["book_id"];
 
     try {
         await favorite_book.create({
