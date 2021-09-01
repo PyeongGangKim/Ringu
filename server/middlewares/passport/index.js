@@ -1,6 +1,5 @@
 const passport = require('passport');
 const bcrypt = require('bcrypt');
-
 const { member } = require('../../models');
 const { secretKey } = require('../../config/jwt_secret');
 // strategy
