@@ -23,10 +23,19 @@ const { salt } = require("../../config/salt");
 const aws = require("../../utils/aws");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
-    var id = req.query.id;
+    var id = req.user.id;
 
     try{
         const user = await member.findOne({
+            attributes: [
+                "id",
+                "email",
+                "nickname",
+                "description",
+                "tel",
+                "profile",
+                "type",
+            ],
             where : {
                 id: id
             }
@@ -47,7 +56,42 @@ router.get('/', isLoggedIn, async(req, res, next) => {
     }
 })
 
-router.get('/profile/:memberId', isLoggedIn, async(req, res, next) => {
+router.get('/:memberId', async(req, res, next) => {
+    var id = req.params.memberId
+
+    try{
+        const user = await member.findOne({
+            attributes: [
+                "id",
+                "email",
+                "nickname",
+                "description",
+                "tel",
+                "profile",
+                "type",
+            ],
+            where : {
+                id: id
+            }
+        });
+
+        if(user){
+            user.profile = imageLoad(user.profile)
+            res.status(StatusCodes.OK).json({
+                user: user,
+            })
+        }
+        else {
+            res.status(StatusCodes.NO_CONTENT);
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+})
+
+router.get('/profile/:memberId', async(req, res, next) => {
     var id = req.params.memberId
 
     try {
@@ -59,7 +103,6 @@ router.get('/profile/:memberId', isLoggedIn, async(req, res, next) => {
 
         const url = imageLoad(result.profile)
 
-        console.log(url)
         res.status(StatusCodes.OK).json({
             "url" : url,
         });
@@ -127,13 +170,14 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
                 nickname : nickname,
             }
         });
+
         if(result.length != 0){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).send("available nickname");
         }
     }
     catch(err){
@@ -142,19 +186,19 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     }
 });
 
-router.put('/nickname', isLoggedIn, async (req, res, next) => {
+router.put('/', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;
-    let nickname = req.body.nickname;
+    let params = req.body;
     // patch로 변경필요
     try{
-        const result = await member.update({
-            nickname : nickname,
-        },
-        {
-            where : {
-                id : id,
-            }
-        });
+        const result = await member.update(
+            params,
+            {
+                where : {
+                    id : id,
+                }
+            });
+
         if(result){
             res.status(StatusCodes.OK).json({
                 "member" : result,
@@ -183,10 +227,14 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.json({status: "ok", result});
+            res.status(statusCodes.OK).json({
+                result}
+            );
         }
         else{
-            res.json({status: "error", reason: "name update error"});
+            res.status(statusCods.INTERNAL_SERVER_ERROR).json({
+                "error": "name update error",
+            });
         }
     }
     catch(err){
@@ -208,12 +256,11 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).send("deleted!");
         }
     }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    catch(err){        
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
     }
 });
 
