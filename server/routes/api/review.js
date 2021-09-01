@@ -71,6 +71,7 @@ router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
                 status : 1,
             }
         });
+        console.log(StatusCodes.CONFLICT)
         if(duplicate_result){
             res.status(StatusCodes.CONFLICT).send("Duplicate");
             return;
@@ -86,77 +87,140 @@ router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         console.error(err);
     }
 });
-router.get('/', isLoggedIn, async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
-    var member_id = req.user.id;
+router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     try{
-        const review_list = await review.findAll({
-            attributes: [
-                "score",
-                "description",
-                "created_date_time",
-                [sequelize.literal("book_detail.title"),"title"],
-                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
-            ],
-            where: {
-                member_id : member_id,
-                status : 1,
-            },
-            include : [
-                {
-                    model : book_detail,
-                    as : 'book_detail',
-                    attributes: [],
-                    include: [
-                        {
-                            model: book,
-                            as : 'book',
-                            attributes : [],
-                            include : [
-                                {
-                                    model: member,
-                                    as: 'author',
-                                    attributes: [],
-                                }
-                            ]
-                        }
-                    ]
-                },
+        var member_id = ("member_id" in req.query && req.query.member_id !== null) ? req.query.member_id : null;
+        var author_id = ("author_id" in req.query && req.query.author_id !== null) ? req.query.author_id : null;
+        var book_id =   ("book_id" in req.query && req.query.book_id !== null) ? req.query.book_id : null;
+        var time =      ("time" in req.query && req.query.time !== null) ? req.query.time : 0;
 
-            ]
-        });
-        if(review_list.length == 0){
+        var offset = time * 5;
+        var limit = 5;
+
+        var where = {
+            status: 1,
+        }
+
+        if (member_id !== null) {
+            where['$member_id$'] = member_id
+        }
+        else if (author_id !== null) {
+            where['$author_id$'] = author_id
+        }
+        else if (book_id !== null) {
+            where['$book_id$'] = book_id
+        }
+
+        const getReviewList = async(where, distinct) => {
+            var attr = []
+            var group = []
+            if (distinct) {
+                attr = [
+                    [sequelize.literal("`book_detail->book`.id"),"book_id"],
+                    [sequelize.literal("`book_detail->book`.title"),"book_title"],
+                ]
+                group = ['book_title']
+            }
+            else {
+                attr = [
+                    "id",
+                    "score",
+                    "description",
+                    "created_date_time",
+                    [sequelize.literal("member.nickname"),"nickname"],
+                    [sequelize.literal("book_detail.id"),"detail_id"],
+                    [sequelize.literal("book_detail.title"),"subtitle"],
+                    [sequelize.literal("`book_detail->book`.id"),"book_id"],
+                    [sequelize.literal("`book_detail->book`.type"),"book_type"],
+                    [sequelize.literal("`book_detail->book`.title"),"book_title"],
+                    [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
+                ]
+            }
+            const list = await review.findAll({
+                attributes: attr,
+                where: where,
+                include : [
+                    {
+                        model : book_detail,
+                        as : 'book_detail',
+                        attributes: [],
+                        include: [
+                            {
+                                model: book,
+                                as : 'book',
+                                attributes : [],
+                                include : [
+                                    {
+                                        model: member,
+                                        as: 'author',
+                                        attributes: [],
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        model : member,
+                        as : 'member',
+                        attributes: [],
+                    }
+                ],
+                group: group,
+                limit: limit,
+                offset: offset,
+            });
+
+            return list
+        }
+        const reviewList = await getReviewList(where, false)
+        var reviewTitleList = null;
+
+        if (req.query.title !== null && req.query.title === 'true') {
+            reviewTitleList = await  getReviewList(where, true)
+        }
+
+
+
+        if(reviewList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("no review");
         }
         else{
             res.status(StatusCodes.OK).json({
-                review_list : review_list,
+                reviewList : reviewList,
+                reviewTitleList : reviewTitleList,
+                reviewListLength: reviewList.length,
             });
         }
 
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
-router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
+/*router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     var author_id = req.params.author_id
 
     try{
-        const review_list = await review.findAll({
+        const reviewList = await review.findAll({
             attributes: [
                 "score",
                 "description",
                 "created_date_time",
-                [sequelize.literal("book_detail.title"),"title"],
+                [sequelize.literal("book_detail.id"),"detail_id"],
+                [sequelize.literal("book_detail.title"),"subtitle"],
+                [sequelize.literal("`book_detail->book`.id"),"book_id"],
+                [sequelize.literal("`book_detail->book`.title"),"book_title"],
+                [sequelize.literal("`book_detail->book`.author_id"),"author_id"],
                 [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
 
             ],
             where: {
                 status : 1,
+                '$author_id$': author_id
             },
             include : [
                 {
@@ -168,9 +232,9 @@ router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 re
                             model: book,
                             as : 'book',
                             attributes : [],
-                            where: {
-                                author_id: author_id,
-                            },
+                            //where: {
+                            //    author_id: author_id,
+                            //},
                             include : [
                                 {
                                     model: member,
@@ -184,12 +248,12 @@ router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 re
 
             ]
         });
-        if(review_list.length == 0){
+        if(reviewList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("no review");
         }
         else{
             res.status(StatusCodes.OK).json({
-                review_list : review_list,
+                reviewList : reviewList,
             });
         }
 
@@ -204,7 +268,6 @@ router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 re
 
 router.get('/book/:book_id', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     var book_id = req.params.book_id
-    console.log(req.params)
 
     try{
         const reviewList = await review.findAll({
@@ -212,8 +275,12 @@ router.get('/book/:book_id', async (req, res, next) => { // 자기가 쓴 review
                 "score",
                 "description",
                 "created_date_time",
-                [sequelize.literal("book_detail.title"),"title"],
+                [sequelize.literal("book_detail.id"),"detail_id"],
+                [sequelize.literal("book_detail.title"),"subtitle"],
+                [sequelize.literal("`book_detail->book`.id"),"book_id"],
+                [sequelize.literal("`book_detail->book`.title"),"book_title"],
                 [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
+
 
             ],
             where: {
@@ -261,7 +328,7 @@ router.get('/book/:book_id', async (req, res, next) => { // 자기가 쓴 review
             "error": "server error"
         });
     }
-});
+});*/
 
 
 router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
