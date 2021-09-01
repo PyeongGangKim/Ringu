@@ -6,7 +6,7 @@ var helper_api = require("../../helper/api");
 
 const {StatusCodes} = require("http-status-codes");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
-const {sequelize ,member ,favorite_author, review_statistics, Sequelize: {Op} } = require("../../models");
+const {sequelize ,member ,favorite_author, favorite_author_statistics, review_statistics, Sequelize: {Op} } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -16,14 +16,40 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 
     var member_id = req.user.id;
     var author_id = req.body.author_id;
+    const t = await sequelize.transaction();
     try{
         await favorite_author.create({
                 member_id : member_id,
                 author_id : author_id,
+        },{
+            transaction : t,
         });
+        const [find_favorite_author_statistics, created] = await favorite_author_statistics.findOrCreate({
+            where:{
+                author_id : author_id,
+            },
+            defaults: {
+                author_id : author_id,
+                favorite_person_number: 0,
+
+            },
+            transaction: t,
+        });
+        let added_person_number = find_favorite_author_statistics.favorite_person_number*1 + 1;
+        let favorite_author_statistics_id = find_favorite_author_statistics.id;
+        await favorite_author_statistics.update({
+            favorite_person_number: added_person_number
+        },{
+            where: {
+                id: favorite_author_statistics_id
+            },
+            transaction: t,
+        });
+        await t.commit();
         res.status(StatusCodes.OK).send("success like");
     }
     catch(err){
+        await t.rollback();
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -124,16 +150,42 @@ router.get('/', isLoggedIn, async (req, res, next) => {
 router.delete('/:favoriteAuthorId', isLoggedIn, async (req, res, next) => {
 
     var id = req.params.favoriteAuthorId;
-
+    const t = await sequelize.transaction();
     try{
+        const cancel_favorite_author = await favorite_author.findOne({
+            where: {
+                id : id
+            },
+        });
         await favorite_author.destroy({
             where:{
                 id : id,
+            },
+            transaction: t,
+        });
+        let cancel_favorite_author_id = cancel_favorite_author.author_id;
+        const cancel_favorite_author_statistics = await favorite_author_statistics.findOne({
+            where: {
+                author_id: cancel_favorite_author_id
             }
-        })
-        res.status(StatusCodes.OK)
+        });
+        let cancel_favorite_person_number = cancel_favorite_author_statistics.favorite_person_number - 1;
+        await favorite_author_statistics.update({
+            favorite_person_number : cancel_favorite_person_number,
+        },{
+            where:{
+                author_id : cancel_favorite_author_id,
+            },
+            transaction: t,
+        });
+        await t.commit();
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
+        
     }
     catch(err){
+        await t.rollback();
         console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }

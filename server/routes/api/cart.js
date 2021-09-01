@@ -94,11 +94,15 @@ router.delete('/:cartId', isLoggedIn, async (req, res, next) => { // 필요없�
                 id : id,
             }
         })
-        res.status(StatusCodes.OK);
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
 
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server_error",
+        });
     }
 });
 

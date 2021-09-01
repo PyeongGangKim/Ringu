@@ -27,7 +27,8 @@ class Review extends Component {
 
     async componentDidMount() {
         var state = this.state;
-        const res = await API.sendGet(URL.api.book.getByDetail + state.book_detail)
+        const res = await API.sendGet(URL.api.book_detail.get + state.book_detail)
+
         if(res.status === 200)
         {
             var book = res.data.book
@@ -68,13 +69,16 @@ class Review extends Component {
         }
 
         var params = {
+            member_id: User.getInfo().id,
+            book_id: state.book.book_id,
+            author_id: state.book.author_id,
             book_detail_id: state.book_detail,
             score: state.score,
             description: state.description
         }
 
-        const res = await API.sendPost(URL.api.review.register, params)
-        if(res.status === 200) {
+        const res = await API.sendPost(URL.api.review.register, params)        
+        if(res.status === "ok") {
             alert("작성하신 리뷰가 등록되었습니다.")
             window.location.href = URL.service.mypage.purchases;
         } else if(res.status === 409){

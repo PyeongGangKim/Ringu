@@ -13,15 +13,13 @@ import axios from 'axios';
 class SideMemberInfo extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
-
-        console.log(userInfo)
+        let userInfo = User.getInfo();        
 
         this.state = {
             favorites: 0,
             purchases: 0,
             carts: 0,
-            profile: "",
+            profile: userInfo.profile ? userInfo.profile : "",
         }
     }
 
@@ -52,28 +50,46 @@ class SideMemberInfo extends Component {
             cartList = carts.data.cartList
         }
 
+        const res = await API.sendGet(URL.api.member.profile + User.getInfo().id)
+
         this.setState({
             favorites: favoriteBookList.length + favoriteAuthorList.length,
             purchases: purchaseList.length,
             carts: cartList.length,
+            profile: res.data.url,
         })
     }
 
     handleProfileChange = async(e) => {
+        var state = this.state
         const data = new FormData()
-        data.append('file', e.target.files[0])        
+        data.append('img', e.target.files[0])
 
         const res = await API.sendData(URL.api.member.upload_profile, data)
+
+        const res2 = await API.sendGet(URL.api.member.profile+User.getInfo().id)
+        state.profile = res2.data.url;
+
+        this.setState(state)
+
     }
 
     render() {
+        var state = this.state
         return (
             <div className="side-info">
                 <form>
                     <div className="img-area">
                         <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
                         <label for="profile">
-                            <img src="/blank.jpg"/>
+                            {
+                                state.profile ?
+                                <img src={state.profile}/>
+                                :
+                                <img src="/blank.jpg"/>
+
+                            }
+
                         </label>
                     </div>
                 </form>
@@ -95,9 +111,11 @@ class SideMemberInfo extends Component {
                             </div>
 
                             <div className="btn-wrap-vert">
-                                <button className="btn btn-color-2 btn-block">
-                                    새 작품 등록하기
-                                </button>
+                                <Link to={URL.service.register.book}>
+                                    <button className="btn btn-color-2 btn-block">
+                                        새 작품 등록하기
+                                    </button>
+                                </Link>
 
                                 <button className="btn btn-outline btn-block">
                                     책 양식 다운로드

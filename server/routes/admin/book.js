@@ -637,6 +637,7 @@ router.get("/unapproved/reason", async (req, res, next) => {
         console.error(err);
     }
 });
+
 router.post("/unapproved/:bookDetailId", async(req, res, next) => {
     // book_detail model에 is_approved 를 -1 로 바꿔준다.
     // 그리고 notification 해줘야 된다.
@@ -817,6 +818,63 @@ router.get("/approved/:bookDetailId", async (req,res,next) => {
     }
 });
 
+router.get('/:bookDetailId/update/page', async(req, res, next) => {
+    checkLogin(req, res, "/admin/book/:bookDetailId/upadte/page");
+
+    const book_detail_id = req.params.bookDetailId;
+
+    try{
+        const updatedBook = await book_detail.findOne({
+            where: {
+                id : book_detail_id,
+            }
+        });
+        res.render("admin/pages/book_detail_update", {
+            "book": updatedBook,
+            "helper_date": helper_date,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
+});
+router.post('/:bookDetailId/update', async(req, res, next) => {
+    checkLogin(req, res, "/admin/book/:bookDetailId/update/page");
+
+    const book_detail_id = req.params.bookDetailId;
+    const title = req.body.title;
+    const page_number = req.body.page_number;
+    const charge = req.body.charge;
+
+    try{
+        const isUpdate = await book_detail.update({
+            title: title,
+            page_number: page_number,
+            charge : charge,
+        },
+        {
+            where: {
+                id : book_detail_id,
+            }
+        });
+        if(isUpdate){
+            const updatedBook = await book_detail.findOne({
+                where: {
+                    id: book_detail_id,
+                }
+            });
+            res.render("admin/pages/book_detail_update", {
+                "book": updatedBook,
+                "helper_date": helper_date,
+            });
+        }
+        
+    }
+    catch(err){
+        console.error(err);
+    }
+})
+
 router.get('/download/:bookDetailId', async (req,res,next) => {
     checkLogin(req, res, "/admin/book/");
     
@@ -838,6 +896,5 @@ router.get('/download/:bookDetailId', async (req,res,next) => {
         console.error(err);
     }
 });
-
 
 module.exports = router;

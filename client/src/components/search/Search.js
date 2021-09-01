@@ -23,7 +23,6 @@ class Search extends Component {
 
     async componentDidMount() {
         var state = this.state;
-        console.log(state)
         this.handleSearch(state.search['keyword'])
     }
 
@@ -34,7 +33,7 @@ class Search extends Component {
             keyword: keyword,
         }
 
-        const res = await API.sendGet(URL.api.book.list, params = params)
+        const res = await API.sendGet(URL.api.book.list, params = params)        
         if(res.status === 200) {
             var searchList = res.data.bookList
 
@@ -71,15 +70,17 @@ class Search extends Component {
                             {
                                 searchList.map(item => {
                                     return (
-                                        <li className="book-box">
-                                            <div className="thumbnail-box">
-                                                <div className="img-area">
-                                                    <img src="/travel.jpg"/>
-                                                </div>
-                                                <div className="favorite-icon"/>
+                                        <li key={item.id} className="book-box">
+                                            <Link  to={URL.service.book + item.id}>
+                                                <div className="thumbnail-box">
+                                                    <div className="img-area">
+                                                        <img src={item.img}/>
+                                                    </div>
+                                                    <div className="favorite-icon"/>
 
-                                                <h3 className="title">{item.title}</h3>
-                                            </div>
+                                                    <h3 className="title">{item.title}</h3>
+                                                </div>
+                                            </Link>
 
                                             <div className="book-info">
                                                 <span className="price">{parse.numberWithCommas(item.price)}원</span>

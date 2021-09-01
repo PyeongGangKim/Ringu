@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
 const bcrypt = require('bcrypt');
 const multer = require("multer");
 
@@ -131,7 +130,9 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 })
@@ -156,7 +157,9 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
     // DB LOAD
@@ -177,12 +180,17 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
             });
         }
         else{
-            res.status(StatusCodes.OK).send("available nickname");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
+
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 
@@ -208,7 +216,9 @@ router.put('/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 });
@@ -228,8 +238,8 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
         });
         if(result){
             res.status(statusCodes.OK).json({
-                result}
-            );
+                "message" : "OK",
+            });
         }
         else{
             res.status(statusCods.INTERNAL_SERVER_ERROR).json({
@@ -256,11 +266,15 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK).send("deleted!");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
-    catch(err){        
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 

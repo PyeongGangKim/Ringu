@@ -28,6 +28,7 @@
             margin-right: 5px;
         }
         .upload {
+            height: 27px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -53,6 +54,27 @@
         }
     }
 
+    input[type=file] {
+        display: none;
+    }
+
+    textarea, input{
+        padding: 10px;
+    }
+
+    .file-wrap {
+        margin-right: 5px;
+        width: 200px;
+        height: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 2px 4px;
+
+        .filename {
+            width:100%;
+        }
+    }
+
     .btn-wrap {
         button {
             width: 340px;
@@ -69,6 +91,16 @@
             height: 250px;
             border: 1px solid #999;
             border-radius: 5px;
+
+            img {
+                border-radius: 5px;
+                width: 100%;
+                height: 100%;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                cursor: pointer;
+            }
 
             .thumbnail-text {
                 width: 100%;

@@ -21,11 +21,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    is_approved: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
-    },
     status: {
       type: DataTypes.TINYINT,
       allowNull: false,
@@ -46,6 +41,11 @@ module.exports = function(sequelize, DataTypes) {
     round: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    charge : {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 10,
     }
   }, {
     sequelize,

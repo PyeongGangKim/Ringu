@@ -13,25 +13,36 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-class BookType2 extends Component {
+class BookType1 extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
         this.state = {
             book: props.book,
             reviewList: [],
+            detailList: [],
         }
     }
 
     async componentDidMount() {
         var state = this.state;
-        const res = await API.sendGet(URL.api.review.getByBook + state.book.id)
-        console.log(state.book)
+        let userInfo = User.getInfo();
+        const res1 = await API.sendGet(URL.api.review.getByBook + state.book.id)
 
-        if(res.status === 200) {
-            state.reviewList = res.data.reviewList
+        if(res1.status === 200) {
+            state.reviewList = res1.data.reviewList
             this.setState(state)
         }
+
+        var params = {
+            member_id : userInfo.id
+        }
+        const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
+        if(res2.status === 200) {
+            state.detailList = res2.data.detailList
+            this.setState(state)
+        }
+
+        console.log(res2)
     }
 
     render() {
@@ -48,7 +59,7 @@ class BookType2 extends Component {
 
                         <div className="book-detail-box">
                             <span className="book-detail">저자 : {book.author_nickname}</span>
-                            <span className="book-detail">페이지수 : {book.page_number}페이지</span>
+                            <span className="book-detail">페이지수 : {book.page_number}</span>
                         </div>
 
                         <h3 className="book-title">{book.title}</h3>
@@ -58,7 +69,7 @@ class BookType2 extends Component {
                     <div className="book-nav">
                         <div className="navlist">
                             <a href="#book" className="navitem">책소개</a>
-                            <a href="#contents" className="navitem">목차</a>
+                            <a href="#contents" className="navitem">회차</a>
                             <a href="#author" className="navitem">작가소개</a>
                             <a href="#review" className="navitem">리뷰</a>
                         </div>
@@ -76,10 +87,20 @@ class BookType2 extends Component {
 
                         <a name="contents">
                             <div className="content-box" >
-                                <div className="content-header"> 목차</div>
-                                <div className="content-value contents">
-                                    {book.content}
-                                </div>
+                                <div className="content-header"> 회차</div>
+                                <table className="content-value">
+                                    {
+                                        state.detailList.map((item, i) => {
+                                            return (
+                                                <tr>
+                                                    <td>{i+1}회차.</td>
+                                                    <td>{item.title}</td>
+                                                    <td><em className={item.purchases.length ? "download" : "lock"}/></td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </table>
                             </div>
                         </a>
 
@@ -165,4 +186,4 @@ class BookType2 extends Component {
     }
 }
 
-export default BookType2;
+export default BookType1;

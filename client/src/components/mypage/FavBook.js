@@ -35,7 +35,7 @@ class FavBook extends Component {
         var state = this.state;
 
         const res = await API.sendGet(URL.api.favorite.book.list)
-        console.log(res)
+
         if(res.status === 200) {
             var favoriteList = res.data.favoriteBookList
             state.data.favoriteList = favoriteList
@@ -47,7 +47,6 @@ class FavBook extends Component {
     }
 
     handleDelete = async(id) => {
-        console.log(id)
         var state = this.state
         const res = await API.sendDelete(URL.api.favorite.book.delete + id)
 
@@ -78,14 +77,16 @@ class FavBook extends Component {
                                 favoriteList.map(item => {
                                     return (
                                         <li key={item.id} className="book-box">
-                                            <div className="thumbnail-box">
-                                                <div className="img-area">
-                                                    <img src="/travel.jpg"/>
-                                                </div>
-                                                <button onClick={() => this.handleDelete(item.id)} className="favorite-icon on"/>
+                                            <Link  to={URL.service.book + item.book_id}>
+                                                <div className="thumbnail-box">
+                                                    <div className="img-area">
+                                                        <img src={item.img}/>
+                                                    </div>
+                                                    <button onClick={() => this.handleDelete(item.id)} className="favorite-icon on"/>
 
-                                                <h3 className="title">{item.title}</h3>
-                                            </div>
+                                                    <h3 className="title">{item.title}</h3>
+                                                </div>
+                                            </Link>
 
                                             <div className="book-info">
                                                 <span className="price">{parse.numberWithCommas(item.price)} 원</span>

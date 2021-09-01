@@ -1,13 +1,13 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('purchase', {
+  return sequelize.define('account', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    member_id: {
+    author_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -15,35 +15,31 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    book_detail_id: {
+    total_earned_money: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'book_detail',
-        key: 'id'
-      }
     },
-    payment_id: {
+    total_withdrawal_amount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    amount_available_withdrawal: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'payment',
-        key: 'id'
-      }
+      allowNull: false,
+    },
+    request_withdrawal_amount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
     },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    status: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 1
-    }
   }, {
     sequelize,
-    tableName: 'purchase',
+    tableName: 'account',
     timestamps: false,
     indexes: [
       {
@@ -55,17 +51,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "member_id",
+        name: "author_id",
         using: "BTREE",
         fields: [
-          { name: "member_id" },
-        ]
-      },
-      {
-        name: "purchase_book_detail_id_fk",
-        using: "BTREE",
-        fields: [
-          { name: "book_detail_id" },
+          { name: "author_id" },
         ]
       },
     ]
