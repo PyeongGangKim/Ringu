@@ -41,10 +41,11 @@ class Login extends Component {
     }
 
     initializeNaverLogin = () => {
-        var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.CALLBACK_URL);
+        var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.BASE_URL + NAVER.CALLBACK_URL);
         var state = naver_id_login.getUniqState();
+
         naver_id_login.setButton("green", 1, 65);
-        naver_id_login.setDomain("http://3.36.58.100:3000");
+        naver_id_login.setDomain(NAVER.BASE_URL);
         naver_id_login.setState(state);
         naver_id_login.init_naver_id_login();
     }
@@ -67,10 +68,12 @@ class Login extends Component {
         }
 
         API.sendPost(URL.api.auth.login, params).then(res => {
-            var status = res.data.status;
-            if(status === "ok") {
+            var status = res.status;
+            if(status === 200) {
                 var token = res.data.token;
-                if( token ) Cookies.set('token', token, {expires: 7, path: '/'});
+                if( token ) {
+                    Cookies.set('token', token, {expires: 7, path: '/'});
+                }
                 window.location.href = "/home";
             } else {
                 alert('회원정보가 일치하지 않습니다.');
@@ -86,10 +89,6 @@ class Login extends Component {
 
         return (
             <div className="page3">
-                <div className="title-wrap">
-                    <h2 className="title">로그인</h2>
-                </div>
-
                 <div id="login-area">
                     <div className="login-wrap">
                         <div id="email-form" className="form-group">

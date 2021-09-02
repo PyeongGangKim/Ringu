@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Timer from '../common/Timer';
+import Cookies from 'js-cookie';
 
 import '../../scss/common/main.scss'
 import '../../scss/common/common.scss'
@@ -16,7 +17,7 @@ class SignupDetail extends Component {
         super(props);
 
         this.state = {
-            email: {val: "22@ss.com", msg: "", clear: false, class: "form-control", btn: false},
+            email: {val: "trop100@naver.co", msg: "", clear: false, class: "form-control", btn: false},
             emailCode: {val: "", msg: "", clear: false, class: "form-control", visible: false},
             nickname: {val: "", msg: "", clear: false, class: "form-control", visible: false},
             password: {val: "", msg: "", clear: false, class: "form-control"},
@@ -28,6 +29,7 @@ class SignupDetail extends Component {
             eventAgree: false,
             activeAgree: false,
             timer: {min: 0, sec:0, active: false, clear: false},
+            timeout: false,
             naver: null,
         };
     }
@@ -36,10 +38,10 @@ class SignupDetail extends Component {
 
     }
 
-    handleEmailChange = evt => {
+    handleEmailChange = (evt) => {
         var state = JSON.parse(JSON.stringify(this.state));
 
-        state.email.val = evt.target.value;
+        state.email.val = evt.target.value.trim();
         state.email.clear = false;
         state.emailCode.visible = false;
         state.timer.active = false;
@@ -60,26 +62,49 @@ class SignupDetail extends Component {
             state.email.btn = false;
             state.email.clear = false;
             state.email.class = "form-control error";
-            state.email.msg = "이메일을 입력해주세요";
+            state.email.msg = "이메일을 형식이 유효하지 않습니다.";
         }
 
         this.setState(state);
     }
 
-    verifyEmail = async(evt) => {
+    handleChangeTimeout = (value) => {
         var state = this.state;
+        state.timeout = value;
+        state.emailCode.val = "";
+        this.setState(state);
+    }
 
+    handleResend = async() => {
+        var state = this.state;
         var params = {
             email: state.email.val,
         }
 
-        const res = await API.sendGet(URL.api.auth.email.duplicate, params)
+        const res = await API.sendPost(URL.api.auth.email.code, params)
+        var status = res.status;
 
-        if(res.data.status === "ok"){
+        if(status === 200) {
+            this.setState({
+                timer: {...state.timer, active:true},
+            });
+        } else {
+            alert("재전송에 실패하였습니다. 잠시 후 다시 시도해주세요")
+        }
+    }
+
+    verifyEmail = async(evt) => {
+        var state = this.state;
+        var params = {
+            email: state.email.val,
+        }
+
+        const duplicate = await API.sendGet(URL.api.auth.email.duplicate, params)
+        if(duplicate.status === 200){
             const res = await API.sendPost(URL.api.auth.email.code, params)
-            var status = res.data.status;
+            var status = res.status;
 
-            if(status === "ok") {
+            if(status === 201) {
                 this.setState({
                     emailCode: {...state.emailCode, visible: true},
                     email: {...state.email, btn:false},
@@ -88,16 +113,21 @@ class SignupDetail extends Component {
             } else {
 
             }
-
-
-        } else {
-            if(res.reason === "duplicate email")
+        } else if(duplicate.status === 409) {
             state.email.class = "form-control error";
             state.email.clear = false;
             state.email.btn = false;
             state.email.msg = "이미 가입되어 있는 이메일입니다";
 
             this.setState(state);
+        } else {
+            state.email.class = "form-control error";
+            state.email.clear = false;
+            state.email.btn = false;
+            state.email.msg = "잠시 후에 다시 시도해주세요.";
+
+            this.setState(state);
+
         }
     }
 
@@ -225,100 +255,143 @@ class SignupDetail extends Component {
         this.setState(state);
     }
 
-    verifyEmailCode = evt => {
+    verifyEmailCode = async(evt) => {
         var state = this.state;
-        state.emailCode.clear = true;
-        state.email.clear = true;
-        state.emailCode.btn = false;
-        this.setState(state);
+        var params = {
+            number: state.emailCode.val,
+            email: state.email.val,
+        }
+
+        const res = await API.sendGet(URL.api.auth.email.identification, params)
+
+        if(res.status === 200) {
+            state.emailCode.clear = true;
+            state.email.clear = true;
+            state.emailCode.btn = false;
+            state.timer.active = false;
+            this.setState(state);
+        } else {
+            state.emailCode.class = "form-control error";
+            state.emailCode.clear = false;
+            state.emailCode.msg = "인증에 실패하였습니다.";
+
+            this.setState(state);
+        }
+
     }
 
-    verifyNickname = evt => {
+    verifyNickname = async(evt) => {
         var state = this.state;
 
         var params = {
             nickname: state.nickname.val,
         }
 
-        API.sendPost(URL.api.auth.verify_nickname, params).then(res => {
-            var status = res.data.status;
+        const res = await API.sendPost(URL.api.auth.verify_nickname, params)
+        if(res.status === 200) {
+            state.nickname.clear = true;
+            state.nickname.btn = false;
+            alert("사용 가능한 닉네임입니다.")
 
-            if(status === "ok") {
-                state.nickname.clear = true;
-                state.nickname.btn = false;
+        } else if (res.status === 409) {
+            state.nickname.class = "form-control error";
+            state.nickname.clear = false;
+            state.nickname.btn = false;
+            state.nickname.msg = "이미 존재하는 닉네임입니다";
+        }
+        else {
+            state.nickname.class = "form-control error";
+            state.nickname.clear = false;
+            state.nickname.btn = false;
+            state.nickname.msg = "중복 확인이 실패하였습니다. 잠시 후 다시 이용해주세요.";
+        }
 
-            } else {
-                if(res.reason === "duplicate")
-                state.nickname.class = "form-control error";
-                state.nickname.clear = false;
-                state.nickname.btn = false;
-                state.nickname.msg = "이미 존재하는 닉네임입니다";
-            }
-
-            this.setState(state);
-        })
+        this.setState(state);
     }
 
-    handleSubmit = evt => {
-        var state = this.state;
-        var params = {
-            email: state.email.val,
-            password: state.password.val,
-            nickname: state.nickname.val
-        }
-        API.sendPost(URL.api.auth.signup, params).then(res => {
-            var status = res.data.status;
-
-            if(status === "ok") {
-                state.nickname.clear = true;
-                state.nickname.btn = false;
-
-            } else {
-                if(res.reason === "duplicate")
-                state.nickname.class = "form-control error";
-                state.nickname.clear = false;
-                state.nickname.btn = false;
-                state.nickname.msg = "이미 존재하는 닉네임입니다";
+    handleSubmit = async(evt) => {
+        try {
+            var state = this.state;
+            var params = {
+                email: state.email.val,
+                password: state.password.val,
+                nickname: state.nickname.val,
+                age_terms_agreement: state.ageCheck,
+                service_terms_agreement: state.serviceAgree,
+                privacy_terms_agreement: state.infoAgree,
+                notice_terms_agreement: state.eventAgree,
+                account_active_terms_agreement: state.activeAgree,
             }
 
-            this.setState(state);
-        })
+            const res = await API.sendPost(URL.api.auth.signup, params)
+
+            var status = res.status;
+            if(status === 201) {
+                var token = res.data.token;
+                if( token ) {
+                    Cookies.set('token', token, {expires: 7, path: '/'})
+                }
+
+                this.props.history.push({
+                    pathname: URL.service.accounts.welcome,
+                    state: {
+                        nickname: state.nickname.val,
+                    }
+                })
+            }
+        } catch(e) {
+            console.log(e)
+        }
     }
 
     render() {
+        var state = this.state;
+
         return (
             <div className="signup-content">
                 <div className="header"> 이메일 </div>
                 <div className="email-wrap">
                     <div id="email" className="form-group">
-                        <input type="email" name="email" autoComplete="off" className={this.state.email.class} placeholder="이메일을 입력해주세요." value={this.state.email.val} onChange={this.handleEmailChange}/>
-                        <button className="btn" disabled={!this.state.email.btn} onClick={this.verifyEmail}>
+                        <input type="email" name="email" autoComplete="off" className={state.email.class} placeholder="이메일을 입력해주세요." value={state.email.val} onChange={this.handleEmailChange} pattern="[^\s]+"/>
+                        <button className="btn" disabled={!state.email.btn} onClick={this.verifyEmail}>
                             {
-                                this.state.email.clear === true ? "인증완료" : "인증하기"
+                                state.email.clear === true ? "인증완료" : "인증하기"
                             }
                         </button>
                         {
-                            this.state.email.msg &&
+                            state.email.msg &&
                             <div className="error-wrap">
-                                <span>{this.state.email.msg}</span>
+                                <span>{state.email.msg}</span>
                             </div>
                         }
 
                     </div>
                     {
-                        this.state.emailCode.visible &&
+                        state.emailCode.visible &&
                         <div id="email-code" className="form-group">
-                            <input type="number" name="email-code" maxLength="6" autoComplete="off" className={this.state.emailCode.class} placeholder="인증 번호를 입력해주세요." value={this.state.emailCode.val} onChange={this.handleEmailCodeChange}/>
-                            <button className="btn" disabled={!this.state.emailCode.btn} onClick={this.verifyEmailCode}>
-                                {
-                                    this.state.emailCode.clear === true ? "인증완료" : "인증하기"
-                                }
-                            </button>
-                            <Timer mm={0} ss={11} active={this.state.timer.active}/>
+                            <input type="number" name="email-code" disabled={state.timeout} maxLength="6" autoComplete="off" className={state.emailCode.class} placeholder="인증 번호를 입력해주세요." value={state.emailCode.val} onChange={this.handleEmailCodeChange}/>
                             {
-                                this.state.emailCode.msg &&
+                                state.timeout === true ?
+                                <button className="btn">재전송</button>
+                                :
+                                <button className="btn" disabled={!state.emailCode.btn} onClick={this.verifyEmailCode}>
+                                    {
+                                        state.emailCode.clear === true ?
+                                        "인증완료"
+                                        :
+                                        "인증하기"
+                                    }
+                                </button>
+                            }
+                            {
+                                state.timer.active &&
+                                <Timer mm={5} ss={0} active={state.timer.active} setTimeout={this.handleChangeTimeout} />
+                            }
+
+                            {
+                                state.emailCode.msg &&
                                 <div className="error-wrap">
-                                    <span>{this.state.emailCode.msg}</span>
+                                    <span>{state.emailCode.msg}</span>
                                 </div>
                             }
                         </div>
@@ -329,16 +402,16 @@ class SignupDetail extends Component {
                 <div className="header"> 닉네임 </div>
                 <div className="nickname-wrap">
                     <div id="nickname" className="form-group">
-                        <input type="text" name="nickname" autoComplete="off" className="form-control" placeholder="닉네임을 입력해주세요." value={this.state.nickname.val} onChange={this.handleNicknameChange}/>
-                        <button className="btn"  disabled={!this.state.nickname.btn} onClick={this.verifyNickname}>
+                        <input type="text" name="nickname" autoComplete="off" className="form-control" placeholder="닉네임을 입력해주세요." value={state.nickname.val} onChange={this.handleNicknameChange}/>
+                        <button className="btn"  disabled={!state.nickname.btn} onClick={this.verifyNickname}>
                             {
-                                this.state.nickname.clear === true ? "확인완료" : "중복확인"
+                                state.nickname.clear === true ? "확인완료" : "중복확인"
                             }
                         </button>
                         {
-                            this.state.nickname.msg &&
+                            state.nickname.msg &&
                             <div className="error-wrap">
-                                <span>{this.state.nickname.msg}</span>
+                                <span>{state.nickname.msg}</span>
                             </div>
                         }
                     </div>
@@ -347,20 +420,20 @@ class SignupDetail extends Component {
                 <div className="header"> 비밀번호 </div>
                 <div className="password-wrap">
                     <div id="password" className="form-group">
-                        <input type="password" name="password" autoComplete="off" className="form-control" placeholder="비밀 번호를 입력해주세요." value={this.state.password.val} onChange={this.handlePasswordChange}/>
+                        <input type="password" name="password" autoComplete="off" className="form-control" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
                         {
-                            this.state.password.msg &&
+                            state.password.msg &&
                             <div className="error-wrap">
-                                <span>{this.state.password.msg}</span>
+                                <span>{state.password.msg}</span>
                             </div>
                         }
                     </div>
                     <div id="password-confirm" className="form-group">
-                        <input type="password" name="password-check" autoComplete="off" className="form-control" placeholder="비밀 번호를 한 번 더 입력해주세요." value={this.state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
+                        <input type="password" name="password-check" autoComplete="off" className="form-control" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
                         {
-                            this.state.passwordCheck.msg &&
+                            state.passwordCheck.msg &&
                             <div className="error-wrap">
-                                <span>{this.state.passwordCheck.msg}</span>
+                                <span>{state.passwordCheck.msg}</span>
                             </div>
                         }
                     </div>
@@ -370,7 +443,7 @@ class SignupDetail extends Component {
                 <div className="terms-wrap">
                     <div className="terms-box">
                         <div className="checkbox-wrap all">
-                            <input type="checkbox" id="agree-all" onClick={this.handleCheckAll} checked={this.state.ageCheck && this.state.serviceAgree && this.state.eventAgree && this.state.infoAgree && this.state.activeAgree }/>
+                            <input type="checkbox" id="agree-all" onClick={this.handleCheckAll} checked={state.ageCheck && state.serviceAgree && state.eventAgree && state.infoAgree && state.activeAgree }/>
                             <label htmlFor="agree-all" >
                                 <div className="checkbox-text">
                                     모두 동의합니다.
@@ -381,7 +454,7 @@ class SignupDetail extends Component {
                         <hr/>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-age" onClick={this.handleAgeCheck} checked={this.state.ageCheck}/>
+                            <input type="checkbox" id="agree-age" onClick={this.handleAgeCheck} checked={state.ageCheck}/>
                             <label htmlFor="agree-age" >
                                 <div className="checkbox-text">
                                     만 14세 이상입니다.
@@ -391,7 +464,7 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={this.state.serviceAgree}/>
+                            <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={state.serviceAgree}/>
                             <label htmlFor="agree-service">
                                 <div className="checkbox-text">
                                     <a href=""><u>서비스 이용약관</u></a>에 동의합니다.
@@ -401,7 +474,7 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={this.state.infoAgree}/>
+                            <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={state.infoAgree}/>
                             <label htmlFor="agree-info">
                                 <div className="checkbox-text">
                                     <a href=""><u>개인정보 수집/이용</u></a>에 동의합니다.
@@ -411,7 +484,7 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-event" onClick={this.handleEventAgree} checked={this.state.eventAgree}/>
+                            <input type="checkbox" id="agree-event" onClick={this.handleEventAgree} checked={state.eventAgree}/>
                             <label htmlFor="agree-event">
                                 <div className="checkbox-text">
                                     이벤트 할인 혜택 수신에 동의합니다.(선택)
@@ -420,7 +493,7 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-active" onClick={this.handleActiveAgree} checked={this.state.activeAgree}/>
+                            <input type="checkbox" id="agree-active" onClick={this.handleActiveAgree} checked={state.activeAgree}/>
                             <label htmlFor="agree-active">
                                 <div className="checkbox-text">
                                     장기 미접속 시 계정 활성 상태 유지합니다.(선택)
@@ -430,12 +503,12 @@ class SignupDetail extends Component {
                     </div>
                 </div>
 
-                <a href="/welcome">
-                    {/*<button className="btn signup-btn" disabled={!(this.state.email.clear && this.state.emailCode.clear && this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>*/}
-                    <button className="btn signup-btn" disabled={!(this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>
-                        가입완료!
-                    </button>
-                </a>
+
+                {/*<button className="btn signup-btn" disabled={!(this.state.email.clear && this.state.emailCode.clear && this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>*/}
+                <button className="btn signup-btn" disabled={!(state.password.clear && state.passwordCheck.clear && state.nickname.clear && state.ageCheck && state.serviceAgree && state.infoAgree)} onClick={this.handleSubmit}>
+                    가입완료!
+                </button>
+
             </div>
         );
     }

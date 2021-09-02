@@ -12,8 +12,9 @@ const NaverCallback = ({location, history, ...props}) => {
 
 
     const getUserProfile = async () => {
+        console.log(NAVER.BASE_URL+NAVER.CALLBACK_URL)
         try {
-            var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.CALLBACK_URL);
+            var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.BASE_URL+NAVER.CALLBACK_URL);
 
             var token = naver_id_login.oauthParams.access_token;
             var params = {
@@ -36,25 +37,23 @@ const NaverCallback = ({location, history, ...props}) => {
 
                     const email_check_res = await API.sendGet(URL.api.auth.email.duplicate, params={email:email})
 
+                    // 중복없는 경우
+                    // 회원가입 페이지로 넘어가기
                     if(email_check_res.status === 200) {
-                        // 중복없는 경우
-                        // 회원가입 페이지로 넘어가기
-                        if(email_check_res.data.status === 'ok') {
-                            history.push({
-                                pathname:   URL.service.accounts.signup_step,
-                                search:     `?sns=naver&email=${email}&id=${id}`,
-                            });
-                        }
-                        // 중복 있는 경우
-                        // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
-                        // 2. 이미 등록된 계정이면 에러 메시지
-                        else {
-                            const res = await API.sendGet(URL.api.auth.sns.naver, params={id:id, email:email, sns: 'naver'})
-                            if(res.status === 200) {
-                                var token = res.data.token;
-                                if( token ) Cookies.set('token', token, {expires: 7, path: '/'});
-                                history.push(URL.service.home);
-                            }
+                        history.push({
+                            pathname:   URL.service.accounts.signup_step,
+                            search:     `?sns=naver&email=${email}&id=${id}`,
+                        });
+                    }
+                    // 중복 있는 경우
+                    // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
+                    // 2. 이미 등록된 계정이면 에러 메시지
+                    else {
+                        const res = await API.sendGet(URL.api.auth.sns.naver, params={id:id, email:email, sns: 'naver'})
+                        if(res.status === 200) {
+                            var token = res.data.token;
+                            if( token ) Cookies.set('token', token, {expires: 7, path: '/'});
+                            history.push(URL.service.home);
                         }
                     }
                 } catch(err) {
