@@ -19,7 +19,9 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         categories = categories.map(x => {
             return parseInt(x)
         })
-        let is_approved = (req.query.is_approved) ? [req.query.is_approved] : [0,1];
+        let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
+        let orderBy = ("orderBy" in req.query && typeof req.query.orderBy !== undefined) ? req.query.orderBy : 'DESC';
+        let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [0,1] : [1];
 
         const bookList = await book.findAll({
             attributes: [
@@ -29,8 +31,10 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 "title",
                 "type",//type 1이 연재본, 2가 단행본.
                 "is_finished_serialization",
+                "is_approved",
+                "created_date_time",
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
-                [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"mean_score" ],
+                [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"score" ],
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("category.name"), "category"],
             ],
@@ -92,6 +96,10 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 }
             ],
             group: 'id',
+            order: [
+                [sequelize.literal(order), orderBy]
+            ]
+
         });
 
         for(let i = 0 ; i < bookList.length ; i++){
@@ -216,6 +224,8 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("author.description"), "author_description"],
                 [sequelize.literal("category.name"), "category"],
+                [sequelize.literal("book_details.page_number"),"page_count"],
+                [sequelize.literal("book_details.file"),"file"],
                 [sequelize.literal("SUM(`book_details->review_statistics`.score_amount)"),"review_score"],
                 [sequelize.literal("SUM(`book_details->review_statistics`.person_number)"),"review_count"],
             ],
@@ -246,7 +256,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     as : "book_details",
                     required: false,
                     attributes: [
-
+                        "id",
                         "title",
                         "file",
                         "round",
@@ -288,10 +298,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            console.log('22222222222')
-            console.log(book_detail_info.dataValues.img)
-            book_detail_info.dataValues.img = await imageLoad(book_detail_info.dataValues.img);
-            console.log(book_detail_info.dataValues.img)
+            book_detail_info.img = await imageLoad(book_detail_info.img);
             res.status(StatusCodes.OK).json({
                 "book": book_detail_info,
             });
@@ -317,9 +324,13 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 status: 1,
             },
             attributes : [
-                "id",
                 "title",
                 "file",
+                "id",
+                [sequelize.literal("`book->author`.nickname"), "author"],
+                [sequelize.literal("book.img"), "img"],
+                [sequelize.literal("book.price"), "price"],
+                [sequelize.literal("book.title"), "book_title"],
             ],
 
             include : [
@@ -330,6 +341,16 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                     where: {
                         member_id: member_id,
                     }
+                },
+                {
+                    model: book,
+                    as: "book",
+                    attributes: [],
+                    include: [{
+                        model:member,
+                        as: "author",
+                        attributes: [],
+                    }]
                 }
             ]
         });
@@ -493,6 +514,73 @@ router.delete('/round/:bookDetailId', isLoggedIn, async(req, res, next) => {
     }
 })
 
+router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) => {
+    try {
+        let book_id = req.body.book_id;
+        let book_detail_id = req.body.book_detail_id;
+
+        console.log(req.body)
+
+        var params = {
+            "title": req.body.title,
+            "price": req.body.price,
+            "description": req.body.book_description,
+            "content": req.body.content,
+        }
+
+
+
+        if (typeof req.files.img !== 'undefined') {
+            params['img'] = req.files.img[0].key;
+        }
+
+        if (typeof req.files.preview !== 'undefined') {
+            params['preview'] = req.files.preview[0].key;
+        }
+
+
+        const t = await sequelize.transaction();
+
+        const updateBook = await book.update(
+            params,
+        {
+            where: {
+                id: book_id
+            },
+            transaction: t
+        })
+
+        params = {
+            "page_number": req.body.page_count,
+        }
+
+        if (typeof req.files.file !== 'undefined') {
+            params['file'] = req.files.file[0].key;
+        }
+
+        const updateBookDetail = await book_detail.update(
+            params,
+        {
+            where: {
+                id: book_detail_id
+            },
+            transaction: t
+        })
+
+        await t.commit();
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
+    }
+    catch(err){
+        console.error(err);
+        await t.rollback();
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+})
+
 router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
     const bookDetailId = req.params.bookDetailId;
     const type = req.query.type;
@@ -502,9 +590,7 @@ router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
                 id : bookDetailId,
             }
         });
-        console.log(type);
         const url = downloadFile(type, result.file);
-        console.log(result.file);
 
         res.status(StatusCodes.OK).json({
             "url" : url,
