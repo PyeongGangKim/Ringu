@@ -23,14 +23,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    payment_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'payment',
-        key: 'id'
-      }
-    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -40,6 +32,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    payment_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'payment',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
@@ -66,6 +70,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "book_detail_id" },
+        ]
+      },
+      {
+        name: "purchase_payment_fk_idx",
+        using: "BTREE",
+        fields: [
+          { name: "payment_id" },
         ]
       },
     ]

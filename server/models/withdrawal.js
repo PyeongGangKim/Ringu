@@ -31,12 +31,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     remitted_date_time: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: true
     },
     is_remittance: {
       type: DataTypes.TINYINT,
-      allowNull : false,
-      defaultValue: 1,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,

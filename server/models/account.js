@@ -17,26 +17,26 @@ module.exports = function(sequelize, DataTypes) {
     },
     total_earned_money: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
     total_withdrawal_amount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     amount_available_withdrawal: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    request_withdrawal_amount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
+      allowNull: false
     },
     created_date_time: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
+    request_withdrawal_amount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    }
   }, {
     sequelize,
     tableName: 'account',
@@ -51,7 +51,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "author_id",
+        name: "account_member_id_fk",
         using: "BTREE",
         fields: [
           { name: "author_id" },

@@ -11,9 +11,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'author',
+        model: 'member',
         key: 'id'
-      }
+      },
+      unique: "favorite_author_statistics_member_id_fk"
     },
     favorite_person_number: {
       type: DataTypes.INTEGER,
@@ -38,7 +39,8 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "favorite_author_statistics_author_id_fk",
+        name: "favorite_author_statistics_author_id_uindex",
+        unique: true,
         using: "BTREE",
         fields: [
           { name: "author_id" },
