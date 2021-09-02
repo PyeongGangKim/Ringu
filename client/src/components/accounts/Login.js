@@ -67,7 +67,7 @@ class Login extends Component {
         }
 
         API.sendPost(URL.api.auth.login, params).then(res => {
-            var status = res.data.status;
+            var status = res.status;
             if(status === "ok") {
                 var token = res.data.token;
                 if( token ) Cookies.set('token', token, {expires: 7, path: '/'});

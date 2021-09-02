@@ -67,17 +67,18 @@ class SignupDetail extends Component {
     }
 
     verifyEmail = async(evt) => {
+        
         var state = this.state;
-
+        console.log(state.email.val);
         var params = {
             email: state.email.val,
         }
 
-        const res = await API.sendGet(URL.api.auth.email.duplicate, params)
-
-        if(res.data.status === "ok"){
-            const res = await API.sendPost(URL.api.auth.email.code, params)
-            var status = res.data.status;
+        const res = await API.sendPost(URL.api.auth.email.duplicate, params)
+        console.log(res);
+        if(res.status === "ok"){
+            const res_email_code = await API.sendPost(URL.api.auth.email.code, params)
+            var status = res_email_code.data.status;
 
             if(status === "ok") {
                 this.setState({
@@ -241,7 +242,7 @@ class SignupDetail extends Component {
         }
 
         API.sendPost(URL.api.auth.verify_nickname, params).then(res => {
-            var status = res.data.status;
+            var status = res.status;
 
             if(status === "ok") {
                 state.nickname.clear = true;
