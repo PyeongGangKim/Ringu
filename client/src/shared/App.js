@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Switch, Route ,Redirect } from 'react-router-dom';
 
-import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegister, AuthorPage, BookPage, RegisterPage, BuyPage, BuyCompletePage, SearchPage} from '../pages';
+import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegister, AuthorPage, BookPage, RegisterPage, BuyPage, BuyCompletePage, SearchPage, NotificationPage} from '../pages';
 import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage } from '../pages';
 import { ReviewPage } from '../pages';
 
@@ -36,6 +36,7 @@ class App extends Component {
                 <Route path="/signup-step" component={SignupPage} />{}
                 <Route path="/welcome" component={SignupPage} />{}
                 <Route path="/review/:book_detail" component={ReviewPage} />{}
+                <Route path="/notification" component={NotificationPage} />{}
                 <Route component={NotFound} />
             </Switch>
         );
