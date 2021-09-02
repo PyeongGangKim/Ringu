@@ -127,6 +127,10 @@ class Header extends Component {
                                         <li><button onClick={this.logOut}>로그아웃</button></li>
                                     </ul>
                                 </div>
+                                <Link to={URL.service.notification} id="notification-page">
+                                    <img src="/notification.png"/>
+                                    <span>알림</span>
+                                </Link>
                             </div>
                             :
                             <div id="accounts">
