@@ -26,6 +26,6 @@ module.exports = {
                 break;
 
         }
-        return `${date.getFullYear().toString().substring(2,5)}. ${date.getMonth()+1}. ${date.getDate()}. ${day}`
+        return `${date.getFullYear().toString().substring(2,5)}. ${date.getMonth()+1}. ${date.getDate()}`
     }
 }
