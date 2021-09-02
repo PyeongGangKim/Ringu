@@ -88,6 +88,18 @@ header {
                 }
             }
 
+            #notification-page {
+                width: 70px;
+                height: 100%;
+
+                img {
+                    display:block;
+                    width: 30px;
+                    height: 30px;
+                    margin: 0 auto 10px auto;
+                }
+            }
+
             #user-nb {
                 position: relative;
                 width: 90px;
