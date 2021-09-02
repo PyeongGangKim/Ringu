@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-
+const {StatusCodes} = require("http-status-codes");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -14,6 +14,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
     try{
         const notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -34,23 +35,43 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
                 ["created_date_time", "ASC"]
             ],
         });
-        res.json({status: "ok", notifications});
+        res.status(StatusCodes.OK).json({
+            "notification_list" : notifications,
+        });
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get notifications"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 });
-
+router.get('/newNotiCount', isLoggedIn, async(req, res, next) => {
+    let member_id = req.user.id;
+    try{
+        const newNotiCount = await notiCount.findOne({
+            where : {
+                member_id : member_id
+            }
+        });
+        console.log(newNotiCount.count);
+        res.status(StatusCodes.OK).json({
+            new_notification_count: newNotiCount.count,
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
 router.get('/book', isLoggedIn, async (req, res, next) => {
-    var member_id = req.user.id;
+    let member_id = req.user.id;
     try{
         const book_notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -71,14 +92,23 @@ router.get('/book', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
-        res.json({status: "ok", book_notifications});
+        const unread_cnt = await notification.count({
+            where : {
+                member_id : member_id,
+                status : 1,
+                type: 1,
+                is_read : 0,
+            }   
+        });
+        res.status(StatusCodes.OK).json({
+            book_notification_list: book_notifications,
+            unread_count : unread_cnt
+        });
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get book notification list"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 });
@@ -87,6 +117,7 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
     try{
         const withdrawal_notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -96,7 +127,7 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
             where: {
                 member_id : member_id,
                 status : 1,
-                type: 2,
+                type: 4,
             },
             include : {
                 as: "member",
@@ -107,14 +138,24 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
-        res.json({status: "ok", withdrawal_notifications});
+        const unread_cnt = await notification.count({
+            where : {
+                member_id : member_id,
+                status : 1,
+                type: 4,
+                is_read : 0,
+            }   
+        });
+        res.status(StatusCodes.OK).json({
+            withdrawal_notification_list: withdrawal_notifications,
+            unread_count : unread_cnt
+        });
+
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get withdrawal notification list"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 });
@@ -123,6 +164,7 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
     try{
         const notice_notifications = await notification.findAll({
             attributes : [
+                "id",
                 [sequelize.literal("member.nickname"), "nickname"],
                 "title",
                 "content",
@@ -143,14 +185,23 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
-        res.json({status: "ok", notice_notifications});
+        const unread_cnt = await notification.count({
+            where : {
+                member_id : member_id,
+                status : 1,
+                type: 2,
+                is_read : 0,
+            }   
+        });
+        res.status(StatusCodes.OK).json({
+            normal_notification_list : notice_notifications,
+            unread_count : unread_cnt
+        });
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get notice notification list"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 });
@@ -163,15 +214,15 @@ router.delete('/:notificationId', isLoggedIn, async (req, res, next) => { // 필
                 id : notification_id,
             }
         })
-        res.json({status: "ok"});
+        res.status(StatusCodes.OK).json({
+            "message": "OK"
+        });
     
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to delete notification"
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 });
@@ -186,16 +237,14 @@ router.put('/:notificationId', isLoggedIn, async(req, res, next) => { // 읽은 
                 id: notificatino_id,
             }
         });
-        res.json({
-            status: "ok",
+        res.status(StatusCodes.OK).json({
+            "message": "ok",
         })
     }
     catch(err){
         console.error(err);
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to update reading notification "
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 })

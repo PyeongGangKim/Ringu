@@ -1,6 +1,6 @@
 const passport = require("passport");
 
-exports.isLoggedIn = (req, res, next) => {
+exports.isLoggedIn = (req, res, next) => {    
     passport.authenticate("jwt", { session: false }, (err, user) => {
         if (user) {
             req.user = user;

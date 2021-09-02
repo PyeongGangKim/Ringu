@@ -1,17 +1,16 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
 const bcrypt = require('bcrypt');
 const multer = require("multer");
 
 var helper_api = require("../../helper/api");
 var helper_security = require("../../helper/security");
-const {StatusCodes} = require("http-status-codes");
 //var helper_email = require("../../helper/email");
 var helper_random = require("../../helper/random");
 var helper_date = require("../../helper/date");
 
+const {StatusCodes} = require("http-status-codes");
 
 let { member } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
@@ -24,10 +23,19 @@ const { salt } = require("../../config/salt");
 const aws = require("../../utils/aws");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
-    var id = req.query.id;
+    var id = req.user.id;
 
     try{
         const user = await member.findOne({
+            attributes: [
+                "id",
+                "email",
+                "nickname",
+                "description",
+                "tel",
+                "profile",
+                "type",
+            ],
             where : {
                 id: id
             }
@@ -48,7 +56,42 @@ router.get('/', isLoggedIn, async(req, res, next) => {
     }
 })
 
-router.get('/profile/:memberId', isLoggedIn, async(req, res, next) => {
+router.get('/:memberId', async(req, res, next) => {
+    var id = req.params.memberId
+
+    try{
+        const user = await member.findOne({
+            attributes: [
+                "id",
+                "email",
+                "nickname",
+                "description",
+                "tel",
+                "profile",
+                "type",
+            ],
+            where : {
+                id: id
+            }
+        });
+
+        if(user){
+            user.profile = imageLoad(user.profile)
+            res.status(StatusCodes.OK).json({
+                user: user,
+            })
+        }
+        else {
+            res.status(StatusCodes.NO_CONTENT);
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+})
+
+router.get('/profile/:memberId', async(req, res, next) => {
     var id = req.params.memberId
 
     try {
@@ -60,7 +103,6 @@ router.get('/profile/:memberId', isLoggedIn, async(req, res, next) => {
 
         const url = imageLoad(result.profile)
 
-        console.log(url)
         res.status(StatusCodes.OK).json({
             "url" : url,
         });
@@ -83,13 +125,15 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         }
         else{
             res.status(StatusCodes.OK).json({
-                check: false,    
+                check: false,
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 })
@@ -114,7 +158,9 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
     // DB LOAD
@@ -128,44 +174,52 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
                 nickname : nickname,
             }
         });
+
         if(result.length != 0){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
+
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 
-router.put('/nickname', isLoggedIn, async (req, res, next) => {
+router.put('/', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;
-    let nickname = req.body.nickname;
+    let params = req.body;
     // patch로 변경필요
     try{
-        const result = await member.update({
-            nickname : nickname,
-        },
-        {
-            where : {
-                id : id,
-            }
-        });
+        const result = await member.update(
+            params,
+            {
+                where : {
+                    id : id,
+                }
+            });
+
         if(result){
             res.status(StatusCodes.OK).json({
                 "member" : result,
             });
         }
-        
+
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 });
@@ -184,10 +238,14 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.json({status: "ok", result});
+            res.status(statusCodes.OK).json({
+                "message" : "OK",
+            });
         }
         else{
-            res.json({status: "error", reason: "name update error"});
+            res.status(statusCods.INTERNAL_SERVER_ERROR).json({
+                "error": "name update error",
+            });
         }
     }
     catch(err){
@@ -209,12 +267,15 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK);
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 

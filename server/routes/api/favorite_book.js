@@ -12,36 +12,39 @@ router.post('/', isLoggedIn,async (req, res, next) => {
 
     var member_id = req.user.id;
     var book_id = req.body.book_id;
-
+    const t = await sequelize.transaction();
     try{
-        const result = await sequelize.transaction(async (t) => {
-            await favorite_book.create({
+        await favorite_book.create({
                 member_id : member_id,
                 book_id : book_id,
-            });
-            const [statistics, created] = await favorite_book_statistics.findOrCreate({
-                where: {
-                    book_id: book_id,
-                },
-                defaults: {
-                    book_id: book_id,
-                    favorite_person_number: 0,
-                }
-            });
-            await favorite_book_statistics.update(
-                {
-                    favorite_person_number : statistics.favorite_person_number + 1,
-                },
-                {
-                    where:{
-                        id: statistics.id,
-                },
-            });
-            res.status(StatusCodes.CREATED).send("success like");
+        },{
+            transaction : t,
         });
+        const [statistics, created] = await favorite_book_statistics.findOrCreate({
+            where: {
+                book_id: book_id,
+            },
+            defaults: {
+                book_id: book_id,
+                favorite_person_number: 0,
+            },
+            transaction : t,
+        });
+        await favorite_book_statistics.update(
+            {
+                favorite_person_number : statistics.favorite_person_number + 1,
+            },
+            {
+                where:{
+                    id: statistics.id,
+                },
+                transaction : t,
+        });
+        await t.commit();
+        res.status(StatusCodes.CREATED).send("success like");
     }
-
     catch(err){
+        await t.rollback();
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -62,17 +65,16 @@ router.post('/duplicate', isLoggedIn,async (req, res, next) => {
         })
         if(duplicate_result){
             res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
         }
         else{
             res.status(StatusCodes.OK).send("No Duplicate");
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
@@ -87,11 +89,12 @@ router.get('/', isLoggedIn,async (req, res, next) => {
             attributes : [
                 "id",
                 [sequelize.literal("book.id"), "book_id"],
+                [sequelize.literal("book.type"), "type"],
+                [sequelize.literal("book.is_finished_serialization"), "is_finished"],
                 [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.title"), "title"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("`book->author`.nickname"),"author_nickname"],
-
                 [sequelize.literal("SUM(`book->review_statistics`.score_amount) / SUM(`book->review_statistics`.person_number)"),"review_score"],
             ],
             include : [
@@ -99,9 +102,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                     model : book,
                     as : "book",
                     attributes: [
-                        "img",
-                        "title",
-                        "price",
+
                     ],
 
                     include: [
@@ -109,15 +110,14 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                             model: member,
                             as : "author",
                             attributes: [
-                                "nickname",
+
                             ],
                         },
                         {
                             model: review_statistics,
                             as : "review_statistics",
                             attributes : [
-                                "score_amount",
-                                "person_number",
+
                             ],
                         },
                     ]
@@ -150,19 +150,45 @@ router.get('/', isLoggedIn,async (req, res, next) => {
 
 router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
 
-    var id = req.params.favoriteBookId;
-
+    let id = req.params.favoriteBookId;
+    const t = await sequelize.transaction();
     try{
+        const cancel_favorite_book = await favorite_book.findOne({
+            where: {
+                id : id
+            },
+        });
         await favorite_book.destroy({
             where: {
                 id : id,
+            },
+            transaction: t,
+        });
+        let cancel_favorite_book_id = cancel_favorite_book.book_id;
+        const cancel_favorite_book_statistics = await favorite_book_statistics.findOne({
+            where: {
+                book_id : cancel_favorite_book_id
             }
         });
-        res.status(StatusCodes.OK);
+
+        let cancel_favorite_person_number = cancel_favorite_book_statistics.favorite_person_number - 1;
+        await favorite_book_statistics.update({
+            favorite_person_number : cancel_favorite_person_number,
+        },{
+            where : {
+                book_id : cancel_favorite_book_id,
+            },
+            transaction : t,
+        });
+        res.status(StatusCodes.OK).json({
+            "message" : "OK",
+        });
+        await t.commit();
     }
     catch(err){
+        await t.rollback();
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
     }
 });
 

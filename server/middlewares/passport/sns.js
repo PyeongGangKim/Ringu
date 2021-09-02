@@ -13,7 +13,7 @@ const verify = async (accessToken, refreshToken, profile, done) => {
     if(!profile) return done('err', null);
     var _profile = profile._json;
     try{
-        let user = await member.findOne({ where: { email: _profile.email } });
+        let user = await member.findOne({ where: { email: _profile.email, status: 1 } });
         if(user){
             user.isFirst = false;
             return done(null, user);

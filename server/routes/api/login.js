@@ -15,11 +15,12 @@ router.post("/", async (req, res) => {
             let member = result.data
 
             const token = jwt.sign({
-                id: member.id
+                id: member.id,
+                type: member.type,
             }, req.app.get('jwt-secret'), {
                 expiresIn: '12h',
                 issuer: 'ringu',
-            });            
+            });
             res.json({status:"ok", token})
         } else{
             res.json({

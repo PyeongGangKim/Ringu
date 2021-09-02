@@ -1,13 +1,13 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('notiCount', {
+  return sequelize.define('account', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    member_id: {
+    author_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -15,7 +15,15 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    count: {
+    total_earned_money: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    total_withdrawal_amount: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    amount_available_withdrawal: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -23,10 +31,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    request_withdrawal_amount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,
-    tableName: 'notiCount',
+    tableName: 'account',
     timestamps: false,
     indexes: [
       {
@@ -38,10 +51,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "notiCount_member_id_fk",
+        name: "account_member_id_fk",
         using: "BTREE",
         fields: [
-          { name: "member_id" },
+          { name: "author_id" },
         ]
       },
     ]

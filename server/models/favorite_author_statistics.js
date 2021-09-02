@@ -1,21 +1,22 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('notiCount', {
+  return sequelize.define('favorite_author_statistics', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    member_id: {
+    author_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'member',
         key: 'id'
-      }
+      },
+      unique: "favorite_author_statistics_member_id_fk"
     },
-    count: {
+    favorite_person_number: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -26,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'notiCount',
+    tableName: 'favorite_author_statistics',
     timestamps: false,
     indexes: [
       {
@@ -38,10 +39,11 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "notiCount_member_id_fk",
+        name: "favorite_author_statistics_author_id_uindex",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "member_id" },
+          { name: "author_id" },
         ]
       },
     ]
