@@ -44,19 +44,19 @@ class PasswordChange extends Component {
         }
         try {
             const res = await API.sendPost(URL.api.member.passwordCheck, params)
-            var status = res.data.status;
+            var status = res.status;
 
-            if(status === "ok") {
+            if(status === 200) {
                 var params = {
                     password: state.data.newPassword,
                 }
                 try {
                     const res = await API.sendPut(URL.api.member.password, params)
 
-                    var status = res.data.status;
-                    if(status === "ok") {
+                    var status = res.status;
+                    if(status === 200) {
                         alert("비밀번호를 변경하였습니다.")
-                        window.location.href = URL.service.home
+                        window.location.reload(false);
                     }
                 } catch(e) {
                     console.log(e)

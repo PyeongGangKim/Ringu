@@ -45,15 +45,15 @@ class NotificationChange extends Component {
 
         const res = await API.sendPost(URL.api.member.passwordCheck, params)
 
-        var status = res.data.status;
+        var status = res.status;
 
-        if(status === "ok") {
+        if(status === 200) {
             var params = {
                 password: state.data.newPassword,
             }
             const res = await API.sendPut(URL.api.member.password, params)
-            var status = res.data.status;
-            if(status === "ok") {
+            var status = res.status;
+            if(status === 200) {
                 alert("비밀번호를 변경하였습니다.")
             }
         } else {
@@ -66,7 +66,7 @@ class NotificationChange extends Component {
         return (
             <div id="mypage" className="page2">
                 <div className="title-wrap">
-                    <h2 className="title">알림 설정 변경</h2>                    
+                    <h2 className="title">알림 설정 변경</h2>
                 </div>
 
                 <hr/>

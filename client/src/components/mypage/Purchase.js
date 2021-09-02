@@ -54,19 +54,13 @@ class Purchase extends Component {
             const author = await API.sendGet(URL.api.author.get + purchaseList[i].book.author_id)
             purchaseList[i].author = author.data.result;
         }*/
-        console.log(purchaseList)
-
         state.data.purchaseList = purchaseList
-        console.log(purchaseList);
         this.setState(state)
     }
-    async downloadAction(book_detail_id, e){
-        console.log(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");
+    async downloadAction(book_detail_id){
         const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");
         let downloadUrl = res.data.url;
-        console.log(downloadUrl);
         window.open(downloadUrl);
-        
     }
     render() {
         var purchaseList = this.state.data.purchaseList
@@ -111,39 +105,35 @@ class Purchase extends Component {
                                         </div>
 
                                         <table className="details">
-                                            <tr>
-                                                <th className="label">다운로드</th>
-                                                <th className="label">구매가격</th>
-                                                <th className="label">구매일</th>
-                                                <td rowSpan="2">
+                                            <tbody>
+                                                <tr>
+                                                    <td className="label">다운로드</td>
+                                                    <td className="label">구매가격</td>
+                                                    <td className="label">구매일</td>
+                                                    <td rowSpan="2">
 
-                                                    {
-                                                        item.review ?
-                                                        <button disabled className="btn btn-rounded btn-color-2">
-                                                            리뷰완료
-                                                        </button>
-                                                        :
-                                                        <Link to={URL.service.review + item.book_detail_id}>
-                                                            <button className="btn btn-rounded btn-color-2">
-                                                                리뷰쓰기
+                                                        {
+                                                            item.review ?
+                                                            <button disabled className="btn btn-rounded btn-color-2">
+                                                                리뷰완료
                                                             </button>
-                                                        </Link>
-                                                    }
-
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <button onClick = {
-                                                        () => console.log("실행"),this.downloadAction.bind(this, item.book_detail_id)
-                                                    }>
-                                                        <img src="download.png"/>
-                                                    </button>
-                                                </td>
-                                                <td className="value">{parse.numberWithCommas(item.price)} 원</td>
-                                                <td className="value">{date.format(item.created_date_time)}</td>
-                                            </tr>
+                                                            :
+                                                            <Link to={URL.service.review + item.book_detail_id}>
+                                                                <button className="btn btn-rounded btn-color-2">
+                                                                    리뷰쓰기
+                                                                </button>
+                                                            </Link>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <em className="download" onClick={() => this.downloadAction(item.book_detail_id)}/>
+                                                    </td>
+                                                    <td className="value">{parse.numberWithCommas(item.price)} 원</td>
+                                                    <td className="value">{date.format(item.created_date_time)}</td>
+                                                </tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
