@@ -3,9 +3,12 @@ import { Link, withRouter } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
 
+import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 import User from '../../utils/user';
+import iamport from '../../config/iamport';
+
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
@@ -15,24 +18,25 @@ class Buy extends Component {
         let userInfo = User.getInfo();
 
         this.state = {
-            buyList: [],
+            purchaseList: props.location.state.purchaseList,
             pay_method: 'card',
-            amount: 1,
+            amount: 0,
             agree: false,
+            user: {}
         }
     }
 
     async componentDidMount() {
         var state = this.state;
-        const res = await API.sendGet(URL.api.cart.list)
 
-        if(res.status === 200) {
-            var buyList = res.data.cartList
-            state.buyList = buyList
+        if (state.purchaseList)
+            this.sum(state.purchaseList);
+
+        const res = await API.sendGet(URL.api.member.get)
+
+        if (res.status === 200) {
+            state.user = res.data.user
         }
-
-        if (state.buyList)
-            this.sum(state.buyList);
 
         this.setState(state)
     }
@@ -44,7 +48,7 @@ class Buy extends Component {
             sum += list[i].price
         }
 
-        state.price = sum;
+        state.amount = sum;
 
         this.setState(state)
     }
@@ -57,12 +61,13 @@ class Buy extends Component {
     }
 
     onPayment = () => {
-        if(this.state.agree === false) {
+        var state = this.state
+        if(state.agree === false) {
             alert("동의해주세요.")
             return;
         }
         const { IMP } = window;
-        IMP.init("imp50068849")
+        IMP.init(iamport.IMP_PAYMENT_CODE)
         let userInfo = User.getInfo();
         if(!userInfo) {
             alert("로그인 후 구매하여 주세요.");
@@ -73,31 +78,32 @@ class Buy extends Component {
             pg: 'html5_inicis',
             pay_method: 'card',
             merchant_uid: 'merchant_' + new Date().getTime(),
-            name: '결제 테스트',
-            amount: 1,
-            buyer_email: 'trop100@naver.com',
+            name: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
+            amount: 100,
+            buyer_email: state.user.email,
             buyer_name: '임유빈',
-            buyer_tel: '01020618506',
-            buyer_addr: '서울특별시 관악구 관악로 1',
-            buyer_postcode: '08826',
+            buyer_tel: !!state.user.tel ? state.user.tel : null,
+            buyer_addr: '',
+            buyer_postcode: '',
         },
-            function (rsp) {
-                console.log( "rsp", rsp );
+            async(rsp) => {
                 var msg
                 if (rsp.success) {
-                    let params = rsp;
-                    console.log('22222222')
-                    API.sendPost(URL.api.payments, params).then((res) => {
+                    msg = "결제가 완료되었습니다."
 
-                    }).catch((err) => {
+                    let params = rsp;
+                    params.purchaseList = state.purchaseList;
+                    const res = await API.sendPost(URL.api.payment.create, params)
+                    if(res.status === 200) {
+                        window.location.href = "/home"
+                    }
+                    /*).catch((err) => {
                         console.log(err);
-                    });
+                        alert(err);
+                    });*/
                 } else {
-                    msg = '결제가 취소되었습니다.';
                     var return_url = "";
                     alert( rsp.error_msg );
-                    //window.location.href = return_url;
-
                 }
             }
         )
@@ -105,13 +111,12 @@ class Buy extends Component {
 
     render() {
         var state = this.state;
-        console.log(state)
         return (
             <div id="buy" className="page1">
                 <div id="cartlist-area">
-                    <h3 className="header">구매하기({2}건)</h3>
+                    <h3 className="header">구매하기({state.purchaseList.length} 건)</h3>
                     {
-                        state.buyList.map(item => {
+                        state.purchaseList.map(item => {
                             return (
                                 <div key={item.id} className="product-box">
                                     <div className="img-box">
@@ -124,7 +129,7 @@ class Buy extends Component {
                                         {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
                                         <p>파일형식:{"PDF"}</p>
                                     </div>
-                                    <span className="price"> {item.price}</span>
+                                    <span className="price"> {parse.numberWithCommas(item.price)}</span>
                                 </div>
                             )
                         })
@@ -168,19 +173,19 @@ class Buy extends Component {
                         <div className="content">
                             <div className="payment-group">
                                 <input type="radio" id="CARD"/>
-                                <label for="CARD" className="btn btn-outline btn-rounded">
+                                <label htmlFor="CARD" className="btn btn-outline btn-rounded">
                                     <em id="payment-card"/>
                                     신용카드
                                 </label>
 
                                 <input type="radio" id="ACCOUNT"/>
-                                <label for="ACCOUNT" className="btn btn-outline btn-rounded">
+                                <label htmlFor="ACCOUNT" className="btn btn-outline btn-rounded">
                                     <em id="payment-account"/>
                                     실시간 계좌이체
                                 </label>
 
                                 <input type="radio" id="PHONE"/>
-                                <label for="PHONE" className="btn btn-outline btn-rounded">
+                                <label htmlFor="PHONE" className="btn btn-outline btn-rounded">
                                     <em id="payment-phone"/>
                                     휴대폰
                                 </label>
@@ -192,7 +197,7 @@ class Buy extends Component {
                         <div className="detail-price">
                             <dl >
                                 <dt>총 금액</dt>
-                                <dd>{state.price} 원</dd>
+                                <dd>{parse.numberWithCommas(state.amount)} 원</dd>
                             </dl>
                             <dl>
                                 <dt>쿠폰 및 적립금 할인</dt>
@@ -201,7 +206,7 @@ class Buy extends Component {
 
                             <dl className="total">
                                 <dt>결제금액</dt>
-                                <dd>{state.price} 원</dd>
+                                <dd>{parse.numberWithCommas(state.amount)} 원</dd>
                             </dl>
                         </div>
 
