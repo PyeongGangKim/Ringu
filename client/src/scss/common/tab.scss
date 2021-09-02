@@ -1,0 +1,83 @@
+.tab-wrap {
+    .tab-nav {
+        height: 60px;
+        border-bottom: 2px solid #ccc;
+
+        .tab-btn {
+            display:inline-block;
+            width: 90px;
+            height: 60px;
+            font-size: 21px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 60px;
+
+            &.active {
+                font-weight: 700;
+                border-bottom: 4px solid var(--color-1);
+            }
+        }
+    }
+
+    .tab-inner {
+        margin: 0px;
+
+        .inner-box:nth-last-child(1) > .inner-content {
+            border-bottom: 0;
+        }
+
+        .inner-box {
+            display: flex;
+            width: 100%;
+            min-height: 150px;
+            padding-top: 25px;
+
+            .inner-header{
+                margin-top: 20px;
+                min-width: 170px;
+                max-width: 170px;
+                padding-left: 15px;
+                font-size: 30px;
+            }
+            .inner-content {
+                width: 100%;
+                border-bottom: 1px solid #bbb;
+                padding-bottom: 25px;
+
+                .intro {
+                    font-size: 20px;
+                    min-height: 150px;
+                    padding: 10px 50px;
+                }
+            }
+
+            .inner-subheader-wrap {
+                font-size: 18px;
+                padding: 20px 0;
+
+                .inner-subheader {
+                    font-weight: 500;
+                    padding: 4px 0;
+                    margin-bottom: 20px;
+                    cursor: pointer;
+                }
+
+                .inner-subheader.active {
+                    color: var(--color-1);
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+}
+.tab-dock-top {
+    padding-top: 63px;
+
+    .tab-nav {
+        position: fixed;
+        width: 980px;
+        background-color: white;
+        top: 0;
+        z-index: 100;
+    }
+}

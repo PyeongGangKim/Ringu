@@ -67,9 +67,7 @@
         }
     }
 
-    .row {
-        display: flex;
-        align-items: center;
+    .row {        
         padding-bottom: 30px;
 
         h3 {
@@ -105,11 +103,11 @@
         }
 
         &.buttons {
-            margin-top: 150px;
+            margin-top: 100px;
             justify-content: space-between;
 
             .btn {
-                font-size: 14px;
+                font-size: 16px;
                 font-weight: 500;
                 padding: 15px 30px;
             }
@@ -126,6 +124,82 @@
 
         textarea {
             font-size: 14px;
+        }
+    }
+}
+
+.modal.review {
+    padding: 10px 30px;
+    width: 350px;
+
+    .header {
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        margin: 15px 0;
+    }
+
+    .content {
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        margin-bottom: 30px;
+    }
+
+    button {
+        margin: 10px auto;
+        padding: 10px 0;
+        width: 90%;
+        font-size: 14px;
+    }
+
+    .review-point-box {
+        width: 100%;
+        display:flex;
+        align-items: center;
+        border: 2px solid #c2c2c2;
+        border-radius: 4px;
+        height: 100px;
+        margin: 50px 0 50px 0;
+
+        .mark {
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 25%;
+            height: 100%;
+            background-color: var(--color-2);
+            border-radius: 2px 0 0 2px;
+
+            em {
+                font-weight: 600;
+                font-size: 18px;
+                text-align: center;
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                border-radius: 50%;
+                background-color: white;
+                color: var(--color-2);;
+
+            }
+        }
+
+        .point {
+            display:flex;
+            width: 75%;
+            flex-direction: column;
+            .label {
+                color: #a2a2a2;
+
+                text-align: center;
+            }
+            .value {
+                text-align: center;
+                font-size: 32px;
+                font-weight: 600;
+            }
         }
     }
 }

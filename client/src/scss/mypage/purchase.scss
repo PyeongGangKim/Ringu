@@ -37,11 +37,17 @@
                     width: 90px;
                     text-align: center;
 
-                    img {
+                    em.download {
+                        display: inline-block;
                         margin: 10px auto;
                         width: 40px;
                         height: 40px;
-                    }
+                        background-image: url('/download-rounded.png');
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        cursor: pointer;
+                    }                    
                 }
 
                 &:nth-child(2) {

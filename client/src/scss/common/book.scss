@@ -1,5 +1,7 @@
 .booklist-area {
     padding-bottom: 60px;
+    margin-bottom: 30px;
+
 
     ul {
         padding: 0;
@@ -8,7 +10,7 @@
 
         li {
             flex: 0 1 auto;
-            margin-right: 40px;
+            margin-right: 20px;
             margin-bottom: 40px;
         }
 
@@ -18,31 +20,120 @@
     }
 }
 
-.book-box {
-    width: 260px;
-    height: 280px;
-    overflow: hidden;
+.book-box.ser {
+    .book-type-wrap {
+        background-color: var(--color-ser);
+    }
+    .thumbnail-box {
+        border: 10px solid var(--color-ser-bg);
+    }
+}
+
+.book-box.ser-ed {
+    .book-type-wrap {
+        background-color: var(--color-ser-ed);
+    }
+    .thumbnail-box {
+        border: 10px solid var(--color-ser-ed-bg);
+    }
+}
+
+.book-box.pub {
+    .book-type-wrap {
+        background-color: var(--color-pub);
+    }
+    .thumbnail-box {
+        border: 10px solid var(--color-pub-bg);
+    }
+}
+
+.book-box.wait {
+    opacity: 0.7;
 
     .thumbnail-box {
+        border: 10px solid #e9e9e9;
+    }
+
+    .wait {
+        width: 100%;
+        font-size: 20px;
+        font-weight: 600;
+        text-align:center;
+        padding: 20px 0;
+    }
+}
+
+.book-box {
+    position: relative;
+    width: 260px;
+
+    .btn-wrap {
+        margin: 0 !important;
+    }
+
+    .book-type-wrap {
+        position: absolute;
+        height: 20px;
+        z-index: 2;
+        padding: 0 20px;
+        border-radius: 5px 5px 0 0;
+
+        span {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            color: white;
+        }
+    }
+
+    .thumbnail-box {
+        margin-top: 10px;
         position: relative;
         height: 220px;
-        border: 10px solid #f1eefc;
 
-        .favorite-icon {
+        .favorite-box {
             position: absolute;
-            width: 25px;
-            height: 25px;
-            background-image: url("/heart.png");
-            background-repeat: no-repeat;
-            background-size: contain;
-            top: 15px;
-            right: 20px;
+            width: 35px;
+            height: 35px;
+            top: 10px;
+            right: 15px;
+            z-index: 10;
+            border-radius: 4px;
+            transition: 0.5s;
 
-            &.on {
-                background-image: url("/heart.png");
+            &:hover{
+                background-color: rgba(0, 0, 0, 0.2);
             }
-        }
 
+            .favorite-btn {
+                position: absolute;
+                display: block;
+                width: 100%;
+                height: 100%;
+                padding: 0;
+
+                .favorite {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    width: 25px;
+                    height: 25px;
+                    background-image: url("/heart_empty.png");
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    z-index: 11;
+
+                    &.on {
+                        background-image: url("/heart.png");
+                    }
+                }
+            }
+
+
+        }
 
 
         h3 {
@@ -57,7 +148,7 @@
         .img-area {
             border-radius: 6px;
             overflow: hidden;
-            margin: 10px;
+            margin: 5px;
             position: relative;
             height: 150px;
 
@@ -68,35 +159,50 @@
         }
     }
 
-    .book-info {
-        padding: 10px 20px;
+    .book-info-box {
         border: 2px solid #eee;
-        border-top: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 60px;
 
-        .price {
-            font-size: 24px;
-        }
+        .book-info {
+            padding: 10px 15px;
+            border-top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            cursor: pointer;
 
-        .details {
-
-            .author-info {
-                font-size: 15px;
+            .price {
+                font-size: 20px;
             }
 
-            .review-info {
-                text-align: right;
+            .details {
+
+                .author-info {
+                    font-size: 14px;
+                }
+
+                .review-info {
+                    text-align: right;
+                    font-size: 14px;
+                }
+
+                .author-label {
+                    color: #b3b3b3;
+                }
+            }
+        }
+
+        .btn-wrap {
+            button {
                 font-size: 14px;
-            }
-
-            .author-label {
-                color: #b3b3b3;
+                font-weight: 500;
+                margin: 20px;
+                padding: 5px 0;
+                border: 0;
+                background-color: #f2f2f2;
             }
         }
-
-
     }
+
+
 }
