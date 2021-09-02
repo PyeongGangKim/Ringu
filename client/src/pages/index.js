@@ -20,3 +20,4 @@ export { default as SignupCallbackPage } from './SignupCallbackPage';
 export { default as ReviewPage } from './ReviewPage';
 export { default as PasswordChangePage } from './PasswordChangePage';
 export { default as NotificationChangePage } from './NotificationChangePage';
+export { default as NotificationPage } from './NotificationPage';
