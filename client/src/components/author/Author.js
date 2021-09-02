@@ -1,11 +1,15 @@
 import React, { Component, Fragment } from 'react';
+import ReactDOM from 'react-dom'
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
 
 import User from '../../utils/user';
+import Book from '../../components/book/Book'
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
+import '../../scss/common/common.scss';
+import '../../scss/common/tab.scss';
 import '../../scss/author/author.scss';
 import '../../scss/book/book.scss';
 
@@ -14,170 +18,478 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+import Modal from '../../components/modal/Modal';
+
+const tabHeight = 60;
+
 class Author extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
-        console.log(userInfo)
+
+        this.introRef = React.createRef();
+        this.bookRef = React.createRef();
+        this.reviewRef = React.createRef();
 
         this.state = {
-            hash: props.hash.substring(1, props.hash.length),
-            bookList:[],
+            tab: 'intro',
+            tabChange: false,
+            detailList: [],
+            bookList: {},
+            selected: {},
+
             user: {},
+            active: 'a',
+            activeReview: 0,
+            dock: false,
+            reviewList: [],
+            reviewTitleList: [],
+
+            //
+            display:false,
+            modify: false,
+
+            modalPos:{},
+            host: false,
         }
+        console.log(props)
     }
 
     async componentDidMount() {
         var state = this.state;
 
-        var params = {
-            author_id: User.getInfo().id,
-        }
-
-        const res = await API.sendGet(URL.api.book.list, params = params)
-        var bookList = res.data.bookList
-        console.log(bookList)
-
-        const userRes = await API.sendGet(URL.api.member.get, params = {id: User.getInfo().id})
-        var user = userRes.data.user
-
-        /*for(var i=0; i<favoriteList.length; i++) {
-            favoriteList[i].book = {}
-
-            var book;
-
-            if(favoriteList[i].type === 1) {
-                book = await API.sendGet(URL.api.book.serialization + favoriteList[i].serialization_book_id)
-                favoriteList[i].book = book.data.serializationBook;
-            } else {
-                book = await API.sendGet(URL.api.book.singlePublished + favoriteList[i].single_published_book_id)
-                favoriteList[i].book = book.data.singlePublishedBook;
+        try {
+            var params = {
+                author_id: this.props.authorId,
+                is_approved: true,
             }
 
+            const res = await API.sendGet(URL.api.book.list, params = params)
+            var bookList = res.data.bookList
 
+            if(this.props.authorId === User.getInfo().id) {
+                console.log(222)
+                state.host = true
+            }
 
-            const author = await API.sendGet(URL.api.author.get + favoriteList[i].book.author_id)
-            favoriteList[i].author = author.data.result;
-        }*/
+            var waitingList = bookList.filter(book => {
+                return book.is_approved === 0
+            })
 
-        state.bookList = bookList
-        state.user = user
+            bookList = bookList.filter(book => {
+                return book.is_approved === 1
+            })
+
+            var serialList = bookList.filter(book => {
+                return book.type === 1
+            })
+
+            state.bookList['ser'] = serialList.filter(book => {
+                return book.is_finished_serialization === 0
+            })
+
+            state.bookList['ser-ed'] = serialList.filter(book => {
+                return book.is_finished_serialization === 1
+            })
+
+            state.bookList['pub'] = bookList.filter(book => {
+                return book.type === 2
+            })
+
+            state.bookList['wait'] = waitingList;
+
+            const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = {title: true, author_id: this.props.authorId})
+            var reviewData = reviewRes.data
+
+            state.reviewList = reviewData.reviewList
+            state.reviewTitleList = reviewData.reviewTitleList
+
+            const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
+            var user = userRes.data.user
+
+            state.user = user
+
+            window.addEventListener('scroll', this.handleScroll)
+
+            if (window.scrollY > 100) {
+                state.dock = true;
+            } else {
+                state.dock = false;
+            }
+
+            this.setState(state)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
+            window.addEventListener('scroll', this.handleScroll)
+        }
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll)
+    }
+
+    handleTabChange = (event, value) => {
+        this.setState({tab: value, tabChange: true})
+        window.removeEventListener('scroll', this.handleScroll)
+
+        if (value === 'intro') {
+            window.scrollTo({
+                top: this.introRef.current.offsetTop - tabHeight,
+            })
+        } else if (value === 'book') {
+            window.scrollTo({
+                top: this.bookRef.current.offsetTop - tabHeight,
+            })
+        } else {
+            window.scrollTo({
+                top: this.reviewRef.current.offsetTop - tabHeight,
+            })
+        }
+    }
+
+    handleScroll = (event) => {
+        var state = this.state;
+
+        const scrollTop = ('scroll', event.srcElement.scrollingElement.scrollTop);
+        if (scrollTop > 100) {
+            state.dock = true;
+        } else {
+            state.dock = false;
+        }
+
+        if(state.tabChange === true) {
+            state.tabChange = false
+            this.setState(state);
+            return;
+        }
+
+        if (scrollTop >= this.reviewRef.current.offsetTop - tabHeight) {
+            state.tab = 'review';
+        }
+        else if (scrollTop >= this.bookRef.current.offsetTop - tabHeight) {
+            state.tab = 'book';
+        } else {
+            state.tab = 'intro';
+        }
+
+        this.setState(state);
+    }
+
+    handleSubClick = (value) => {
+        var state = this.state;
+        state.active = value
+        this.setState(state)
+    }
+
+    handleDisplayClick = async(e, book) => {
+        var x = e.pageX - 100;
+        var y = e.pageY + 50;
+        var state = this.state;
+        var display = true
+
+        var params = {
+            member_id : this.props.authorId
+        }
+
+        const res = await API.sendGet(URL.api.book.getDetailList + book.id, params)
+        if(res.status === 200) {
+            var detailList = res.data.detailList
+            state.detailList = detailList
+            this.setState(state)
+        }
+
+        state.selected = book;
+
+        //var modalRoot = document.getElementById('modal-root')
+        //modalRoot.style.cssText = `top:${coordY}px; left:${coordX}px;`
+
+        state.modalPos = {x: x, y: y}
+
+        state.display = true
+        this.setState(state)
+    }
+
+    handleReviewTitleClick = async(title, book_id) => {
+        var state = this.state;
+        state.activeReview = title;
+        this.setState(state)
+
+        var params = {
+            title: false,
+        }
+        if(book_id !== null) {
+            params['book_id'] = book_id;
+        } else {
+            params['author_id'] = this.props.authorId;
+        }
+
+        const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = params)
+        var reviewData = reviewRes.data
+
+        state.reviewList = reviewData.reviewList
+        this.setState(state)
+    }
+
+    handleCloseClick = () => {
+        var state = this.state;
+
+        state.selected = {};
+        state.detailList = [];
+        state.display = false;
+        this.setState(state)
+    }
+
+    handleModifyClick = () => {
+        var state = this.state;
+        state.modify = true;
 
         this.setState(state)
     }
 
-    render() {
-        var bookList = this.state.bookList
+    handleCompleteClick = async() => {
         var state = this.state;
+        state.modify = false;
+
+        const res = await API.sendPut(URL.api.member.update, {description: state.user.description})
+        if(res.status === 200){
+            alert("변경되었습니다.")
+        } else {
+            alert("변경에 실패하였습니다.")
+        }
+
+        this.setState(state)
+    }
+
+    handleDescriptionChange = (evt) => {
+        var state = this.state;
+        state.user.description = evt.target.value;
+        this.setState(state)
+    }
+
+    handleUpdate = (book) => {
+        var state = this.state;
+        var newArray = state.bookList[book.status].filter(item => item.id !== book.id)
+        state.bookList[book.status] = newArray
+        this.setState(state)
+    }
+
+    handleDetailDelete = async(id) => {
+        var state = this.state;
+
+        const res = await API.sendDelete(URL.api.book_detail.delete + id)
+        if(res.status === 200) {
+            state.detailList = state.detailList.filter(item => {
+                return item.id !== id
+            })
+            this.setState(state)
+        } else {
+            alert("삭제하지 못 했습니다.")
+        }
+    }
+
+    downloadAction = async(book_detail_id) => {
+        const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");
+        let downloadUrl = res.data.url;
+        window.open(downloadUrl);
+    }
+
+    render() {
+        var state = this.state;
+        var bookList = state.bookList;
+        var selected = state.selected;
 
         return (
             <div id="author-page" className="page2">
-                <div className="tab-wrap">
-                    <div className="tab-nav">
-                        <a href="#intro" className={"tab-btn " + (state.hash == "intro" ? "active" : "")}>소개</a>
-                        <a href="#book" className={"tab-btn " + (state.hash == "book" ? "active" : "")}>작품</a>
-                        <a href="#review" className={"tab-btn " + (state.hash == "review" ? "active" : "")}>리뷰</a>
-                    </div>
-                </div>
-
-                <div className="tab-inner">
-                    <div id="intro-area" className="inner-box ">
-                        <div className="inner-header"> 소개</div>
-                        <div className="inner-content">
-                            <div className="intro">
-                                {state.user.description ? state.user.description : "" }
+                {
+                    (this.props.isAuthor === true && state.display === true) &&
+                    <Modal
+                        onClose={this.handleCloseClick}
+                        pos={state.modalPos}
+                    >
+                        <div className="book-detail-modal">
+                            <div className="book-detail-header">
+                                <h3>{state.selected.title}</h3>
                             </div>
-                        </div>
 
-                    </div>
+                            <em className="close" onClick={this.handleCloseClick}> &times; </em>
 
-                    <div id="book-area" className="inner-box">
-                        <div className="inner-header"> 작품</div>
-                        <div className="inner-content">
-                            <div className="booklist-area">
-                                <ul>
+                            <table className="book-details">
+                                <tbody>
                                     {
-                                        bookList.map(item => {
+                                        state.detailList.map((detail, idx) => {
                                             return (
-                                                <li className="book-box">
-                                                    <Link  to={URL.service.book + item.id}>
-                                                        <div className="thumbnail-box">
-                                                            <div className="img-area">
-                                                                <img src={item.img}/>
-                                                            </div>
+                                                <tr key={idx} className="book-detail">
+                                                    <td className="book-detail-idx"> <span> {idx+1}회차. </span> </td>
+                                                    <td className="book-detail-title"> <span> {detail.title} </span></td>
+                                                    {
+                                                        parseInt(this.props.authorId) === state.user.id ?
+                                                        <td className="icon">
+                                                            <em className="download"  onClick={() => this.downloadAction(detail.id)}/>
+                                                        </td>
+                                                        :
+                                                        !!detail.purchases.length ?
+                                                        <td className="icon"> <em className="download"/> </td>
+                                                        :
+                                                        <td className="icon"> <em className="lock"/> </td>
 
-                                                            <h3 className="title">{item.title}</h3>
-                                                        </div>
-                                                    </Link>
-
-                                                    <div className="book-info">
-                                                        <span className="price">{parse.numberWithCommas(item.price)}원</span>
-                                                        <div className="details">
-                                                            <div className="author-info">
-                                                                <span className="author-label"> 작가 </span>
-                                                                <span> {item.author_nickname} </span>
-                                                            </div>
-                                                            <div className="review-info">
-                                                                <span className="star"> ★ </span>
-                                                                <span> 5.0 </span>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </li>
+                                                    }
+                                                    {
+                                                        parseInt(this.props.authorId) === state.user.id &&
+                                                        <td className="icon">
+                                                            <em className="modify"/>
+                                                        </td>
+                                                    }
+                                                    {
+                                                        parseInt(this.props.authorId) === state.user.id &&
+                                                        <td className="icon">
+                                                            <em className="x" onClick={() => this.handleDetailDelete(detail.id)}/>
+                                                        </td>
+                                                    }
+                                                </tr>
                                             )
                                         })
                                     }
-                                </ul>
-                            </div>
-
+                                </tbody>
+                            </table>
+                            <button className="btn btn-block btn-bottom">
+                                + 새로운 회차 등록하기
+                            </button>
                         </div>
-                    </div>
+                    </Modal>
+                }
 
+                <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
+                    <ul className="tab-nav">
+                        <li className={"tab-btn " + (state.tab === "intro" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'intro')}>소개</li>
+                        <li className={"tab-btn " + (state.tab === "book" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'book')}>작품</li>
+                        <li className={"tab-btn " + (state.tab === "review" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'review')}>리뷰</li>
+                    </ul>
+                    <div className="tab-inner">
+                        <div id="intro-area" className="inner-box" ref={this.introRef}>
+                            <div className="inner-header">
+                                소개
+                                {
+                                    (this.props.isAuthor === true && state.modify === true) ?
+                                    <span className="small" onClick={this.handleCompleteClick}>
+                                        <em/>완료
+                                    </span>
+                                    :
+                                    <span className="small" onClick={this.handleModifyClick}>
+                                        <em/>수정
+                                    </span>
+                                }
 
-                    <div id="review-area" className="inner-box" >
-                        <div className="inner-header">
-                            <span> 리뷰 </span>
-                            <div className="review-book-list">
-                                <div className="book-title active"> 전체 </div>
-                                <div className="book-title"> 파워블로그 만들기 </div>
-                                <div className="book-title"> 대학원 진학 준비 과정 노하우</div>
+                            </div>
+                            <div className="inner-content">
+                                {
+                                    this.props.isAuthor === true ?
+                                    <textarea className="intro" value={state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
+                                    :
+                                    <div className="intro"> {state.user.description} </div>
+                                }
                             </div>
                         </div>
-                        <div className="inner-content final">
-                            <div className="review-area">
-                                <div className="review-box">
-                                    <div className="review-details">
-                                        <strong className="title"> 파워블로그 만들기</strong>
-                                        <span className="user"> jih* </span>
-                                        <span className="sep">  | </span>
-                                        <span className="stars"> ★ ★ ★ ★ ★ </span>
-                                        <span className="score"> 5.0 </span>
-                                    </div>
-                                    <div className="review-content">
-                                        리뷰 입니다
-                                    </div>
-                                </div>
 
-                                <div className="review-box">
-                                    <div className="review-details">
-                                        <strong className="title"> 파워블로그 만들기</strong>
-                                        <span className="user"> jih* </span>
-                                        <span className="sep">  | </span>
-                                        <span className="stars"> ★ ★ ★ ★ ★ </span>
-                                        <span className="score"> 5.0 </span>
-                                    </div>
-                                    <div className="review-content">
-                                        리뷰 입니다
-                                    </div>
+                        <div id="book-area" className="inner-box" ref={this.bookRef}>
+                            <div className="inner-header">
+                                <span> 작품 </span>
+                                <div className="inner-subheader-wrap">
+                                    <div className={this.state.active === 'a' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('a')}> 전체 </div>
+                                    <div className={this.state.active === 'ser' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser')}> 연재중 </div>
+                                    <div className={this.state.active === 'ser-ed' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser-ed')}> 연재완료 </div>
+                                    <div className={this.state.active === 'pub' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('pub')}> 단행본</div>
+                                    <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 승인 대기 중</div>
                                 </div>
-
-                                <div className="add-btn">
-                                    <button className="add-btn btn btn-transparent"> + 더보기 </button>
-                                </div>
-
                             </div>
+                            <div className="inner-content">
+                                {
+                                    Object.keys(bookList).map((status, n) => {
+                                        return (
+                                            (bookList[status].length !== 0 && (state.active === 'a' || state.active === status)) &&
+                                            <div key={n} className="booklist-area">
+                                                <ul>
+                                                    {
+                                                        bookList[status].map((item, idx) => {
+                                                            item['status'] = status
 
+                                                            return (
+                                                                <Book
+                                                                    key={item.id}
+                                                                    book = {item}
+                                                                    status = {status}
+                                                                    isAuthor = {!!state.host}
+                                                                    handleDisplayClick = {status !== "wait" ? this.handleDisplayClick : undefined}
+                                                                    handleUpdate = {status !== "wait" ? this.handleUpdate : undefined}
+                                                                />
+                                                            )
+                                                        })
+                                                    }
+                                                </ul>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        </div>
+
+
+                        <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                            <div className="inner-header">
+                                <span> 리뷰 </span>
+                                <div className="inner-subheader-wrap">
+                                    <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
+                                    {
+                                        this.state.reviewTitleList.map((item, title_idx) => {
+                                            return (
+                                                <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            </div>
+                            <div className="inner-content">
+                                <div className="review-area">
+                                    {
+                                        this.state.reviewList.map((item, review_idx) => {
+                                            return (
+                                                <div key={item.id} className="review-box">
+                                                    <div className="review-details">
+                                                        <strong className="title"> {item.book_title}</strong>
+                                                        <span className="user"> {item.nickname} </span>
+                                                        <span className="sep">  | </span>
+                                                        <span className="stars">
+                                                            {"★".repeat(item.score)}
+                                                        </span>
+
+                                                        <span className="score"> {item.score ? parseFloat(item.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
+                                                    </div>
+                                                    {
+                                                        item.book_type === 1 &&
+                                                        <div className="review-subtitle">
+                                                            {item.subtitle}
+                                                        </div>
+                                                    }
+
+                                                    <div className="review-content">
+                                                        {item.description}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })
+                                    }
+
+                                    {
+                                        this.state.reviewList.length >= 5 &&
+                                        <div className="add-btn">
+                                            <button className="add-btn btn btn-transparent"> + 더보기 </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

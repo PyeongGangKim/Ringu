@@ -4,6 +4,7 @@ import Switch from '@material-ui/core/Switch';
 
 
 import User from '../../utils/user';
+import Book from '../../components/book/Book'
 import '../../scss/mypage/favorite.scss';
 import '../../scss/common/button.scss';
 import '../../scss/common/book.scss';
@@ -36,6 +37,7 @@ class FavBook extends Component {
 
         const res = await API.sendGet(URL.api.favorite.book.list)
 
+
         if(res.status === 200) {
             var favoriteList = res.data.favoriteBookList
             state.data.favoriteList = favoriteList
@@ -46,16 +48,13 @@ class FavBook extends Component {
 
     }
 
-    handleDelete = async(id) => {
-        var state = this.state
-        const res = await API.sendDelete(URL.api.favorite.book.delete + id)
-
-        if(res.data.status === "ok") {
-            var filteredArray = this.state.data.favoriteList.filter(item => item.id !== id)
-            var data = {...state.data, favoriteList: filteredArray}
-            this.setState({data: data})
-            alert("즐겨찾기가 취소되었습니다.")
-        }
+    handleDelete = async(book) => {
+        console.log(222222)
+        var state = this.state;
+        var filteredArray = state.data.favoriteList.filter(item => item.id !== book.id)
+        var data = {...state.data, favoriteList: filteredArray}
+        this.setState({data: data})
+        alert("즐겨찾기가 취소되었습니다.")
     }
 
     render() {
@@ -75,33 +74,25 @@ class FavBook extends Component {
                         <ul>
                             {
                                 favoriteList.map(item => {
+                                    var status = ""
+                                    if (item.type === 2) {
+                                        status = "pub"
+                                    }
+                                    else if (item.is_finished) {
+                                        status = "ser-ed"
+                                    }
+                                    else {
+                                        status = "ser"
+                                    }
                                     return (
-                                        <li key={item.id} className="book-box">
-                                            <Link  to={URL.service.book + item.book_id}>
-                                                <div className="thumbnail-box">
-                                                    <div className="img-area">
-                                                        <img src={item.img}/>
-                                                    </div>
-                                                    <button onClick={() => this.handleDelete(item.id)} className="favorite-icon on"/>
-
-                                                    <h3 className="title">{item.title}</h3>
-                                                </div>
-                                            </Link>
-
-                                            <div className="book-info">
-                                                <span className="price">{parse.numberWithCommas(item.price)} 원</span>
-                                                <div className="details">
-                                                    <div className="author-info">
-                                                        <span className="author-label"> 작가 </span>
-                                                        <span> {item.author_nickname} </span>
-                                                    </div>
-                                                    <div className="review-info">
-                                                        <span className="star"> ★ </span>
-                                                        <span> {item.review_score ? parseFloat(item.review_score).toFixed(1) : "0.0"} </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
+                                        <Book
+                                            key={item.id}
+                                            book = {item}
+                                            status = {status}
+                                            handleUpdate = {this.handleDelete}
+                                            favorite
+                                            isFavorite
+                                        />
                                     )
                                 })
                             }

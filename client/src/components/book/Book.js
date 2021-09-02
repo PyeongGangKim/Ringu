@@ -16,6 +16,7 @@ import API from '../../utils/apiutils';
 class Book extends Component {
     constructor(props) {
         super(props)
+        console.log(props)
 
         this.handleDisplayClick = props.handleDisplayClick;
         this.handleUpdate = props.handleUpdate;
@@ -100,7 +101,7 @@ class Book extends Component {
     render() {
         var book = this.props.book;
         var status = this.props.status;
-        var isAuthor = ('isAuthor' in this.props && typeof this.props.isAuthor != 'undefined') ? true : false;
+        var isAuthor = ('isAuthor' in this.props && !!this.props.isAuthor) ? true : false;
         var favorite = ('favorite' in this.props && typeof this.props.favorite != 'undefined') ? true : false;
         var isFavorite = this.state.isFavorite;
 
