@@ -46,7 +46,7 @@ let api_authorRouter = require('./routes/api/author');
 let api_reviewRouter = require('./routes/api/review');
 let api_withdrawalRouter = require('./routes/api/withdrawal');
 let api_notificationRouter = require('./routes/api/notification');
-// let api_paymentsRouter = require('./routes/api/payments');
+let api_paymentRouter = require('./routes/api/payment');
 
 let app = express();
 
@@ -109,7 +109,7 @@ app.use('/api/author', api_authorRouter);
 app.use('/api/review', api_reviewRouter);
 app.use('/api/withdrawal', api_withdrawalRouter);
 app.use('/api/notification', api_notificationRouter);
-// app.use('/api/payment',api_paymentsRouter);
+app.use('/api/payment',api_paymentRouter);
 //app.use('/api/upload', api_uploadRouter);
 
 
