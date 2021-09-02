@@ -14,7 +14,6 @@ router.post('/', isLoggedIn,async (req, res, next) => {
     var book_id = req.body.book_id;
     const t = await sequelize.transaction();
     try{
-
         await favorite_book.create({
                 member_id : member_id,
                 book_id : book_id,
