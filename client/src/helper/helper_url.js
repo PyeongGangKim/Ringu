@@ -72,6 +72,14 @@ module.exports = {
         },
         register: {
             book:               "/book",
+        },
+        notification: {
+            getNotification:    "/notification/",
+            getNewNoticount:    "/notification/newNotiCount",
+            getBookNotification:     "/notification/book",
+            getNormalNotification:  "/notification/notice",
+            getWithdrawalNotification: "/notification/withdrawal",
+            putReadNotification:    "/notification/"
         }
     },
     service : {
@@ -110,5 +118,6 @@ module.exports = {
         },
         search          : "/search",
         review          : "/review/",
+        notification    : "/notification/",
     }
 };
