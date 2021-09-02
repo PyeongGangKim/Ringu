@@ -11,8 +11,6 @@ const { sequelize, category, favorite_book, book, book_detail, member, review, r
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_detail_id = req.params.bookId;
 
-    console.log(111111)
-
     try{
         const book_detail_info = await book_detail.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
@@ -74,6 +72,31 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             "error": "server error"
         });
         console.error(err);
+    }
+});
+
+router.delete('/:bookDetailId', isLoggedIn, async (req, res, next) => {    
+    let id = req.params.bookDetailId;
+
+    try{
+        const result = await book_detail.update({
+            status: 0,
+        },
+        {
+            where: {
+                id : id,
+            }
+        });
+        if(result){
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
+        }
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 });
 
