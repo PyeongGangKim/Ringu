@@ -6,7 +6,7 @@ import RegisterBook2 from '../components/register/RegisterBook2';
 
 import Header from '../components/common/Header';
 
-class RegisterPage extends Component {
+class RegisterDetailPage extends Component {
     constructor(props) {
         super(props);        
     }
@@ -19,15 +19,10 @@ class RegisterPage extends Component {
                 <Header history={this.props.history}></Header>
                 <div id="wrap">
                     {
-                        !bookType ?
-                        <RegisterBookSelect history={this.props.history}/>
+                        bookType === 2 ?
+                        <RegisterBook2 location={this.props.location}/>
                         :
-                        (
-                            bookType === 2 ?
-                            <RegisterBook2/>
-                            :
-                            <RegisterBook1/>
-                        )
+                        <RegisterBook1 location={this.props.location}/>
                     }
                 </div>
             </Fragment>
@@ -35,4 +30,4 @@ class RegisterPage extends Component {
     }
 }
 
-export default RegisterPage;
+export default RegisterDetailPage;

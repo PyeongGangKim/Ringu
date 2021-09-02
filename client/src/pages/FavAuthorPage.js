@@ -15,7 +15,7 @@ class FavAuthorPage extends Component {
 
         return (
             <Fragment>
-                <Header></Header>
+                <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
                         <SideMemberInfo author="false"/>
