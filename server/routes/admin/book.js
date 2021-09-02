@@ -67,6 +67,7 @@ router.get("/", async (req, res, next) => {
                     required: true,
                     model: book_detail,
                     as : "book_details",
+                    attributes: ['page_number', 'round','id'],
                     where: {
                         [Op.or] : [
                             {
@@ -80,11 +81,11 @@ router.get("/", async (req, res, next) => {
 
                         ]
                     }
-                    //attributes: ['page_number', 'file', 'round'],
+                    
                 },
             ]
         });
-        console.log(rows);
+        console.log(rows[0].book_details);
         let total_count = count;
         let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
         console.log(renderingPage);

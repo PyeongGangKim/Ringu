@@ -21,18 +21,17 @@ router.get("/",async (req, res, next) => {
     var page            = ("page" in req.query) ? req.query.page : 1;
     var offset          = parseInt(limit) * (parseInt(page)-1);
 
-    console.log(req.query);
+    
     var fields = {
         "member_name"         : ("title" in req.query) ? req.query.title : "",
         "name"         : ("price" in req.query) ? req.query.price : "",
     }
-    console.log(fields);
     try{
         const {count, rows} = await author.findAndCountAll({
             where: {
                 [Op.or] : {
                     name : ("name" in fields && fields.name != "") ? {[Op.like] : "%"+fields.name+"%" } : {[Op.like] : "%%" } ,
-                    '$member.name$' : ("member_name" in fields && fields.member_name != "") ? { [Op.like]: "%"+fields.member_name+"%" } : {[Op.like] : "%%" } ,
+                    '$member.nickname$' : ("member_name" in fields && fields.member_name != "") ? { [Op.like]: "%"+fields.member_name+"%" } : {[Op.like] : "%%" } ,
                 },
                 status : 1,
             },
