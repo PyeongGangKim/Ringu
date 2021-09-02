@@ -55,10 +55,10 @@
                             <%=book.title%>  
                         </td>
                         <td class="text-center">
-                            <%=book.price%> /////<%=book.book_details.title%>
+                            <%=book.price%> 
                         </td>
                         <td class="menu">
-                            <a href="/admin/book/download/<%=book.book_details.id%>/?type=file">
+                            <a href="/admin/book/download/<%=book.book_details[0].id%>/?type=file">
                                 <div class="menu-item">
                                     파일 다운로드
                                 </div>
@@ -66,7 +66,7 @@
                             </a>
                         </td>
                         <td class="menu">
-                            <a href="/admin/book/download/<%=book.book_details.id%>/?type=preview">
+                            <a href="/admin/book/download/<%=book.book_details[0].id%>/?type=preview">
                                 <div class="menu-item">
                                     미리보기 다운로드
                                 </div>
