@@ -2,16 +2,17 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
-
-import User from '../../utils/user';
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/register/review.scss';
 
+import User from '../../utils/user';
 import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
+
+import Modal from '../../components/modal/Modal';
 
 class Review extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class Review extends Component {
             isSuccess: false,
             score: 0,
             description: '',
+            modal: false,
         }
     }
 
@@ -48,6 +50,11 @@ class Review extends Component {
         var state = this.state
         state.description = evt.target.value
         this.setState(state)
+    }
+
+    handleBack = (evt) => {
+
+        window.location.href=URL.service.mypage.purchases
     }
 
     handleSubmit = async() => {
@@ -77,14 +84,24 @@ class Review extends Component {
             description: state.description
         }
 
-        const res = await API.sendPost(URL.api.review.register, params)        
-        if(res.status === "ok") {
-            alert("작성하신 리뷰가 등록되었습니다.")
-            window.location.href = URL.service.mypage.purchases;
-        } else if(res.status === 409){
+        const duplicate = await API.sendPost(URL.api.review.duplicate, {book_detail_id: state.book_detail})
+
+        if(duplicate.status === 200) {
+            const res = await API.sendPost(URL.api.review.register, params)
+            if(res.status === 201) {
+                state.modal = true;
+                this.setState(state);
+            }
+            else {
+                alert("리뷰를 등록하지 못하였습니다.")
+            }
+
+        }
+        else if (duplicate.status === 409){
             alert("이미 리뷰를 작성하셨습니다.")
-            window.location.href = URL.service.mypage.purchases;
-        } else {
+            window.location.href = URL.service.mypage.purchases
+        }
+        else {
             alert("리뷰를 등록하지 못하였습니다.")
         }
     }
@@ -95,6 +112,47 @@ class Review extends Component {
         return (
             state.isSuccess &&
             <div id="review" className="page3">
+                {
+                    state.modal === true &&
+                    <Modal
+                        onClose={this.handleCloseClick}
+                        overlay={true}
+                    >
+                        <div className="modal review">
+                            <div className="review-point-box">
+                                <div className="mark">
+                                    <em>P</em>
+                                </div>
+                                <div className="point">
+                                    <div className="label">
+                                        적립 포인트
+                                    </div>
+                                    <div className="value">
+                                        100P
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="header">
+                                리뷰를 써주셔서 감사합니다.
+                            </div>
+                            <div className="content">
+                                축하합니다! 포인트가 지급되었습니다. RINGU는 고객님들의 생생한 리뷰를 모아 신뢰할 수 있는 리뷰 서비스를 제공하기 위해 노력하겠습니다.
+                            </div>
+
+                            <Link to={URL.service.mypage.purchases}>
+                                <button className="btn btn-block btn-color-2">
+                                    확인
+                                </button>
+                            </Link>
+
+                            <button className="btn btn-block btn-transparent">
+                                리뷰 보러가기
+                            </button>
+
+                        </div>
+                    </Modal>
+
+                }
                 <div>
                     <div className="review-box">
                         <div className="thumbnail-box">
@@ -136,7 +194,7 @@ class Review extends Component {
                     </div>
 
                     <div className="row buttons">
-                        <button className="btn btn-rounded btn-outline back"> &lt; &nbsp;뒤로</button>
+                        <button className="btn btn-rounded btn-outline back" onClick={this.handleBack}> &lt; &nbsp;뒤로</button>
                         <button className="btn btn-color-2 register" onClick={this.handleSubmit}> 등록</button>
                     </div>
                 </div>
