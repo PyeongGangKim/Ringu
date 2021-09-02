@@ -15,7 +15,6 @@ module.exports = {
             headers['Authorization'] = 'Bearer ' + token;
         }
         url = apiHost + url
-
         var ret = axios.post(url, JSON.stringify(params), { headers: headers })
             .then(res => {
                 var status = res.data.status;
@@ -31,7 +30,7 @@ module.exports = {
             .catch(err => {
                 console.log(err)
                 var resp = err.response;
-                return { status: resp.status, data: resp.data, reason: resp.statusText };
+                return { status: resp.data.status, data: resp.data, reason: resp.statusText };
             })
         return ret;
     },
