@@ -1,0 +1,78 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h1>송금한 금액(조회: <%=total_count%>)</h1>
+
+        <form method="GET" action="/admin/account/" class="panel-options input-inline">
+            <input type="text" class="input" name="name" value="" placeholder="작가 이름"/>
+            <input type="text" class="input" name="nickname" value="" placeholder="작가 nickname"/>
+            <button type="submit" class="btn btn-success" style="height: 23px;">검색</button>
+            <a href="/admin/withdrawal/">
+                <div class="btn" id="filter-clear">초기화</div>
+            </a>
+        </form>
+        <!--/.panel-options-->
+    </div>
+    <!--/.panel-header-->
+
+    <div class="panel-body padTopNone">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th style="width: 120px;">작가 nickname</th>
+                    <th style="width: 200px;">작가 이름</th>
+                    <th style="width: 60px;">은행</th>
+                    <th style="width: 100px;">계좌</th>
+                    <th style="width: 100px;">출금 요청 금액</th>
+                    <th style="width: 100px;">출금 요청 날짜</th>
+                    <th style="width: 100px;">송금 날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!withdrawal_list.length) { %>
+                    <tr>
+                        <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
+                    </tr>
+                <% } %>
+                <% withdrawal_list.forEach(function(withdrawal, index) { %>
+                    <tr>
+                        <td class="text-center"><%=withdrawal.id%></td>
+                        <td class="text-center">
+                            <%=withdrawal.author.nickname%>
+                        </td>
+                        <td class="text-center">
+                            <%=withdrawal.author.author.name%>
+                        </td>
+                        <td class="text-center">
+                            <%=withdrawal.author.author.bank%>
+                        </td>
+                        <td class="text-left">
+                            <%=withdrawal.author.author.account%>
+                        </td>
+                        <td class="text-left">
+                            <%=withdrawal.amount%>
+                        </td>
+                        <td class="text-left">
+                            <%=withdrawal.created_date_time%>
+                        </td>
+                        <td class="text-left">
+                            <%=withdrawal.remitted_date_time%>
+                        </td>
+
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!--/.panel-body-->
+
+    <div class="panel-block text-center">
+        <%- pagination_html%>
+    </div>
+    <!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<%- include("../templates/foot"); %>

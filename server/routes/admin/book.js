@@ -12,12 +12,12 @@ const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/thir
 const { book, notiCount, favorite_author ,notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 
-router.get("/book_detail", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
     //book_detail에서, where문으로 is_approved 확인하기.
     //book join해주고, book안에 category, author 조인 해준다.
     //근데 nested할 때, where문을 어떻게 쓰느냐가 중요함.
-    checkLogin(req, res, "/admin/book/book_detail/" + "?is_approved="+ req.query.is_approved);
+    checkLogin(req, res, "/admin/book/" + "?is_approved="+ req.query.is_approved);
 
     
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
@@ -35,15 +35,14 @@ router.get("/book_detail", async (req, res, next) => {
     }
 
     try{
-        const {count, rows} = await book_detail.findAndCountAll({
+        const {count, rows} = await book.findAndCountAll({
             where: {
-                [Op.and] : {
+                
                     is_approved : fields.is_approved,
-                    '$book.price$' : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
-                    '$book.category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
+                    price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
+                    '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
                     title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
-                    '$book.author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
-                },
+                    '$author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
                 status : 1,
             },
             limit : limit,
@@ -53,30 +52,43 @@ router.get("/book_detail", async (req, res, next) => {
             ],
             include : [
                 {
-                    model : book,
-                    as : "book",
-                    attributes : ['price','type'],
-                    include : [
-                        {
-                            model : category,
-                            as : "category",
-                            attributes: ['name'],
-                        },
-                        {
-                            model : member,
-                            as : "author",
-                            attributes: ['nickname'],
-                        },
-                    ]
-                }
-                
+                    required: true,
+                    model : category,
+                    as : "category",
+                    //attributes: ['name'],
+                },
+                {
+                    required: true,
+                    model : member,
+                    as : "author",
+                    //attributes: ['nickname'],
+                },
+                {
+                    required: true,
+                    model: book_detail,
+                    as : "book_details",
+                    where: {
+                        [Op.or] : [
+                            {
+                                round : 1,
+                            },
+                            {
+                                round : {
+                                    [Op.is] : null,
+                                }
+                            }
+
+                        ]
+                    }
+                    //attributes: ['page_number', 'file', 'round'],
+                },
             ]
         });
-        console.log(rows[0].book.author.nickname);
+        console.log(rows);
         let total_count = count;
         let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
         console.log(renderingPage);
-        let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/book_detail/" + fields.is_approved, page, limit, total_count, fields);
+        let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
             "book_list"       : rows,
@@ -638,12 +650,12 @@ router.get("/unapproved/reason", async (req, res, next) => {
     }
 });
 
-router.post("/unapproved/:bookDetailId", async(req, res, next) => {
+router.post("/unapproved/:bookId", async(req, res, next) => {
     // book_detail model에 is_approved 를 -1 로 바꿔준다.
     // 그리고 notification 해줘야 된다.
     // notification에 넣어줄 때, type을 출간 거절로 넣어주고
     //checkLogin(req, res, "/unapproved/" + req.params.bookDetailId);
-    const book_detail_id = req.params.bookDetailId;
+    const book_id = req.params.bookId;
     const reason = req.body.reason;
     const t = await sequelize.transaction();
     try{
@@ -652,28 +664,22 @@ router.post("/unapproved/:bookDetailId", async(req, res, next) => {
         },
         {
             where: {
-                id : book_detail_id,
+                id : book_id,
             }
         });
-        const getMemberByBook = await book_detail.findOne({//해당 책에 작가의 member_id를 알아와야됨.
+        const getMemberByBook = await book.findOne({//해당 책에 작가의 member_id를 알아와야됨.
             where: {
-                id: book_detail_id,
+                id: book_id,
             },
             include: [
                 {
-                    model: book,
-                    as: 'book',
-                    include : [
-                        {
-                            model: member,
-                            as : 'author',
-                            attributes: ['id'],
-                        }
-                    ]
+                    model: member,
+                    as : 'author',
+                    attributes: ['id'],
                 }
             ]
         });
-        let notiMember = getMemberByBook.book.author.id;
+        let notiMember = getMemberByBook.author.id;
         let title = getMemberByBook.title + "이 출간 거부 됐습니다."
         try{
             const noti = await notification.create({
@@ -716,15 +722,15 @@ router.post("/unapproved/:bookDetailId", async(req, res, next) => {
     }
 });
 
-router.get("/approved/:bookDetailId", async (req,res,next) => {
+router.get("/approved/:bookId", async (req,res,next) => {
     // approved로 book의 author를 얻어 내서 해당 author를 팔로우 한 친구들한테만 Notify하기
     checkLogin(req, res, "/admin/member/");
 
 
-    let id = req.params.bookDetailId;
+    let id = req.params.bookId;
     console.log(id);
     try{
-        await book_detail.update({
+        await book.update({
             is_approved : 1
         },{
             where: {
@@ -736,27 +742,21 @@ router.get("/approved/:bookDetailId", async (req,res,next) => {
         console.log(err);
     }
     try{
-        let approved_book = await book_detail.findOne({
+        let approved_book = await book.findOne({
             where: {
                 id: id
             },
             include : [
                 {
-                    model: book,
-                    as : "book",
-                    include : [
-                        {
-                            model: member,
-                            as : "author",
-                        }
-                    ]
+                    model: member,
+                    as : "author",
                 }
             ]
         });
 
         // 해당 작가를 follow 하고 있는 모든 데이터 얻어내기
-        let followed_author_id =  approved_book.book.author_id;
-        let followed_author_name = approved_book.book.author.nickname;
+        let followed_author_id =  approved_book.author_id;
+        let followed_author_name = approved_book.author.nickname;
         let book_title = approved_book.title;
         let following_members = await favorite_author.findAll({
             attributes: [

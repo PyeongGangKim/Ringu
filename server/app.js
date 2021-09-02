@@ -32,6 +32,7 @@ var admin_categoryRouter = require('./routes/admin/category');
 var admin_authorRouter = require('./routes/admin/author');
 let admin_notification = require('./routes/admin/notification');
 let admin_account = require('./routes/admin/account');
+let admin_withdrawal = require('./routes/admin/withdrawal');
 
 var api_authRouter = require('./routes/api/auth');
 var api_bookRouter = require('./routes/api/book');
@@ -95,6 +96,7 @@ app.use('/admin/category', admin_categoryRouter);
 app.use('/admin/author', admin_authorRouter);
 app.use('/admin/notification', admin_notification);
 app.use('/admin/account', admin_account);
+app.use('/admin/withdrawal', admin_withdrawal);
 
 app.use('/api/auth', api_authRouter);
 app.use('/api/book', api_bookRouter);

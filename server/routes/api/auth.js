@@ -8,6 +8,8 @@ const { smtpTransport } = require('../../config/email');
 var { generateRandom } = require('../../utils/random_number');
 const { secretKey } = require('../../config/jwt_secret');
 const {StatusCodes} = require("http-status-codes");
+
+
 const { identification, member } = require("../../models");
 const { isLoggedIn } = require('../../middlewares/auth');
 const { redirect_url } = require('../../config/url');
@@ -277,7 +279,7 @@ router.post("/login", async (req, res, next) => {
             }
             req.login(user, { session: false }, (loginError) => {
                 if (loginError) {
-                    res.status(400).json(loginError);
+                    res.status(StatusCode.INTERNAL_SERVER_ERROR).json(loginError);
                     return;
                 }
                 const token = jwt.sign({
@@ -316,7 +318,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
     const curDay = new Date();
 
     let time = curDay.getHours() * 3600 + curDay.getMinutes() * 60 + curDay.getSeconds();
-    console.log(222222)
+
     try{
         const result = await identification.findOne({
             raw: true,
@@ -364,7 +366,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
         res.status(StatusCodes.OK).send();
     }
     catch(err){
-        console.log(err);
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'error'
         });
@@ -391,7 +393,7 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: err});
     }
     try{
@@ -405,7 +407,7 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
         res.json({status: 'error'});
     }
 });
@@ -419,7 +421,6 @@ router.post('/phone/identification/number', isLoggedIn, async (req, res, next) =
             to : toPhoneNumber,
             content: msg,
         });
-        console.log(result);
         if(result.status == 200 || result.status == 202){
             await identification.create({
                 identification_info : toPhoneNumber,
@@ -491,7 +492,7 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
 
     }
     catch(err){
-        console.log(err);
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
