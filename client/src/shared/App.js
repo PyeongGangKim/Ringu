@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Switch, Route ,Redirect } from 'react-router-dom';
 
-import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegister, AuthorPage, BookPage, RegisterPage, BuyPage, BuyCompletePage, SearchPage} from '../pages';
-import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage } from '../pages';
+import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegisterPage, AuthorRegisterDetailPage, AuthorPage, BookPage, RegisterPage, RegisterDetailPage, BuyPage, BuyCompletePage, SearchPage} from '../pages';
+import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage } from '../pages';
 import { ReviewPage } from '../pages';
 
 class App extends Component {
@@ -23,18 +23,21 @@ class App extends Component {
                 <Route path="/carts" component={Carts} />{}
                 <Route path="/favorite/book" component={FavBookPage} />{}
                 <Route path="/favorite/author" component={FavAuthorPage} />{}
-                <Route path="/register/author" component={AuthorRegister} />{}
-                <Route path="/author" component={AuthorPage} />{}
+
+                <Route path="/register/author/" component={AuthorRegisterDetailPage} />{}
+                <Route path="/author/:author_id" component={AuthorPage} />{}
                 <Route path="/book/:book" component={BookPage} />
-                <Route path="/register" component={RegisterPage} /> {}
+                <Route path="/register/book/:bookType" component={RegisterDetailPage} /> {}
+                <Route path="/register/book" component={RegisterPage} /> {}
+                <Route path="/modify/book/:bookId" component={ModifyBookPage} /> {}
                 <Route path="/complete" component={BuyCompletePage} />{}
                 <Route path="/buy" component={BuyPage} />{}
                 <Route path="/search" component={SearchPage} />{}
                 <Route path="/login" component={LoginPage} />{}
                 <Route path="/signup/:sns/callback" component={SignupCallbackPage} />{}
+                <Route path="/signup/step" component={SignupDetailPage} />{}
                 <Route path="/signup" component={SignupPage} />{}
-                <Route path="/signup-step" component={SignupPage} />{}
-                <Route path="/welcome" component={SignupPage} />{}
+                <Route path="/welcome" component={WelcomePage} />{}
                 <Route path="/review/:book_detail" component={ReviewPage} />{}
                 <Route component={NotFound} />
             </Switch>

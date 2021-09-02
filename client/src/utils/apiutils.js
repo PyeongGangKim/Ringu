@@ -16,24 +16,30 @@ module.exports = {
         }
         url = apiHost + url
 
-        var ret = axios.post(url, JSON.stringify(params), { headers: headers })
-            .then(res => {
-                var status = res.data.status;
-                var data = res.data;
-                var reason = "";
-                if (status === "error") {
-                    if (!!res.data.reason) reason = res.data.reason;
-                    return { status: "error", data: "", reason: reason };
-                } else {
-                    return { status: "ok", data: data, reason: reason };
-                }
-            })
-            .catch(err => {
-                console.log(err)
-                var resp = err.response;
-                return { status: resp.status, data: resp.data, reason: resp.statusText };
-            })
-        return ret;
+        try {
+            var ret = axios.post(url, JSON.stringify(params), { headers: headers })
+                .then(res => {
+                    var status = res.status;
+                    var data = res.data;
+                    var reason = "";
+
+                    if (status === 200 || status === 201) {
+                        return { status: status, data: data, reason: reason };
+                    } else {
+                        if (!!res.data.reason) reason = res.data.reason;
+                        return { status: "error", data: "", reason: reason };
+                    }
+                })
+                .catch(err => {
+                    var resp = err.response;
+                    return { status: resp.status, data: resp.data, reason: resp.statusText };
+                })
+            return ret;
+        }
+        catch(err) {
+            console.log(err)
+            alert('error')
+        }
     },
 
     sendData(url, data) {
@@ -45,17 +51,19 @@ module.exports = {
             headers['Authorization'] = 'Bearer ' + token;
         }
         url = apiHost + url
-                
+
         var ret = axios.post(url, data, { headers: headers })
             .then(res => {
-                var status = res.data.status;
+
+                var status = res.status;
                 var data = res.data;
                 var reason = "";
-                if (status === "error") {
+
+                if (status === 200) {                    
+                    return { status: status, data: data, reason: reason };
+                } else {
                     if (!!res.data.reason) reason = res.data.reason;
                     return { status: "error", data: "", reason: reason };
-                } else {
-                    return { status: "ok", data: data, reason: reason };
                 }
             })
             .catch(err => {
@@ -87,11 +95,12 @@ module.exports = {
         }
 
         var ret = axios.put(url, params, { headers: headers }).then(res => {
-            var status = res.data.status;
+            var status = res.status;
             var data = res.data;
             var reason = "";
-            if (status === "ok") {
-                return { status: "ok", data: data, reason: reason };
+
+            if (status === 200) {
+                return { status: status, data: data, reason: reason };
             } else {
                 if (!!res.data.reason) reason = res.data.reason;
                 return { status: "error", data: "", reason: reason };
@@ -109,13 +118,16 @@ module.exports = {
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
+
         var ret = axios.delete(url, {params: params, headers: headers} )
             .then(res => {
-                var status = res.data.status;
+                console.log(url)
+                var status = res.status;
                 var data = res.data;
                 var reason = "";
-                if (status === "ok") {
-                    return { status: "ok", data: data, reason: reason };
+
+                if (status === 200) {
+                    return { status: status, data: data, reason: reason };
                 } else {
                     if (!!res.data.reason) reason = res.data.reason;
                     return { status: "error", data: "", reason: reason };
