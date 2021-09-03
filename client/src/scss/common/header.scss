@@ -6,7 +6,7 @@ header {
     right: 0;
     width: 100%;
     height: 110px;
-    z-index: 1500;
+    z-index: 500;
 
     #signup-header {
         width: 100%;
@@ -17,7 +17,7 @@ header {
             position: absolute;
             top: 20px;
             left: 0;
-            right: 0;            
+            right: 0;
             height: 60px;
         }
     }
@@ -154,6 +154,11 @@ header {
 
         .search {
             width: 550px;
+
+            input {
+                font-size: 18px;
+                line-height: 36px;
+            }
         }
     }
 }

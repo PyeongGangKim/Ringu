@@ -15,6 +15,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             attributes: [
                 "id",
                 "created_date_time",
+                [sequelize.literal("book_detail.id"), "book_detail_id"],
                 [sequelize.literal("book_detail.title"), "book_detail_title"],
 
                 // 임시
@@ -52,7 +53,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 ]
             }
         });
-        if(cartList.length == 0){
+        if(cartList.length === 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
@@ -83,6 +84,31 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             reason: "fail to get cart list"
         });
     }*/
+});
+
+router.put('/clear', isLoggedIn, async (req, res, next) => {
+    try {
+        var member_id = req.params.member_id
+        var book_detail_id = req.params.book_detail_id
+
+        const res = await cart.update({
+            status: 0,
+        },
+        {
+            where: {
+                member_id: member_id,
+                book_detail_id: {
+                    [Op.in] : book_detail_id,
+                },
+            },
+        })
+
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server_error",
+        });
+    }
 });
 
 router.delete('/:cartId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯

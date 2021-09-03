@@ -27,11 +27,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    is_approved: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
-    },
     img: {
       type: DataTypes.STRING(100),
       allowNull: true
@@ -73,6 +68,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 1
+    },
+    is_approved: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,

@@ -5,63 +5,230 @@ import '../../scss/search/search.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 
+import Book from '../../components/book/Book'
+
 import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+import Modal from '../../components/modal/Modal';
+
 class Search extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            search: parse.searchToDict(props.search),
-            searchList: [],
-        };
+        var search = parse.searchToDict(props.search)
 
+        this.state = {
+            search: search,
+            searchList: [],
+            count: 0,
+            categoryList: [],
+            selected: new Set([]),
+            newSelected: new Set([]),
+            filter: 1,
+            display: 0,
+            keyword: search['keyword'],
+            order: [],
+        };
     }
 
     async componentDidMount() {
-        var state = this.state;
-        this.handleSearch(state.search['keyword'])
+        try {
+            var state = this.state;
+            const categoryRes = await API.sendGet(URL.api.category.list)
+            if(categoryRes.status === 200){
+                state.categoryList = categoryRes.data.categoryList
+                this.setState(state)
+            }
+
+            this.setState(state)
+            this.handleSearch()
+        }
+        catch(e) {
+            console.log(e)
+        }
     }
 
-    handleSearch = async(keyword) => {
+    handleUpdateSearch = () => {
+        var state = this.state;
+        console.log(state)
+
+        var search = `?keyword=${state.keyword}`
+        if (state.order.length !== 0) {
+            search = search + `&filter=${state.order[0]}&order=${state.order[1]}`
+        }
+
+        var categories = Array.from(state.selected)
+        for(var i=0; i < categories.length; i++) {
+            search = search + `&categories=${categories[i]}`
+        }
+
+        console.log(search)
+
+        this.props.history.push({
+            search: search
+        })
+    }
+
+    handleCategoryClick = (id) => {
+        var state = this.state;
+        var newSelected = new Set([...state.newSelected])
+
+        if(newSelected.has(id)){
+            newSelected.delete(id)
+        }
+        else {
+            newSelected.add(id)
+        }
+
+        state.newSelected = newSelected;
+
+        this.setState(state)
+    }
+
+    handleCategoryCompleteClick = async() => {
+        var state = this.state;
+
+        state.selected = state.newSelected;
+        state.display = false;
+        this.setState(state)
+
+        console.log(state)
+
+        this.handleSearch()
+    }
+
+    handleDisplayClick = (value) => {
+        var state = this.state;
+
+        state.display = value;
+        this.setState(state)
+    }
+
+    handleCloseClick = () => {
+        var state = this.state;
+
+        state.newSelected = state.selected;
+        state.display = 0;
+        this.setState(state)
+    }
+
+    handleFilterChange = (e, filter) => {
+        var state = this.state;
+        state.filter = parseInt(e.target.value);
+        state.order = filter
+        this.setState(state)
+        this.handleSearch()
+    }
+
+    handleSearch = async() => {
         var state = this.state;
 
         var params = {
-            keyword: keyword,
+            keyword: state.keyword,
         }
 
-        const res = await API.sendGet(URL.api.book.list, params = params)        
+        if (Array.from(state.selected).length !== 0) {
+            params['categories'] = Array.from(state.selected)
+        }
+
+        if (state.order.length !== 0) {
+            params['order'] = state.order[0]
+            params['orderBy'] = state.order[1]
+        }
+
+        const res = await API.sendGet(URL.api.book.list, params = params)
+        console.log(res)
+
         if(res.status === 200) {
-            var searchList = res.data.bookList
-
-            state.searchList = searchList
-            this.setState(state)
+            state.searchList = res.data.bookList;
+            this.setState(state);
+            this.handleUpdateSearch()
         }
-
     }
 
     render() {
         var searchList = this.state.searchList
         var state = this.state;
 
+
         return (
             <div id="wrap">
                 <div id="search" className="page1">
+                    {
+                        state.display > 0 &&
+                        <Modal
+                            onClose={this.handleCloseClick}
+                            overlay={true}
+                        >
+                            {
+                                state.display === 1 &&
+                                <div className="search-modal">
+                                    <div className="header"> 카테고리 </div>
+                                    <em className="close" onClick={this.handleCloseClick}> &times; </em>
+                                    <ul className="category-box">
+                                        {
+                                            state.categoryList.map((item, idx) => {
+                                                return (
+                                                    <li key={item.id} className={state.newSelected.has(item.id) ? "category selected" : "category"} onClick={() => this.handleCategoryClick(item.id)}>
+                                                        {item.name}
+                                                    </li>
+                                                )
+                                            })
+                                        }
+                                    </ul>
+                                    <button className="btn btn-block btn-bottom" onClick={this.handleCategoryCompleteClick}>
+                                        완료
+                                    </button>
+                                </div>
+                            }
+                            {
+                                state.display === 2 &&
+                                <div className="search-modal">
+                                    <div className="header"> 정렬 </div>
+                                    <em className="close" onClick={this.handleCloseClick}> &times; </em>
+                                    <div className="filter-box">
+                                        <label htmlFor="recent" className="radio-container">
+                                            최신순
+                                            <input type="radio" id="recent" name="recent" value="1" checked={state.filter === 1 ? true : false} onChange={(e) => this.handleFilterChange(e, ['created_date_time', 'desc'])}/>
+                                            <span className="checkmark"/>
+                                        </label>
+                                        <label htmlFor="score" className="radio-container">
+                                            평점순
+                                            <input type="radio" id="score" name="score" value="2" checked={state.filter === 2 ? true : false} onChange={(e) => this.handleFilterChange(e, ['score', 'desc'])}/>
+                                            <span className="checkmark"/>
+                                        </label>
+                                        <label htmlFor="titleAsc" className="radio-container">
+                                            제목순 (오름차순)
+                                            <input type="radio" id="titleAsc" name="titleAsc" value="3" checked={state.filter === 3 ? true : false} onChange={(e) => this.handleFilterChange(e, ['title', 'asc'])}/>
+                                            <span className="checkmark"/>
+                                        </label>
+                                        <label htmlFor="score" className="radio-container">
+                                        <input type="radio" id="titleDesc" name="titleDesc" value="4" checked={state.filter === 4 ? true : false} onChange={(e) => this.handleFilterChange(e, ['title', 'desc'])}/>
+                                            제목순 (내림차순)
+                                            <span className="checkmark"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+
+                        </Modal>
+                    }
+
                     <div className="title-wrap">
-                        <h2 className="title">{`'${state.search['keyword']}'`} 검색 결과</h2>
+                        <h2 className="title">{`'${state.search['keyword']}'`} 검색 결과 ({state.searchList.length} 건)</h2>
                     </div>
 
                     <div className="filter-area">
-                        <div className="filter">
+                        <div className="filter" onClick={() => this.handleDisplayClick(1)}>
                             <span> 카테고리</span>
-                            <img src="/arrow_down.png" style={{width: "15px", height: "10px", marginLeft: "10px"}}/>
+                            <em/>
                         </div>
-                        <div className="filter">
+                        <div className="filter" onClick={() => this.handleDisplayClick(2)}>
                             <span> 정렬</span>
-                            <img src="/arrow_down.png" style={{width: "15px", height: "10px", verticalAlign: "middle", marginLeft: "10px"}}/>
+                            <em/>
                         </div>
                     </div>
 
@@ -69,35 +236,22 @@ class Search extends Component {
                         <ul>
                             {
                                 searchList.map(item => {
+                                    var status = ""
+                                    if (item.type === 2) {
+                                        status = "pub"
+                                    }
+                                    else if (item.is_finished) {
+                                        status = "ser-ed"
+                                    }
+                                    else {
+                                        status = "ser"
+                                    }
                                     return (
-                                        <li key={item.id} className="book-box">
-                                            <Link  to={URL.service.book + item.id}>
-                                                <div className="thumbnail-box">
-                                                    <div className="img-area">
-                                                        <img src={item.img}/>
-                                                    </div>
-                                                    <div className="favorite-icon"/>
-
-                                                    <h3 className="title">{item.title}</h3>
-                                                </div>
-                                            </Link>
-
-                                            <div className="book-info">
-                                                <span className="price">{parse.numberWithCommas(item.price)}원</span>
-                                                <div className="details">
-                                                    <div className="author-info">
-                                                        <span className="author-label"> 작가 </span>
-                                                        <span> {item.author_nickname} </span>
-                                                    </div>
-                                                    <div className="review-info">
-                                                        <span className="star"> ★ </span>
-                                                        <span> 5.0 </span>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                        </li>
+                                        <Book
+                                            book={item}
+                                            status={status}
+                                            favorite
+                                        />
                                     )
                                 })
                             }

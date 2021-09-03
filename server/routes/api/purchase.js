@@ -14,11 +14,11 @@ const request = require("request");
 
 
 router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
-    
+
     let book_detail_id = req.body.book_detail_id;
     let payment_id = req.body.payment_id;
-    
-    
+
+
     const t = await sequelize.transaction();
     try{
         //book_detail_id로 수수료 가져와서 purchase할 때, withdrawal에 저장.
@@ -40,16 +40,15 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
                     as : "book",
                     attributes: []
                 }
-                
+
             ],
             transaction: t,
         });
-        console.log(purchased_book);
+
         let author_id = purchased_book.dataValues.author_id;
         let price = purchased_book.dataValues.price;
         let charge = purchased_book.dataValues.charge;
-        console.log(author_id, price, charge);
-    
+
         await purchase.create({
             member_id : author_id,
             book_detail_id : book_detail_id,
@@ -60,7 +59,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
             transaction: t,
         });
         let earned_money = price - (price * (charge / 100));
-        
+
         let [author_account, created] = await account.findOrCreate({
             where : {
                 author_id : author_id,
@@ -73,8 +72,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
             },
             transaction : t,
         });
-        console.log(created);
-        console.log(author_account);
+
         if(!created){
             let update_total_earned_money = author_account.total_earned_money + earned_money;
             let update_amount_available_withdrawal = author_account.amount_available_withdrawal + earned_money;
@@ -147,12 +145,12 @@ router.post('/kakaopay', isLoggedIn, async(req, res, next) => {
                 console.error(response.body);
             }
         }
-        
-        
+
+
     })
 })
 router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
-    
+
     let member_id = req.body.member_id;
     let book_detail_id = req.body.book_detail_id;
 
@@ -184,7 +182,7 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
         const result = await purchase.bulkCreate(
             purchaseList,
         );
-        console.log(result);
+
         res.status(StatusCodes.OK).send("success purchasing");
     }
     catch(err){
@@ -283,7 +281,6 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
         }
         else{
             for(let i = 0 ; i < purchaseList.length ; i++){
-                console.log(purchaseList[i].dataValues.img);
                 if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
                 purchaseList[i].dataValues.img = await imageLoad(purchaseList[i].dataValues.img);
             }

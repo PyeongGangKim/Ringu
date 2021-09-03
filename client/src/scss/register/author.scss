@@ -1,47 +1,72 @@
-#approval-box {
-    width: 500px;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 21px;
-    margin-top: 80px;
+#register-author {
+    .input-box {
+        padding: 20px 0;
 
-    h3 {
-        font-size: 30px;
-        margin-bottom: 30px;
-    }
-
-    .check-area {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-
-        img {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
+        .btn-auth {
+            position:absolute;
+            right: 0;
+            bottom: -40px;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 20px;
+            background-color: #e1e2e6;
+            border: 0;
         }
-    }
+        .form-group {
+            .form-control {
+                line-height: 14px;                
+            }
+            .error-msg {
+                position:absolute;
+            }
 
-    .btn {
-        font-size: 20px;
-        padding: 8px 15px;
-        margin-top: 80px;
-    }
-}
+        }
 
-#auth-reg-section {
-    .input-area {
-        margin: 60px;
+    }
+    .row {
+        justify-content: space-between;
+        margin-bottom: 40px;
+
+        .input-box:nth-child(1) {
+            flex: 2 2 0;
+            margin-right: 60px;
+
+        }
+        .input-box:nth-child(2) {
+            flex: 3 3 0;
+        }
     }
 
     .btn-wrap {
-        width: auto;
-        margin: 0 60px;
-        margin-left: 110px;
+        width: 60%;
+        margin: 0 auto;
+    }
+    .phone-auth-box {
+        padding-top: 40px;
+        text-align: center;
+        .header {
+            font-size: 30px;
+            font-weight: 600;
+            padding: 20px 0;
+        }
+        .subheader {
+            font-size: 20px;
+            font-weight: 500;
+            padding: 10px 0;
+        }
+        .btn-box {
+            width: 400px;
+            margin: 0 auto;
+            padding-top: 200px;
 
-        .btn {
-            width: 420px;
+            .btn-auth {
+                font-size: 20px;
+                font-weight: 500;
+                width:100%;
+                border-radius: 10px;
+                padding: 10px 0;
+
+            }
         }
     }
-
 }

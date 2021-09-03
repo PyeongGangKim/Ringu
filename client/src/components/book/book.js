@@ -1,139 +1,178 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+
 
 
 import User from '../../utils/user';
-import '../../scss/common/page.scss';
-import '../../scss/common/button.scss';
-import '../../scss/book/book.scss';
+
+import '../../scss/common/book.scss';
+
+
+import date from '../../helper/date';
+import parse from '../../helper/parse';
+import URL from '../../helper/helper_url';
+import API from '../../utils/apiutils';
 
 class Book extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
+
+        this.handleDisplayClick = props.handleDisplayClick;
+        this.handleUpdate = props.handleUpdate;
+
         this.state = {
-            hash: props.hash ? props.hash.substring(1, props.hash.length) : "",
+            isFavorite: ('isFavorite' in props && typeof props.isFavorite !== 'undefined') ? props.isFavorite : !!this.props.book.favorite_book_id,
+        }
+    }
+
+    onFavoriteClick = async(e, book) => {
+        e.preventDefault()
+        var state = this.state
+
+        // 즐찾 삭제
+        if(state.isFavorite) {
+            try {
+                const res = await API.sendDelete(URL.api.favorite.book.delete + book.id)
+                if(res.status === 200) {
+                    state.isFavorite = false;
+                    this.setState(state);
+                }
+            } catch(e) {
+                console.log(e)
+            }
+        }
+        // 즐찾 추가
+        else {
+            try {
+                var params = {
+                    book_id: book.id,
+                }
+                const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
+                if(duplicate.status === 200) {
+                    const res = await API.sendPost(URL.api.favorite.book.create, params)
+                    if(res.status === 201) {
+                        state.isFavorite = true;
+                        this.setState(state);
+                    }
+                    else {
+                        alert("즐겨찾기에 추가하지 못하였습니다.")
+                    }
+                }
+                else {
+                    alert("즐겨찾기에 추가하지 못하였습니다.")
+                }
+            } catch(e) {
+                console.log(e)
+            }
+        }
+
+        if("handleUpdate" in this.props && typeof this.props.handleUpdate !== 'undefined'){
+            this.handleUpdate(book)
+        }
+    }
+
+    onDeleteClick = async(book) => {
+        var state = this.state
+
+        try {
+            const res = await API.sendDelete(URL.api.book.delete + book.id)
+            if(res.status === 200) {
+                alert("작품이 삭제되었습니다")
+            }
+            else {
+                alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+            }
+        } catch(e) {
+            console.log(e)
+        }
+
+        if("handleUpdate" in this.props && typeof this.props.handleUpdate !== 'undefined'){
+            this.handleUpdate(book)
+        }
+    }
+
+    handleModify = (book_id) => {
+        if(window.confirm("선택한 도서를 수정하시겠습니까?")) {
+            window.location.href = URL.service.book.modify + book_id
         }
     }
 
     render() {
-        var state = this.state;
+        var book = this.props.book;
+        var status = this.props.status;
+        var isAuthor = ('isAuthor' in this.props && typeof this.props.isAuthor != 'undefined') ? true : false;
+        var favorite = ('favorite' in this.props && typeof this.props.favorite != 'undefined') ? true : false;
+        var isFavorite = this.state.isFavorite;
+
+        const mark = {
+            'ser': "연재중",
+            'ser-ed': "연재완료",
+            'pub': "단행본",
+        }
 
         return (
-            <div className="container book" >
-                <div className="header">
-                    <div>
-                        <div style={{width: "300px", margin:"auto", paddingBottom:"30px"}}>
-                            <img src="" style={{width: "100%", height: "200px", margin:"auto", display:"block", borderRadius: "4px", marginBottom: "4px"}}/>
-                            <span style={{color:"var(--color-1)", fontSize:"11px"}}>저자 : 리미 &nbsp; &nbsp;&nbsp; 페이지수 60페이지</span>
-                            <br/><br/>
-                            <span style={{fontSize:"18px", fontWeight:"700"}}>한 달만에 -8kg 성공하는 법</span>
+            <li className={"book-box " + status}>
+                <div className="book-type-wrap">
+                    <span> {mark[status]} </span>
+                </div>
+                <Link to={URL.service.book.book + book.id}>
+                    <div className="thumbnail-box">
+                        <div className="img-area">
+
+                            <img src={!!book.img ? book.img : "/ringu_thumbnail.png"}/>
+                        </div>
+                        {
+                            favorite &&
+                            <div className="favorite-box">
+                                <button className="favorite-btn">
+                                    <em onClick={(e) => this.onFavoriteClick(e, book)} className={"favorite " + (isFavorite ? "on" : "")}/>
+                                </button>
+                            </div>
+                        }
+
+                        <h3 className="title">{book.title}</h3>
+                    </div>
+                </Link>
+
+                {
+                    status === 'wait' ?
+                    <div className="book-info-box">
+                        <div className="wait">
+                            승인 대기중
                         </div>
                     </div>
-
-
-                </div>
-                <div className="book-nav">
-                    <div className="navlist">
-                        <a href="#book" className={state.hash == "book" ? "navitem active" : "navitem"}>책소개</a>
-                        <a href="#contents" className={state.hash == "contents" ? "navitem active" : "navitem"}>목차</a>
-                        <a href="#author" className={state.hash == "author" ? "navitem active" : "navitem"}>작가소개</a>
-                        <a href="#review" className={state.hash == "review" ? "navitem active" : "navitem"}>리뷰</a>
+                    :
+                    <div className="book-info-box">
+                        <div className="book-info">
+                            <span className="price">{parse.numberWithCommas(book.price)}원</span>
+                            <div className="details">
+                                <div className="author-info">
+                                    <span className="author-label"> 작가 </span>
+                                    <span> {book.author_nickname} </span>
+                                </div>
+                                <div className="review-info">
+                                    <span className="star"> ★ </span>
+                                    <span> {book.mean_score ? parseFloat(book.mean_score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
+                                </div>
+                            </div>
+                        </div>
+                        {
+                            isAuthor === true &&
+                            <div className="btn-wrap">
+                                {
+                                    status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
+                                }
+                                {
+                                    status.includes('pub') && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
+                                }
+                                <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
+                            </div>
+                        }
                     </div>
-                </div>
+                }
 
-                <div className="content">
-                    <a name="book">
-                        <div className="content-box" >
-                            <div className="content-header"> 책소개</div>
-                            <div className="content-value book">
-                                책 소개창입니다
-                            </div>
-                        </div>
-                    </a>
 
-                    <a name="contents">
-                        <div className="content-box" >
-                            <div className="content-header"> 목차</div>
-                            <div className="content-value contents">
-                                <div>프롤로그</div>
-                                <div>1.설탕 대체 식품 찾기</div>
-                                <div>2.밀가루 대체 식품 찾기</div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a name="author">
-                        <div className="content-box" >
-                            <div className="content-header"> 작가 소개</div>
-                            <div className="content-value author">
-                                <div>
-                                    <div style={{display:"inline-block", textAlign:"center"}}>
-                                        <div><img src="blank.jpg" style={{width:"100px", height:"100px", textAlign:"center", borderRadius:"50%"}}/></div>
-                                        <div className="btn btn-color-2" style={{textAlign: "center", fontSize:"10px"}}>작업 공간</div>
-                                    </div>
-
-                                    <div style={{display:"inline-block", verticalAlign: "top", marginLeft:"20px"}}>
-                                        반갑읍니다...
-                                        작가 소개입니다..
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a name="review">
-                        <div className="content-box" >
-                            <div className="content-header">
-                                <span> 리뷰 </span>
-                            </div>
-
-                            <div className="content-value review">
-                                <div style={{backgroundColor:"var(--color-4)", borderRadius:"4px", width:"100%"}}>
-                                    <div style={{textAlign:"center"}}>
-                                        <div style={{display:"inline-block", verticalAlign:"middle", fontSize: "32px", fontWeight: "700", padding: "30px"}}>5.0</div>
-                                        <div style={{verticalAlign:"middle", display:"inline-block", textAlign: "left"}}>
-                                            <div style={{fontSize:"24px", fontWeight:"700", color: "#fff539"}}>★★★★★</div>
-                                            <span style={{fontSize:"12px"}}>100 개의 후기</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="review-container" style={{marginLeft:"10px"}}>
-                                    <div className="review-item" style={{borderBottom: "1px solid #ccc", padding: "15px 0 25px 0"}}>
-                                        <div style={{marginBottom: "15px"}}>
-                                            <span style={{fontSize:"12px"}}> jih* </span>
-                                            <span style={{fontSize:"12px", color:"#ccc"}}> | </span>
-                                            <span style={{fontSize:"14px", color:"yellow"}}> ★ ★ ★ ★ ★ </span>
-                                        </div>
-                                        <span>
-                                            리뷰입니당
-                                        </span>
-                                    </div>
-
-                                    <div className="review-item" style={{borderBottom: "1px solid #ccc", padding: "15px 0 25px 0"}}>
-                                        <div style={{marginBottom: "15px"}}>
-                                            <span style={{fontSize:"12px"}}> jih* </span>
-                                            <span style={{fontSize:"12px", color:"#ccc"}}> | </span>
-                                            <span style={{fontSize:"14px", color:"yellow"}}> ★ ★ ★ ★ ★ </span>
-                                        </div>
-                                        <span>
-                                            리뷰입니당
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div style={{textAlign:"center", margin: "30px 0", fontSize: "12px", fontWeight: "700"}}>
-                                    <span style={{cursor:"pointer"}}>+ 더보기</span>
-                                </div>
-
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-            </div>
+            </li>
         )
     }
 }

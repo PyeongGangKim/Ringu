@@ -41,10 +41,8 @@ class FavAuthor extends Component {
 
     handleDelete = async(id) => {
         var state = this.state
-        console.log(URL.api.favorite.author.delete + id)
         const res = await API.sendDelete(URL.api.favorite.author.delete + id)
-
-        if(res.data.status === "ok") {
+        if(res.status === 200) {
             var filteredArray = this.state.favoriteList.filter(item => item.id !== id)
 
             this.setState({favoriteList: filteredArray})

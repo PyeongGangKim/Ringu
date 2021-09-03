@@ -120,12 +120,12 @@ class SignupDetailSNS extends Component {
         }
 
         API.sendPost(URL.api.auth.verify_nickname, params).then(res => {
-            var status = res.data.status;
+            var status = res.status;
 
-            if(status === "ok") {
+            if(status === 200) {
                 state.nickname.clear = true;
                 state.nickname.btn = false;
-
+                alert("사용 가능한 닉네임입니다.")
 
             } else {
                 if(res.reason === "duplicate")
@@ -146,19 +146,30 @@ class SignupDetailSNS extends Component {
             nickname: state.nickname.val,
             sns: state.sns,
             id: state.id,
+            age_terms_agreement: state.ageCheck,
+            service_terms_agreement: state.serviceAgree,
+            privacy_terms_agreement: state.infoAgree,
+            notice_terms_agreement: state.eventAgree,
+            account_active_terms_agreement: state.activeAgree,
         }
 
         API.sendPost(URL.api.auth.sns.signup, params).then(res => {
-            var status = res.data.status;
-            console.log(res)
+            var status = res.status;
 
-            if(status === "ok") {
+            if(status === 201) {
                 var token = res.data.token;
                 if( token ) {
                     Cookies.set('token', token, {expires: 7, path: '/'})
                 }
-                this.setState(state);
-                window.location.href = URL.service.accounts.welcome;
+
+                this.props.history.push({
+                    pathname: URL.service.accounts.welcome,
+                    state: {
+                                nickname: state.nickname.val,
+                            }
+                })
+
+
             }
         })
     }

@@ -38,8 +38,10 @@ class Cart extends Component {
         var state = this.state;
         const res = await API.sendGet(URL.api.cart.list)
 
+
         if(res.status === 200) {
             var cartList = res.data.cartList
+            console.log(cartList)
             state.data.cartList = cartList
         }
 
@@ -47,6 +49,18 @@ class Cart extends Component {
             this.sum(cartList);
 
         this.setState(state)
+    }
+
+    handlePurchase = (type) => {
+        var state = this.state;
+        var purchaseList = (type === 1) ? state.data.cartList : Object.values(state.data.selectedList);
+
+        this.props.history.push({
+            pathname : URL.service.buy.buy,
+            state: {
+                purchaseList: purchaseList
+            }
+        })
     }
 
     sum = (list) => {
@@ -66,7 +80,7 @@ class Cart extends Component {
         var state = this.state
 
         const res = await API.sendDelete(URL.api.cart.delete + id)
-        if(res.data.status === "ok") {
+        if(res.status === 200) {
             var filteredArray = this.state.data.cartList.filter(item => item.id !== id)
             var data = {...state.data, cartList: filteredArray}
             this.setState({data: data})
@@ -125,7 +139,7 @@ class Cart extends Component {
                         cartList.map((item,i) => {
                             return (
                                 <div key={item.id} className="cart-box">
-                                    <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onClick={this.handleSelect} value={i}/>
+                                    <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
                                     <img src={item.img}/>
                                     <div className="details">
                                         <h3 className="title">{item.book_detail_title}</h3>
@@ -158,25 +172,14 @@ class Cart extends Component {
                         </button>
 
                         <div className="buy-btn">
-                            <Link to={{
-                                pathname : URL.service.buy.buy,
-                                state : {
-                                    cartList : state.data.selectedList,
-                                }}} onClick={this.isSelectedEmpty}>
-                                <button className="btn selected">
-                                    선택 상품 구매
-                                </button>
-                            </Link>
+                            <button className="btn selected" onClick={() => this.handlePurchase(0)}>
+                                선택 상품 구매
+                            </button>
 
-                            <Link to={{
-                                pathname : URL.service.buy.buy,
-                                state : {
-                                    cartList : true,
-                                }}} onClick={this.isSelectedEmpty}>
-                                <button className="btn all">
-                                    전체 상품 구매
-                                </button>
-                            </Link>
+                            <button className="btn all" onClick={() => this.handlePurchase(1)}>
+                                전체 상품 구매
+                            </button>
+
                         </div>
                     </div>
 

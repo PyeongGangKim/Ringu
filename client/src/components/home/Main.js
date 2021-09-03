@@ -6,6 +6,8 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/button.scss'
 
+import Book from '../../components/book/Book'
+
 import User from '../../utils/user';
 import date from '../../helper/date';
 import parse from '../../helper/parse';
@@ -26,7 +28,7 @@ class Main extends Component {
     async componentDidMount() {
         var state = this.state;
         var params = {
-            member_id: User.getInfo().id,
+            member_id: User.getInfo() ? User.getInfo().id : null,
         }
 
         const res = await API.sendGet(URL.api.book.main, params)
@@ -56,7 +58,7 @@ class Main extends Component {
                             <strong>당신이 찾는 모든 것들의 공간</strong>
                             <p>당신이 찾는 모든 것들의 공간</p>
                             <div className="search">
-                                <input type="text" maxLength="15" autocomplete="off" value={this.state.keyword} onChange={this.handleKeywordChange}/>
+                                <input type="text" maxLength="15" autoComplete="off" value={this.state.keyword} onChange={this.handleKeywordChange}/>
                                 <button type="submit" onClick={this.handleSearchClick}>
                                     검색
                                 </button>
@@ -92,34 +94,19 @@ class Main extends Component {
                         <ul>
                             {
                                 this.state.bookList.slice(0,5).map(item => {
+                                    var status = '';
+                                    if(item.type === 2) {
+                                        status  = 'pub'
+                                    } else {
+                                        status  = 'ser'
+                                    }
                                     return (
-                                        <li key={item.id} className="book-box">
-                                            <Link  to={URL.service.book + item.id}>
-                                                <div className="thumbnail-box">
-                                                    <div className="img-area">
-                                                        <img src={item.img}/>
-                                                    </div>
-
-                                                    <h3 className="title">{item.title}</h3>
-                                                </div>
-                                            </Link>
-
-                                            <div className="book-info">
-                                                <span className="price">{parse.numberWithCommas(item.price)} 원</span>
-                                                <div className="details">
-                                                    <div className="author-info">
-                                                        <span className="author-label"> 작가 </span>
-                                                        <span> {item.author_nickname} </span>
-                                                    </div>
-                                                    <div className="review-info">
-                                                        <span className="star"> ★ </span>
-                                                        <span> {item.review_score ? parseFloat(item.review_score).toFixed(1) : "0.0"} </span>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                        </li>
+                                        <Book
+                                            key={item.id}
+                                            book={item}
+                                            status={status}
+                                            favorite
+                                        />
                                     )
                                 })
                             }

@@ -21,6 +21,7 @@ class BookPage extends Component {
     async componentDidMount() {
         var state = this.state;
         const res = await API.sendGet(URL.api.book.get + state.book)
+
         if(res.status === 200) {
             var book = res.data.book
             state.book = book
@@ -36,11 +37,11 @@ class BookPage extends Component {
         return (
             this.state.isSuccess ?
             <Fragment>
-                <Header home={true}></Header>
+                <Header home={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display: "flex"}}>
                     {
                         this.state.book.type === 1 ?
-                        <BookType1 book={state.book}/>
+                        <BookType1 book={state.book}  history={this.props.history}/>
                         :
                         <BookType2 book={state.book}/>
                     }

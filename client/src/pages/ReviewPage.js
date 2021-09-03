@@ -14,7 +14,7 @@ class ReviewPage extends Component {
     render() {
         return (
             <Fragment>
-                <Header></Header>
+                <Header history={this.props.history}></Header>
                 <div id="wrap">
                     <Review book_detail={this.state.book_detail}/>
                 </div>

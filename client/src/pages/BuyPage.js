@@ -11,7 +11,7 @@ class Carts extends Component {
     render() {
         return (
             <Fragment>
-                <Header></Header>
+                <Header history={this.props.history}></Header>
                 <div id="wrap">
                     <Buy/>
                 </div>

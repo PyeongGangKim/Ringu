@@ -16,8 +16,11 @@ class Header extends Component {
     constructor(props) {
         super(props);
         let userInfo = User.getInfo();
+        if (props.mypage && !userInfo) {
+            alert("로그인이 필요합니다.")
+            window.location.href = "/home"
+        }
         var search = props.search ? parse.searchToDict(props.search) : {}
-
         var params = {
             display: false,
             keyword: "keyword" in search ? search["keyword"] : "",
@@ -28,7 +31,6 @@ class Header extends Component {
                 ...params,
                 login : 'Y',
                 id : userInfo.id,
-                type : userInfo.type,
 
             }
         } else {
@@ -36,7 +38,6 @@ class Header extends Component {
                 ...params,
                 login: 'N',
                 id: '',
-                type : '',
 
             }
         }
@@ -54,12 +55,14 @@ class Header extends Component {
             return;
         }
 
-        window.location.href = URL.service.search + "?keyword=" + this.state.keyword
+        this.props.history.push({
+            pathname: URL.service.search,
+            search: "?keyword=" + this.state.keyword,
+        })
     }
 
     logOut = () => {
         const q_logout =  window.confirm("로그아웃 하시겠습니까?");
-        console.log(q_logout);
         if( q_logout === true ) {
             this.setState({
                 login : 'N'
@@ -79,7 +82,7 @@ class Header extends Component {
 
         return (
             <header>
-                <div id="header" className={this.props.visible && "bottom-line"}>
+                <div id="header" className={this.props.visible ? "bottom-line" : ""}>
                     <h1 id="logo">
                         <Link to="/home">
                             <img src="logo.png" width="220px" height="70px"/>
@@ -100,14 +103,20 @@ class Header extends Component {
                             this.state.login == 'Y'
                             ?
                             <div id="user-page">
-                                <Link to={URL.service.author} id="author-page">
-                                    <img src="/author.png"/>
+                                <Link to={URL.service.author + this.state.id} id="author-page">
+                                    {
+                                        this.props.author === true ?
+                                        <img src="/author_clicked.png"/>
+                                        :
+                                        <img src="/author.png"/>
+                                    }
+
                                     <span>작가 공간</span>
                                 </Link>
 
                                 <div id="user-nb" onClick={this.handleDisplay}>
                                     {
-                                        this.state.display ?
+                                        this.state.display || this.props.mypage ?
                                         <div id="nb-box">
                                             <img src="/mypage-active.png" alt="마이페이지"/>
                                         </div>

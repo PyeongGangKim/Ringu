@@ -153,7 +153,13 @@
 
             input[type="radio"] {
                 display:inline-block;
-
+                opacity: 0;
+                width: 0;
+                height: 0;
+                position: absolute;
+                z-index: -1;
+                vertical-align: top;
+                margin: 0;
             }
 
             label {

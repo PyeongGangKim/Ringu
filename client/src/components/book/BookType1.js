@@ -1,3 +1,4 @@
+// 연재본
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
@@ -13,20 +14,51 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+// 연재본
 class BookType1 extends Component {
     constructor(props) {
         super(props)
+        this.introRef = React.createRef();
+        this.authorRef = React.createRef();
+        this.seriesRef = React.createRef();
+        this.reviewRef = React.createRef();
+
+        console.log(props)
+
         this.state = {
             book: props.book,
             reviewList: [],
             detailList: [],
+            tab: 'intro',
+            tabChange: false,
+            dock: false,
+            selected: {},
+            author: false,
         }
+    }
+
+    handleCheck = (e, book) => {
+        var state = this.state;
+        if(e.target.value){
+            state.selected[book.id+""] = book
+        }
+        else {
+            delete state.selected[book.id]
+        }
+
+        this.setState(state)
+
     }
 
     async componentDidMount() {
         var state = this.state;
+
         let userInfo = User.getInfo();
-        const res1 = await API.sendGet(URL.api.review.getByBook + state.book.id)
+        if (userInfo.id === state.book.author_id) {
+            state.author = true;
+            this.setState(state);
+        }
+        const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
 
         if(res1.status === 200) {
             state.reviewList = res1.data.reviewList
@@ -34,16 +66,113 @@ class BookType1 extends Component {
         }
 
         var params = {
-            member_id : userInfo.id
+            member_id : userInfo !== null ? userInfo.id : null
         }
+
         const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
+        console.log(res2)
         if(res2.status === 200) {
             state.detailList = res2.data.detailList
             this.setState(state)
         }
 
-        console.log(res2)
+        window.addEventListener('scroll', this.handleScroll)
+
+        if (window.scrollY > 650) {
+            state.dock = true;
+        } else {
+            state.dock = false;
+        }
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
+            window.addEventListener('scroll', this.handleScroll)
+        }
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll)
+    }
+
+    handlePurchase = (type) => {
+        var state = this.state
+        var purchaseList = []
+        if(type === 0) {
+            purchaseList = state.selected
+        }
+        else {
+            purchaseList = state.detailList
+        }
+        this.props.history.push({
+            pathname: URL.service.buy.buy,
+            state: {
+                purchaseList: Object.values(this.state.selected)
+            }
+        })
+
+
+    }
+
+    handleTabChange = (event, value) => {
+        const tabHeight = 60;
+
+        this.setState({tab: value, tabChange: true})
+        window.removeEventListener('scroll', this.handleScroll)
+
+        if (value === 'intro') {
+            window.scrollTo({
+                top: this.introRef.current.offsetTop - tabHeight,
+            })
+        } else if (value === 'author') {
+            window.scrollTo({
+                top: this.authorRef.current.offsetTop - tabHeight,
+            })
+        } else if (value === 'series'){
+            window.scrollTo({
+                top: this.seriesRef.current.offsetTop - tabHeight,
+            })
+        }
+        else {
+            window.scrollTo({
+                top: this.reviewRef.current.offsetTop - tabHeight,
+            })
+        }
+    }
+
+    handleScroll = (event) => {
+        const tabHeight = 60;
+        var state = this.state;
+
+        const scrollTop = ('scroll', event.srcElement.scrollingElement.scrollTop);
+        if (scrollTop > 650) {
+            state.dock = true;
+        } else {
+            state.dock = false;
+        }
+
+        if(state.tabChange === true) {
+            state.tabChange = false
+            this.setState(state);
+            return;
+        }
+
+        if (scrollTop >= this.reviewRef.current.offsetTop - tabHeight) {
+            state.tab = 'review';
+        }
+        else if (scrollTop >= this.seriesRef.current.offsetTop - tabHeight) {
+            state.tab = 'series';
+        }
+        else if (scrollTop >= this.authorRef.current.offsetTop - tabHeight) {
+            state.tab = 'author';
+        }
+        else {
+            state.tab = 'intro';
+        }
+
+        this.setState(state);
+    }
+
 
     render() {
         var state = this.state;
@@ -54,7 +183,7 @@ class BookType1 extends Component {
                 <div className="book-content">
                     <div className="book-info">
                         <div className="book-thumbnail-box">
-                            <img src={state.book.img} />
+                            <img src={!!state.book.img ? state.book.img : "/ringu_thumbnail.png" } />
                         </div>
 
                         <div className="book-detail-box">
@@ -63,57 +192,67 @@ class BookType1 extends Component {
                         </div>
 
                         <h3 className="book-title">{book.title}</h3>
-
                     </div>
 
-                    <div className="book-nav">
-                        <div className="navlist">
-                            <a href="#book" className="navitem">책소개</a>
-                            <a href="#contents" className="navitem">회차</a>
-                            <a href="#author" className="navitem">작가소개</a>
-                            <a href="#review" className="navitem">리뷰</a>
-                        </div>
-                    </div>
-
-                    <div className="book-content">
-                        <a name="book">
-                            <div className="content-box" >
-                                <div className="content-header"> 책소개</div>
-                                <div className="content-value book">
+                    <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
+                        <ul className="tab-nav">
+                            <li className={"tab-btn " + (state.tab === "intro" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'intro')}>책소개</li>
+                            <li className={"tab-btn " + (state.tab === "series" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'series')}>회차</li>
+                            <li className={"tab-btn " + (state.tab === "author" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'author')}>작가소개</li>
+                            <li className={"tab-btn " + (state.tab === "review" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'review')}>리뷰</li>
+                        </ul>
+                        <div className="tab-inner">
+                            <div id="intro-area" className="inner-box" ref={this.introRef}>
+                                <div className="inner-header"> 책소개</div>
+                                <div className="inner-content">
                                     {book.description}
                                 </div>
                             </div>
-                        </a>
 
-                        <a name="contents">
-                            <div className="content-box" >
-                                <div className="content-header"> 회차</div>
-                                <table className="content-value">
+                            <div id="series-area" className="inner-box" ref={this.seriesRef}>
+                                <div className="inner-header"> 회차</div>
+                                <div className="inner-content">
+                                    <table>
+                                        <tbody>
+                                            {
+                                                state.detailList.map((item, i) => {
+                                                    console.log(item)
+                                                    return (
+                                                        <tr key={i}>
+                                                            <td>{(item.purchases.length === 0 && state.author === false) && <input type="checkbox" onClick={(e) => this.handleCheck(e, item)} checked={state.selected[item.id]}/>}</td>
+                                                            <td>{i+1}회차.</td>
+                                                            <td>{item.title}</td>
+                                                            {
+                                                                !state.author &&
+                                                                <td><em className={item.purchases.length ? "download" : "lock"}/></td>
+                                                            }
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+
                                     {
-                                        state.detailList.map((item, i) => {
-                                            return (
-                                                <tr>
-                                                    <td>{i+1}회차.</td>
-                                                    <td>{item.title}</td>
-                                                    <td><em className={item.purchases.length ? "download" : "lock"}/></td>
-                                                </tr>
-                                            )
-                                        })
+                                        !state.author &&
+                                        <div className="buttons">
+                                            <button className="btn btn-outline" onClick={() => this.handlePurchase(0)}> 선택 구매 </button>
+                                            <button className="btn btn-color-2" onClick={() => this.handlePurchase(1)}> 전체 구매 </button>
+                                        </div>
                                     }
-                                </table>
+                                </div>
                             </div>
-                        </a>
 
-                        <a name="author">
-                            <div className="content-box" >
-                                <div className="content-header"> 작가 소개</div>
-                                <div className="content-value author">
+                            <div id="author-area" className="inner-box" ref={this.authorRef}>
+                                <div className="inner-header"> 작가소개</div>
+                                <div className="inner-content">
                                     <div className="author-box">
                                         <div className="author-profile">
-                                            <div className="author-thumbnail-box">
-                                                <img src="/blank.jpg" style={{width:"100px", height:"100px", textAlign:"center", borderRadius:"50%"}}/>
-                                            </div>
                                             <Link to={URL.service.author + book.author_id}>
+                                                <div className="author-thumbnail-box">
+                                                    <img src="/blank.jpg" style={{width:"100px", height:"100px", textAlign:"center", borderRadius:"50%"}}/>
+                                                </div>
+
                                                 <div className="btn btn-block btn-color-2 btn-rounded">작가 공간</div>
                                             </Link>
                                         </div>
@@ -124,18 +263,13 @@ class BookType1 extends Component {
                                     </div>
                                 </div>
                             </div>
-                        </a>
 
-                        <a name="review">
-                            <div className="content-box">
-                                <div className="content-header">
-                                    <span> 리뷰 </span>
-                                </div>
-
-                                <div className="content-value review">
+                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                                <div className="inner-header"> 리뷰</div>
+                                <div className="inner-content review">
                                     <div className="review-header">
                                         <div className="review-score">
-                                            {book.review_score ? (book.review_score).toFixed(1) : 0.0}
+                                            {book.review_score ? (book.review_score).toFixed(1) : (0).toFixed(1)}
                                         </div>
                                         <div className="review-star">
                                             <em className={book.review_score >= 1 ? "on" : "off"}/>
@@ -149,9 +283,9 @@ class BookType1 extends Component {
                                     </div>
                                     <div className="review-box" style={{marginLeft:"10px"}}>
                                         {
-                                            state.reviewList.map(item => {
+                                            state.reviewList.map((item, review_idx) => {
                                                 return (
-                                                    <div className="review-item" >
+                                                    <div key={item.id} className="review-item">
                                                         <div style={{marginBottom: "15px"}}>
                                                             <span style={{fontSize:"12px"}}> {item.author} </span>
                                                             <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>
@@ -161,6 +295,9 @@ class BookType1 extends Component {
                                                             <em className={item.score >= 4 ? "on" : "off"}/>
                                                             <em className={item.score >= 5 ? "on" : "off"}/>
                                                         </div>
+                                                        <div className="review-subtitle">
+                                                            {item.subtitle}
+                                                        </div>
                                                         <span>
                                                             {item.description}
                                                         </span>
@@ -169,16 +306,17 @@ class BookType1 extends Component {
                                             })
                                         }
                                     </div>
+
                                     {
-                                        state.reviewList.length === 4 &&
-                                        <div className="btn-box" >
-                                            <button>+ 더보기</button>
+                                        this.state.reviewList.length >= 5 &&
+                                        <div className="add-btn">
+                                            <button className="add-btn btn btn-transparent"> + 더보기 </button>
                                         </div>
                                     }
 
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>

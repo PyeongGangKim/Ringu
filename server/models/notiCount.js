@@ -7,15 +7,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    created_date_time: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    count: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     member_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -23,6 +14,15 @@ module.exports = function(sequelize, DataTypes) {
         model: 'member',
         key: 'id'
       }
+    },
+    count: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    created_date_time: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
     sequelize,

@@ -59,9 +59,9 @@ class AuthorInfo extends Component {
                         </div>
 
                         <div style={{width:"100%", margin:"50px auto auto auto"}}>
-                            <div className="btn btn-outline" style={{margin: "10px", padding: "10px 15px", width:"45%", fontSize:"16px"}}>
+                            {/*<div className="btn btn-outline" style={{margin: "10px", padding: "10px 15px", width:"45%", fontSize:"16px"}}>
                                 임시 저장
-                            </div>
+                            </div>*/}
                             <div className="btn btn-color-2" style={{margin: "10px", padding: "10px 15px", width:"45%", fontSize:"16px"}} onClick={this.moveNext}>
                                 완료
                             </div>

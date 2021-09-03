@@ -1,19 +1,86 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
-
+import Cookies from 'js-cookie';
 
 import User from '../../utils/user';
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 
+import URL from '../../helper/helper_url';
+import API from '../../utils/apiutils';
+
 class Leave extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
+
+        this.state = {
+            user: null,
+            description: '',
+            email: '',
+        }
+    }
+
+    async componentDidMount() {
+        var state = this.state;
+        const res = await API.sendGet(URL.api.member.get)
+
+        if (res.status === 200) {
+            state.user = res.data.user;
+            this.setState(state);
+        } else {
+            alert("잠시 후 다시 시도하세요.")
+        }
+    }
+
+    handleDescriptionChange = (evt) => {
+        var state = this.state;
+        state.description = evt.target.value;
+        this.setState(state)
+    }
+
+    handleEmailChange = (evt) => {
+        var state = this.state;
+        state.email = evt.target.value;
+        this.setState(state)
+    }
+
+    handleSubmit = async() => {
+        var state = this.state;
+        if (state.description === '') {
+            alert("탈퇴 사유를 작성해주세요")
+            return;
+        }
+        if (state.email === '' ) {
+            alert("가입하신 이메일을 적어주세요")
+            return;
+        }
+
+        if (state.email !== state.user.email) {
+            alert("이메일이 일치하지 않습니다")
+            return;
+        }
+        console.log(111)
+        const res = await API.sendDelete(URL.api.member.delete)
+        console.log(res)
+        if (res.status === 200) {
+            alert("회원 탈퇴가 성공적으로 완료되었습니다")
+            Cookies.remove('token');
+            Cookies.remove('token', { path: '/'});
+            Cookies.remove('token', { path: '/detail' });
+            window.location = "/home";
+        }
+        else {
+            alert("회원 탈퇴가 완료되지 못했습니다. 잠시 후 다시 시도해주세요")
+        }
+
+
+        this.setState(state)
     }
 
     render() {
+        var state = this.state;
+
         return (
             <div id="mypage" className="page2">
                 <div className="title-wrap">
@@ -32,20 +99,20 @@ class Leave extends Component {
                                     <em>* 필수</em>
                                 </div>
 
-                                <textarea cols={50} rows={3}/>
+                                <textarea cols={50} rows={3} value={state.description} onChange={this.handleDescriptionChange}/>
 
                                 <div className="label-wrap">
                                     <p className="label">이메일 확인</p>
                                 </div>
 
-                                <input placeholder="RINGU에 가입하신 이메일을 적어주세요"/>
+                                <input placeholder="RINGU에 가입하신 이메일을 적어주세요" value={state.email} onChange={this.handleEmailChange}/>
                             </div>
 
                             <div className="btn-wrap">
-                                <button className="btn btn-outline">
-                                    취소
+                                <button className="btn btn-outline btn-transparent">
+
                                 </button>
-                                <button className="btn btn-color-2">
+                                <button className="btn btn-color-2" onClick={this.handleSubmit}>
                                     탈퇴하기
                                 </button>
                             </div>

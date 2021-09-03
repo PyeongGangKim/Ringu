@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 
-const Timer = ({ mm, ss, active = false, reset = true }) => {
+const Timer = ({ mm, ss, timeout, reset = false, active = false, setTimeout}) => {
     const m = mm;
     const s = ss;
-    const [timeout, setTimeout] = useState(timeout);
+
     // 시간초과
     const [min, setMin] = useState(m);
     const [sec, setSec] = useState(s);
+    var interval = null;
 
 
     const resetTimer = () => {
-        console.log('reset')
         setMin(m);
         setSec(s);
-
-        console.log(reset)
     };
 
     useEffect(() => {
@@ -22,18 +20,24 @@ const Timer = ({ mm, ss, active = false, reset = true }) => {
     }, [reset]);
 
     useEffect(() => {
-        let interval = null;
         if (active) {
             interval = setInterval(() => {
+                console.log(1)
                 if (sec === 0) {
                     if (min === 0) {
-                        // timeout
-                        setTimeout(true);
-                    } else {
+                        clearInterval(interval)
+                    }
+                    else {
                         setSec(59);
                         setMin(min - 1);
                     }
-                } else {
+                }
+                else if (sec === 1 && min === 0) {
+                    setSec(sec - 1);
+                    setTimeout(true);
+                    clearInterval(interval)
+                }
+                else {
                     setSec(sec - 1);
                 }
             }, 1000);
@@ -42,6 +46,8 @@ const Timer = ({ mm, ss, active = false, reset = true }) => {
         }
         return () => clearInterval(interval);
     }, [active, sec]);
+
+
 
     return (
         <span className="timer">

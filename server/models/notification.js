@@ -20,10 +20,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 1
     },
-    read_date_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     created_date_time: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -33,10 +29,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    is_read: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-    },
     member_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -44,6 +36,15 @@ module.exports = function(sequelize, DataTypes) {
         model: 'member',
         key: 'id'
       }
+    },
+    read_date_time: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    is_read: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,

@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import User from '../../utils/user';
 import '../../scss/common/sideinfo.scss';
@@ -13,51 +14,69 @@ import axios from 'axios';
 class SideMemberInfo extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();        
+        let userInfo = User.getInfo();
 
         this.state = {
             favorites: 0,
             purchases: 0,
             carts: 0,
-            profile: userInfo.profile ? userInfo.profile : "",
+            profile: "",
+            user: userInfo,
+            host: {},
         }
     }
 
     async componentDidMount() {
-        var state = this.state;
-        var favoriteBookList = []
-        var favoriteAuthorList = []
-        var purchaseList = []
-        var cartList = []
+        try {
+            var state = this.state;
+            var favoriteBookList = []
+            var favoriteAuthorList = []
+            var purchaseList = []
+            var cartList = []
 
-        const fav1 = await API.sendGet(URL.api.favorite.book.list)
-        if(fav1.status === 200) {
-            favoriteBookList = fav1.data.favoriteBookList
+            if (this.props.author === false) {
+                const fav1 = await API.sendGet(URL.api.favorite.book.list)
+
+                if(fav1.status === 200) {
+                    favoriteBookList = fav1.data.favoriteBookList
+                }
+
+                const fav2 = await API.sendGet(URL.api.favorite.author.list)
+                if(fav2.status === 200) {
+                    favoriteAuthorList = fav2.data.favoriteAuthorList
+                }
+
+                const purchases = await API.sendGet(URL.api.purchase.list)
+                if(purchases.status === 200) {
+                    purchaseList = purchases.data.purchaseList
+                }
+
+                const carts = await API.sendGet(URL.api.cart.list)
+                if(carts.status === 200) {
+                    cartList = carts.data.cartList
+                }
+            }
+
+            var id;
+
+            // 작가 페이지
+            if("authorId" in this.props && this.props.authorId !== undefined) {
+                id = this.props.authorId
+            }
+            else {
+                id = state.user.id
+            }
+
+            const userRes = await API.sendGet(URL.api.member.getById + id)
+            this.setState({
+                favorites: favoriteBookList.length + favoriteAuthorList.length,
+                purchases: purchaseList.length,
+                carts: cartList.length,
+                host: userRes.data.user,
+            })
+        } catch(e) {
+            console.log(e)
         }
-
-        const fav2 = await API.sendGet(URL.api.favorite.author.list)
-        if(fav2.status === 200) {
-            favoriteAuthorList = fav2.data.favoriteAuthorList
-        }
-
-        const purchases = await API.sendGet(URL.api.purchase.list)
-        if(purchases.status === 200) {
-            purchaseList = purchases.data.purchaseList
-        }
-
-        const carts = await API.sendGet(URL.api.cart.list)
-        if(carts.status === 200) {
-            cartList = carts.data.cartList
-        }
-
-        const res = await API.sendGet(URL.api.member.profile + User.getInfo().id)
-
-        this.setState({
-            favorites: favoriteBookList.length + favoriteAuthorList.length,
-            purchases: purchaseList.length,
-            carts: cartList.length,
-            profile: res.data.url,
-        })
     }
 
     handleProfileChange = async(e) => {
@@ -68,33 +87,33 @@ class SideMemberInfo extends Component {
         const res = await API.sendData(URL.api.member.upload_profile, data)
 
         const res2 = await API.sendGet(URL.api.member.profile+User.getInfo().id)
-        state.profile = res2.data.url;
+        state.host.profile = res2.data.url;
 
         this.setState(state)
 
     }
 
     render() {
-        var state = this.state
+        var state = this.state        
+
         return (
             <div className="side-info">
                 <form>
                     <div className="img-area">
                         <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
-                        <label for="profile">
+                        <label htmlFor="profile">
                             {
                                 state.profile ?
                                 <img src={state.profile}/>
                                 :
                                 <img src="/blank.jpg"/>
-
                             }
 
                         </label>
                     </div>
                 </form>
 
-                <strong className="name">임유빈</strong>
+                <strong className="name"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
 
                 {
                     this.props.author === true ?
@@ -153,6 +172,10 @@ class SideMemberInfo extends Component {
 
         )
     }
+}
+
+SideMemberInfo.propTypes = {
+    author: PropTypes.bool.isRequired,
 }
 
 export default SideMemberInfo;

@@ -10,7 +10,7 @@ class Home extends Component {
     render() {
         return (
             <Fragment>
-                <Header visible={false}></Header>
+                <Header visible={true} history={this.props.history}></Header>
                 <Main history={this.props.history}></Main>
             </Fragment>
         )

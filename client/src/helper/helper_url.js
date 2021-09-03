@@ -8,8 +8,9 @@ module.exports = {
                 edit:       "/auth/user/edit",
             },
             email: {
-                code:       "/auth/email/code",
-                duplicate:  "/auth/email/duplicate",
+                code:           "/auth/email/code",
+                duplicate:      "/auth/email/duplicate",
+                identification: "/auth/email/identification",
             },
             company: {
                 get:        "/auth/company",
@@ -25,30 +26,38 @@ module.exports = {
         },
         member: {
             get:              "/member",
+            getById:          "/member/",
             verify_nickname:  "/member/nickname/duplicate",
             password:         "/member/password",
             passwordCheck:    "/member/password/check",
             upload_profile:   "/member/upload_profile",
             profile:          "/member/profile/",
+            update:           "/member/",
+            delete:           "/member",
         },
         cart: {
             list:               "/cart",
             delete:             "/cart/",
+            clear:              "/cart/clear",
         },
         purchase: {
             list:               "/purchase",
         },
-
         book: {
             get:                "/book/",
             list:               "/book",
+            modify:             "/book/modify" ,
             dowload:            "/book/download",
             getDetailList:      "/book/detail/",
             main:               "/book/main",
-
+            delete:             "/book/",
         },
         book_detail: {
             get:                "/book_detail/",
+            delete:             "/book_detail/",
+        },
+        category: {
+            list:               "/category",
         },
         author: {
             get:                "/author/",
@@ -59,8 +68,10 @@ module.exports = {
                 delete:         "/favorite_author/",
             },
             book: {
+                create:         "/favorite_book",
                 list:           "/favorite_book",
                 delete:         "/favorite_book/",
+                duplicate:      "/favorite_book/duplicate",
             },
         },
         review: {
@@ -69,6 +80,7 @@ module.exports = {
             getByAuthor:        "/review/author/",
             getByBook:          "/review/book/",
             register:           "/review",
+            duplicate:          "/review/duplicate",
         },
         register: {
             book:               "/book",
@@ -80,7 +92,10 @@ module.exports = {
             getNormalNotification:  "/notification/notice",
             getWithdrawalNotification: "/notification/withdrawal",
             putReadNotification:    "/notification/"
-        }
+        },
+        payment: {
+            create:             "/payment",
+        },
     },
     service : {
         home    : "/home",
@@ -93,14 +108,18 @@ module.exports = {
             carts               : "/carts",
             fav_author          : "/favorite/author",
             fav_book            : "/favorite/book",
-            auth                : "/auth",
+            register            : "/register/author/",
         },
         author                  : "/author/",
         register : {
-            author      : "/register/author",
-            book        : "/register",
+            author              : "/register/author",
+            author_detail       : "/register/author/detail",
+            book                : "/register/book/",
         },
-        book: "/book/",
+        book: {
+            book                : "/book/",
+            modify              : "/modify/book/",
+        },
         buy : {
             buy         : "/buy",
             complete    : "/complete",
