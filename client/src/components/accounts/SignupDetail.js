@@ -17,11 +17,11 @@ class SignupDetail extends Component {
         super(props);
 
         this.state = {
-            email: {val: "", msg: "", clear: false, class: "form-control", btn: false},
-            emailCode: {val: "", msg: "", clear: false, class: "form-control", visible: false},
-            nickname: {val: "", msg: "", clear: false, class: "form-control", visible: false},
-            password: {val: "", msg: "", clear: false, class: "form-control"},
-            passwordCheck: {val: "", msg: "", clear: false, class: "form-control"},
+            email: {val: "", msg: "", clear: false, class: "form-control", btn: false, success: false,},
+            emailCode: {val: "", msg: "", clear: false, class: "form-control", visible: false, success: false},
+            nickname: {val: "", msg: "", clear: false, class: "form-control", visible: false, success: false},
+            password: {val: "", msg: "", clear: false, class: "form-control", success: false},
+            passwordCheck: {val: "", msg: "", clear: false, class: "form-control", success: false},
             checkAll: false,
             ageCheck: false,
             serviceAgree: false,
@@ -105,8 +105,8 @@ class SignupDetail extends Component {
 
             if(status === 201) {
                 this.setState({
-                    emailCode: {...state.emailCode, visible: true},
-                    email: {...state.email, btn:false},
+                    emailCode: {...state.emailCode, visible: true,},
+                    email: {...state.email, btn:false, },
                     timer: {...state.timer, active:true},
                 });
             } else {
@@ -180,8 +180,18 @@ class SignupDetail extends Component {
     handlePasswordChange = evt => {
         var state = this.state;
         state.password.val = evt.target.value;
-        state.password.clear = false;
+        //state.password.clear = false;
+        let passRule = /^.*(?=^.{8,12}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/;
 
+        if (passRule.test(evt.target.value)) {  // Regex으로 이메일 형식 맞는지 확인
+            state.password.class = "form-control";
+            state.password.msg = "";
+            state.password.success = true;
+        } else {
+            state.password.clear = false;
+            state.password.class = "form-control error";
+            state.password.msg = "비밀 번호가 조건에 맞지 않습니다.";
+        }
         if(state.passwordCheck.val !== "") {
             state.passwordCheck.val = ""
         }
@@ -198,6 +208,8 @@ class SignupDetail extends Component {
             state.passwordCheck.class = "form-control error";
             state.passwordCheck.msg = "비밀번호가 일치하지 않습니다"
         } else {
+            state.password.success = true;
+            state.passwordCheck.success = true;
             state.passwordCheck.clear = true;
             state.password.clear = true;
             state.passwordCheck.class = "form-control";
@@ -265,6 +277,8 @@ class SignupDetail extends Component {
         const res = await API.sendGet(URL.api.auth.email.identification, params)
 
         if(res.status === 200) {
+            state.emailCode.success = true;
+            state.email.success = true;
             state.emailCode.clear = true;
             state.email.clear = true;
             state.emailCode.btn = false;
@@ -290,6 +304,7 @@ class SignupDetail extends Component {
         const res = await API.sendPost(URL.api.auth.verify_nickname, params)
         if(res.status === 200) {
             state.nickname.clear = true;
+            state.nickname.success = true;
             state.nickname.btn = false;
             alert("사용 가능한 닉네임입니다.")
 
@@ -333,7 +348,8 @@ class SignupDetail extends Component {
                 }
 
                 this.props.history.push({
-                    pathname: URL.service.accounts.welcome,
+                    //pathname: URL.service.accounts.welcome,
+                    pathname: URL.service.home,
                     state: {
                         nickname: state.nickname.val,
                     }
@@ -505,7 +521,7 @@ class SignupDetail extends Component {
 
 
                 {/*<button className="btn signup-btn" disabled={!(this.state.email.clear && this.state.emailCode.clear && this.state.password.clear && this.state.passwordCheck.clear && this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>*/}
-                <button className="btn signup-btn" disabled={!(state.password.clear && state.passwordCheck.clear && state.nickname.clear && state.ageCheck && state.serviceAgree && state.infoAgree)} onClick={this.handleSubmit}>
+                <button className="btn signup-btn" disabled={!(state.password.clear && state.passwordCheck.clear && state.nickname.clear && state.ageCheck && state.serviceAgree && state.infoAgree && state.emailCode.success && state.email.success && state.nickname.success && state.password.success && state.passwordCheck.success )} onClick={this.handleSubmit}>
                     가입완료!
                 </button>
 
