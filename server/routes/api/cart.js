@@ -72,18 +72,6 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         });
         console.error(err);
     }
-        /*
-        res.json({status: "ok", cartList});
-    }
-
-    catch(err){
-        console.log(err)
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get cart list"
-        });
-    }*/
 });
 
 router.put('/clear', isLoggedIn, async (req, res, next) => {

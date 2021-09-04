@@ -76,11 +76,9 @@ router.post('/duplicate', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to like author"
-        })
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
     }
 
 });
@@ -187,7 +185,9 @@ router.delete('/:favoriteAuthorId', isLoggedIn, async (req, res, next) => {
     catch(err){
         await t.rollback();
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
     }
 });
 
