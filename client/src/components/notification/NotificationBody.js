@@ -20,6 +20,7 @@ class NotificationBody extends Component {
             data: {
                 notificationList : [],
                 selectedNotiList : [],
+                spanNotiList: -1,
             }
         }
     }
@@ -27,18 +28,40 @@ class NotificationBody extends Component {
         if(this.props.notificationList !== prevProps.notificationList){
             let state = this.state;
             state.data.notificationList = this.props.notificationList;
-            console.log(state);
+            console.log(state.data.notificationList);
             this.setState({
                 state
             });
         }
     }
 
+    handleSpanList(itemId){
+        let state = this.state;
+        if(state.data.spanNotiList == itemId) {
+            state.data.spanNotiList = -1;
+            this.setState({
+                state
+            });
+        }
+        else{
+            state.data.spanNotiList = itemId;
+            this.setState({
+                state
+            });
+        }
+        console.log(state);
+    }
+
 
 
     render(){
         let notificationList = this.state.data.notificationList;
-        //console.log(this.props.notificationList);
+        const spanContent = (item) => {
+            if(this.state.spanNotiList == item.id){
+                console.log(item);
+                return <span>{item.content}</span>
+            }
+        }
         return(
             <div id="notificationpage">
                 <div>
@@ -46,10 +69,17 @@ class NotificationBody extends Component {
                         {
                             notificationList.map(item => {
                                 return(
-                                    <li key = {item.id}>
-                                        {item.title}
-                                        <Moment format="MM월 DD일 HH:MM">{item.date}</Moment>
-                                    </li>
+                                    <div>
+                                        <li key = {item.id}>
+                                            <button onClick = {()=> this.handleSpanList(item.id)}> {item.title} </button>
+                                            <Moment format="MM월 DD일 HH:MM">{item.date}</Moment>
+                                        </li>
+                                       <div>
+                                           {
+                                               spanContent(item)
+                                           }
+                                        </div>
+                                    </div>
                                 )
                             })
                         }

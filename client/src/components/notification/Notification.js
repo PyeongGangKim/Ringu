@@ -112,17 +112,11 @@ class Notification extends Component {
         const body = () => {
             switch(this.state.selectedNotification){
                 case 1: 
-                    console.log(this.state.selectedNotification);
                     return <NotificationBody notificationList={this.state.data.bookNotification.notification}/>;
-                    break;
                 case 2: 
-                    console.log(this.state.selectedNotification);
                     return <NotificationBody notificationList={this.state.data.withdrawalNotification.notification}/>;
-                    break;
                 case 3: 
-                    console.log(this.state.selectedNotification);
                     return <NotificationBody notificationList={this.state.data.normalNotification.notification}/>;
-                    break;
             }
             
         }

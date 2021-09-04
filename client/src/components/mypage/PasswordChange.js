@@ -23,13 +23,27 @@ class PasswordChange extends Component {
                 newPasswordCheck: "",
             },
             msg: {
-
+                newPassword: "",
             }
         };
     }
 
     handleOldPasswordChange = (evt) => {var state = this.state; state.data.oldPassword = evt.target.value; this.setState(state);}
-    handleNewPasswordChange = (evt) => {var state = this.state; state.data.newPassword = evt.target.value; this.setState(state);}
+    handleNewPasswordChange = (evt) => {
+        var state = this.state; 
+        state.data.newPassword = evt.target.value; 
+        let passRule = /^.*(?=^.{8,12}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/;
+        if(!passRule.test(state.data.newPassword)){
+            state.msg.newPassword = "비밀 번호가 조건에 맞지 않습니다.";
+            this.setState(state);
+        }
+        else{
+            state.msg.newPassword = "";
+            this.setState(state);
+        }
+        this.setState(state);
+        
+    }
     handleNewPasswordCheckChange = (evt) => {var state = this.state; state.data.newPasswordCheck = evt.target.value; this.setState(state);}
 
     handleClick = async() => {
@@ -37,16 +51,21 @@ class PasswordChange extends Component {
         var params = {
             password: state.data.oldPassword
         }
-
+        
+        
         if(state.data.newPassword !== state.data.newPasswordCheck) {
             alert("비밀번호가 일치하지 않습니다.")
-            return
+            return;
+        }
+        if(state.msg.newPassword !== ""){
+            alert("비밀번호가 조건에 맞지 않습니다.")
+            return;
         }
         try {
             const res = await API.sendPost(URL.api.member.passwordCheck, params)
             var status = res.status;
-
             if(status === 200) {
+                console.log(status)
                 var params = {
                     password: state.data.newPassword,
                 }
@@ -63,7 +82,9 @@ class PasswordChange extends Component {
                 }
 
             } else {
-
+                console.log(status);
+                alert("현재 비밀번호가 일치하지 않습니다.");
+                return;
             }
         } catch(e) {
             console.log(e)
@@ -98,6 +119,12 @@ class PasswordChange extends Component {
                         <div className="input-box">
                             <h3 className="header"> 새 비밀번호 </h3>
                             <input className="textbox" type="password" name="newPassword" autoComplete="off" value={this.state.data.newPassword} onChange={this.handleNewPasswordChange} placeholder="새 비밀번호를 입력해주세요." />
+                            {
+                                this.state.msg.newPassword &&
+                                <div className="error-warp">
+                                    <span>{this.state.msg.newPassword}</span>
+                                </div>
+                            }
                         </div>
                         <div className="input-box">
                             <h3 className="header"> 새 비밀번호 확인 </h3>
