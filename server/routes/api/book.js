@@ -597,6 +597,9 @@ router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
         });
     }
     catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
         console.error(err);
     }
 });
