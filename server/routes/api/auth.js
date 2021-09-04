@@ -408,7 +408,9 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
     }
     catch(err){
         console.error(err);
-        res.json({status: 'error'});
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "server error",
+        });
     }
 });
 

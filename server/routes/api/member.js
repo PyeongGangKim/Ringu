@@ -47,12 +47,16 @@ router.get('/', isLoggedIn, async(req, res, next) => {
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT).json({
+                msg: "no content",
+            });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "server error",
+        });
     }
 })
 
@@ -82,12 +86,16 @@ router.get('/:memberId', async(req, res, next) => {
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT).json({
+                msg: "no content",
+            });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "server error",
+        });
     }
 })
 
@@ -117,15 +125,15 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         let password = req.body.password;
 
         const result = await bcrypt.compare(password, req.user.password);
-
+        console.log(result);
         if(result){
             res.status(StatusCodes.OK).json({
-                check: true,
+                msg: "ok"
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
-                check: false,
+            res.status(StatusCodes.CONFLICT).json({
+                msg: "didn't correct"
             });
         }
     }
@@ -250,6 +258,9 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
     }
     catch(err){
         console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
 })
