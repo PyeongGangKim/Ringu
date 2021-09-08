@@ -44,7 +44,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                         }
 
                         const email_check_res = await API.sendGet(URL.api.auth.email.duplicate, params={email:email})
-                        
+
                         // 중복없는 경우
                         // 회원가입 페이지로 넘어가기
                         if(email_check_res.status === 200) {
@@ -60,7 +60,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                             const res = await API.sendGet(URL.api.auth.sns.naver, params={id:id, email:email, sns: 'naver'})
                             if(res.status === 200) {
                                 var token = res.data.token;
-                                if( token ) Cookies.set('token', token, {expires: 7, path: '/'});
+                                if( token ) Cookies.set('RINGU_TOKEN', token, {expires: 7, path: '/'});
                                 history.push(URL.service.home);
                             }
                         }

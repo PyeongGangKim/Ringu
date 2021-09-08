@@ -80,6 +80,7 @@ class SignupDetail extends Component {
         var params = {
             email: state.email.val,
         }
+
         const res = await API.sendPost(URL.api.auth.email.code, params)
         var status = res.status;
 
@@ -179,11 +180,11 @@ class SignupDetail extends Component {
 
     handlePasswordChange = evt => {
         var state = this.state;
-        state.password.val = evt.target.value;
-        //state.password.clear = false;
         let passRule = /^.*(?=^.{8,12}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/;
+        state.password.val = evt.target.value;
+        state.password.clear = false;
 
-        if (passRule.test(evt.target.value)) {  // Regex으로 이메일 형식 맞는지 확인
+        if (passRule.test(evt.target.value)) {  // Regex으로 비밀번호 형식 맞는지 확인
             state.password.class = "form-control";
             state.password.msg = "";
             state.password.success = true;
@@ -192,6 +193,7 @@ class SignupDetail extends Component {
             state.password.class = "form-control error";
             state.password.msg = "비밀 번호가 조건에 맞지 않습니다.";
         }
+
         if(state.passwordCheck.val !== "") {
             state.passwordCheck.val = ""
         }
@@ -273,7 +275,6 @@ class SignupDetail extends Component {
             email: state.email.val,
         }
 
-
         const res = await API.sendGet(URL.api.auth.email.identification, params)
 
         if(res.status === 200) {
@@ -344,12 +345,11 @@ class SignupDetail extends Component {
             if(status === 201) {
                 var token = res.data.token;
                 if( token ) {
-                    Cookies.set('token', token, {expires: 7, path: '/'})
+                    Cookies.set('RINGU_TOKEN', token, {expires: 7, path: '/'})
                 }
 
                 this.props.history.push({
-                    //pathname: URL.service.accounts.welcome,
-                    pathname: URL.service.home,
+                    pathname: URL.service.accounts.welcome,
                     state: {
                         nickname: state.nickname.val,
                     }

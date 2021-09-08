@@ -16,11 +16,13 @@ class Header extends Component {
     constructor(props) {
         super(props);
         let userInfo = User.getInfo();
+
         if (props.mypage && !userInfo) {
             alert("로그인이 필요합니다.")
             window.location.href = "/home"
         }
         var search = props.search ? parse.searchToDict(props.search) : {}
+
         var params = {
             display: false,
             keyword: "keyword" in search ? search["keyword"] : "",
@@ -64,9 +66,9 @@ class Header extends Component {
             this.setState({
                 login : 'N'
             })
-            Cookies.remove('token');
-            Cookies.remove('token', { path: '/'});
-            Cookies.remove('token', { path: '/detail' });
+            Cookies.remove('RINGU_JWT');
+            Cookies.remove('RINGU_JWT', { path: '/'});
+            Cookies.remove('RINGU_JWT', { path: '/detail' });
 
             window.location = "/home";
         } else {

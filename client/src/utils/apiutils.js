@@ -10,7 +10,7 @@ var headers = {
 
 module.exports = {
     sendPost(url, params) {
-        var token = Cookies.get('token')
+        var token = Cookies.get('RINGU_JWT')
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
@@ -47,7 +47,7 @@ module.exports = {
         var headers = {
             'Content-Type': 'multipart/form-data',
         }
-        var token = Cookies.get('token')
+        var token = Cookies.get('RINGU_JWT')
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
@@ -60,7 +60,7 @@ module.exports = {
                 var data = res.data;
                 var reason = "";
 
-                if (status === 200) {                    
+                if (status === 200) {
                     return { status: status, data: data, reason: reason };
                 } else {
                     if (!!res.data.reason) reason = res.data.reason;
@@ -76,7 +76,7 @@ module.exports = {
     },
 
     sendGet(url, params = {} ) {
-        var token = Cookies.get('token')
+        var token = Cookies.get('RINGU_JWT')
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
@@ -90,7 +90,7 @@ module.exports = {
 
     sendPut(url, params = {}) {
         var url = apiHost + url
-        var token = Cookies.get('token')
+        var token = Cookies.get('RINGU_JWT')
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
@@ -115,7 +115,7 @@ module.exports = {
     sendDelete(url, params = {}) {
         var url = apiHost + url
 
-        var token = Cookies.get('token')
+        var token = Cookies.get('RINGU_JWT')
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
