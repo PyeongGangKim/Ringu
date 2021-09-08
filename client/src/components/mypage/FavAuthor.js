@@ -26,17 +26,10 @@ class FavAuthor extends Component {
         var state = this.state;
 
         const res = await API.sendGet(URL.api.favorite.author.list)
-        console.log(res)
-        var favoriteList = res.data.favoriteAuthorList
-
-
-
-        /*for(var i=0; i<favoriteList.length; i++) {
-            const author = await API.sendGet(URL.api.author.get + favoriteList[i].author_id)
-            favoriteList[i].author = author.data.result;
-        }*/
-
-        this.setState({favoriteList: favoriteList})
+        if(res.status === 200) {
+            var favoriteList = res.data.favoriteAuthorList
+            this.setState({favoriteList: favoriteList})
+        }
     }
 
     handleDelete = async(id) => {
