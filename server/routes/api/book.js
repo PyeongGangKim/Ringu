@@ -89,9 +89,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                     attributes: [],
                     required: false,
                     where: {
-                        member_id : {
-                            [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
-                        }
+                        member_id : (member_id == null || member_id == "") ? null: member_id,
                     }
                 }
             ],
@@ -170,9 +168,7 @@ router.get('/main', async(req, res, next) => { // 커버만 가져오는 api, �
                     attributes: [],
                     required: false,
                     where: {
-                        member_id : {
-                            [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
-                        }
+                        member_id : (member_id == null || member_id == "") ? null : member_id,
                     }
                 }
             ],
