@@ -16,7 +16,6 @@ import API from '../../utils/apiutils';
 class Book extends Component {
     constructor(props) {
         super(props)
-        console.log(props)
 
         this.handleDisplayClick = props.handleDisplayClick;
         this.handleUpdate = props.handleUpdate;
@@ -49,6 +48,7 @@ class Book extends Component {
                     book_id: book.id,
                 }
                 const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
+                console.log(duplicate)
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.book.create, params)
                     if(res.status === 201) {
@@ -58,9 +58,13 @@ class Book extends Component {
                     else {
                         alert("즐겨찾기에 추가하지 못하였습니다.")
                     }
+                } else if(duplicate.status === 403) {
+                    if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = URL.service.accounts.login;
+                    }
                 }
                 else {
-                    alert("즐겨찾기에 추가하지 못하였습니다.")
+                    alert("이미 즐겨찾기되어 있습니다.")
                 }
             } catch(e) {
                 console.log(e)
