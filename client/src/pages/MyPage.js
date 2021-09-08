@@ -13,7 +13,7 @@ class MyPage extends Component {
             nickname: null,
         }
 
-        this.handleNicknameChange = (value) => {            
+        this.handleNicknameChange = (value) => {
             this.setState({nickname:value})
         }
     }
@@ -26,7 +26,7 @@ class MyPage extends Component {
                 <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
-                        <SideMemberInfo author="false" nickname={this.state.nickname}/>
+                        <SideMemberInfo isAuthor={false} nickname={this.state.nickname}/>
                         <SideNav display1={display} path={this.props.location.pathname}/>
                     </div>
                     <MyInfo handleNicknameChange={this.handleNicknameChange}/>

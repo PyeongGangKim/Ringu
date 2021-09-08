@@ -19,8 +19,6 @@ class SearchPage extends Component {
             alert("검색어를 입력해주세요.")
             window.location.href = URL.service.home;
         }
-
-        console.log(this.props)
     }
 
     render() {

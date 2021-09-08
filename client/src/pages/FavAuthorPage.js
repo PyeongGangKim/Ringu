@@ -18,7 +18,7 @@ class FavAuthorPage extends Component {
                 <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
-                        <SideMemberInfo author="false"/>
+                        <SideMemberInfo isAuthor={false}/>
                         <SideNav display2={display} path={this.props.location.pathname}/>
                     </div>
                     <FavAuthor/>
