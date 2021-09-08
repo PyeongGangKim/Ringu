@@ -37,7 +37,10 @@ class Author extends Component {
             bookList: {},
             selected: {},
 
-            user: {},
+            user: {
+                id: -1,
+                description: '',
+            },
             active: 'a',
             activeReview: 0,
             dock: false,
@@ -51,7 +54,6 @@ class Author extends Component {
             modalPos:{},
             host: false,
         }
-        console.log(props)
     }
 
     async componentDidMount() {
@@ -66,8 +68,7 @@ class Author extends Component {
             const res = await API.sendGet(URL.api.book.list, params = params)
             if(res.status === 200) {
                 var bookList = res.data.bookList
-
-                if(this.props.authorId === User.getInfo().id) {
+                if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
                     state.host = true
                 }
 
@@ -315,7 +316,7 @@ class Author extends Component {
         return (
             <div id="author-page" className="page2">
                 {
-                    (this.props.isAuthor === true && state.display === true) &&
+                    (this.props.isHost === true && state.display === true) &&
                     <Modal
                         onClose={this.handleCloseClick}
                         pos={state.modalPos}
@@ -383,7 +384,7 @@ class Author extends Component {
                             <div className="inner-header">
                                 소개
                                 {
-                                    (this.props.isAuthor === true && state.modify === true) ?
+                                    (this.props.isHost === true && state.modify === true) ?
                                     <span className="small" onClick={this.handleCompleteClick}>
                                         <em/>완료
                                     </span>
@@ -396,10 +397,10 @@ class Author extends Component {
                             </div>
                             <div className="inner-content">
                                 {
-                                    this.props.isAuthor === true ?
-                                    <textarea className="intro" value={state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
+                                    this.props.isHost === true ?
+                                    <textarea className="intro" value={state.user.description === null ? '' : state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
                                     :
-                                    <div className="intro"> {state.user.description} </div>
+                                    <div className="intro"> {state.user.description === null ? '' : state.user.description} </div>
                                 }
                             </div>
                         </div>
@@ -431,7 +432,7 @@ class Author extends Component {
                                                                     key={item.id}
                                                                     book = {item}
                                                                     status = {status}
-                                                                    isAuthor = {!!state.host}
+                                                                    isHost = {this.props.isHost}
                                                                     handleDisplayClick = {status !== "wait" ? this.handleDisplayClick : undefined}
                                                                     handleUpdate = {status !== "wait" ? this.handleUpdate : undefined}
                                                                 />
