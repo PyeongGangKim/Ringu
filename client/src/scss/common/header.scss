@@ -67,21 +67,18 @@ header {
 
             a {
                 margin: 0 10px;
-                width: 50px;
+                width: 105px;
+                height: 40px;
+                text-align: center;
 
-                &:hover {
-                    font-size: 17px;
-                    transition: 0.2s;
+                .btn {
+                    width: 105px;
+                    height: 100%;
                 }
             }
 
             .btn-login {
 
-            }
-
-            .btn-signup {
-                width: 105px;
-                height: 40px;
             }
         }
 
