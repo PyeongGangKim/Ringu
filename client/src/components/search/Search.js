@@ -18,10 +18,9 @@ class Search extends Component {
     constructor(props) {
         super(props);
 
-        var search = parse.searchToDict(props.search)
+        this.search = new URLSearchParams(this.props.search)
 
         this.state = {
-            search: search,
             searchList: [],
             count: 0,
             categoryList: [],
@@ -29,7 +28,7 @@ class Search extends Component {
             newSelected: new Set([]),
             filter: 1,
             display: 0,
-            keyword: search['keyword'],
+            keyword: this.search.get('keyword'),
             order: [],
         };
     }
@@ -37,6 +36,32 @@ class Search extends Component {
     async componentDidMount() {
         try {
             var state = this.state;
+
+            if (this.search.has('filter') && this.search.has('order')) {
+                var filter = this.search.get('filter')
+                var order = this.search.get('order')
+                state.order = [filter, order]
+
+                if(filter === 'recent') {
+                    state.filter = 1
+                }
+                else if(filter === 'score') {
+                    state.filter = 2
+                }
+                else if(filter === 'title') {
+                    if(order === 'asc') {
+                        state.filter = 3
+                    }
+                    else {
+                        state.filter = 4
+                    }
+                }
+            }
+
+            if (this.search.has('category')) {
+                state.selected = [... new Set(this.search.get('category').split('|'))]
+            }
+
             const categoryRes = await API.sendGet(URL.api.category.list)
             if(categoryRes.status === 200){
                 state.categoryList = categoryRes.data.categoryList
@@ -44,32 +69,26 @@ class Search extends Component {
             }
 
             this.setState(state)
-            this.handleSearch()
+            this.handleSearch(false)
         }
         catch(e) {
             console.log(e)
         }
     }
 
-    handleUpdateSearch = () => {
+    handleDisplayClick = (value) => {
         var state = this.state;
-        console.log(state)
 
-        var search = `?keyword=${state.keyword}`
-        if (state.order.length !== 0) {
-            search = search + `&filter=${state.order[0]}&order=${state.order[1]}`
-        }
+        state.display = value;
+        this.setState(state)
+    }
 
-        var categories = Array.from(state.selected)
-        for(var i=0; i < categories.length; i++) {
-            search = search + `&categories=${categories[i]}`
-        }
+    handleCloseClick = () => {
+        var state = this.state;
 
-        console.log(search)
-
-        this.props.history.push({
-            search: search
-        })
+        state.newSelected = state.selected;
+        state.display = 0;
+        this.setState(state)
     }
 
     handleCategoryClick = (id) => {
@@ -95,24 +114,7 @@ class Search extends Component {
         state.display = false;
         this.setState(state)
 
-        console.log(state)
-
-        this.handleSearch()
-    }
-
-    handleDisplayClick = (value) => {
-        var state = this.state;
-
-        state.display = value;
-        this.setState(state)
-    }
-
-    handleCloseClick = () => {
-        var state = this.state;
-
-        state.newSelected = state.selected;
-        state.display = 0;
-        this.setState(state)
+        this.handleUpdateSearch()
     }
 
     handleFilterChange = (e, filter) => {
@@ -120,10 +122,10 @@ class Search extends Component {
         state.filter = parseInt(e.target.value);
         state.order = filter
         this.setState(state)
-        this.handleSearch()
+        this.handleUpdateSearch()
     }
 
-    handleSearch = async() => {
+    handleSearch = async(mounted) => {
         var state = this.state;
 
         var params = {
@@ -140,13 +142,31 @@ class Search extends Component {
         }
 
         const res = await API.sendGet(URL.api.book.list, params = params)
-        console.log(res)
 
         if(res.status === 200) {
             state.searchList = res.data.bookList;
+
             this.setState(state);
-            this.handleUpdateSearch()
+            if(mounted) {
+                this.handleUpdateSearch()
+            }
         }
+    }
+
+    handleUpdateSearch = () => {
+        var state = this.state;
+
+        var search = `?keyword=${encodeURIComponent(state.keyword)}`
+        if (state.order.length !== 0) {
+            search = search + `&filter=${encodeURIComponent(state.order[0])}&order=${encodeURIComponent(state.order[1])}`
+        }
+
+        var categories = Array.from(state.selected)
+        if (state.selected.length != 0){
+            search = search + `&category=${encodeURIComponent(Array.from(state.selected).join('|'))}`
+        }
+
+        window.location = URL.service.search + search
     }
 
     render() {
@@ -205,7 +225,7 @@ class Search extends Component {
                                             <input type="radio" id="titleAsc" name="titleAsc" value="3" checked={state.filter === 3 ? true : false} onChange={(e) => this.handleFilterChange(e, ['title', 'asc'])}/>
                                             <span className="checkmark"/>
                                         </label>
-                                        <label htmlFor="score" className="radio-container">
+                                        <label htmlFor="titleDesc" className="radio-container">
                                         <input type="radio" id="titleDesc" name="titleDesc" value="4" checked={state.filter === 4 ? true : false} onChange={(e) => this.handleFilterChange(e, ['title', 'desc'])}/>
                                             제목순 (내림차순)
                                             <span className="checkmark"/>
@@ -218,7 +238,7 @@ class Search extends Component {
                     }
 
                     <div className="title-wrap">
-                        <h2 className="title">{`'${state.search['keyword']}'`} 검색 결과 ({state.searchList.length} 건)</h2>
+                        <h2 className="title">{`'${this.search.get('keyword')}'`} 검색 결과 ({state.searchList.length} 건)</h2>
                     </div>
 
                     <div className="filter-area">
@@ -248,6 +268,7 @@ class Search extends Component {
                                     }
                                     return (
                                         <Book
+                                            key={item.id}
                                             book={item}
                                             status={status}
                                             favorite

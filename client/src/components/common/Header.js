@@ -55,10 +55,7 @@ class Header extends Component {
             return;
         }
 
-        this.props.history.push({
-            pathname: URL.service.search,
-            search: "?keyword=" + this.state.keyword,
-        })
+        window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(this.state.keyword)
     }
 
     logOut = () => {
@@ -103,6 +100,10 @@ class Header extends Component {
                             this.state.login == 'Y'
                             ?
                             <div id="user-page">
+                                <Link to={URL.service.notification} id="notification-page">
+                                    <img src="/notification.png"/>
+                                    <span>알림</span>
+                                </Link>
                                 <Link to={URL.service.author + this.state.id} id="author-page">
                                     {
                                         this.props.author === true ?
@@ -136,17 +137,13 @@ class Header extends Component {
                                         <li><button onClick={this.logOut}>로그아웃</button></li>
                                     </ul>
                                 </div>
-                                <Link to={URL.service.notification} id="notification-page">
-                                    <img src="/notification.png"/>
-                                    <span>알림</span>
-                                </Link>
                             </div>
                             :
                             <div id="accounts">
-                                <Link to={URL.service.accounts.login}>
+                                <Link to={URL.service.accounts.login} className="btn-login">
                                     로그인
                                 </Link>
-                                <Link to={URL.service.accounts.signup}>
+                                <Link to={URL.service.accounts.signup} className="btn-signup">
                                     <div className="btn btn-rounded btn-color-2">회원가입</div>
                                 </Link>
                             </div>
