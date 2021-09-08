@@ -32,6 +32,7 @@ module.exports = {
             passwordCheck:    "/member/password/check",
             upload_profile:   "/member/upload_profile",
             profile:          "/member/profile/",
+            certification:    "/member/certification",
             update:           "/member/",
             delete:           "/member",
         },
