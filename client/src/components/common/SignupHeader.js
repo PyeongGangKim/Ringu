@@ -18,7 +18,7 @@ class SignupHeader extends Component {
     render() {
         return (
             <header>
-                <div id="signup-header" className={this.props.visible && "bottom-line"}>
+                <div id="signup-header" className="bottom-line">
                     <h1 id="signup-logo">
                         <Link to="/home">
                             <img src="/logo.png" height="70px"/>
