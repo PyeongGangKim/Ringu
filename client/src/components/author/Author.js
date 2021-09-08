@@ -64,49 +64,58 @@ class Author extends Component {
             }
 
             const res = await API.sendGet(URL.api.book.list, params = params)
-            var bookList = res.data.bookList
+            if(res.status === 200) {
+                var bookList = res.data.bookList
 
-            if(this.props.authorId === User.getInfo().id) {
-                console.log(222)
-                state.host = true
+                if(this.props.authorId === User.getInfo().id) {
+                    state.host = true
+                }
+
+                var waitingList = bookList.filter(book => {
+                    return book.is_approved === 0
+                })
+
+                bookList = bookList.filter(book => {
+                    return book.is_approved === 1
+                })
+
+                var serialList = bookList.filter(book => {
+                    return book.type === 1
+                })
+
+                state.bookList['ser'] = serialList.filter(book => {
+                    return book.is_finished_serialization === 0
+                })
+
+                state.bookList['ser-ed'] = serialList.filter(book => {
+                    return book.is_finished_serialization === 1
+                })
+
+                state.bookList['pub'] = bookList.filter(book => {
+                    return book.type === 2
+                })
+
+                state.bookList['wait'] = waitingList;
+                this.setState(state)
             }
 
-            var waitingList = bookList.filter(book => {
-                return book.is_approved === 0
-            })
-
-            bookList = bookList.filter(book => {
-                return book.is_approved === 1
-            })
-
-            var serialList = bookList.filter(book => {
-                return book.type === 1
-            })
-
-            state.bookList['ser'] = serialList.filter(book => {
-                return book.is_finished_serialization === 0
-            })
-
-            state.bookList['ser-ed'] = serialList.filter(book => {
-                return book.is_finished_serialization === 1
-            })
-
-            state.bookList['pub'] = bookList.filter(book => {
-                return book.type === 2
-            })
-
-            state.bookList['wait'] = waitingList;
-
             const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = {title: true, author_id: this.props.authorId})
-            var reviewData = reviewRes.data
 
-            state.reviewList = reviewData.reviewList
-            state.reviewTitleList = reviewData.reviewTitleList
+            if(reviewRes.status === 200) {
+                var reviewData = reviewRes.data
+
+                state.reviewList = reviewData.reviewList
+                state.reviewTitleList = reviewData.reviewTitleList
+                this.setState(state)
+            }
 
             const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
-            var user = userRes.data.user
+            if(userRes.status === 200) {
+                var user = userRes.data.user
 
-            state.user = user
+                state.user = user
+                this.setState(state)
+            }
 
             window.addEventListener('scroll', this.handleScroll)
 
@@ -117,6 +126,7 @@ class Author extends Component {
             }
 
             this.setState(state)
+
         } catch (e) {
             console.log(e)
         }
