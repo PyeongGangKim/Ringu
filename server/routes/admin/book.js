@@ -6,6 +6,7 @@ var config_url = require("../../config/url");
 var helper_pagination = require("../../helper/pagination");
 var helper_date = require("../../helper/date");
 const { checkLogin } = require("../../helper/activity");
+const {base_url} = require("../../config/url");
 
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
@@ -29,16 +30,21 @@ router.get("/", async (req, res, next) => {
     let fields = {
         "title"         : ("title" in req.query) ? req.query.title : "",
         "price"         : ("price" in req.query) ? req.query.price : "",
-        "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
+        "is_approved"   : ("is_approved" in req.query) ? [req.query.is_approved] : [0,1],
         "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
+        "is_picked"     : ("is_picked" in req.query) ? [req.query.is_picked] : [0,1],
     }
 
     try{
         const {count, rows} = await book.findAndCountAll({
             where: {
-                
-                    is_approved : fields.is_approved,
+                    is_picked : {
+                        [Op.in] : fields.is_picked
+                    },
+                    is_approved : {
+                        [Op.in] : fields.is_approved
+                    },
                     price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
                     '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
                     title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
@@ -85,10 +91,10 @@ router.get("/", async (req, res, next) => {
                 },
             ]
         });
-        console.log(rows[0].book_details);
+        console.log(count);
         let total_count = count;
         let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
-        console.log(renderingPage);
+        renderingPage = (fields.is_picked == 1) ? "admin/pages/pickedBookList" : renderingPage;
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
@@ -874,7 +880,73 @@ router.post('/:bookDetailId/update', async(req, res, next) => {
     catch(err){
         console.error(err);
     }
-})
+});
+router.get('/:bookId/pickedForm', async(req, res, next) => {
+    const book_id = req.params.bookId;
+    try{
+        const pickedBook = await book.findOne({
+            where: {
+                id: book_id,
+            }
+        });
+        res.render("admin/pages/pickedForm",{
+            book: pickedBook,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
+    
+});
+router.post('/:bookId/picked', async (req,res,next) => {
+    checkLogin(req, res, "/admin/book/" + "?is_approved=1");
+    const bookId = req.params.bookId;
+    const is_picked = 1;
+    const rank = req.body.rank;
+    try{
+        const result = await book.update(
+            {
+                is_picked : is_picked,
+                rank : rank
+            },
+            {
+                where: {
+                    id : bookId,
+                }
+            }
+        );
+        const url = base_url + "admin/book/?is_picked=1"  
+        res.redirect(url);
+    }  
+    catch(err){
+        console.error(err);
+    }
+});
+
+router.get('/:bookId/unpicked', async (req,res,next) => {
+    checkLogin(req, res, "/admin/book/" + "?is_approved=1");
+    const bookId = req.params.bookId;
+    const is_picked = 0;
+    const rank = 0;
+    try{
+        const result = await book.update(
+            {
+                is_picked : is_picked,
+                rank : rank
+            },
+            {
+                where: {
+                    id : bookId,
+                }
+            }
+        );
+        const url = base_url + "admin/book/?is_picked=1"  
+        res.redirect(url);
+    }  
+    catch(err){
+        console.error(err);
+    }
+});
 
 router.get('/download/:bookDetailId', async (req,res,next) => {
     checkLogin(req, res, "/admin/book/");
