@@ -48,7 +48,7 @@ class Book extends Component {
                     book_id: book.id,
                 }
                 const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
-                console.log(duplicate)
+                
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.book.create, params)
                     if(res.status === 201) {

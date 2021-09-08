@@ -55,30 +55,50 @@ header {
         position: absolute;
         top: 25px;
         right: 0;
-        width: 160px;
+        width: 250px;
         height: 60px;
 
         #accounts {
             display:flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             height: 100%;
             font-size: 16px;
+
+            a {
+                margin: 0 10px;
+                width: 50px;
+
+                &:hover {
+                    font-size: 17px;
+                    transition: 0.2s;
+                }
+            }
+
+            .btn-login {
+
+            }
+
+            .btn-signup {
+                width: 105px;
+                height: 40px;
+            }
         }
 
         #user-page {
             display:flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             height: 100%;
-            font-size: 15px;
+            font-size: 16px;
             text-align: center;
             color: #999999;
 
 
-            #author-page {
+            #author-page, #notification-page {
                 width: 70px;
                 height: 100%;
+                margin: 0 5px;
 
                 img {
                     display:block;
@@ -88,22 +108,13 @@ header {
                 }
             }
 
-            #notification-page {
-                width: 70px;
-                height: 100%;
 
-                img {
-                    display:block;
-                    width: 30px;
-                    height: 30px;
-                    margin: 0 auto 10px auto;
-                }
-            }
 
             #user-nb {
                 position: relative;
                 width: 90px;
                 height: 100%;
+                margin: 0 5px;
                 cursor: pointer;
 
                 #nb-box {
@@ -149,7 +160,7 @@ header {
     #search-area {
         position: absolute;
         top: 35px;
-        right: 200px;
+        right: 280px;
         height: 40px;
 
         .search {

@@ -69,7 +69,7 @@ class Main extends Component {
 
 
                 <div id="home" className="page1">
-                    <div className="title-wrap">
+                    {/*<div className="title-wrap">
                         <h2> 인기있는 주제 </h2>
                     </div>
 
@@ -83,7 +83,7 @@ class Main extends Component {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>*/}
 
                     <div className="title-wrap">
                         <h2> 여행 </h2>
