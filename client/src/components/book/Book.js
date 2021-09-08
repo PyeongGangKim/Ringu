@@ -48,7 +48,7 @@ class Book extends Component {
                     book_id: book.id,
                 }
                 const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
-                
+
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.book.create, params)
                     if(res.status === 201) {
@@ -105,7 +105,7 @@ class Book extends Component {
     render() {
         var book = this.props.book;
         var status = this.props.status;
-        var isAuthor = ('isAuthor' in this.props && !!this.props.isAuthor) ? true : false;
+        var isHost = ('isHost' in this.props && !!this.props.isHost) ? true : false;
         var favorite = ('favorite' in this.props && typeof this.props.favorite != 'undefined') ? true : false;
         var isFavorite = this.state.isFavorite;
 
@@ -162,7 +162,7 @@ class Book extends Component {
                             </div>
                         </div>
                         {
-                            isAuthor === true &&
+                            isHost === true &&
                             <div className="btn-wrap">
                                 {
                                     status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
