@@ -101,20 +101,32 @@ class SideMemberInfo extends Component {
         return (
             <div className="side-info">
                 <form>
+                    <div className="profile">
                     {
                         this.props.isAuthor === true ?
                         <div className="img-area">
-                            <img src={state.host.profile}/>
+                            {
+                                state.host.profile === null || !state.host.profile ?
+                                <img src="/blank.jpg"/>
+                                :
+                                <img src={state.host.profile}/>
+                            }
                         </div>
                         :
-                        <div className="profile">
+                        <div className="img-area">
                             <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
-                            <img src={state.host.profile}/>
-                            <label htmlFor="profile">                                
+                            {
+                                state.host.profile === null || !state.host.profile ?
+                                <img src="/blank.jpg"/>
+                                :
+                                <img src={state.host.profile}/>
+                            }
+                            <label htmlFor="profile">
                                 <em/>
                             </label>
                         </div>
                     }
+                    </div>
                 </form>
 
                 <strong className="name"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
