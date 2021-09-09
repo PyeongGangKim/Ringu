@@ -41,12 +41,12 @@ class Cart extends Component {
 
         if(res.status === 200) {
             var cartList = res.data.cartList
-            console.log(cartList)
             state.data.cartList = cartList
         }
 
         if (cartList)
             this.sum(cartList);
+
 
         this.setState(state)
     }
@@ -142,7 +142,7 @@ class Cart extends Component {
                                     <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
                                     <img src={item.img}/>
                                     <div className="details">
-                                        <h3 className="title">{item.book_detail_title}</h3>
+                                        <h3 className="title">{item.title}</h3>
                                         <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
                                     </div>
                                     <strong className="price"> {parse.numberWithCommas(item.price)} 원</strong>

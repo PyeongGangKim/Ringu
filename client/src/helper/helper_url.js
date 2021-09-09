@@ -49,8 +49,9 @@ module.exports = {
         book: {
             get:                "/book/",
             list:               "/book",
-            modify:             "/book/modify" ,
-            dowload:            "/book/download",
+            modify:             "/book/modify",
+            download:           "/book/download",
+            preview:            "/book/preview",
             getDetailList:      "/book/detail/",
             main:               "/book/main",
             delete:             "/book/",

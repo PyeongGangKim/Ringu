@@ -56,7 +56,7 @@ class BookType1 extends Component {
                     console.log("no content")
                 }
             } catch(e) {
-                console.err(e)
+                console.error(e)
             }
         }
         // 즐찾 추가
@@ -85,25 +85,14 @@ class BookType1 extends Component {
                     alert("이미 즐겨찾기되어 있습니다.")
                 }
             } catch(e) {
-                console.err(e)
+                console.error(e)
             }
         }
     }
 
-    handleCheck = (e, book) => {
-        var state = this.state;
-        if(e.target.value){
-            state.selected[book.id+""] = book
-        }
-        else {
-            delete state.selected[book.id]
-        }
-
-        this.setState(state)
-    }
-
     async componentDidMount() {
         var state = this.state;
+
 
         try {
             const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
@@ -149,7 +138,7 @@ class BookType1 extends Component {
             this.setState(state)
         }
         catch(e) {
-            console.err(e)
+            console.error(e)
         }
     }
 
@@ -167,15 +156,16 @@ class BookType1 extends Component {
         var state = this.state
         var purchaseList = []
         if(type === 0) {
-            purchaseList = state.selected
+            purchaseList = Object.values(state.selected)
         }
         else {
             purchaseList = state.detailList
         }
+
         this.props.history.push({
             pathname: URL.service.buy.buy,
             state: {
-                purchaseList: Object.values(this.state.selected)
+                purchaseList: purchaseList
             }
         })
     }
@@ -239,6 +229,34 @@ class BookType1 extends Component {
         this.setState(state);
     }
 
+    handleSelect = evt => {
+        var state = this.state;
+        var detailList = state.detailList;
+        var selected = state.selected;
+        var value = parseInt(evt.target.value)
+        var id = detailList[value]["id"]
+
+        if(evt.target.checked === true) {
+            selected[id] = detailList[value]
+        } else {
+            delete selected[id]
+        }
+
+        state.selected = selected;
+        this.setState(state);
+    }
+
+    downloadAction = async(book_detail_id) => {
+
+        const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=file");
+        if(res.status === 200) {
+            let downloadUrl = res.data.url;
+            window.open(downloadUrl);
+        }
+        else {
+            alert("오류가 발생했습니다.")
+        }
+    }
 
     render() {
         var state = this.state;
@@ -290,12 +308,30 @@ class BookType1 extends Component {
                                                 state.detailList.map((item, i) => {
                                                     return (
                                                         <tr key={i}>
-                                                            <td>{(item.purchases.length === 0 && state.author === false) && <input type="checkbox" onClick={(e) => this.handleCheck(e, item)} checked={state.selected[item.id]}/>}</td>
+                                                            <td>{(item.purchases.length === 0 && state.author === false) &&
+                                                                <input type="checkbox" checked={(!!state.selected[item.id]) ? true : false} onChange={this.handleSelect} value={i} />}</td>
                                                             <td>{i+1}회차.</td>
-                                                            <td>{item.title}</td>
+                                                            {
+                                                                i === 0 ?
+                                                                <td>
+                                                                    {item.title}
+                                                                    <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
+                                                                </td>
+                                                                :
+                                                                <td>
+                                                                    {item.title}
+                                                                </td>
+                                                            }
                                                             {
                                                                 !state.author &&
-                                                                <td><em className={item.purchases.length ? "download" : "lock"}/></td>
+                                                                <td>
+                                                                    {
+                                                                        item.purchases.length || i === 0 ?
+                                                                        <em className="download" onClick={() => this.downloadAction(item.id)} />
+                                                                        :
+                                                                        <em className="lock"/>
+                                                                    }
+                                                                </td>
                                                             }
                                                         </tr>
                                                     )
