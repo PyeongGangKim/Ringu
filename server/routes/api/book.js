@@ -334,7 +334,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             is_finished_serialization : is_finished_serialization,
             serialization_day: serialization_day,
         });
-        console.log(new_book);
+
         if(new_book.type == 2){//단행본 일때,
             const new_single_book = await book_detail.create({
                 title: new_book.title,
@@ -342,7 +342,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
                 page_number : page_number,
                 file : file,
             });
-            console.log(new_single_book);
+
             res.status(StatusCodes.CREATED).send("single_published_book created");
         }
         else{
@@ -370,7 +370,7 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
             file : file,
             round: round
         });
-        console.log(new_round_book);
+
         res.status(StatusCodes.CREATED).send("new round serialization_book created");
     }
     catch(err){
@@ -446,8 +446,6 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
     try {
         let book_id = req.body.book_id;
         let book_detail_id = req.body.book_detail_id;
-
-        console.log(req.body)
 
         var params = {
             "title": req.body.title,
