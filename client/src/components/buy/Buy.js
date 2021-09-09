@@ -125,7 +125,7 @@ class Buy extends Component {
                                     </div>
                                     <div className="details">
                                         <strong className="title">(책 제목:{item.title})</strong>
-                                        <p>저자:{item.author_name}</p>
+                                        <p>저자:{item.author}</p>
                                         <p>출간방식:{item.type === 2 ? "단행본" : "연재본"}</p>
                                         {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
                                         <p>파일형식:{"PDF"}</p>
