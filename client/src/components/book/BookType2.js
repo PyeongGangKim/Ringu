@@ -29,24 +29,139 @@ class BookType2 extends Component {
             tab: 'intro',
             tabChange: false,
             dock: false,
+            isFavorite: false,
+        }
+    }
+
+    handlePurchaseClick = async() => {
+        if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
+            this.props.history.push({
+                pathname: URL.service.buy.buy,
+                state: {
+                    purchaseList: [this.state.book]
+                }
+            })
+        }
+    }
+
+    handleCartClick = async() => {
+        var state = this.state;
+
+        try {
+            var params = {
+                book_detail_id: state.book.book_details[0].id,
+            }
+
+            const duplicate = await API.sendPost(URL.api.cart.duplicate, params)
+            console.log(duplicate)
+            if(duplicate.status === 200) {
+                const res = await API.sendPost(URL.api.cart.create, params)
+
+                if(res.status === 201) {
+                    if(window.confirm(`${this.state.book.title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
+                        this.props.history.push(URL.service.mypage.carts)
+                    }
+                }
+            }
+            else if(duplicate.status === 409) {
+                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.carts)
+                }                
+            } else {
+                alert("장바구니에 담지 못하였습니다.")
+            }
+        }
+        catch(err){
+            console.log(err.response)
+            console.err(err)
+        }
+    }
+
+    onFavoriteClick = async(book) => {
+        var state = this.state
+
+        // 즐찾 삭제
+        if(state.isFavorite) {
+            try {
+                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                if(res.status === 200) {
+                    var fb = res.data.favoriteBook;
+
+                    const res2 = await API.sendDelete(URL.api.favorite.book.delete + fb.id)
+                    if(res2.status === 200) {
+                        state.isFavorite = false;
+                        this.setState(state);
+                    }
+                }
+            } catch(e) {
+                console.log(e)
+            }
+        }
+        // 즐찾 추가
+        else {
+            try {
+                var params = {
+                    book_id: book.id,
+                }
+
+                const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
+
+                if(duplicate.status === 200) {
+                    const res = await API.sendPost(URL.api.favorite.book.create, params)
+                    if(res.status === 201) {
+                        state.isFavorite = true;
+                        this.setState(state);
+                    }
+                    else {
+                        alert("즐겨찾기에 추가하지 못하였습니다.")
+                    }
+                } else if(duplicate.status === 403) {
+                    if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = URL.service.accounts.login;
+                    }
+                }
+                else {
+                    alert("이미 즐겨찾기되어 있습니다.")
+                }
+            } catch(e) {
+                console.log(e)
+            }
         }
     }
 
     async componentDidMount() {
         var state = this.state;
-        const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
 
-        if(res.status === 200) {
-            state.reviewList = res.data.reviewList
+        try {
+            const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
+            if(duplicate.status === 200) {
+                state.isFavorite = false;
+                this.setState(state)
+            }
+            else {
+                state.isFavorite = true;
+                this.setState(state)
+            }
+
+            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+
+            if(res.status === 200) {
+                state.reviewList = res.data.reviewList
+                this.setState(state)
+            }
+
+            window.addEventListener('scroll', this.handleScroll)
+
+            if (window.scrollY > 650) {
+                state.dock = true;
+            } else {
+                state.dock = false;
+            }
+
             this.setState(state)
         }
-
-        window.addEventListener('scroll', this.handleScroll)
-
-        if (window.scrollY > 650) {
-            state.dock = true;
-        } else {
-            state.dock = false;
+        catch(e) {
+            console.err(e)
         }
     }
 
@@ -125,10 +240,27 @@ class BookType2 extends Component {
 
         return (
             <div id="book" className="page3" >
+                <div className="merchant-bar">
+                    <div className="merchant-box">
+                        <span className="title">{book.title}</span>
+                        <div className="payment-wrap">
+                            <span className="price">{parse.numberWithCommas(book.price)}원</span>
+                            <button className="btn btn-color-4" onClick={this.handleCartClick}> 장바구니 </button>
+                            <button className="btn btn-color-2" onClick={this.handlePurchaseClick}> 구매하기 </button>
+                        </div>
+                    </div>
+
+                </div>
                 <div className="book-content">
                     <div className="book-info">
                         <div className="book-thumbnail-box">
                             <img src={!!state.book.img ? state.book.img : "/ringu_thumbnail.png" } />
+
+                            <div className="favorite-box">
+                                <button className="favorite-btn">
+                                    <em onClick={() => this.onFavoriteClick(state.book)} className={"favorite " + (state.isFavorite ? "on" : "")}/>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="book-detail-box">
