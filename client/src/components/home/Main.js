@@ -31,7 +31,7 @@ class Main extends Component {
             member_id: User.getInfo() ? User.getInfo().id : null,
         }
 
-        const res = await API.sendGet(URL.api.book.main, params)
+        const res = await API.sendGet(URL.api.book.get, params)
         if(res.status === 200) {
             state.bookList = res.data.bookList
             this.setState(state)
