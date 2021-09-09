@@ -12,6 +12,7 @@ router.post('/', isLoggedIn,async (req, res, next) => {
 
     var member_id = req.user.id;
     var book_id = req.body.book_id;
+
     const t = await sequelize.transaction();
     try{
         await favorite_book.create({
@@ -20,6 +21,8 @@ router.post('/', isLoggedIn,async (req, res, next) => {
         },{
             transaction : t,
         });
+
+
         const [statistics, created] = await favorite_book_statistics.findOrCreate({
             where: {
                 book_id: book_id,
@@ -78,6 +81,35 @@ router.post('/duplicate', isLoggedIn,async (req, res, next) => {
     }
 });
 
+router.get('/:bookId', isLoggedIn, async (req, res, next) => {
+    var member_id = req.user.id;
+    var book_id = req.params.bookId;
+
+    console.log(member_id)
+    console.log(book_id)
+
+    try {
+        const fav = await favorite_book.findOne({
+            where: {
+                member_id: member_id,
+                book_id: book_id
+            }
+        })
+
+        if(fav) {
+            res.status(StatusCodes.OK).json({
+                "favoriteBook": fav,
+            })
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+})
+
 router.get('/', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
 
@@ -87,8 +119,8 @@ router.get('/', isLoggedIn,async (req, res, next) => {
                 member_id : member_id,
             },
             attributes : [
-                "id",
-                [sequelize.literal("book.id"), "book_id"],
+                ["id", "favorite_book_id"],
+                [sequelize.literal("book.id"), "id"],
                 [sequelize.literal("book.type"), "type"],
                 [sequelize.literal("book.is_finished_serialization"), "is_finished"],
                 [sequelize.literal("book.img"), "img"],
@@ -126,7 +158,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
             group: "book.id"
         });
 
-        if(favoriteBookList.length == 0){
+        if(favoriteBookList.length === 0){
             res.status(StatusCodes.NO_CONTENT).send("no content");
         }
         else{
@@ -149,7 +181,6 @@ router.get('/', isLoggedIn,async (req, res, next) => {
 });
 
 router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
-
     let id = req.params.favoriteBookId;
     const t = await sequelize.transaction();
     try{
@@ -158,6 +189,7 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
                 id : id
             },
         });
+
         await favorite_book.destroy({
             where: {
                 id : id,

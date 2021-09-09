@@ -43,7 +43,7 @@ class BookPage extends Component {
                         this.state.book.type === 1 ?
                         <BookType1 book={state.book}  history={this.props.history}/>
                         :
-                        <BookType2 book={state.book}/>
+                        <BookType2 book={state.book} history={this.props.history}/>
                     }
 
                 </div>

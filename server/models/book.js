@@ -77,12 +77,12 @@ module.exports = function(sequelize, DataTypes) {
     is_picked: {
       type: DataTypes.TINYINT,
       allowNull: false,
-      defaultValue: 0,
+      defaultValue: 0
     },
     rank: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+      allowNull: true
+    }
   }, {
     sequelize,
     tableName: 'book',

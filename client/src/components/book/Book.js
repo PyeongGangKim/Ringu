@@ -32,11 +32,18 @@ class Book extends Component {
         // 즐찾 삭제
         if(state.isFavorite) {
             try {
-                const res = await API.sendDelete(URL.api.favorite.book.delete + book.id)
+                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                console.log(res)
                 if(res.status === 200) {
-                    state.isFavorite = false;
-                    this.setState(state);
+                    var fb = res.data.favoriteBook;
+
+                    const res2 = await API.sendDelete(URL.api.favorite.book.delete + fb.id)
+                    if(res2.status === 200) {
+                        state.isFavorite = false;
+                        this.setState(state);
+                    }
                 }
+
             } catch(e) {
                 console.log(e)
             }

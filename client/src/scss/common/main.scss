@@ -10,7 +10,7 @@
         height: 100%;
         padding: 20px 120px;
         border-radius: 25px;
-        background-color: #f1eefc;
+        background-color: var(--color-3);
         background-image: url("/main.png");
         background-size: cover;
 
@@ -140,7 +140,7 @@
 
 .book-item-profile {
   height:75%;
-  border: 10px solid #f1eefc;
+  border: 10px solid var(--color-3);
   text-align: center;
   margin: auto;
   padding: 10px 5px;

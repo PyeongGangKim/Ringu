@@ -23,8 +23,6 @@ class BookType1 extends Component {
         this.seriesRef = React.createRef();
         this.reviewRef = React.createRef();
 
-        console.log(props)
-
         this.state = {
             book: props.book,
             reviewList: [],
@@ -34,6 +32,58 @@ class BookType1 extends Component {
             dock: false,
             selected: {},
             author: false,
+            isFavorite: false,
+        }
+    }
+
+    onFavoriteClick = async(book) => {
+        var state = this.state
+
+        // 즐찾 삭제
+        if(state.isFavorite) {
+            try {
+                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                if(res.status === 200) {
+                    var fb = res.data.favoriteBook;
+
+                    const res2 = await API.sendDelete(URL.api.favorite.book.delete + fb.id)
+                    if(res2.status === 200) {
+                        state.isFavorite = false;
+                        this.setState(state);
+                    }
+                }
+            } catch(e) {
+                console.err(e)
+            }
+        }
+        // 즐찾 추가
+        else {
+            try {
+                var params = {
+                    book_id: book.id,
+                }
+                const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
+
+                if(duplicate.status === 200) {
+                    const res = await API.sendPost(URL.api.favorite.book.create, params)
+                    if(res.status === 201) {
+                        state.isFavorite = true;
+                        this.setState(state);
+                    }
+                    else {
+                        alert("즐겨찾기에 추가하지 못하였습니다.")
+                    }
+                } else if(duplicate.status === 403) {
+                    if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = URL.service.accounts.login;
+                    }
+                }
+                else {
+                    alert("이미 즐겨찾기되어 있습니다.")
+                }
+            } catch(e) {
+                console.err(e)
+            }
         }
     }
 
@@ -47,41 +97,56 @@ class BookType1 extends Component {
         }
 
         this.setState(state)
-
     }
 
     async componentDidMount() {
         var state = this.state;
 
-        let userInfo = User.getInfo();
-        if (userInfo.id === state.book.author_id) {
-            state.author = true;
-            this.setState(state);
-        }
-        const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+        try {
+            const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
+            if(duplicate.status === 200) {
+                state.isFavorite = false;
+                this.setState(state)
+            }
+            else {
+                state.isFavorite = true;
+                this.setState(state)
+            }
 
-        if(res1.status === 200) {
-            state.reviewList = res1.data.reviewList
+            let userInfo = User.getInfo();
+            if (userInfo.id === state.book.author_id) {
+                state.author = true;
+                this.setState(state);
+            }
+            const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+
+            if(res1.status === 200) {
+                state.reviewList = res1.data.reviewList
+                this.setState(state)
+            }
+
+            var params = {
+                member_id : userInfo !== null ? userInfo.id : null
+            }
+
+            const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
+            if(res2.status === 200) {
+                state.detailList = res2.data.detailList
+                this.setState(state)
+            }
+
+            window.addEventListener('scroll', this.handleScroll)
+
+            if (window.scrollY > 650) {
+                state.dock = true;
+            } else {
+                state.dock = false;
+            }
+
             this.setState(state)
         }
-
-        var params = {
-            member_id : userInfo !== null ? userInfo.id : null
-        }
-
-        const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
-        console.log(res2)
-        if(res2.status === 200) {
-            state.detailList = res2.data.detailList
-            this.setState(state)
-        }
-
-        window.addEventListener('scroll', this.handleScroll)
-
-        if (window.scrollY > 650) {
-            state.dock = true;
-        } else {
-            state.dock = false;
+        catch(e) {
+            console.err(e)
         }
     }
 
@@ -110,8 +175,6 @@ class BookType1 extends Component {
                 purchaseList: Object.values(this.state.selected)
             }
         })
-
-
     }
 
     handleTabChange = (event, value) => {
@@ -179,11 +242,17 @@ class BookType1 extends Component {
         var book = state.book;
 
         return (
-            <div id="book" className="page3" >
+            <div id="book" className="page3" >                
                 <div className="book-content">
                     <div className="book-info">
                         <div className="book-thumbnail-box">
                             <img src={!!state.book.img ? state.book.img : "/ringu_thumbnail.png" } />
+
+                            <div className="favorite-box">
+                                <button className="favorite-btn">
+                                    <em onClick={() => this.onFavoriteClick(state.book)} className={"favorite " + (state.isFavorite ? "on" : "")}/>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="book-detail-box">
@@ -216,7 +285,6 @@ class BookType1 extends Component {
                                         <tbody>
                                             {
                                                 state.detailList.map((item, i) => {
-                                                    console.log(item)
                                                     return (
                                                         <tr key={i}>
                                                             <td>{(item.purchases.length === 0 && state.author === false) && <input type="checkbox" onClick={(e) => this.handleCheck(e, item)} checked={state.selected[item.id]}/>}</td>
