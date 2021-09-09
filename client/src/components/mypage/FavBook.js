@@ -44,12 +44,9 @@ class FavBook extends Component {
 
             this.setState(state)
         }
-
-
     }
 
     handleDelete = async(book) => {
-        console.log(222222)
         var state = this.state;
         var filteredArray = state.data.favoriteList.filter(item => item.id !== book.id)
         var data = {...state.data, favoriteList: filteredArray}
