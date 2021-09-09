@@ -53,7 +53,7 @@ class BookType2 extends Component {
             }
 
             const duplicate = await API.sendPost(URL.api.cart.duplicate, params)
-            console.log(duplicate)
+            
             if(duplicate.status === 200) {
                 const res = await API.sendPost(URL.api.cart.create, params)
 
@@ -66,7 +66,7 @@ class BookType2 extends Component {
             else if(duplicate.status === 409) {
                 if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
                     this.props.history.push(URL.service.mypage.carts)
-                }                
+                }
             } else {
                 alert("장바구니에 담지 못하였습니다.")
             }
@@ -92,6 +92,9 @@ class BookType2 extends Component {
                         state.isFavorite = false;
                         this.setState(state);
                     }
+                }
+                else if(res.status === 204) {
+                    console.log("no content")
                 }
             } catch(e) {
                 console.log(e)
