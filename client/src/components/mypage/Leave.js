@@ -60,14 +60,14 @@ class Leave extends Component {
             alert("이메일이 일치하지 않습니다")
             return;
         }
-        console.log(111)
+
         const res = await API.sendDelete(URL.api.member.delete)
-        console.log(res)
+
         if (res.status === 200) {
             alert("회원 탈퇴가 성공적으로 완료되었습니다")
-            Cookies.remove('token');
-            Cookies.remove('token', { path: '/'});
-            Cookies.remove('token', { path: '/detail' });
+            Cookies.remove('RINGU_JWT');
+            Cookies.remove('RINGU_JWT', { path: '/'});
+            Cookies.remove('RINGU_JWT', { path: '/detail' });
             window.location = "/home";
         }
         else {

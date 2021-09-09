@@ -18,7 +18,7 @@ class AuthPage extends Component {
                 <Header></Header>
                 <div className="content">
                   <div className="side">
-                    <SideMemberInfo author="false"/>
+                    <SideMemberInfo author={false}/>
                     <SideNav display1={display}/>
                   </div>
                   <Auth/>

@@ -238,6 +238,10 @@
             margin-bottom: 30px;
             position: relative;
             padding-left: 30px;
+
+            label, input {
+                cursor: pointer;
+            }
         }
 
         .payment-btn {

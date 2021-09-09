@@ -159,7 +159,7 @@ class SignupDetailSNS extends Component {
             if(status === 201) {
                 var token = res.data.token;
                 if( token ) {
-                    Cookies.set('token', token, {expires: 7, path: '/'})
+                    Cookies.set('RINGU_TOKEN', token, {expires: 7, path: '/'})
                 }
 
                 this.props.history.push({

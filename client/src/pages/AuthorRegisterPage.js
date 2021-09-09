@@ -1,7 +1,5 @@
 import React, { Component, Fragment } from 'react';
 
-import SideMemberInfo from '../components/common/SideMemberInfo';
-import SideNav from '../components/mypage/SideNav';
 import RegisterAuthor from '../components/register/RegisterAuthor';
 import Header from '../components/common/Header';
 
@@ -15,8 +13,8 @@ class AuthorRegisterPage extends Component {
     render() {
         return (
             <Fragment>
-                <Header ></Header>
-                <div id="wrap">                    
+                <Header searchVisible={false}></Header>
+                <div id="wrap">
                     <RegisterAuthor/>
                 </div>
             </Fragment>

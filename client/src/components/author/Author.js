@@ -37,7 +37,10 @@ class Author extends Component {
             bookList: {},
             selected: {},
 
-            user: {},
+            user: {
+                id: -1,
+                description: '',
+            },
             active: 'a',
             activeReview: 0,
             dock: false,
@@ -51,7 +54,6 @@ class Author extends Component {
             modalPos:{},
             host: false,
         }
-        console.log(props)
     }
 
     async componentDidMount() {
@@ -64,49 +66,57 @@ class Author extends Component {
             }
 
             const res = await API.sendGet(URL.api.book.list, params = params)
-            var bookList = res.data.bookList
+            if(res.status === 200) {
+                var bookList = res.data.bookList
+                if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
+                    state.host = true
+                }
 
-            if(this.props.authorId === User.getInfo().id) {
-                console.log(222)
-                state.host = true
+                var waitingList = bookList.filter(book => {
+                    return book.is_approved === 0
+                })
+
+                bookList = bookList.filter(book => {
+                    return book.is_approved === 1
+                })
+
+                var serialList = bookList.filter(book => {
+                    return book.type === 1
+                })
+
+                state.bookList['ser'] = serialList.filter(book => {
+                    return book.is_finished_serialization === 0
+                })
+
+                state.bookList['ser-ed'] = serialList.filter(book => {
+                    return book.is_finished_serialization === 1
+                })
+
+                state.bookList['pub'] = bookList.filter(book => {
+                    return book.type === 2
+                })
+
+                state.bookList['wait'] = waitingList;
+                this.setState(state)
             }
 
-            var waitingList = bookList.filter(book => {
-                return book.is_approved === 0
-            })
-
-            bookList = bookList.filter(book => {
-                return book.is_approved === 1
-            })
-
-            var serialList = bookList.filter(book => {
-                return book.type === 1
-            })
-
-            state.bookList['ser'] = serialList.filter(book => {
-                return book.is_finished_serialization === 0
-            })
-
-            state.bookList['ser-ed'] = serialList.filter(book => {
-                return book.is_finished_serialization === 1
-            })
-
-            state.bookList['pub'] = bookList.filter(book => {
-                return book.type === 2
-            })
-
-            state.bookList['wait'] = waitingList;
-
             const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = {title: true, author_id: this.props.authorId})
-            var reviewData = reviewRes.data
 
-            state.reviewList = reviewData.reviewList
-            state.reviewTitleList = reviewData.reviewTitleList
+            if(reviewRes.status === 200) {
+                var reviewData = reviewRes.data
+
+                state.reviewList = reviewData.reviewList
+                state.reviewTitleList = reviewData.reviewTitleList
+                this.setState(state)
+            }
 
             const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
-            var user = userRes.data.user
+            if(userRes.status === 200) {
+                var user = userRes.data.user
 
-            state.user = user
+                state.user = user
+                this.setState(state)
+            }
 
             window.addEventListener('scroll', this.handleScroll)
 
@@ -117,6 +127,7 @@ class Author extends Component {
             }
 
             this.setState(state)
+
         } catch (e) {
             console.log(e)
         }
@@ -305,7 +316,7 @@ class Author extends Component {
         return (
             <div id="author-page" className="page2">
                 {
-                    (this.props.isAuthor === true && state.display === true) &&
+                    (this.props.isHost === true && state.display === true) &&
                     <Modal
                         onClose={this.handleCloseClick}
                         pos={state.modalPos}
@@ -373,7 +384,7 @@ class Author extends Component {
                             <div className="inner-header">
                                 소개
                                 {
-                                    (this.props.isAuthor === true && state.modify === true) ?
+                                    (this.props.isHost === true && state.modify === true) ?
                                     <span className="small" onClick={this.handleCompleteClick}>
                                         <em/>완료
                                     </span>
@@ -386,10 +397,10 @@ class Author extends Component {
                             </div>
                             <div className="inner-content">
                                 {
-                                    this.props.isAuthor === true ?
-                                    <textarea className="intro" value={state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
+                                    this.props.isHost === true ?
+                                    <textarea className="intro" value={state.user.description === null ? '' : state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
                                     :
-                                    <div className="intro"> {state.user.description} </div>
+                                    <div className="intro"> {state.user.description === null ? '' : state.user.description} </div>
                                 }
                             </div>
                         </div>
@@ -421,7 +432,7 @@ class Author extends Component {
                                                                     key={item.id}
                                                                     book = {item}
                                                                     status = {status}
-                                                                    isAuthor = {!!state.host}
+                                                                    isHost = {this.props.isHost}
                                                                     handleDisplayClick = {status !== "wait" ? this.handleDisplayClick : undefined}
                                                                     handleUpdate = {status !== "wait" ? this.handleUpdate : undefined}
                                                                 />

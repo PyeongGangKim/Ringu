@@ -7,20 +7,31 @@ import Author from '../components/author/Author';
 import Header from '../components/common/Header';
 
 class AuthorPage extends Component {
+    valid = true;
+    isHost = false;
     constructor(props) {
         super(props);
 
-        let userInfo = User.getInfo();
+        var hostId = props.match.params.author_id
+        var visitor = User.getInfo();
 
-        if(userInfo !== null && parseInt(userInfo.id) === parseInt(props.match.params.author_id) && userInfo.type !== 1) {
-            alert("작가 인증이 필요합니다.")
-            window.location.href = "/mypage";
-            return false;
+        if(visitor !== null && parseInt(visitor.id) === parseInt(hostId))
+        {
+            this.isHost = true;
+        }
+
+        if(this.isHost)
+        {
+            if(visitor.type !== 1) // 작가 여부 확인
+            {
+                this.valid = false
+                alert("작가 인증이 필요합니다.")
+                window.location.href = "/mypage";
+            }
         }
 
         this.state = {
-            authorId: this.props.match.params.author_id,
-            isAuthor: (userInfo !== null && parseInt(userInfo.id) === parseInt(props.match.params.author_id) && parseInt(userInfo.type) === 1) ? true : false,
+            authorId: hostId,
         }
     }
 
@@ -41,13 +52,14 @@ class AuthorPage extends Component {
         var state = this.state
 
         return (
+            this.valid &&
             <Fragment>
                 <Header author history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
-                        <SideMemberInfo author={true} authorId={this.props.match.params.author_id}/>
+                        <SideMemberInfo isAuthor={true} authorId={this.props.match.params.author_id} isHost={this.isHost}/>
                     </div>
-                    <Author authorId={state.authorId} isAuthor={state.isAuthor}/>
+                    <Author authorId={state.authorId} isHost={this.isHost}/>
                 </div>
             </Fragment>
         )

@@ -16,7 +16,7 @@ class Purchases extends Component {
                 <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
-                        <SideMemberInfo author={false}/>
+                        <SideMemberInfo isAuthor={false}/>
                         <SideNav path={this.props.location.pathname}/>
                     </div>
                     <Purchase/>

@@ -52,7 +52,7 @@ const NaverCallback = ({location, history, ...props}) => {
                         const res = await API.sendGet(URL.api.auth.sns.naver, params={id:id, email:email, sns: 'naver'})
                         if(res.status === 200) {
                             var token = res.data.token;
-                            if( token ) Cookies.set('token', token, {expires: 7, path: '/'});
+                            if( token ) Cookies.set('RINGU_TOKEN', token, {expires: 7, path: '/'});
                             history.push(URL.service.home);
                         }
                     }
