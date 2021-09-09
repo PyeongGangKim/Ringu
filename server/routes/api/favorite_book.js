@@ -85,9 +85,6 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
     var book_id = req.params.bookId;
 
-    console.log(member_id)
-    console.log(book_id)
-
     try {
         const fav = await favorite_book.findOne({
             where: {
@@ -100,6 +97,11 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
             res.status(StatusCodes.OK).json({
                 "favoriteBook": fav,
             })
+        }
+        else{
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
         }
     }
     catch(err){
