@@ -12,7 +12,7 @@ const { isLoggedIn } = require("../../middlewares/auth");
 
 
 router.post('/', isLoggedIn, async (req, res, next) => {
-
+    console.log(3333333)
 
     var member_id = req.user.id;
     var author_id = req.body.author_id;
@@ -46,7 +46,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
             transaction: t,
         });
         await t.commit();
-        res.status(StatusCodes.OK).send("success like");
+        res.status(StatusCodes.CREATED).send("success like");
     }
     catch(err){
         await t.rollback();
@@ -82,6 +82,37 @@ router.post('/duplicate', isLoggedIn, async (req, res, next) => {
     }
 
 });
+
+router.get('/:authorId', isLoggedIn, async (req, res, next) => {
+    var member_id = req.user.id;
+    var author_id = req.params.authorId;
+
+    try {
+        const fav = await favorite_author.findOne({
+            where: {
+                member_id: member_id,
+                author_id: author_id
+            }
+        })
+
+        if(fav) {
+            res.status(StatusCodes.OK).json({
+                "favoriteAuthor": fav,
+            })
+        }
+        else{
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+})
 
 router.get('/', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
@@ -180,7 +211,7 @@ router.delete('/:favoriteAuthorId', isLoggedIn, async (req, res, next) => {
         res.status(StatusCodes.OK).json({
             "message" : "OK",
         });
-        
+
     }
     catch(err){
         await t.rollback();
