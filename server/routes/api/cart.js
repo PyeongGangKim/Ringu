@@ -6,6 +6,52 @@ const { isLoggedIn } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const { sequelize, cart, book, book_detail, purchase, withdrawal, member, author } = require("../../models");
 
+router.post('/', isLoggedIn,async (req, res, next) => {
+    var member_id = req.user.id;
+    var book_detail_id = req.body.book_detail_id;
+
+    try{
+        await cart.create({
+                member_id : member_id,
+                book_detail_id : book_detail_id,
+        });
+
+        res.status(StatusCodes.CREATED).send("success cart");
+    }
+    catch(err){
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+        console.error(err);
+    }
+});
+
+router.post('/duplicate', isLoggedIn,async (req, res, next) => {
+    var member_id = req.user.id;
+    var book_detail_id = req.body.book_detail_id;
+
+    try{
+        const duplicate_result = await cart.findOne({
+            where: {
+                member_id : member_id,
+                book_detail_id : book_detail_id,
+                status : 1,
+            }
+        })
+        if(duplicate_result){
+            res.status(StatusCodes.CONFLICT).send("Duplicate");
+        }
+        else{
+            res.status(StatusCodes.OK).send("No Duplicate");
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
 
 router.get('/', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
