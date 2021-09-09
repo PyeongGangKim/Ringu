@@ -67,9 +67,11 @@ module.exports = {
         },
         favorite: {
             author: {
-                get:            "/favorit_author/",
+                create:         "/favorite_author",
+                get:            "/favorite_author/",
                 list:           "/favorite_author",
                 delete:         "/favorite_author/",
+                duplicate:      "/favorite_author/duplicate",
             },
             book: {
                 create:         "/favorite_book",
@@ -96,7 +98,10 @@ module.exports = {
             getBookNotification:     "/notification/book",
             getNormalNotification:  "/notification/notice",
             getWithdrawalNotification: "/notification/withdrawal",
-            putReadNotification:    "/notification/"
+            putReadNotification:    "/notification/",
+            getBookNewNotiCount: "/notification/book/newNotiCnt",
+            getWithdrawalNewNotiCount: "/notification/withdrawal/newNotiCnt",
+            getNormalNewNotiCount: "/notification/notice/newNotiCnt",
         },
         payment: {
             create:             "/payment",

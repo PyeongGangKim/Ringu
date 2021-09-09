@@ -52,6 +52,9 @@ class BookType1 extends Component {
                         this.setState(state);
                     }
                 }
+                else if(res.status === 204) {
+                    console.log("no content")
+                }
             } catch(e) {
                 console.err(e)
             }
@@ -242,7 +245,7 @@ class BookType1 extends Component {
         var book = state.book;
 
         return (
-            <div id="book" className="page3" >                
+            <div id="book" className="page3" >
                 <div className="book-content">
                     <div className="book-info">
                         <div className="book-thumbnail-box">

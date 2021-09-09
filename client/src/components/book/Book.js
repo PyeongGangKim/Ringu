@@ -33,7 +33,6 @@ class Book extends Component {
         if(state.isFavorite) {
             try {
                 const res = await API.sendGet(URL.api.favorite.book.get + book.id)
-                console.log(res)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 

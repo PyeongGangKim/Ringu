@@ -32,6 +32,7 @@ class Main extends Component {
             order: "sales",
         }
 
+
         const res = await API.sendGet(URL.api.book.list, params)
         if(res.status === 200) {
             state.bookList = res.data.bookList
