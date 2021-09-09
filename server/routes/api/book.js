@@ -23,6 +23,14 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         let orderBy = ("orderBy" in req.query && typeof req.query.orderBy !== undefined) ? req.query.orderBy : 'DESC';
         let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [0,1] : [1];
 
+        var orderParams = [
+            [sequelize.literal(order), orderBy]
+        ]
+
+        if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {
+            orderParams.push(['created_date_time', 'DESC'])
+        }
+
         const bookList = await book.findAll({
             attributes: [
                 "id",
@@ -33,6 +41,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 "is_finished_serialization",
                 "is_approved",
                 "created_date_time",
+                [sequelize.literal("COUNT(`book_details->purchases`.id)"), "sales"],
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"score" ],
                 [sequelize.literal("author.nickname"), "author_nickname"],
@@ -80,6 +89,11 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                             model : review_statistics,
                             as : 'review_statistics',
                             attributes: [],
+                        },
+                        {
+                            model : purchase,
+                            as : 'purchases',
+                            attributes: [],
                         }
                     ]
                 },
@@ -94,10 +108,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 }
             ],
             group: 'id',
-            order: [
-                [sequelize.literal(order), orderBy]
-            ]
-
+            order: orderParams,
         });
 
         for(let i = 0 ; i < bookList.length ; i++){
@@ -107,85 +118,6 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         res.status(StatusCodes.OK).json({
             bookList: bookList,
         });
-    }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "error": "server error"
-        });
-    }
-});
-
-router.get('/main', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
-    let member_id = req.query.member_id;
-    let is_approved = (req.query.is_approved) ? [req.query.is_approved] : [0,1];
-    try{
-        const bookList = await book.findAll({
-            order: [sequelize.random()],
-            attributes: [
-                "id",
-                "price",
-                "img",
-                "title",
-                "type",//type 1이 연재본, 2가 단행본.
-                [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
-                [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"mean_score" ],
-                [sequelize.literal("author.nickname"), "author_nickname"],
-                [sequelize.literal("category.name"), "category"],
-            ],
-            where: {
-                status: 1,
-                is_approved : {
-                    [Op.in] : is_approved
-                },
-            },
-            include : [
-                {
-                    model : category,
-                    as : 'category',
-                    attributes : [],
-                },
-                {
-                    model : member,
-                    as : 'author',
-                    attributes: [],
-                },
-                {
-                    model : book_detail,
-                    as : 'book_details',
-                    attributes: [],
-                    include : [
-                        {
-                            model : review_statistics,
-                            as : 'review_statistics',
-                            attributes: [],
-                        }
-                    ]
-                },
-                {
-                    model : favorite_book,
-                    as: 'favorite_books',
-                    attributes: [],
-                    required: false,
-                    where: {
-                        member_id : (member_id == null || member_id == "") ? null : member_id,
-                    }
-                }
-            ],
-            group: 'id',
-        });
-        if(bookList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
-        }
-        else{
-            for(let i = 0 ; i < bookList.length ; i++){
-                if(bookList[i].dataValues.img == null || bookList[i].dataValues.img[0] == 'h') continue;
-                bookList[i].dataValues.img = await imageLoad(bookList[i].dataValues.img);
-            }
-            res.status(StatusCodes.OK).json({
-                bookList: bookList,
-            });
-        }
     }
     catch(err){
         console.error(err);
