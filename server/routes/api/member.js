@@ -1,5 +1,10 @@
 var express = require("express");
 var router = express.Router();
+var axios = require('axios');
+var iamport = require("../../config/iamport");
+
+let jwt = require('jsonwebtoken');
+const { secretKey } = require('../../config/jwt_secret');
 
 const bcrypt = require('bcrypt');
 const multer = require("multer");
@@ -47,16 +52,12 @@ router.get('/', isLoggedIn, async(req, res, next) => {
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT).json({
-                msg: "no content",
-            });
+            res.status(StatusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "server error",
-        });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -86,16 +87,12 @@ router.get('/:memberId', async(req, res, next) => {
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT).json({
-                msg: "no content",
-            });
+            res.status(StatusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "server error",
-        });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -125,15 +122,15 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         let password = req.body.password;
 
         const result = await bcrypt.compare(password, req.user.password);
-        console.log(result);
+
         if(result){
             res.status(StatusCodes.OK).json({
-                msg: "ok"
+                check: true,
             });
         }
         else{
-            res.status(StatusCodes.CONFLICT).json({
-                msg: "didn't correct"
+            res.status(StatusCodes.OK).json({
+                check: false,
             });
         }
     }
@@ -203,9 +200,51 @@ router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     }
 });
 
+/*router.post('/certification', async(req, res, next) => {
+    const { imp_uid } = req.body;
+    console.log(imp_uid)
+
+    try {
+        // 인증 토큰 발급 받기
+        const getToken = await axios({
+            url: "https://api.iamport.kr/users/getToken",
+            method: "post", // POST method
+            headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+            data: {
+                imp_key: iamport.apikey,
+                imp_secret: iamport.secret
+            }
+        })
+
+        const { access_token } = getToken.data.response;
+
+        // imp_uid로 인증 정보 조회
+        const getCertifications = await axios({
+            url: `https://api.iamport.kr/certifications/${imp_uid}`,
+            method: 'get',
+            headers: { 'Authorization': access_token }
+        });
+        //console.log(getCertifications.data)
+        const certificationsInfo = getCertifications.data.response;
+        //console.log(certificationsInfo)
+
+        if(certificationsInfo){
+            res.status(StatusCodes.OK).json({
+                "certification" : certificationsInfo,
+            });
+        }
+    } catch(err) {
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+})*/
+
 router.put('/', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;
     let params = req.body;
+
     // patch로 변경필요
     try{
         const result = await member.update(
@@ -217,9 +256,22 @@ router.put('/', isLoggedIn, async (req, res, next) => {
             });
 
         if(result){
-            res.status(StatusCodes.OK).json({
-                "member" : result,
-            });
+            var ret = {
+                "message" : "update completed!",
+            }
+
+            if ('type' in params && typeof params.type !== 'undefined') {
+                const token = jwt.sign({
+                    id: id,
+                    type: params.type,
+                }, secretKey, {
+                    expiresIn: '12h',
+                    issuer: 'ringu',
+                });
+                ret['token'] = token;
+            }
+
+            res.status(StatusCodes.OK).json(ret);
         }
 
     }
@@ -229,7 +281,6 @@ router.put('/', isLoggedIn, async (req, res, next) => {
             "message" : "server error",
         });
     }
-
 });
 
 router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => {
@@ -246,21 +297,18 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
         else{
-            res.status(statusCods.INTERNAL_SERVER_ERROR).json({
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 "error": "name update error",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "message" : "server error",
-        });
     }
 
 })
