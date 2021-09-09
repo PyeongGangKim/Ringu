@@ -150,7 +150,7 @@ class MyInfo extends Component {
 
                             </h3>
 
-                            <input className="textbox" type="text" name="nickname" autoComplete="off" value={this.state.data.nickname.value} onChange={this.handleNicknameChange}/>
+                            <input className="textbox" type="text" name="nickname" disabled={this.state.data.nickname.isModifying === false} autoComplete="off" value={this.state.data.nickname.value} onChange={this.handleNicknameChange}/>
                             {
                                 (this.state.data.nickname.isModifying === true) &&
                                 (
