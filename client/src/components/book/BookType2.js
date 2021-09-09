@@ -23,6 +23,8 @@ class BookType2 extends Component {
         this.contentRef = React.createRef();
         this.reviewRef = React.createRef();
 
+        console.log(props.book)
+
         this.state = {
             book: props.book,
             reviewList: [],
@@ -53,7 +55,7 @@ class BookType2 extends Component {
             }
 
             const duplicate = await API.sendPost(URL.api.cart.duplicate, params)
-            
+
             if(duplicate.status === 200) {
                 const res = await API.sendPost(URL.api.cart.create, params)
 
@@ -129,6 +131,18 @@ class BookType2 extends Component {
             } catch(e) {
                 console.log(e)
             }
+        }
+    }
+
+    downloadAction = async() => {
+        var detail = this.state.book.book_details[0]
+        const res = await API.sendGet(URL.api.book.download+ "/" + detail.id + "?type=preview");
+        if(res.status === 200) {
+            let downloadUrl = res.data.url;
+            window.open(downloadUrl);
+        }
+        else {
+            alert("오류가 발생했습니다.")
         }
     }
 
@@ -292,7 +306,10 @@ class BookType2 extends Component {
                             <div id="content-area" className="inner-box" ref={this.contentRef}>
                                 <div className="inner-header"> 목차</div>
                                 <div className="inner-content">
-
+                                    <div className="preview">
+                                        <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
+                                    </div>
+                                    {book.content}
                                 </div>
                             </div>
 
