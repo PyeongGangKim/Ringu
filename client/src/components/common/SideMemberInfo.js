@@ -23,6 +23,7 @@ class SideMemberInfo extends Component {
             profile: "/blank.jpg",
             user: userInfo,
             host: {},
+            isFavorite: false,
         }
     }
 
@@ -68,6 +69,15 @@ class SideMemberInfo extends Component {
                 id = state.user.id
             }
 
+            if (this.props.isHost === false) {
+                const res = await API.sendGet(URL.api.favorite.author.get, {author_id: this.props.authorId})
+                if(res.status === 200) {
+                    var fa = res.data.favoriteAuthor;
+                    state.isFavorite = true;
+                    this.setState(state);
+                }
+            }
+
             const userRes = await API.sendGet(URL.api.member.getById + id)
             this.setState({
                 favorites: favoriteBookList.length + favoriteAuthorList.length,
@@ -95,17 +105,79 @@ class SideMemberInfo extends Component {
         }
     }
 
+    handleFavoriteClick = async() => {
+        var state = this.state;
+
+        if(state.isFavorite) {
+            try {
+                const res = await API.sendGet(URL.api.favorite.author.get + this.props.authorId)
+                if(res.status === 200) {
+                    var fa = res.data.favoriteAuthor;
+
+                    const res2 = await API.sendDelete(URL.api.favorite.author.delete + fa.id)
+                    if(res2.status === 200) {
+                        state.isFavorite = false;
+                        this.setState(state);
+                    }
+                }
+
+            } catch(e) {
+                console.log(e)
+            }
+        }
+        // 즐찾 추가
+        else {
+            try {
+                var params = {
+                    author_id: this.props.authorId,
+                }
+                const duplicate = await API.sendPost(URL.api.favorite.author.duplicate, params)
+
+                if(duplicate.status === 200) {
+                    const res = await API.sendPost(URL.api.favorite.author.create, params)
+                    if(res.status === 201) {
+                        state.isFavorite = true;
+                        this.setState(state);
+                    }
+                    else {
+                        alert("즐겨찾기에 추가하지 못하였습니다.")
+                    }
+                } else if(duplicate.status === 403) {
+                    if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = URL.service.accounts.login;
+                    }
+                }
+                else {
+                    alert("이미 즐겨찾기되어 있습니다.")
+                }
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    }
+
     render() {
         var state = this.state
 
         return (
             <div className="side-info">
-                <form>
-                    <div className="profile">
+                {
+                    this.props.isHost === false &&
+                    <div className="favorite-box">
+                        <button className="favorite-btn" onClick={this.handleFavoriteClick}>
+                            <em className={"favorite " + (state.isFavorite ? "on" : "")}/>
+                        </button>
+                    </div>
+                }
+
+                <div className="profile">
                     {
                         this.props.isAuthor === true ?
                         <div className="img-area">
                             {
+                                typeof state.host.profile === 'undefined' ?
+                                <div className="img-dummy"/>
+                                :
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
@@ -116,6 +188,9 @@ class SideMemberInfo extends Component {
                         <div className="img-area">
                             <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
                             {
+                                typeof state.host.profile === 'undefined' ?
+                                <div className="img-dummy"/>
+                                :
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
@@ -126,10 +201,16 @@ class SideMemberInfo extends Component {
                             </label>
                         </div>
                     }
-                    </div>
-                </form>
+                </div>
 
-                <strong className="name"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
+
+                {
+                    typeof state.host.nickname === 'undefined' || state.host.nickname === '' ?
+                    <div className="nickname-dummy"></div>
+                    :
+                    <strong className="nickname"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
+                }
+
 
                 {
                     this.props.isAuthor === true ?
