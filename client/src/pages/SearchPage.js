@@ -15,8 +15,6 @@ class SearchPage extends Component {
 
         var search = parse.searchToDict(props.location.search)
 
-        console.log(search)
-
         if (!("keyword" in search && !!search.keyword)) {
             alert("검색어를 입력해주세요.")
             window.location.href = URL.service.home;
@@ -26,8 +24,8 @@ class SearchPage extends Component {
     render() {
         return (
             <Fragment>
-                <Header search={this.state.search} history={this.props.history}></Header>
-                <Search search={this.state.search} history={this.props.history}></Search>
+                <Header search={this.state.search}></Header>
+                <Search search={this.state.search}></Search>
             </Fragment>
         )
     }

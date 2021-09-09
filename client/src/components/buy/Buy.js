@@ -66,13 +66,14 @@ class Buy extends Component {
             alert("동의해주세요.")
             return;
         }
-        const { IMP } = window;
-        IMP.init(iamport.IMP_PAYMENT_CODE)
         let userInfo = User.getInfo();
         if(!userInfo) {
             alert("로그인 후 구매하여 주세요.");
             window.location.href = URL.service.accounts.login;
         }
+
+        const { IMP } = window;
+        IMP.init(iamport.IMP_PAYMENT_CODE)
 
         IMP.request_pay({
             pg: 'html5_inicis',
@@ -166,32 +167,6 @@ class Buy extends Component {
                                 </tbody>
                             </table>
                         </div>
-
-                        <hr/>
-
-                        <h3 className="header"> 결제 방법  </h3>
-                        <div className="content">
-                            <div className="payment-group">
-                                <input type="radio" id="CARD"/>
-                                <label htmlFor="CARD" className="btn btn-outline btn-rounded">
-                                    <em id="payment-card"/>
-                                    신용카드
-                                </label>
-
-                                <input type="radio" id="ACCOUNT"/>
-                                <label htmlFor="ACCOUNT" className="btn btn-outline btn-rounded">
-                                    <em id="payment-account"/>
-                                    실시간 계좌이체
-                                </label>
-
-                                <input type="radio" id="PHONE"/>
-                                <label htmlFor="PHONE" className="btn btn-outline btn-rounded">
-                                    <em id="payment-phone"/>
-                                    휴대폰
-                                </label>
-                            </div>
-                        </div>
-
                     </div>
                     <div id="sum-box" className="buy-detail-box">
                         <div className="detail-price">
@@ -213,8 +188,8 @@ class Buy extends Component {
                         <hr/>
 
                         <div className="agree-txt">
-                            <input type="checkbox" checked={state.agree} onClick={this.handleAgree}/>
-                            주문 내용을 확인하였으며 결제에 동의합니다 (필수)
+                            <input type="checkbox" id="agree-payment" checked={state.agree} onClick={this.handleAgree}/>
+                            <label htmlFor="agree-payment">주문 내용을 확인하였으며 결제에 동의합니다 (필수)</label>
                         </div>
 
                         <button className="payment-btn btn btn-block btn-color-2" onClick={this.onPayment}>결제하기</button>

@@ -14,9 +14,19 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 import iamport from '../../config/iamport';
 
+import Cookies from 'js-cookie';
+
 class RegisterAuthorDetail extends Component {
+    user = User.getInfo();
     constructor(props) {
         super(props)
+
+
+        if(this.user.type === 1) {
+            alert("이미 작가로 등록하였습니다.")
+            window.location.href = URL.service.home
+        }
+
 
         this.state = {
             name: {val: "", msg: "", clear: false, class: "form-control"},
@@ -85,11 +95,18 @@ class RegisterAuthorDetail extends Component {
         e.preventDefault();
 
         if(state.name.msg !== "" || state.name.val === "") {
+            state.name.class = "form-control error";
+            state.name.msg = "이름을 입력해주세요."
+            this.setState(state)
             alert("이름을 올바르게 입력해주세요")
             return;
         }
 
+
         if(state.phone.msg !== "" || state.phone.val === "") {
+            state.phone.class = "form-control error";
+            state.phone.msg = "휴대폰 번호를 입력해주세요."
+            this.setState(state)
             alert("휴대폰 번호를 올바르게 입력해주세요")
             return;
         }
@@ -112,8 +129,19 @@ class RegisterAuthorDetail extends Component {
                         var params = {
                             type: 1,
                         }
+
                         const res = await API.sendPut(URL.api.member.update, params)
+
                         if(res.status === 200) {
+                            // TODO
+                            var token = res.data.token;
+                            if( token ) {
+                                Cookies.remove('RINGU_JWT');
+                                Cookies.remove('RINGU_JWT', { path: '/'});
+                                Cookies.remove('RINGU_JWT', { path: '/detail' });
+                                Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
+                            }
+
                             alert("인증이 완료되었습니다")
                             window.location.href = URL.service.author + User.getInfo().id
                         }
@@ -138,6 +166,7 @@ class RegisterAuthorDetail extends Component {
         let state = this.state
 
         return (
+            this.user.type === 0 &&
             <div id="register-author" className="page3">
                 <div className="title-wrap">
                     <h2 className="title">기본 인증 및 정보</h2>
@@ -152,7 +181,7 @@ class RegisterAuthorDetail extends Component {
                                 <input type="text" className={state.name.class} disabled={state.certificated} onChange={this.handleNameChange}/>
                                 {
                                     !!state.name.msg &&
-                                    <div className="error-msg">
+                                    <div className="error-wrap">
                                         <span>{state.name.msg}</span>
                                     </div>
                                 }
@@ -165,7 +194,7 @@ class RegisterAuthorDetail extends Component {
                                 <input type="number" className={state.phone.class} placeholder={"예) 01012345678"} disabled={state.certificated} onChange={this.handlePhoneChange}/>
                                 {
                                     !!state.phone.msg &&
-                                    <div className="error-msg">
+                                    <div className="error-wrap">
                                         <span>{state.phone.msg}</span>
                                     </div>
                                 }
@@ -193,7 +222,7 @@ class RegisterAuthorDetail extends Component {
                             </button>
                             {
                                 state.account.msg &&
-                                <div className="error-msg">
+                                <div className="error-wrap">
                                     <span>{state.account.msg}</span>
                                 </div>
                             }

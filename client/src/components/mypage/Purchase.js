@@ -36,7 +36,13 @@ class Purchase extends Component {
         var state = this.state;
 
         const res = await API.sendGet(URL.api.purchase.list)
-        var purchaseList = res.data.purchaseList
+
+        if(res.status === 200) {
+            var purchaseList = res.data.purchaseList
+            state.data.purchaseList = purchaseList
+            this.setState(state)
+        }
+        
 
         /*for(var i=0; i<purchaseList.length; i++) {
             purchaseList[i].book = {}
@@ -53,9 +59,8 @@ class Purchase extends Component {
 
             const author = await API.sendGet(URL.api.author.get + purchaseList[i].book.author_id)
             purchaseList[i].author = author.data.result;
+
         }*/
-        state.data.purchaseList = purchaseList
-        this.setState(state)
     }
     async downloadAction(book_detail_id){
         const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");

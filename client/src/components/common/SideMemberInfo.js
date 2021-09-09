@@ -20,7 +20,7 @@ class SideMemberInfo extends Component {
             favorites: 0,
             purchases: 0,
             carts: 0,
-            profile: "",
+            profile: "/blank.jpg",
             user: userInfo,
             host: {},
         }
@@ -34,7 +34,7 @@ class SideMemberInfo extends Component {
             var purchaseList = []
             var cartList = []
 
-            if (this.props.author === false) {
+            if (this.props.isAuthor === false) {
                 const fav1 = await API.sendGet(URL.api.favorite.book.list)
 
                 if(fav1.status === 200) {
@@ -59,10 +59,11 @@ class SideMemberInfo extends Component {
 
             var id;
 
-            // 작가 페이지
+            // 작가 페이지일 때 페이지 주인의 정보를 가져온다
             if("authorId" in this.props && this.props.authorId !== undefined) {
                 id = this.props.authorId
             }
+            // mypage일 때
             else {
                 id = state.user.id
             }
@@ -85,38 +86,41 @@ class SideMemberInfo extends Component {
         data.append('img', e.target.files[0])
 
         const res = await API.sendData(URL.api.member.upload_profile, data)
+        if (res.status === 200) {
+            const profileRes = await API.sendGet(URL.api.member.profile + state.host.id)
+            state.host.profile = profileRes.data.url;
 
-        const res2 = await API.sendGet(URL.api.member.profile+User.getInfo().id)
-        state.host.profile = res2.data.url;
-
-        this.setState(state)
-
+            this.setState(state)
+            alert("프로필 사진이 변경되었습니다.")
+        }
     }
 
     render() {
-        var state = this.state        
+        var state = this.state
 
         return (
             <div className="side-info">
                 <form>
-                    <div className="img-area">
-                        <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
-                        <label htmlFor="profile">
-                            {
-                                state.profile ?
-                                <img src={state.profile}/>
-                                :
-                                <img src="/blank.jpg"/>
-                            }
-
-                        </label>
-                    </div>
+                    {
+                        this.props.isAuthor === true ?
+                        <div className="img-area">
+                            <img src={state.host.profile}/>
+                        </div>
+                        :
+                        <div className="profile">
+                            <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
+                            <img src={state.host.profile}/>
+                            <label htmlFor="profile">                                
+                                <em/>
+                            </label>
+                        </div>
+                    }
                 </form>
 
                 <strong className="name"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
 
                 {
-                    this.props.author === true ?
+                    this.props.isAuthor === true ?
                     <div className="info-area">
                         <div className="author-box">
                             <div className="author-details">
@@ -129,18 +133,20 @@ class SideMemberInfo extends Component {
 
                             </div>
 
-                            <div className="btn-wrap-vert">
-                                <Link to={URL.service.register.book}>
-                                    <button className="btn btn-color-2 btn-block">
-                                        새 작품 등록하기
+                            {
+                                this.props.isHost &&
+                                <div className="btn-wrap-vert">
+                                    <Link to={URL.service.register.book}>
+                                        <button className="btn btn-color-2 btn-block">
+                                            새 작품 등록하기
+                                        </button>
+                                    </Link>
+
+                                    <button className="btn btn-outline btn-block">
+                                        책 양식 다운로드
                                     </button>
-                                </Link>
-
-                                <button className="btn btn-outline btn-block">
-                                    책 양식 다운로드
-                                </button>
-                            </div>
-
+                                </div>
+                            }
                         </div>
 
                     </div>
@@ -148,21 +154,21 @@ class SideMemberInfo extends Component {
                     <div className="info-area">
                         <div className="info-box">
                             <div><span className="info-header">찜목록</span></div>
-                            <div><span className="info-value">{this.state.favorites}</span></div>
+                            <div><span className="info-value">{state.favorites}</span></div>
                         </div>
 
                         <hr width="1" size="50" style={{margin:"auto 15px"}}/>
 
                         <div className="info-box">
                             <div><span className="info-header">구매건수</span></div>
-                            <div><span className="info-value">{this.state.purchases}</span></div>
+                            <div><span className="info-value">{state.purchases}</span></div>
                         </div>
 
                         <hr width="1" size="50" style={{margin:"auto 15px"}}/>
 
                         <div className="info-box">
                             <div><span className="info-header">장바구니</span></div>
-                            <div><span className="info-value">{this.state.carts}</span></div>
+                            <div><span className="info-value">{state.carts}</span></div>
                         </div>
                     </div>
 
@@ -175,7 +181,7 @@ class SideMemberInfo extends Component {
 }
 
 SideMemberInfo.propTypes = {
-    author: PropTypes.bool.isRequired,
+    isAuthor: PropTypes.bool.isRequired,
 }
 
 export default SideMemberInfo;

@@ -30,7 +30,8 @@ input {
     border:none;
 
     &:focus {
-      outline: 0;
+        transition: 0.6s;
+        border: 2px solid black !important;
     }
 }
 

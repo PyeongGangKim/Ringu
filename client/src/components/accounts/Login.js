@@ -69,11 +69,10 @@ class Login extends Component {
 
         API.sendPost(URL.api.auth.login, params).then(res => {
             var status = res.status;
-
             if(status === 200) {
                 var token = res.data.token;
                 if( token ) {
-                    Cookies.set('token', token, {expires: 7, path: '/'});
+                    Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
                 }
                 window.location.href = "/home";
             } else {
@@ -83,7 +82,7 @@ class Login extends Component {
     }
 
     handleFacebook = (response) => {
-        console.log(response)
+
     }
 
     render() {
