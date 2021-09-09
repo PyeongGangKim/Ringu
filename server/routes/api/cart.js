@@ -62,7 +62,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 "id",
                 "created_date_time",
                 [sequelize.literal("book_detail.id"), "book_detail_id"],
-                [sequelize.literal("book_detail.title"), "book_detail_title"],
+                [sequelize.literal("book_detail.title"), "title"],
 
                 // 임시
                 [sequelize.literal("`book_detail->book`.title"), "book_title"],
@@ -70,10 +70,9 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished"],
                 [sequelize.literal("`book_detail->book`.description"), "book_description"],
                 [sequelize.literal("`book_detail->book`.serialization_day"), "serialization_day"],
-                [sequelize.literal("`book_detail->book`.title"), "book_title"],
                 [sequelize.literal("`book_detail->book`.price"), "price"],
                 [sequelize.literal("`book_detail->book`.img"), "img"],
-                [sequelize.literal("`book_detail->book->author`.nickname"), "author_name"],
+                [sequelize.literal("`book_detail->book->author`.nickname"), "author"],
             ],
             where: {
                 member_id : member_id,

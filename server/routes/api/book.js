@@ -32,7 +32,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         let orderParams = [
             [sequelize.literal(order), orderBy]
         ]
-       
+
         if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {
             orderParams.push(['created_date_time', 'DESC'])
         }
@@ -125,9 +125,14 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             if(bookList[i].img == null || bookList[i].img[0] == 'h') continue;
             bookList[i].img = await imageLoad(bookList[i].img);
         }
-        res.status(StatusCodes.OK).json({
-            bookList: bookList,
-        });
+        if(bookList.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                bookList: bookList,
+            });
+        }
     }
     catch(err){
         console.error(err);
@@ -293,6 +298,11 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             ]
         });
 
+        for(var i = 0; i < detailList.length; i++){            
+            if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
+            detailList[i].dataValues.img = await imageLoad(detailList[i].dataValues.img);
+        }
+
         if(detailList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
@@ -301,7 +311,6 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 "detailList": detailList,
             });
         }
-
     }
     catch(err){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -520,13 +529,26 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
 router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
     const bookDetailId = req.params.bookDetailId;
     const type = req.query.type;
+
     try{
         const result = await book_detail.findOne({
             where : {
                 id : bookDetailId,
-            }
+            },
+            attributes : [
+                "file",
+                [sequelize.literal("book.preview"),"preview"],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: [],
+                }
+            ],
         });
-        const url = downloadFile(type, result.file);
+
+        const url = downloadFile(type, result.dataValues[type]);
 
         res.status(StatusCodes.OK).json({
             "url" : url,
