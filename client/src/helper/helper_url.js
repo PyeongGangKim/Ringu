@@ -65,11 +65,13 @@ module.exports = {
         },
         favorite: {
             author: {
+                get:            "/favorit_author/",
                 list:           "/favorite_author",
                 delete:         "/favorite_author/",
             },
             book: {
                 create:         "/favorite_book",
+                get:            "/favorite_book/",
                 list:           "/favorite_book",
                 delete:         "/favorite_book/",
                 duplicate:      "/favorite_book/duplicate",
