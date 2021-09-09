@@ -92,6 +92,20 @@ router.get('/book', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
+        res.status(StatusCodes.OK).json({
+            book_notification_list: book_notifications,
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
+router.get('/book/newNotiCnt', isLoggedIn, async (req, res, next) => {
+    let member_id = req.user.id;
+    try{
         const unread_cnt = await notification.count({
             where : {
                 member_id : member_id,
@@ -101,7 +115,6 @@ router.get('/book', isLoggedIn, async (req, res, next) => {
             }   
         });
         res.status(StatusCodes.OK).json({
-            book_notification_list: book_notifications,
             unread_count : unread_cnt
         });
     }
@@ -138,6 +151,21 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
+        res.status(StatusCodes.OK).json({
+            withdrawal_notification_list: withdrawal_notifications,
+        });
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
+router.get('/withdrawal/newNotiCnt', isLoggedIn, async (req, res, next) => {
+    let member_id = req.user.id;
+    try{
         const unread_cnt = await notification.count({
             where : {
                 member_id : member_id,
@@ -147,7 +175,6 @@ router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
             }   
         });
         res.status(StatusCodes.OK).json({
-            withdrawal_notification_list: withdrawal_notifications,
             unread_count : unread_cnt
         });
 
@@ -185,6 +212,20 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
                 ["created_date_time", "ASC"]
             ],
         });
+        res.status(StatusCodes.OK).json({
+            normal_notification_list : notice_notifications,
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
+router.get('/notice/newNotiCnt', isLoggedIn, async (req, res, next) => {
+    let member_id = req.user.id;
+    try{
         const unread_cnt = await notification.count({
             where : {
                 member_id : member_id,
@@ -194,7 +235,6 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
             }   
         });
         res.status(StatusCodes.OK).json({
-            normal_notification_list : notice_notifications,
             unread_count : unread_cnt
         });
     }

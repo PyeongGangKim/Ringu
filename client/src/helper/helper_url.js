@@ -98,7 +98,10 @@ module.exports = {
             getBookNotification:     "/notification/book",
             getNormalNotification:  "/notification/notice",
             getWithdrawalNotification: "/notification/withdrawal",
-            putReadNotification:    "/notification/"
+            putReadNotification:    "/notification/",
+            getBookNewNotiCount: "/notification/book/newNotiCnt",
+            getWithdrawalNewNotiCount: "/notification/withdrawal/newNotiCnt",
+            getNormalNewNotiCount: "/notification/notice/newNotiCnt",
         },
         payment: {
             create:             "/payment",

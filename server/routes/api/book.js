@@ -9,7 +9,7 @@ const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middl
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 
 
-router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능.
+router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
         let author_id = req.query.author_id;
         let category_id = req.query.category_id;
@@ -21,18 +21,25 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         })
         let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
         let orderBy = ("orderBy" in req.query && typeof req.query.orderBy !== undefined) ? req.query.orderBy : 'DESC';
-        let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [0,1] : [1];
 
-        var orderParams = [
+        let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [1] : [0,1];
+        let is_picked = ("is_picked" in req.query && req.query.is_picked) ? [1] : [0,1];
+        order = ("is_picked" in req.query && req.query.is_picked) ? "rank" : order;
+        orderBy = ("is_picked" in req.query && req.query.is_picked) ? "ASC" : orderBy;
+
+        //let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [0,1] : [1];
+
+        let orderParams = [
             [sequelize.literal(order), orderBy]
         ]
-
+       
         if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {
             orderParams.push(['created_date_time', 'DESC'])
         }
 
         const bookList = await book.findAll({
             attributes: [
+                "rank",
                 "id",
                 "price",
                 "img",
@@ -51,6 +58,9 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 status: 1,
                 is_approved : {
                     [Op.in] : is_approved
+                },
+                is_picked : {
+                    [Op.in] : is_picked
                 },
                 author_id : {
                     [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
@@ -334,7 +344,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             is_finished_serialization : is_finished_serialization,
             serialization_day: serialization_day,
         });
-        console.log(new_book);
+
         if(new_book.type == 2){//단행본 일때,
             const new_single_book = await book_detail.create({
                 title: new_book.title,
@@ -342,7 +352,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
                 page_number : page_number,
                 file : file,
             });
-            console.log(new_single_book);
+
             res.status(StatusCodes.CREATED).send("single_published_book created");
         }
         else{
@@ -370,7 +380,7 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
             file : file,
             round: round
         });
-        console.log(new_round_book);
+
         res.status(StatusCodes.CREATED).send("new round serialization_book created");
     }
     catch(err){
@@ -446,8 +456,6 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
     try {
         let book_id = req.body.book_id;
         let book_detail_id = req.body.book_detail_id;
-
-        console.log(req.body)
 
         var params = {
             "title": req.body.title,

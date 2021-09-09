@@ -12,7 +12,7 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
 
-class NotificationBody extends Component {
+class BookNotification extends Component {
     constructor(props){
         super(props)
         
@@ -24,15 +24,20 @@ class NotificationBody extends Component {
             }
         }
     }
-    componentDidUpdate(prevProps){
-        if(this.props.notificationList !== prevProps.notificationList){
-            let state = this.state;
-            state.data.notificationList = this.props.notificationList;
-            console.log(state.data.notificationList);
-            this.setState({
-                state
-            });
+    async componentDidMount() {
+        let state = this.state;
+        state.data.selectedNotiList.fill(false);
+        const noti_res = await API.sendGet(URL.api.notification.getBookNotification);
+        if(noti_res.status == 200){
+            state.data.notificationList = noti_res.data.book_notification_list;
+            this.setState(state);
         }
+    }
+
+    handleCheckBox(idx){
+        let state = this.state;
+        state.data.selectedNotiList[idx] = !state.data.selectedNotiList[idx];
+        this.setState(state);
     }
 
     handleSpanList(itemId){
@@ -67,10 +72,11 @@ class NotificationBody extends Component {
                 <div>
                     <ul>
                         {
-                            notificationList.map(item => {
+                            notificationList.map((item, idx) => {
                                 return(
                                     <div>
                                         <li key = {item.id}>
+                                            <input type="checkbox" onClick={() => this.handleCheckBox(idx)} checked = {this.state.data.selectedNotiList[idx]}/> 
                                             <button onClick = {()=> this.handleSpanList(item.id)}> {item.title} </button>
                                             <Moment format="MM월 DD일 HH:MM">{item.date}</Moment>
                                         </li>
@@ -92,4 +98,4 @@ class NotificationBody extends Component {
     }
 }
 
-export default NotificationBody;
+export default BookNotification;
