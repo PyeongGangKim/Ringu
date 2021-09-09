@@ -37,6 +37,8 @@ module.exports = {
             delete:           "/member",
         },
         cart: {
+            create:             "/cart",
+            duplicate:          "/cart/duplicate",
             list:               "/cart",
             delete:             "/cart/",
             clear:              "/cart/clear",
