@@ -33,6 +33,50 @@ class BookType2 extends Component {
         }
     }
 
+    handlePurchaseClick = async() => {
+        if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
+            this.props.history.push({
+                pathname: URL.service.buy.buy,
+                state: {
+                    purchaseList: [this.state.book]
+                }
+            })
+        }
+    }
+
+    handleCartClick = async() => {
+        var state = this.state;
+
+        try {
+            var params = {
+                book_detail_id: state.book.book_details[0].id,
+            }
+
+            const duplicate = await API.sendPost(URL.api.cart.duplicate, params)
+            console.log(duplicate)
+            if(duplicate.status === 200) {
+                const res = await API.sendPost(URL.api.cart.create, params)
+
+                if(res.status === 201) {
+                    if(window.confirm(`${this.state.book.title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
+                        this.props.history.push(URL.service.mypage.carts)
+                    }
+                }
+            }
+            else if(duplicate.status === 409) {
+                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.carts)
+                }                
+            } else {
+                alert("장바구니에 담지 못하였습니다.")
+            }
+        }
+        catch(err){
+            console.log(err.response)
+            console.err(err)
+        }
+    }
+
     onFavoriteClick = async(book) => {
         var state = this.state
 
@@ -196,7 +240,17 @@ class BookType2 extends Component {
 
         return (
             <div id="book" className="page3" >
-                
+                <div className="merchant-bar">
+                    <div className="merchant-box">
+                        <span className="title">{book.title}</span>
+                        <div className="payment-wrap">
+                            <span className="price">{parse.numberWithCommas(book.price)}원</span>
+                            <button className="btn btn-color-4" onClick={this.handleCartClick}> 장바구니 </button>
+                            <button className="btn btn-color-2" onClick={this.handlePurchaseClick}> 구매하기 </button>
+                        </div>
+                    </div>
+
+                </div>
                 <div className="book-content">
                     <div className="book-info">
                         <div className="book-thumbnail-box">
