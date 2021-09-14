@@ -62,7 +62,7 @@ class SignupDetail extends Component {
             state.email.btn = false;
             state.email.clear = false;
             state.email.class = "form-control error";
-            state.email.msg = "이메일을 형식이 유효하지 않습니다.";
+            state.email.msg = "이메일 형식이 유효하지 않습니다.";
         }
 
         this.setState(state);
