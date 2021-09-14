@@ -31,7 +31,10 @@ async function localVerify(email, password, done) {
                 status: 1,
             }
         });
-        if(exMember){
+        if(exMember && exMember.password === null && (exMember.kakao_id !== null || exMember.naver_id !== null || exMember.google_id !== null || exMember.facebook_id !== null)) {
+            done(null, false, {message: "SNS로 가입한 계정입니다."});
+        }
+        else if(exMember){
             const result = await bcrypt.compare(password, exMember.password);
             if(result){
                 done(null, exMember);
