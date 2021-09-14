@@ -175,7 +175,7 @@ class SideMemberInfo extends Component {
     }
 
     render() {
-        var state = this.state        
+        var state = this.state
 
         return (
             <div className="side-info">

@@ -18,7 +18,7 @@ class LeavePage extends Component {
                 <Header></Header>
                 <div id="wrap" style={{display:"flex"}}>
                   <div className="side">
-                    <SideMemberInfo author="false"/>
+                    <SideMemberInfo isAuthor={false}/>
                     <SideNav display1={display} path={this.props.location.pathname}/>
                   </div>
                   <Leave/>
