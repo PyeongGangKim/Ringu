@@ -93,28 +93,23 @@ class BookType1 extends Component {
     async componentDidMount() {
         var state = this.state;
 
-
         try {
             const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
             if(duplicate.status === 200) {
                 state.isFavorite = false;
-                this.setState(state)
             }
             else {
                 state.isFavorite = true;
-                this.setState(state)
             }
 
             let userInfo = User.getInfo();
             if (userInfo.id === state.book.author_id) {
                 state.author = true;
-                this.setState(state);
             }
             const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
 
             if(res1.status === 200) {
                 state.reviewList = res1.data.reviewList
-                this.setState(state)
             }
 
             var params = {
@@ -124,7 +119,6 @@ class BookType1 extends Component {
             const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
             if(res2.status === 200) {
                 state.detailList = res2.data.detailList
-                this.setState(state)
             }
 
             window.addEventListener('scroll', this.handleScroll)
@@ -277,8 +271,7 @@ class BookType1 extends Component {
                         </div>
 
                         <div className="book-detail-box">
-                            <span className="book-detail">저자 : {book.author_nickname}</span>
-                            <span className="book-detail">페이지수 : {book.page_number}</span>
+                            <span className="book-detail">{book.author_nickname}</span>
                         </div>
 
                         <h3 className="book-title">{book.title}</h3>
@@ -357,7 +350,7 @@ class BookType1 extends Component {
                                         <div className="author-profile">
                                             <Link to={URL.service.author + book.author_id}>
                                                 <div className="author-thumbnail-box">
-                                                    <img src="/blank.jpg" style={{width:"100px", height:"100px", textAlign:"center", borderRadius:"50%"}}/>
+                                                    <img src={!!state.book.author_profile ? state.book.author_profile : "/blank.jpg"}/>
                                                 </div>
 
                                                 <div className="btn btn-block btn-color-2 btn-rounded">작가 공간</div>

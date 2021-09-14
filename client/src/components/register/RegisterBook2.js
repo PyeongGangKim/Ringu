@@ -152,7 +152,7 @@ class RegisterBook2 extends Component {
                                     <span className="small"> (jpg, png 형식만 업로드 가능)</span>
                                 </h3>
                                 <input type="file" id="thumbnail" accept="image/*" onChange={this.handleThumbnailChange}/>
-                                <label for="thumbnail">
+                                <label htmlFor="thumbnail">
                                     <div className="thumbnail-box">
                                         {
                                             state.thumbnail.file ?
@@ -212,7 +212,7 @@ class RegisterBook2 extends Component {
                                 <input className="filename" value={state.preview.name}/>
                             </div>
                             <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
-                            <label for="preview">
+                            <label htmlFor="preview">
                                 <div className="btn btn-color-2 upload-btn">파일 업로드</div>
                             </label>
                             <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
@@ -223,7 +223,7 @@ class RegisterBook2 extends Component {
                                 <input className="filename" value={state.book.name}/>
                             </div>
                             <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
-                            <label for="book">
+                            <label htmlFor="book">
                                 <div className="btn btn-color-2 upload-btn">파일 업로드</div>
                             </label>
                             <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
@@ -231,9 +231,6 @@ class RegisterBook2 extends Component {
                     </div>
 
                     <div className="btn-wrap">
-                        <button className="btn btn-outline">
-                            임시저장
-                        </button>
                         <button className="btn btn-color-2" onClick={this.handleRegister}>
                             등록하기
                         </button>

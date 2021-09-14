@@ -30,8 +30,8 @@ class PasswordChange extends Component {
 
     handleOldPasswordChange = (evt) => {var state = this.state; state.data.oldPassword = evt.target.value; this.setState(state);}
     handleNewPasswordChange = (evt) => {
-        var state = this.state; 
-        state.data.newPassword = evt.target.value; 
+        var state = this.state;
+        state.data.newPassword = evt.target.value;
         let passRule = /^.*(?=^.{8,12}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/;
         if(!passRule.test(state.data.newPassword)){
             state.msg.newPassword = "비밀 번호가 조건에 맞지 않습니다.";
@@ -42,7 +42,7 @@ class PasswordChange extends Component {
             this.setState(state);
         }
         this.setState(state);
-        
+
     }
     handleNewPasswordCheckChange = (evt) => {var state = this.state; state.data.newPasswordCheck = evt.target.value; this.setState(state);}
 
@@ -51,8 +51,8 @@ class PasswordChange extends Component {
         var params = {
             password: state.data.oldPassword
         }
-        
-        
+
+
         if(state.data.newPassword !== state.data.newPasswordCheck) {
             alert("비밀번호가 일치하지 않습니다.")
             return;
@@ -132,9 +132,7 @@ class PasswordChange extends Component {
                         </div>
                     </div>
 
-                    <div className="btn-wrap">
-                        <div>
-                        </div>
+                    <div className="btn-wrap">                        
                         <button className="btn btn-color-2" onClick={this.handleClick}>
                                 변경하기
                         </button>

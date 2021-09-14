@@ -29,7 +29,7 @@ class Main extends Component {
         var state = this.state;
         var params = {
             member_id: User.getInfo() ? User.getInfo().id : null,
-            order: "sales",
+            is_picked: 1,
         }
 
 
@@ -88,7 +88,7 @@ class Main extends Component {
                     </div>*/}
 
                     <div className="title-wrap">
-                        <h2> 여행 </h2>
+                        <h2> Editor{`'`}s pick </h2>
                         {/*<span> 더보기 </span>*/}
                     </div>
 

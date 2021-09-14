@@ -108,10 +108,7 @@ class Leave extends Component {
                                 <input placeholder="RINGU에 가입하신 이메일을 적어주세요" value={state.email} onChange={this.handleEmailChange}/>
                             </div>
 
-                            <div className="btn-wrap">
-                                <button className="btn btn-outline btn-transparent">
-
-                                </button>
+                            <div className="btn-wrap">                                
                                 <button className="btn btn-color-2" onClick={this.handleSubmit}>
                                     탈퇴하기
                                 </button>

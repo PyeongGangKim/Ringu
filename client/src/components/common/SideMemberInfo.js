@@ -23,6 +23,8 @@ class SideMemberInfo extends Component {
             profile: "/blank.jpg",
             user: userInfo,
             host: {},
+            reviewTotal: 0,
+            reviewCount: 0,
             isFavorite: false,
         }
     }
@@ -34,6 +36,8 @@ class SideMemberInfo extends Component {
             var favoriteAuthorList = []
             var purchaseList = []
             var cartList = []
+            var reviewStats = {};
+            var user = {};
 
             if (this.props.isAuthor === false) {
                 const fav1 = await API.sendGet(URL.api.favorite.book.list)
@@ -55,6 +59,15 @@ class SideMemberInfo extends Component {
                 const carts = await API.sendGet(URL.api.cart.list)
                 if(carts.status === 200) {
                     cartList = carts.data.cartList
+                }
+            } else {
+                var params = {
+                    group: "author_id",
+                    id: this.props.authorId,
+                }
+                const res = await API.sendGet(URL.api.review.stats, params)
+                if(res.status === 200) {
+                    reviewStats = res.data.stats[0]
                 }
             }
 
@@ -79,14 +92,19 @@ class SideMemberInfo extends Component {
             }
 
             const userRes = await API.sendGet(URL.api.member.getById + id)
+            if(userRes.status === 200) {
+                user = userRes.data.user
+            }
             this.setState({
                 favorites: favoriteBookList.length + favoriteAuthorList.length,
                 purchases: purchaseList.length,
                 carts: cartList.length,
-                host: userRes.data.user,
+                host: user,
+                total: parseInt(reviewStats.total),
+                count: parseInt(reviewStats.count),
             })
         } catch(e) {
-            console.log(e)
+            console.error(e)
         }
     }
 
@@ -122,7 +140,7 @@ class SideMemberInfo extends Component {
                 }
 
             } catch(e) {
-                console.log(e)
+                console.error(e)
             }
         }
         // 즐찾 추가
@@ -151,7 +169,7 @@ class SideMemberInfo extends Component {
                     alert("이미 즐겨찾기되어 있습니다.")
                 }
             } catch(e) {
-                console.log(e)
+                console.error(e)
             }
         }
     }
@@ -217,8 +235,10 @@ class SideMemberInfo extends Component {
                     <div className="info-area">
                         <div className="author-box">
                             <div className="author-details">
-                                <span className="stars"> ★ ★ ★ ★ ★ </span>
-                                <span className="score"> 5.0 </span>
+                                <span className="stars">
+                                    {"★".repeat((state.total/state.count))}
+                                </span>
+                                <span className="score"> {(state.total/state.count) ? parseFloat((state.total/state.count)).toFixed(1) : parseFloat(0).toFixed(1)} </span>
                             </div>
 
 

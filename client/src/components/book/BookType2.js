@@ -75,7 +75,7 @@ class BookType2 extends Component {
         }
         catch(err){
             console.log(err.response)
-            console.err(err)
+            console.error(err)
         }
     }
 
@@ -153,18 +153,15 @@ class BookType2 extends Component {
             const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
             if(duplicate.status === 200) {
                 state.isFavorite = false;
-                this.setState(state)
             }
             else {
                 state.isFavorite = true;
-                this.setState(state)
             }
 
             const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
 
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
-                this.setState(state)
             }
 
             window.addEventListener('scroll', this.handleScroll)
@@ -178,7 +175,7 @@ class BookType2 extends Component {
             this.setState(state)
         }
         catch(e) {
-            console.err(e)
+            console.error(e)
         }
     }
 
@@ -281,8 +278,8 @@ class BookType2 extends Component {
                         </div>
 
                         <div className="book-detail-box">
-                            <span className="book-detail">저자 : {book.author_nickname}</span>
-                            <span className="book-detail">페이지수 : {book.page_number}페이지</span>
+                            <span className="book-detail">{book.author_nickname}</span>
+                            <span className="book-detail">총 {book.page_number}페이지</span>
                         </div>
 
                         <h3 className="book-title">{book.title}</h3>
@@ -320,7 +317,7 @@ class BookType2 extends Component {
                                         <div className="author-profile">
                                             <Link to={URL.service.author + book.author_id}>
                                                 <div className="author-thumbnail-box">
-                                                    <img src="/blank.jpg" style={{width:"100px", height:"100px", textAlign:"center", borderRadius:"50%"}}/>
+                                                    <img src={!!state.book.author_profile ? state.book.author_profile : "/blank.jpg"}/>
                                                 </div>
 
                                                 <div className="btn btn-block btn-color-2 btn-rounded">작가 공간</div>
@@ -355,7 +352,7 @@ class BookType2 extends Component {
                                         {
                                             state.reviewList.map(item => {
                                                 return (
-                                                    <div className="review-item" >
+                                                    <div className="review-item" key={item.id}>
                                                         <div style={{marginBottom: "15px"}}>
                                                             <span style={{fontSize:"12px"}}> {item.author} </span>
                                                             <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>

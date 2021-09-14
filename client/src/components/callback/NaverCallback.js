@@ -12,7 +12,6 @@ const NaverCallback = ({location, history, ...props}) => {
 
 
     const getUserProfile = async () => {
-        console.log(NAVER.BASE_URL+NAVER.CALLBACK_URL)
         try {
             var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.BASE_URL+NAVER.CALLBACK_URL);
 
@@ -58,20 +57,24 @@ const NaverCallback = ({location, history, ...props}) => {
                     }
                 } catch(err) {
                     var resp = err.response
-                    console.log(resp)
+                    if(resp.status === 401) { // 인증 실패
+                        alert("인증이 실패하였습니다")
+                        window.location.href = URL.service.accounts.login
+                    }
+                    if(resp.status === 409) { // 중복
+                        alert("이미 가입된 이메일입니다.")
+                        window.location.href = URL.service.accounts.login
+                    } else {
+                        console.log(resp.status)
+                        console.error(resp.data.message)
+                    }
                 }
             } else {
 
             }
         } catch(err){
-            var resp = err.response
-            if(resp.status === 401) { // 인증 실패
-                console.log(resp.data.message)
-            } else {
-                console.log(err)
-            }
+            console.log(err)
         }
-
     }
 
     return null;

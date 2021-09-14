@@ -130,7 +130,7 @@ class Buy extends Component {
                                         {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
                                         <p>파일형식:{"PDF"}</p>
                                     </div>
-                                    <span className="price"> {parse.numberWithCommas(item.price)}</span>
+                                    <span className="price"> {parse.numberWithCommas(item.price)} 원</span>
                                 </div>
                             )
                         })

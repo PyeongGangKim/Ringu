@@ -163,20 +163,20 @@ class Book extends Component {
                                 </div>
                                 <div className="review-info">
                                     <span className="star"> ★ </span>
-                                    <span> {book.mean_score ? parseFloat(book.mean_score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
+                                    <span> {book.score ? parseFloat(book.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
                                 </div>
                             </div>
                         </div>
                         {
                             isHost === true &&
                             <div className="btn-wrap">
+                                <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
                                 {
                                     status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
                                 }
                                 {
                                     status.includes('pub') && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
                                 }
-                                <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
                             </div>
                         }
                     </div>
