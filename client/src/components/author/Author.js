@@ -174,7 +174,6 @@ class Author extends Component {
 
         if(state.tabChange === true) {
             state.tabChange = false
-            this.setState(state);
             return;
         }
 
