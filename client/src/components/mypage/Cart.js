@@ -53,6 +53,12 @@ class Cart extends Component {
 
     handlePurchase = (type) => {
         var state = this.state;
+
+        if(type === 0 && Object.keys(state.data.selectedList).length === 0) {
+            alert("선택된 작품이 없습니다.")
+            return;
+        }
+
         var purchaseList = (type === 1) ? state.data.cartList : Object.values(state.data.selectedList);
 
         this.props.history.push({
@@ -106,6 +112,42 @@ class Cart extends Component {
         this.setState(state);
     }
 
+    handleDeleteSelected = async() => {
+        var state = this.state;
+        var cartList = state.data.cartList;
+
+        if(Object.keys(cartList).length === 0) {
+            alert("장바구니에 등록된 작품이 없습니다.")
+            return;
+        }
+
+        if(window.confirm("선택한 작품을 정말 삭제하시겠습니까?")) {
+            var selectedList = state.data.selectedList;
+            var deleteIds = [];
+
+            for(var key in selectedList) {
+                deleteIds.push(parseInt(key))
+            }
+            var params = {
+                id: deleteIds,
+            }
+
+            const res = await API.sendDelete(URL.api.cart.delete, params)
+            if(res.status === 200) {
+                for(var i=0; i < cartList.length; i++) {
+                    if(deleteIds.includes(cartList[i].id)) {
+                        cartList.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                state.data.cartList = cartList;
+                state.data.selectedList = [];
+                this.setState(state);
+            }
+        }
+    }
+
     isSelectedEmpty = evt => {
         if(this.state.selectedList.length === 0) {
             alert("선택된 상품이 없습니다.")
@@ -126,64 +168,71 @@ class Cart extends Component {
 
                 <hr/>
 
-                <div className="container">
-                    <div className="del-select-btn">
-                        <em> </em>
-                        선택작품 삭제
-
-                    </div>
-                </div>
-
-                <div id="cartlist-area">
-                    {
-                        cartList.map((item,i) => {
-                            return (
-                                <div key={item.id} className="cart-box">
-                                    <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
-                                    <img src={item.img}/>
-                                    <div className="details">
-                                        <h3 className="title">{item.title}</h3>
-                                        <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
-                                    </div>
-                                    <strong className="price"> {parse.numberWithCommas(item.price)} 원</strong>
-                                    <button className="del-btn" onClick={() => this.handleDelete(item.id)}><em className="del"/></button>
-                                </div>
-                            )
-                        })
-                    }
-
-                    <div className="summary">
-                        <div className="sum">
-                            <strong className="label"> 구매액: </strong>
-                            <span> {parse.numberWithCommas(state.data.price)} 원</span>
-                        </div>
-                        <div className="discount">
-                            <strong className="label"> 할인액: </strong>
-                            <span> {parse.numberWithCommas(state.data.discount)} 원</span>
-                        </div>
-                        <div className="total">
-                            <strong className="label"> 총금액: </strong>
-                            <span> {parse.numberWithCommas(state.data.total)} 원</span>
-                        </div>
-                    </div>
-                    <div className="button-wrap">
-                        <button className="cont-btn btn btn-rounded">
-                            <em className="left_arrow"/> 책 계속 둘러보기
+                {
+                    cartList.length > 0 ?
+                    <div className="container">
+                        <button className="del-select-btn" onClick={this.handleDeleteSelected}>
+                            <em> </em>
+                            선택작품 삭제
                         </button>
 
-                        <div className="buy-btn">
-                            <button className="btn selected" onClick={() => this.handlePurchase(0)}>
-                                선택 상품 구매
-                            </button>
+                        <div id="cartlist-area">
+                            {
+                                cartList.map((item,i) => {
+                                    return (
+                                        <div key={item.id} className="cart-box">
+                                            <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
+                                            <img src={item.img}/>
+                                            <div className="details">
+                                                <h3 className="title">{item.title}</h3>
+                                                <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
+                                            </div>
+                                            <strong className="price"> {parse.numberWithCommas(item.price)} 원</strong>
+                                            <button className="del-btn" onClick={() => this.handleDelete(item.id)}><em className="del"/></button>
+                                        </div>
+                                    )
+                                })
+                            }
 
-                            <button className="btn all" onClick={() => this.handlePurchase(1)}>
-                                전체 상품 구매
-                            </button>
+                            <div className="summary">
+                                <div className="sum">
+                                    <strong className="label"> 구매액: </strong>
+                                    <span> {parse.numberWithCommas(state.data.price)} 원</span>
+                                </div>
+                                <div className="discount">
+                                    <strong className="label"> 할인액: </strong>
+                                    <span> {parse.numberWithCommas(state.data.discount)} 원</span>
+                                </div>
+                                <div className="total">
+                                    <strong className="label"> 총금액: </strong>
+                                    <span> {parse.numberWithCommas(state.data.total)} 원</span>
+                                </div>
+                            </div>
+                            <div className="button-wrap">
+                                {/*<button className="cont-btn btn btn-rounded" onClick={this.handleReturn}>
+                                    <em className="left_arrow"/> 책 계속 둘러보기
+                                </button>*/}
 
+                                <div className="buy-btn">
+                                    <button className="btn selected" onClick={() => this.handlePurchase(0)}>
+                                        선택 상품 구매
+                                    </button>
+
+                                    <button className="btn all" onClick={() => this.handlePurchase(1)}>
+                                        전체 상품 구매
+                                    </button>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                </div>
+                    :
+                    <div className="container">
+                        <div className="no-content">
+                            장바구니에 담긴 작품이 없습니다.
+                        </div>
+                    </div>
+                }
             </div>
         )
     }
