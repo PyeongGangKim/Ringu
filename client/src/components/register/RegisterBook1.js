@@ -219,9 +219,6 @@ class RegisterBook1 extends Component {
                     </div>
 
                     <div className="btn-wrap">
-                        <button className="btn btn-outline">
-                            임시저장
-                        </button>
                         <button className="btn btn-color-2" onClick={this.handleRegister}>
                             등록하기
                         </button>
