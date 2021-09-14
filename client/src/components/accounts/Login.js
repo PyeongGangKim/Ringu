@@ -75,6 +75,8 @@ class Login extends Component {
                     Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
                 }
                 window.location.href = "/home";
+            } else if (status === 400){
+                alert(res.data.message);
             } else {
                 alert('회원정보가 일치하지 않습니다.');
             }
