@@ -89,6 +89,7 @@ module.exports = {
             getByBook:          "/review/book/",
             register:           "/review",
             duplicate:          "/review/duplicate",
+            stats:              "/review/stats",
         },
         register: {
             book:               "/book",
