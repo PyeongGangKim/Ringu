@@ -66,36 +66,47 @@ class FavBook extends Component {
 
                 <hr/>
 
-                <div className="container">
-                    <div id="favbooklist-area" className="booklist-area">
-                        <ul>
-                            {
-                                favoriteList.map(item => {
-                                    var status = ""
-                                    if (item.type === 2) {
-                                        status = "pub"
-                                    }
-                                    else if (item.is_finished) {
-                                        status = "ser-ed"
-                                    }
-                                    else {
-                                        status = "ser"
-                                    }
-                                    return (
-                                        <Book
-                                            key={item.id}
-                                            book = {item}
-                                            status = {status}
-                                            handleUpdate = {this.handleDelete}
-                                            favorite
-                                            isFavorite
-                                        />
-                                    )
-                                })
-                            }
-                        </ul>
+                {
+                    favoriteList.length > 0 ?
+                    <div className="container">
+                        <div id="favbooklist-area" className="booklist-area">
+                            <ul>
+                                {
+                                    favoriteList.map(item => {
+                                        var status = ""
+                                        if (item.type === 2) {
+                                            status = "pub"
+                                        }
+                                        else if (item.is_finished) {
+                                            status = "ser-ed"
+                                        }
+                                        else {
+                                            status = "ser"
+                                        }
+                                        return (
+                                            <Book
+                                                key={item.id}
+                                                book = {item}
+                                                status = {status}
+                                                handleUpdate = {this.handleDelete}
+                                                favorite
+                                                isFavorite
+                                            />
+                                        )
+                                    })
+                                }
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                    :
+                    <div className="container">
+                        <div className="no-content">
+                            찜한 작품이 없습니다.
+                        </div>
+                    </div>
+                }
+
+
             </div>
         )
     }
