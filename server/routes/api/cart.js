@@ -144,8 +144,8 @@ router.put('/clear', isLoggedIn, async (req, res, next) => {
     }
 });
 
-router.delete('/:cartId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
-    var id = req.params.cartId;
+router.delete('/', isLoggedIn, async (req, res, next) => {
+    var id = req.query.id;
 
     try{
         await cart.destroy({

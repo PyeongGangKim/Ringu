@@ -126,7 +126,6 @@ router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크
                 email: email
             }
         });
-        console.log(result);
         if(result){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "Duplicate",
@@ -171,7 +170,6 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
 //naver login
 router.get('/naver', passport.authenticate('naver', {session: false}),
     function(req, res) {
-        console.log('naver')
         const token = jwt.sign({
             id: req.user.id,
             type: req.user.type,
