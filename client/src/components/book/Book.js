@@ -163,7 +163,7 @@ class Book extends Component {
                                 </div>
                                 <div className="review-info">
                                     <span className="star"> ★ </span>
-                                    <span> {book.mean_score ? parseFloat(book.mean_score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
+                                    <span> {book.score ? parseFloat(book.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
                                 </div>
                             </div>
                         </div>
