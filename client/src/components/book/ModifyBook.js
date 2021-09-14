@@ -275,11 +275,11 @@ class ModifyBook extends Component {
                     </div>
 
                     <div className="btn-wrap">
-                        <button className="btn btn-outline" onClick={() => this.handleDelete()}>
-                            삭제하기
-                        </button>
                         <button className="btn btn-color-2" onClick={() => this.handleModify(state.bookDetail.id)}>
                             수정하기
+                        </button>
+                        <button className="btn btn-outline" onClick={() => this.handleDelete()}>
+                            삭제하기
                         </button>
                     </div>
                 </div>
