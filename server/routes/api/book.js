@@ -166,6 +166,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 [sequelize.literal("author.id"), "author_id"],
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("author.description"), "author_description"],
+                [sequelize.literal("author.profile"), "author_profile"],
                 [sequelize.literal("category.name"), "category"],
                 [sequelize.literal("book_details.page_number"),"page_count"],
                 [sequelize.literal("book_details.file"),"file"],
@@ -241,6 +242,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            book_detail_info.dataValues.author_profile = await imageLoad(book_detail_info.dataValues.author_profile);
             book_detail_info.img = await imageLoad(book_detail_info.img);
             res.status(StatusCodes.OK).json({
                 "book": book_detail_info,
@@ -298,7 +300,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             ]
         });
 
-        for(var i = 0; i < detailList.length; i++){            
+        for(var i = 0; i < detailList.length; i++){
             if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
             detailList[i].dataValues.img = await imageLoad(detailList[i].dataValues.img);
         }
