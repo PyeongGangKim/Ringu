@@ -84,19 +84,34 @@ class Author extends Component {
                     return book.type === 1
                 })
 
-                state.bookList['ser'] = serialList.filter(book => {
+                var serList = serialList.filter(book => {
                     return book.is_finished_serialization === 0
                 })
 
-                state.bookList['ser-ed'] = serialList.filter(book => {
+                if(serList.length !== 0) {
+                    state.bookList['ser'] = serList
+                }
+
+                var seredList = serialList.filter(book => {
                     return book.is_finished_serialization === 1
                 })
 
-                state.bookList['pub'] = bookList.filter(book => {
+                if(seredList.length !== 0) {
+                    state.bookList['ser-ed'] = seredList
+                }
+
+                var pubList = bookList.filter(book => {
                     return book.type === 2
                 })
 
-                state.bookList['wait'] = waitingList;
+                if(pubList.length !== 0) {
+                    state.bookList['pub'] = pubList
+                }
+
+                if(waitingList.length !== 0) {
+                    state.bookList['wait'] = pubList
+                }
+
                 this.setState(state)
             }
 
@@ -383,18 +398,16 @@ class Author extends Component {
                             <div className="inner-header">
                                 소개
                                 {
-                                    this.props.isHost === true &&
-                                    (
-                                        state.modify === true ?
-                                        <span className="small" onClick={this.handleCompleteClick}>
-                                            <em/>완료
-                                        </span>
-                                        :
-                                        <span className="small" onClick={this.handleModifyClick}>
-                                            <em/>수정
-                                        </span>
-                                    )
+                                    (this.props.isHost === true && state.modify === true) ?
+                                    <span className="small" onClick={this.handleCompleteClick}>
+                                        <em/>완료
+                                    </span>
+                                    :
+                                    <span className="small" onClick={this.handleModifyClick}>
+                                        <em/>수정
+                                    </span>
                                 }
+
                             </div>
                             <div className="inner-content">
                                 {
@@ -414,15 +427,16 @@ class Author extends Component {
                                     <div className={this.state.active === 'ser' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser')}> 연재중 </div>
                                     <div className={this.state.active === 'ser-ed' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser-ed')}> 연재완료 </div>
                                     <div className={this.state.active === 'pub' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('pub')}> 단행본</div>
-                                    {
-                                        this.props.isHost === true &&
-                                        <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 승인 대기 중</div>
-                                    }
-
+                                    <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 승인 대기 중</div>
                                 </div>
                             </div>
                             <div className="inner-content">
                                 {
+                                    Object.keys(bookList).length === 0 || (state.active !== 'a' && !(state.active in bookList)) ?
+                                    <div className="no-content">
+                                        등록된 작품이 없습니다.
+                                    </div>
+                                    :
                                     Object.keys(bookList).map((status, n) => {
                                         return (
                                             (bookList[status].length !== 0 && (state.active === 'a' || state.active === status)) &&
