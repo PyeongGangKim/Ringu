@@ -67,14 +67,14 @@
     #buy-detail-area {
         display: flex;
         justify-content: space-between;
-        height: 530px;
+        height: 330px;
 
         #detail-box {
-            width: 790px;
+            width: 750px;
         }
 
         #sum-box {
-            width: 460px;
+            width: 500px;
         }
 
         .header {
@@ -200,7 +200,7 @@
             dl {
                 position: relative;
                 font-weight: 700;
-                margin-bottom: 40px;
+                margin-bottom: 20px;
 
                 &:after {
                     content: '';
@@ -224,7 +224,7 @@
                 }
             }
             .total {
-                margin-top: 125px;
+                margin-top: 40px;
 
                 dd {
                     font-size: 35px;
@@ -234,8 +234,8 @@
 
         .agree-txt {
             font-size: 15px;
-            margin-top: 120px;
-            margin-bottom: 30px;
+            margin-top: 30px;
+            margin-bottom: 20px;
             position: relative;
             padding-left: 30px;
 
