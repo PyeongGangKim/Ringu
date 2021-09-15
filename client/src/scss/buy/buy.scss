@@ -15,7 +15,7 @@
 
         .header {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 20px;
         }
 
@@ -27,6 +27,7 @@
             padding: 20px 0 30px 0;
 
             .img-box {
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
                 position: relative;
                 width: 230px;
                 height: 140px;
@@ -40,24 +41,38 @@
                 }
             }
 
-            .details {
+            .product {
+                position: relative;
+
+                .detail {
+                    position: absolute;
+                    bottom: 0;
+
+                    p {
+                        line-height: 25px;
+                        font-size: 14px;
+                    }
+                }
+
                 .title {
                     display: block;
                     font-size: 18px;
-                    font-weight: 700;
-                    margin-bottom: 20px;
+                    font-weight: 600;
+                    margin-bottom: 5px;
                 }
 
-                p {
-                    line-height: 25px;
-                    font-size: 15px;
+                .subtitle {
+                    color: var(--lightgray);
+                    font-weight: 500;
+                    font-size: 14px;
+                    margin: 0;
                 }
             }
 
             .price {
                 position: absolute;
                 font-size: 24px;
-                font-weight: 700;
+                font-weight: 600;
                 right: 30px;
                 bottom: 30px;
             }
@@ -79,7 +94,7 @@
 
         .header {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 600;
             padding-top: 20px;
         }
 
@@ -118,7 +133,7 @@
 
                     button {
                         font-size: 15px;
-                        font-weight: 700;
+                        font-weight: 600;
                     }
 
                     input {
@@ -199,7 +214,7 @@
 
             dl {
                 position: relative;
-                font-weight: 700;
+                font-weight: 600;
                 margin-bottom: 20px;
 
                 &:after {
@@ -282,7 +297,7 @@
 
         .buy-title {
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .buy-content {
@@ -297,7 +312,7 @@
 
     .buy-price {
         font-size: 18px;
-        font-weight: 700;
+        font-weight: 600;
         position:absolute;
         right: 50px;
         bottom: 20px;
@@ -318,7 +333,7 @@
 
         .check-text {
             vertical-align: middle;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 12px;
         }
     }
@@ -347,7 +362,7 @@
         margin: 20px 60px;
         .btn {
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 600;
             margin-right: 20px;
             padding: 8px 30px;
             img {
@@ -389,7 +404,7 @@
             vertical-align: middle;
 
             .value {
-                font-weight: 700;
+                font-weight: 600;
                 position:absolute;
                 right: 0px;
             }
@@ -408,7 +423,7 @@
 
             .value {
                 font-size: 24px;
-                font-weight: 700;
+                font-weight: 600;
                 position:absolute;
                 right: 0px;
             }
@@ -429,7 +444,7 @@
             }
 
             .check-text {
-                font-weight: 700;
+                font-weight: 600;
                 font-size: 12px;
             }
         }
