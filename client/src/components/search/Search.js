@@ -59,13 +59,14 @@ class Search extends Component {
             }
 
             if (this.search.has('category')) {
-                state.selected = [... new Set(this.search.get('category').split('|'))]
+                var selectedCategories = this.search.get('category').split('|').map((x) => parseInt(x))
+                state.selected = new Set(selectedCategories);
+                state.newSelected = new Set(selectedCategories);
             }
 
             const categoryRes = await API.sendGet(URL.api.category.list)
             if(categoryRes.status === 200){
                 state.categoryList = categoryRes.data.categoryList
-                this.setState(state)
             }
 
             this.setState(state)
@@ -78,14 +79,12 @@ class Search extends Component {
 
     handleDisplayClick = (value) => {
         var state = this.state;
-
         state.display = value;
         this.setState(state)
     }
 
     handleCloseClick = () => {
         var state = this.state;
-
         state.newSelected = state.selected;
         state.display = 0;
         this.setState(state)
@@ -162,7 +161,7 @@ class Search extends Component {
         }
 
         var categories = Array.from(state.selected)
-        if (state.selected.length != 0){
+        if (categories.length !== 0){
             search = search + `&category=${encodeURIComponent(Array.from(state.selected).join('|'))}`
         }
 
@@ -172,7 +171,6 @@ class Search extends Component {
     render() {
         var searchList = this.state.searchList
         var state = this.state;
-
 
         return (
             <div id="wrap">
