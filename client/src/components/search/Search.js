@@ -128,6 +128,7 @@ class Search extends Component {
         var state = this.state;
 
         var params = {
+            is_approved: 1,
             keyword: state.keyword,
         }
 
