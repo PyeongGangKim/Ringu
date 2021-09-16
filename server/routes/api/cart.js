@@ -26,23 +26,27 @@ router.post('/', isLoggedIn,async (req, res, next) => {
     }
 });
 
-router.post('/duplicate', isLoggedIn,async (req, res, next) => {
+router.get('/duplicate', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
     var book_detail_id = req.body.book_detail_id;
 
     try{
-        const duplicate_result = await cart.findOne({
+        const result = await cart.findOne({
             where: {
                 member_id : member_id,
                 book_detail_id : book_detail_id,
                 status : 1,
             }
         })
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
+        if(result){
+            res.status(StatusCodes.OK).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){

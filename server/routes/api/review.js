@@ -60,11 +60,11 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
         console.error(err);
     }
 });
-router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
     let member_id = req.user.id;
     let book_detail_id = req.body.book_detail_id;
     try{
-        const duplicate_result = await review.findOne({
+        const result = await review.findOne({
             where : {
                 member_id : member_id,
                 book_detail_id : book_detail_id,
@@ -72,19 +72,22 @@ router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
             }
         });
 
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
+        if(result){
+            res.status(StatusCodes.OK).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
@@ -204,7 +207,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
     }
 });
 
-router.get('/stats', async (req, res, next) => {    
+router.get('/stats', async (req, res, next) => {
     var id = req.body.id;
     var group = req.body.group;
 

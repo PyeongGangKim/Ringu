@@ -12,8 +12,6 @@ const { isLoggedIn } = require("../../middlewares/auth");
 
 
 router.post('/', isLoggedIn, async (req, res, next) => {
-    console.log(3333333)
-
     var member_id = req.user.id;
     var author_id = req.body.author_id;
     const t = await sequelize.transaction();
@@ -61,21 +59,26 @@ router.post('/duplicate', isLoggedIn, async (req, res, next) => {
     var author_id = req.body.author_id;
 
     try{
-        const duplicate_result = await favorite_author.findOne({
+        const result = await favorite_author.findOne({
             where: {
                 member_id : member_id,
                 author_id : author_id,
                 status : 1,
             }
         });
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
+        if(result !== null){
+            res.status(StatusCodes.OK).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
