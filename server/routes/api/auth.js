@@ -94,12 +94,13 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
     let nickname = req.body.nickname;
 
     try{
-        const result = await member.findAll({
+        const result = await member.findOne({
             where: {
                 nickname : nickname,
             }
         });
-        if(result.length != 0){
+        
+        if(result !== null){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "Duplicate",
             });
@@ -117,8 +118,8 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
     }
 });
 
-router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크하는 api
-    var email = req.query.email;
+router.post('/email/duplicate', async(req, res, next) => {//email duplicate체크하는 api
+    var email = req.body.email;
 
     try{
         const result = await member.findOne({
@@ -126,7 +127,8 @@ router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크
                 email: email
             }
         });
-        if(result){
+
+        if(result !== null){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "Duplicate",
             });
