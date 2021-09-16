@@ -62,7 +62,6 @@ class Author extends Component {
         try {
             var params = {
                 author_id: this.props.authorId,
-                is_approved: true,
             }
 
             const res = await API.sendGet(URL.api.book.list, params = params)
@@ -109,7 +108,7 @@ class Author extends Component {
                 }
 
                 if(waitingList.length !== 0) {
-                    state.bookList['wait'] = pubList
+                    state.bookList['wait'] = waitingList
                 }
 
                 this.setState(state)
