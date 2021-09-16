@@ -22,7 +22,9 @@ module.exports = {
                 naver:          "/auth/naver",
                 kakao:          "/auth/kakao",
             },
-            verify_nickname:  "/auth/nickname/duplicate",
+            nickname:  {
+                duplicate:      "/auth/nickname/duplicate",
+            },
         },
         member: {
             get:              "/member",
