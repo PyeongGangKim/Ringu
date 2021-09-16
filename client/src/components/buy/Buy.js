@@ -123,12 +123,15 @@ class Buy extends Component {
                                     <div className="img-box">
                                         <img src={item.img}/>
                                     </div>
-                                    <div className="details">
-                                        <strong className="title">(책 제목:{item.title})</strong>
-                                        <p>저자:{item.author}</p>
-                                        <p>출간방식:{item.type === 2 ? "단행본" : "연재본"}</p>
-                                        {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
-                                        <p>파일형식:{"PDF"}</p>
+                                    <div className="product">
+                                        <strong className="title">(책 제목:{item.book_title})</strong>
+                                        <span className="subtitle">{item.title}</span>
+                                        <div className="detail">
+                                            <p>저자:{item.author}</p>
+                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"}</p>
+                                            {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
+                                            <p>파일형식:{"PDF"}</p>
+                                        </div>
                                     </div>
                                     <span className="price"> {parse.numberWithCommas(item.price)} 원</span>
                                 </div>

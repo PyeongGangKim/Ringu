@@ -182,9 +182,13 @@ class Cart extends Component {
                                     return (
                                         <div key={item.id} className="cart-box">
                                             <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
-                                            <img src={item.img}/>
+                                            <Link to={URL.service.book.book + item.id} title="상세 페이지로 이동합니다">
+                                                <img src={item.img}/>
+                                            </Link>
                                             <div className="details">
-                                                <h3 className="title">{item.title}</h3>
+                                                <Link to={URL.service.book.book + item.id}  title="상세 페이지로 이동합니다">
+                                                    <h3 className="title">{item.title}</h3>
+                                                </Link>
                                                 <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
                                             </div>
                                             <strong className="price"> {parse.numberWithCommas(item.price)} 원</strong>
