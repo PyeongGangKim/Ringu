@@ -97,9 +97,10 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
         const result = await member.findOne({
             where: {
                 nickname : nickname,
+                status: 1,
             }
         });
-        
+
         if(result !== null){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "Duplicate",
@@ -124,7 +125,8 @@ router.post('/email/duplicate', async(req, res, next) => {//email duplicate체�
     try{
         const result = await member.findOne({
             where : {
-                email: email
+                email: email,
+                status: 1,
             }
         });
 
@@ -186,20 +188,6 @@ router.get('/naver', passport.authenticate('naver', {session: false}),
     }
 )
 
-
-
-/*router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
-  function (req, res) {
-      const token = jwt.sign({
-           id: req.user.id
-          }, secretKey, {
-              expiresIn: '12h',
-              issuer: 'ringu',
-          });
-      res.cookie('token', token).redirect(redirect_url);
-  },
-);*/
-
 router.get('/naver/callback', function(req, res) {
     try {
         var token = req.query.token;
@@ -230,10 +218,20 @@ router.get('/naver/callback', function(req, res) {
 
 })
 //kakao login
-router.get('/kakao', passport.authenticate('kakao', {
-    session: false,
-    scope: ['account_email'],
-  }),
+router.get('/kakao', passport.authenticate('kakao', {session: false}),
+    function(req, res) {
+        const token = jwt.sign({
+            id: req.user.id,
+            type: req.user.type,
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
+        });
+
+        res.status(StatusCodes.OK).json({
+            token: token
+        });
+    }
 );
 
 router.get( '/kakao/callback',passport.authenticate('kakao', { failureRedirect: '/auth/login', session: false }),
