@@ -13,6 +13,8 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+import Modal from '../../components/modal/Modal';
+
 // type 1: 연재본
 // type 2: 단행본
 class RegisterBook extends Component {
@@ -50,6 +52,22 @@ class RegisterBook extends Component {
             book: {name:"", file:null},
             tmp: null,
             day: {val: "", class: ""},
+            modal: false,
+            author: User.getInfo(),
+        }
+    }
+
+    async componentDidMount() {
+        var state = this.state;
+
+        try {
+            const userRes = await API.sendGet(URL.api.member.getById + state.author.id)
+            if(userRes.status === 200) {
+                state.author = userRes.data.user
+                this.setState(state)
+            }
+        } catch (e) {
+            console.log(e)
         }
     }
 
@@ -136,9 +154,16 @@ class RegisterBook extends Component {
         this.setState(state)
     }
 
-    handleDayChange = (evt) => {
+    handleDayChange = (value) => {
         var state = this.state
-        state.day.val = evt.value;
+
+        state.day.val = Object.entries(value)
+            .sort(([, a], [, b]) => a.value - b.value)
+            .map(item => {return item[1].label})
+            .join('')
+
+
+
         this.setState(state)
     }
 
@@ -151,9 +176,10 @@ class RegisterBook extends Component {
             this.setState(state)
             return;
         }
+
         if(this.type === 1) {
             if(!state.day.val) {
-                alert('페이지 수를 입력해주세요')
+                alert('연재 주기를 입력해주세요')
                 state.day.class = "textbox error";
                 this.setState(state)
                 return;
@@ -174,11 +200,13 @@ class RegisterBook extends Component {
             return;
         }
 
-        if(!state.contents.val) {
-            alert('목차를 입력해주세요')
-            state.contents.class = "error";
-            this.setState(state)
-            return;
+        if(this.type === 2) {
+            if(!state.contents.val) {
+                alert('목차를 입력해주세요')
+                state.contents.class = "error";
+                this.setState(state)
+                return;
+            }
         }
 
         if(!state.bookDescription.val) {
@@ -202,14 +230,14 @@ class RegisterBook extends Component {
             data.append("file", state.book.file)
             data.append("page_count", state.page_count.val)
         } else {
-            data.append("serialization", state.day.val)
+            data.append("serialization_day", state.day.val)
         }
-        console.log(state.day.val)
 
         try {
             const res = await API.sendData(URL.api.register.book, data)
-            if(res.status === 200) {
-
+            if(res.status === 201) {
+                state.modal = true;
+                this.setState(state);
             }
         } catch(e) {
             console.error(e)
@@ -231,12 +259,34 @@ class RegisterBook extends Component {
             }),
             valueContainer: (styles, {  }) => ({
                 ...styles,
-                height: '40px',
+                height: '36px',
             }),
         }
 
         return (
             <div id="register-book" className="page3">
+                {
+                    state.modal === true &&
+                    <Modal
+                        overlay={true}
+                    >
+                        <div className="modal register">
+                            <div className="header">
+                                <span className="em">{state.author.nickname}</span>작가님의 새 작품이 등록되셨습니다!
+                            </div>
+                            <div className="content">
+                                <p>등록일 기준으로 2~3일 내에 <strong>작품승인</strong>이 완료되며</p>
+                                <p>불건전한 내용일시 <strong>임의삭제</strong>될 수 있다는 점을 말씀드립니다.</p>
+                            </div>
+
+                            <Link to={URL.service.author + state.author.id}>
+                                <button className="btn btn-block btn-color-2">
+                                    완료
+                                </button>
+                            </Link>
+                        </div>
+                    </Modal>
+                }
                 <div className="title-wrap">
                     <h2 className="title">새 작품 등록하기</h2>
                 </div>
@@ -282,7 +332,7 @@ class RegisterBook extends Component {
                                     </h3>
                                         <Select
                                             options={this.dayOptions}
-                                            onChange={evt => this.handleDayChange(evt)}
+                                            onChange={value => this.handleDayChange(value)}
                                             styles={selectStyles}
                                             isMulti
                                             isSearchable={false}
@@ -354,6 +404,9 @@ class RegisterBook extends Component {
                     <div className="btn-wrap">
                         <button className="btn btn-color-2" onClick={this.handleRegister}>
                             등록하기
+                        </button>
+                        <button className="btn ">
+                            취소하기
                         </button>
                     </div>
                 </div>

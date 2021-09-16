@@ -154,4 +154,21 @@
             }
         }
     }
+
+
+}
+.modal.register {
+    .header {
+        .em {
+            font-weight: 600;
+            color: var(--color-1);
+        }
+    }
+    .content {
+        margin-bottom: 50px;
+    }
+    button {        
+        width: 150px;
+        margin: auto;
+    }
 }
