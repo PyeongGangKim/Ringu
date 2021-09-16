@@ -30,7 +30,14 @@ input {
     border:none;
 
     &:focus {
-        transition: 0.6s;
+        transition: 0.5s;
+        border: 2px solid black !important;
+    }
+}
+
+textarea {
+    &:focus {
+        transition: 0.5s;
         border: 2px solid black !important;
     }
 }
@@ -66,7 +73,7 @@ input {
     input {
         font-size: 15px;
         background-color: white;
-        border: 1px solid #bbb;
+        border: 2px solid #ddd;
         border-radius: 4px;
         padding: 10px 20px;
 
