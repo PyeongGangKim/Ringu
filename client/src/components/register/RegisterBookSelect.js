@@ -42,7 +42,6 @@ class RegisterBookSelect extends Component {
 
     handleNext = () => {
         var state = this.state;
-        console.log('next')
         this.props.history.push({
             pathname: URL.service.register.book + state.type,
             state: {
@@ -70,6 +69,13 @@ class RegisterBookSelect extends Component {
     render() {
         let state = this.state
 
+        const selectStyles = {
+            valueContainer: (styles, {  }) => ({
+                ...styles,
+                height: '50px',
+            }),
+        }
+
         return (
             <div id="register-book" className="page3">
                 <div className="title-wrap">
@@ -88,7 +94,8 @@ class RegisterBookSelect extends Component {
                                     options={state.categoryOptions}
                                     onChange={evt => this.handleCategoryChange(evt)}
                                     isSearchable={false}
-                                    placeholder={""}/>
+                                    placeholder={""}
+                                    styles={selectStyles}/>
                             </div>
 
                             <div className="select-box">
@@ -99,7 +106,8 @@ class RegisterBookSelect extends Component {
                                     options={state.typeOptions}
                                     onChange={evt => this.handleTypeChange(evt)}
                                     isSearchable={false}
-                                    placeholder={""}/>
+                                    placeholder={""}
+                                    styles={selectStyles}/>
                             </div>
                         </div>
 
