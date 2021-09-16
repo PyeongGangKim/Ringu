@@ -15,19 +15,15 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         let category_id = req.query.category_id;
         let keyword = req.query.keyword;
         let member_id = req.query.member_id;
-        let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories : [];
-        categories = categories.map(x => {
-            return parseInt(x)
-        })
+        let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : [];
+
         let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
         let orderBy = ("orderBy" in req.query && typeof req.query.orderBy !== undefined) ? req.query.orderBy : 'DESC';
 
-        let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [1] : [0,1];
-        let is_picked = ("is_picked" in req.query && req.query.is_picked) ? [1] : [0,1];
+        let is_approved = ("is_approved" in req.query && typeof req.query.is_approved !== 'undefined') ? req.query.is_approved : null;
+        let is_picked = ("is_picked" in req.query && typeof req.query.is_picked !== 'undefined') ? req.query.is_picked : null;
         order = ("is_picked" in req.query && req.query.is_picked) ? "rank" : order;
         orderBy = ("is_picked" in req.query && req.query.is_picked) ? "ASC" : orderBy;
-
-        //let is_approved = ("is_approved" in req.query && req.query.is_approved) ? [0,1] : [1];
 
         let orderParams = [
             [sequelize.literal(order), orderBy]
@@ -35,6 +31,34 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
         if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {
             orderParams.push(['created_date_time', 'DESC'])
+        }
+
+        var where = {
+            status: 1,
+            author_id : {
+                [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
+            },
+            category_id : {
+                [Op.or]: categories,
+                //[Op.like] : (category_id == null || category_id == "") ? "%%" : category_id,
+            },
+            [Op.or]:{
+                //    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                '$book.title$' : {
+                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                },
+                '$author.nickname$' : {
+                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                },
+            },
+        }
+
+        if(is_approved !== null) {
+            where['is_approved'] = is_approved;
+        }
+
+        if(is_picked !== null) {
+            where['is_picked'] = is_picked;
         }
 
         const bookList = await book.findAll({
@@ -54,31 +78,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("category.name"), "category"],
             ],
-            where: {
-                status: 1,
-                is_approved : {
-                    [Op.in] : is_approved
-                },
-                is_picked : {
-                    [Op.in] : is_picked
-                },
-                author_id : {
-                    [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
-                },
-                category_id : {
-                    [Op.or]: categories,
-                    //[Op.like] : (category_id == null || category_id == "") ? "%%" : category_id,
-                },
-                [Op.or]:{
-                    //    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
-                    '$book.title$' : {
-                        [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
-                    },
-                    '$author.nickname$' : {
-                        [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
-                    },
-                },
-            },
+            where: where,
             include : [
                 {
                     model : category,
@@ -327,15 +327,14 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     let content = req.body.content;
     let book_description = req.body.book_description;
     let author_id = req.user.id;
-    let category_id = req.body.category_id ? 1: 1;
+    let category_id = req.body.category_id;
 
     let title = req.body.title;
     let type = req.body.type;
     let is_finished_serialization = (type == 2) ? 1 : 0;
     let serialization_day = req.body.serialization_day;
-    let img = req.files.img[0].key;
+    let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
     let preview = (req.files.preview == null) ? null : req.files.preview[0].key;
-
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
@@ -356,7 +355,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             serialization_day: serialization_day,
         });
 
-        if(new_book.type == 2){//단행본 일때,
+        if(new_book.type === 2){//단행본 일때,
             const new_single_book = await book_detail.create({
                 title: new_book.title,
                 book_id : new_book.id,
@@ -371,10 +370,10 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
