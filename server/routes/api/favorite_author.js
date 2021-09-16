@@ -56,7 +56,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 });
 router.post('/duplicate', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
-    var author_id = req.body.author_id;
+    var author_id = req.query.author_id;
 
     try{
         const result = await favorite_author.findOne({

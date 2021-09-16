@@ -91,7 +91,7 @@ router.post("/signup/sns", async (req, res, next) => {
 });
 
 router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
-    let nickname = req.body.nickname;
+    let nickname = req.query.nickname;
 
     try{
         const result = await member.findOne({
@@ -121,7 +121,7 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
 });
 
 router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하는 api
-    var email = req.body.email;
+    var email = req.query.email;
 
     try{
         const result = await member.findOne({

@@ -172,7 +172,7 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
 
 });
 router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
-    let nickname = req.body.nickname;
+    let nickname = req.query.nickname;
     try{
         const result = await member.findOne({
             where: {
