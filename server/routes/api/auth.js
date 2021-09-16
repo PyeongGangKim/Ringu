@@ -90,7 +90,7 @@ router.post("/signup/sns", async (req, res, next) => {
     }
 });
 
-router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
+router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
     let nickname = req.body.nickname;
 
     try{
@@ -102,8 +102,8 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
         });
 
         if(result !== null){
-            res.status(StatusCodes.CONFLICT).json({
-                "message" : "Duplicate",
+            res.status(StatusCodes.OK).json({
+                "message" : "duplicate",
             });
         }
         else{
@@ -113,13 +113,14 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
         })
     }
 });
 
-router.post('/email/duplicate', async(req, res, next) => {//email duplicate체크하는 api
+router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하는 api
     var email = req.body.email;
 
     try{
@@ -131,8 +132,8 @@ router.post('/email/duplicate', async(req, res, next) => {//email duplicate체�
         });
 
         if(result !== null){
-            res.status(StatusCodes.CONFLICT).json({
-                "message" : "Duplicate",
+            res.status(StatusCodes.OK).json({
+                "message" : "duplicate",
             });
         }
         else {
