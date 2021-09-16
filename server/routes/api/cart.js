@@ -28,7 +28,7 @@ router.post('/', isLoggedIn,async (req, res, next) => {
 
 router.get('/duplicate', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
-    var book_detail_id = req.body.book_detail_id;
+    var book_detail_id = req.query.book_detail_id;
 
     try{
         const result = await cart.findOne({
@@ -39,7 +39,7 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
             }
         })
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

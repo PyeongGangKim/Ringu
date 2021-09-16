@@ -56,7 +56,7 @@ router.post('/', isLoggedIn,async (req, res, next) => {
 });
 router.get('/duplicate', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
-    var book_id = req.body.book_id;
+    var book_id = req.query.book_id;
 
     try{
         const result = await favorite_book.findOne({
@@ -67,7 +67,7 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
             }
         })
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

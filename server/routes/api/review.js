@@ -54,15 +54,15 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
     let member_id = req.user.id;
-    let book_detail_id = req.body.book_detail_id;
+    let book_detail_id = req.query.book_detail_id;
     try{
         const result = await review.findOne({
             where : {
@@ -73,7 +73,7 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         });
 
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

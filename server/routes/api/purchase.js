@@ -151,8 +151,8 @@ router.post('/kakaopay', isLoggedIn, async(req, res, next) => {
 })
 router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
 
-    let member_id = req.body.member_id;
-    let book_detail_id = req.body.book_detail_id;
+    let member_id = req.query.member_id;
+    let book_detail_id = req.query.book_detail_id;
 
     try{
         const result = await purchase.findOne({
@@ -163,7 +163,7 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

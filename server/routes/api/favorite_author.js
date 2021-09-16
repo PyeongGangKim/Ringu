@@ -48,15 +48,15 @@ router.post('/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.post('/duplicate', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
-    var author_id = req.body.author_id;
+    var author_id = req.query.author_id;
 
     try{
         const result = await favorite_author.findOne({
@@ -67,7 +67,7 @@ router.post('/duplicate', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result !== null){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }
