@@ -44,7 +44,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                         }
 
                         const email_check_res = await API.sendPost(URL.api.auth.email.duplicate, params={email:email})
-                        console.log(email_check_res)
+
                         // 중복없는 경우
                         // 회원가입 페이지로 넘어가기
                         if(email_check_res.status === 200) {
@@ -57,7 +57,6 @@ const KakaoCallback = ({location, history, ...props}) => {
                         // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
                         // 2. 이미 등록된 계정이면 에러 메시지
                         else {
-                            console.log(55555)
                             const res = await API.sendGet(URL.api.auth.sns.kakao, params={id:id, email:email, sns: 'kakao'})
 
                             if(res.status === 200) {
