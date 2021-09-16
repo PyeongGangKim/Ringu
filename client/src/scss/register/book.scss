@@ -51,6 +51,15 @@
         height: 40px;
     }
 
+    .error {
+        border-color: red;
+
+        &:focus {
+            transition: 0.5s;
+            border: 2px solid red !important;
+        }
+    }
+
     .upload-wrap {
         .header {
             padding: 2px 8px;

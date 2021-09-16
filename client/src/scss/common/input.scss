@@ -31,14 +31,14 @@ input {
 
     &:focus {
         transition: 0.5s;
-        border: 2px solid black !important;
+        border: 2px solid var(--color-1) !important;
     }
 }
 
 textarea {
     &:focus {
         transition: 0.5s;
-        border: 2px solid black !important;
+        border: 2px solid var(--color-1) !important;
     }
 }
 
