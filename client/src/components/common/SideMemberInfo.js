@@ -138,9 +138,8 @@ class SideMemberInfo extends Component {
                         this.setState(state);
                     }
                 }
-
             } catch(e) {
-                console.error(e)
+                alert("찜하기를 취소하지 못했습니다.")
             }
         }
         // 즐찾 추가
@@ -149,7 +148,7 @@ class SideMemberInfo extends Component {
                 var params = {
                     author_id: this.props.authorId,
                 }
-                const duplicate = await API.sendPost(URL.api.favorite.author.duplicate, params)
+                const duplicate = await API.sendGet(URL.api.favorite.author.duplicate, params)
 
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.author.create, params)
@@ -157,19 +156,20 @@ class SideMemberInfo extends Component {
                         state.isFavorite = true;
                         this.setState(state);
                     }
-                    else {
-                        alert("즐겨찾기에 추가하지 못하였습니다.")
-                    }
-                } else if(duplicate.status === 403) {
+                }
+            } catch(e) {
+                var error = e.response;
+                if(error.status === 401) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
                 }
-                else {
-                    alert("이미 즐겨찾기되어 있습니다.")
+                else if(error.status === 409) {
+                    alert("이미 찜한 작가입니다.")
                 }
-            } catch(e) {
-                console.error(e)
+                else {
+                    alert("찜하기에 실패하였습니다.")
+                }
             }
         }
     }

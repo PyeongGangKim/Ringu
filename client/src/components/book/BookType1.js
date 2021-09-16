@@ -65,27 +65,27 @@ class BookType1 extends Component {
                 var params = {
                     book_id: book.id,
                 }
-                const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
-
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.book.create, params)
                     if(res.status === 201) {
                         state.isFavorite = true;
                         this.setState(state);
                     }
-                    else {
-                        alert("즐겨찾기에 추가하지 못하였습니다.")
-                    }
-                } else if(duplicate.status === 403) {
+                }
+            } catch(e) {
+                var error = e.response;
+                if(error.status === 409) {
+                    alert("이미 찜한 작품입니다.")
+                }
+                else if(error.status === 403) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
                 }
                 else {
-                    alert("이미 즐겨찾기되어 있습니다.")
+                    alert("즐겨찾기에 추가하지 못하였습니다. 잠시 후 다시 시도해주세요.")
                 }
-            } catch(e) {
-                console.error(e)
             }
         }
     }
@@ -94,7 +94,7 @@ class BookType1 extends Component {
         var state = this.state;
 
         try {
-            const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
+            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
             if(duplicate.status === 200) {
                 state.isFavorite = false;
             }

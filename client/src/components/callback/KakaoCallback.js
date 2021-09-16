@@ -43,27 +43,15 @@ const KakaoCallback = ({location, history, ...props}) => {
                             history.replace(URL.service.accounts.signup);
                         }
 
-                        const email_check_res = await API.sendPost(URL.api.auth.email.duplicate, params={email:email})
+                        const res = await API.sendGet(URL.api.auth.email.duplicate, params={email:email})
 
                         // 중복없는 경우
                         // 회원가입 페이지로 넘어가기
-                        if(email_check_res.status === 200) {
+                        if(res.status === 200) {
                             history.push({
                                 pathname:   URL.service.accounts.signup_step,
                                 search:     `?sns=kakao&email=${email}&id=${id}`,
                             });
-                        }
-                        // 중복 있는 경우
-                        // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
-                        // 2. 이미 등록된 계정이면 에러 메시지
-                        else {
-                            const res = await API.sendGet(URL.api.auth.sns.kakao, params={id:id, email:email, sns: 'kakao'})
-
-                            if(res.status === 200) {
-                                var token = res.data.token;
-                                if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
-                                history.push(URL.service.home);
-                            }
                         }
                     } catch(err){
                         var resp = err.response
@@ -72,8 +60,16 @@ const KakaoCallback = ({location, history, ...props}) => {
                             window.location.href = URL.service.accounts.login
                         }
                         if(resp.status === 409) { // 중복
-                            alert("이미 가입된 이메일입니다.")
-                            window.location.href = URL.service.accounts.login
+                            // 중복 있는 경우
+                            // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
+                            // 2. 이미 등록된 계정이면 에러 메시지
+                            const res = await API.sendGet(URL.api.auth.sns.kakao, params={id:id, email:email, sns: 'kakao'})
+
+                            if(res.status === 200) {
+                                var token = res.data.token;
+                                if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
+                                history.push(URL.service.home);
+                            }
                         } else {
                             console.log(resp.status)
                             console.error(resp.data.message)

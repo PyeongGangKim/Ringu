@@ -84,25 +84,26 @@ class Review extends Component {
             description: state.description
         }
 
-        const duplicate = await API.sendPost(URL.api.review.duplicate, {book_detail_id: state.book_detail})
+        try {
+            const duplicate = await API.sendGet(URL.api.review.duplicate, {book_detail_id: state.book_detail})
 
-        if(duplicate.status === 200) {
-            const res = await API.sendPost(URL.api.review.register, params)
-            if(res.status === 201) {
-                state.modal = true;
-                this.setState(state);
+            if(duplicate.status === 200) {
+                const res = await API.sendPost(URL.api.review.register, params)
+                if(res.status === 201) {
+                    state.modal = true;
+                    this.setState(state);
+                }
+            }
+        }
+        catch(e) {
+            var error = e.response;
+            if(error.status === 409){
+                alert("이미 리뷰를 작성하셨습니다.")
+                window.location.href = URL.service.mypage.purchases
             }
             else {
                 alert("리뷰를 등록하지 못하였습니다.")
             }
-
-        }
-        else if (duplicate.status === 409){
-            alert("이미 리뷰를 작성하셨습니다.")
-            window.location.href = URL.service.mypage.purchases
-        }
-        else {
-            alert("리뷰를 등록하지 못하였습니다.")
         }
     }
 
