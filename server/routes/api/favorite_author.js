@@ -48,10 +48,10 @@ router.post('/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.post('/duplicate', isLoggedIn, async (req, res, next) => {
@@ -67,7 +67,7 @@ router.post('/duplicate', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result !== null){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

@@ -73,7 +73,7 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate ì²
         });
 
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

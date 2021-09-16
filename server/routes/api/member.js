@@ -181,7 +181,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
         });
 
         if(result !== null){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }

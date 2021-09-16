@@ -102,7 +102,7 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
         });
 
         if(result !== null){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }
@@ -132,7 +132,7 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
         });
 
         if(result !== null){
-            res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });
         }
