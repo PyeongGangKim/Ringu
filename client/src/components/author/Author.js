@@ -397,7 +397,8 @@ class Author extends Component {
                             <div className="inner-header">
                                 소개
                                 {
-                                    (this.props.isHost === true && state.modify === true) ?
+                                    (this.props.isHost === true) ?
+                                    state.modify === true ?
                                     <span className="small" onClick={this.handleCompleteClick}>
                                         <em/>완료
                                     </span>
@@ -405,6 +406,8 @@ class Author extends Component {
                                     <span className="small" onClick={this.handleModifyClick}>
                                         <em/>수정
                                     </span>
+                                    :
+                                    null
                                 }
 
                             </div>
