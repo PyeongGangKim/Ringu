@@ -7,8 +7,6 @@ import URL from '../helper/helper_url';
 class WelcomePage extends Component {
     constructor(props) {
         super(props);
-
-        console.log(props)
     }
 
     render() {
