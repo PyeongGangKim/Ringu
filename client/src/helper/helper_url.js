@@ -94,6 +94,7 @@ module.exports = {
         },
         register: {
             book:               "/book",
+            bookDetail:         "/book_detail"
         },
         notification: {
             getNotification:    "/notification/",
