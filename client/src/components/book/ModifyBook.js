@@ -107,7 +107,11 @@ class ModifyBook extends Component {
         }
         var reader = new FileReader();
         var file = evt.target.files[0]
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
 
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "_thumbnail." + fieldName, {type: file.type})
 
         reader.onloadend = (e) => {
             const base64 = reader.result;
@@ -116,9 +120,9 @@ class ModifyBook extends Component {
                 this.setState(state)
             }
         }
-        if (file) {
-            reader.readAsDataURL(file);
-            state.thumbnail.file = file
+        if (newFile) {
+            reader.readAsDataURL(newFile);
+            state.thumbnail.file = newFile
 
             this.setState(state)
         }
@@ -127,8 +131,19 @@ class ModifyBook extends Component {
     handlePreviewFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
-        state.preview.name = file.name
-        state.preview.file = file
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
+
+        state.preview.name = newFile.name
+        state.preview.file = newFile
 
         this.setState(state)
     }
@@ -136,8 +151,19 @@ class ModifyBook extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
-        state.book.name = file.name
-        state.book.file = file
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
+
+        state.book.name = newFile.name
+        state.book.file = newFile
 
         this.setState(state)
     }
