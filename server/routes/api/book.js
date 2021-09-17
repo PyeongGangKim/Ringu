@@ -222,7 +222,6 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                                     model: member,
                                     as : "member",
                                     attributes: [
-
                                         "nickname"
                                     ],
                                     required : false,
@@ -251,10 +250,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
 
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
@@ -262,43 +261,55 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     let book_id = req.params.bookId;
     let member_id = 'member_id' in req.query && req.query.member_id !== null ? req.query.member_id : null;
 
+    var where = {
+        book_id: book_id,
+        status: 1,
+    }
+
+    var include = [
+        {
+            model: purchase,
+            as : "purchases",
+            required: false,
+            where: {
+                member_id: member_id,
+            }
+        },
+        {
+            model: book,
+            as: "book",
+            attributes: [],
+            include: [{
+                model:member,
+                as: "author",
+                attributes: [],
+            }]
+        }
+    ]
+
     try{
         const detailList = await book_detail.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
-            where : {
-                book_id: book_id,
-                status: 1,
-            },
+            where : where,
             attributes : [
                 "title",
                 "file",
                 "id",
+                "round",
                 [sequelize.literal("`book->author`.nickname"), "author"],
                 [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("book.title"), "book_title"],
             ],
-
-            include : [
-                {
-                    model: purchase,
-                    as : "purchases",
-                    required: false,
-                    where: {
-                        member_id: member_id,
-                    }
-                },
-                {
-                    model: book,
-                    as: "book",
-                    attributes: [],
-                    include: [{
-                        model:member,
-                        as: "author",
-                        attributes: [],
-                    }]
-                }
-            ]
+            include : include
         });
+
+        const total = await book_detail.findOne({
+            where : where,
+            attributes : [
+                [sequelize.fn('Count','id'), 'count'],
+            ],
+            include : include
+        })
 
         for(var i = 0; i < detailList.length; i++){
             if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
@@ -311,14 +322,15 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
         else{
             res.status(StatusCodes.OK).json({
                 "detailList": detailList,
+                "total": total,
             });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
@@ -376,30 +388,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
         });
     }
 });
-router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
-    let page_number = req.body.page_number;
-    let file = req.files.file[0].key;
-    let book_id = req.body.book_id;
-    let title = req.body.title;
-    let round = req.body.round;
-    try{
-        const new_round_book = await book_detail.create({
-            title: title,
-            book_id : book_id,
-            page_number : page_number,
-            file : file,
-            round: round
-        });
 
-        res.status(StatusCodes.CREATED).send("new round serialization_book created");
-    }
-    catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "error": "server error"
-        });
-        console.error(err);
-    }
-});
 router.delete('/:bookId', isLoggedIn, async(req, res, next) => {
     const bookId = req.params.bookId;
     const t = await sequelize.transaction();
