@@ -110,8 +110,15 @@ class SideMemberInfo extends Component {
 
     handleProfileChange = async(e) => {
         var state = this.state
+        var file = e.target.files[0]
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.user.nickname + "." + fieldName, {type: file.type})
+
         const data = new FormData()
-        data.append('img', e.target.files[0])
+        data.append('img', newFile)
 
         const res = await API.sendData(URL.api.member.upload_profile, data)
         if (res.status === 200) {
