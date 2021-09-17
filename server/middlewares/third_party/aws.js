@@ -49,7 +49,7 @@ const uploadFile = upload.fields([
 
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;
-    console.log(id);
+
     try{
         const findedBook = await book.findOne({
             where : {

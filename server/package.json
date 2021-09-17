@@ -46,7 +46,7 @@
     "react-facebook-login": "^4.1.1",
     "react-kakao-login": "^2.1.0",
     "request": "^2.88.2",
-    "sequelize": "^6.5.0",
+    "sequelize": "^6.6.5",
     "sequelize-auto": "^0.7.11",
     "sequelize-cli": "^6.2.0",
     "winston": "^3.3.3",

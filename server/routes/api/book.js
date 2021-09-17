@@ -271,6 +271,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             model: purchase,
             as : "purchases",
             required: false,
+            attributes: [],
             where: {
                 member_id: member_id,
             }
