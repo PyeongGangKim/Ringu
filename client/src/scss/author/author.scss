@@ -129,12 +129,33 @@
         margin-bottom: 10px;
     }
 
-    table.book-details {
-        width: 100%;
+    .table-wrap {
+        margin-bottom: 30px;
+        max-height: 300px;
         border-top: 2px solid black;
+        overflow-y: scroll;
+
+        &::-webkit-scrollbar {
+            display:block;
+            width: 6px;
+        }
+        &::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: #b2b2b2;
+        }
+        &::-webkit-scrollbar-button {
+            width: 0;
+            height: 0;
+        }
+    }
+
+    table.book-detail-table {
+        width: 100%;
         border-collapse: collapse;
         border-spacing: 0;
-        margin-bottom: 30px;
 
         tr.book-detail {
             height: 55px;
@@ -145,7 +166,7 @@
             }
 
             td.book-detail-idx {
-                width: 75px;
+                width: 90px;
                 text-align:right;
                 padding-right: 10px;
 
@@ -207,17 +228,37 @@
     .btn-wrap {
         width: 60%;
         margin: 0 auto;
+
         button {
+            border-radius: 4px;
             margin: 0 10px;
             border-width: 2px;
+            padding: 4px 20px;
         }
     }
 
     .upload {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 30px;
+        margin-top: 100px;
+
+        .header {
+            position: absolute;
+            top: -60px;
+            left: 0;
+            right: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid black;
+
+        }
+
         span {
             font-size: 16px;
             font-weight: 600;
-            min-width: 75px;
+            min-width: 90px;
             text-align: right;
             padding-right: 10px;
         }
@@ -225,41 +266,48 @@
             display: none;
         }
 
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: 30px;
-
         .upload-btn {
-            font-size: 16px;
+            font-size: 14px;
             width: 100px;
-            padding: 8px 10px;
+            padding: 5px 10px;
         }
 
         .upload-text{
             font-weight: 500;
             font-size: 12px;
         }
+
+        .upload-info {
+            width: 100%;
+        }
+
+        label {
+            display: inline-block;
+            float: right;
+        }
     }
 
-    .file-wrap {
-        margin-right: 5px;
-        width: 380px;
-        height: 40px;
+    .box  {
+        width:100%;
+        height: 30px;
         border: 2px solid #ddd;
         border-radius: 4px;
         padding: 4px 8px;
-        margin-right: 20px;
+        line-height: 18px;
+    }
 
-        .filename {
-            line-height: 28px;
-            font-size: 14px;
-            font-weight: 500;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            width:100%;
-        }
+    .title {
+        margin: 0 20px 10px 0;
+    }
+
+    .file-upload {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 500;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width:300px;
     }
 
     .add-btn {

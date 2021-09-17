@@ -34,8 +34,9 @@ class Author extends Component {
             tab: 'intro',
             tabChange: false,
             detailList: [],
+            detailTotal: 0,
             bookList: {},
-            selected: {},
+            selectedBook: {},
 
             user: {
                 id: -1,
@@ -50,9 +51,11 @@ class Author extends Component {
             //
             display:false,
             modify: false,
+            upload: false,
 
             modalPos:{},
             host: false,
+            book: {title:"", name:"선택 파일 없음", file:null},
         }
     }
 
@@ -223,10 +226,11 @@ class Author extends Component {
         if(res.status === 200) {
             var detailList = res.data.detailList
             state.detailList = detailList
+            state.detailTotal = res.data.total.count
             this.setState(state)
         }
 
-        state.selected = book;
+        state.selectedBook = book;
 
         //var modalRoot = document.getElementById('modal-root')
         //modalRoot.style.cssText = `top:${coordY}px; left:${coordX}px;`
@@ -261,8 +265,10 @@ class Author extends Component {
     handleCloseClick = () => {
         var state = this.state;
 
-        state.selected = {};
+        state.selectedBook = {};
         state.detailList = [];
+        state.detailTotal = 0;
+        state.selectedBook =
         state.display = false;
         this.setState(state)
     }
@@ -301,22 +307,101 @@ class Author extends Component {
         this.setState(state)
     }
 
-    handleDetailDelete = async(id) => {
+    handleDetailDelete = async(detail) => {
         var state = this.state;
 
-        const res = await API.sendDelete(URL.api.book_detail.delete + id)
-        if(res.status === 200) {
-            state.detailList = state.detailList.filter(item => {
-                return item.id !== id
-            })
-            this.setState(state)
-        } else {
-            alert("삭제하지 못 했습니다.")
+        if(window.confirm(`${detail.title}을 삭제하시겠습니까?`)) {
+            const res = await API.sendDelete(URL.api.book_detail.delete + detail.id)
+            if(res.status === 200) {
+                state.detailList = state.detailList.filter(item => {
+                    return item.id !== detail.id
+                })
+                this.setState(state)
+            } else {
+                alert("삭제하지 못 했습니다.")
+            }
+        }
+    }
+
+    handleBookFileChange = evt => {
+        var state = this.state
+        var file = evt.target.files[0]
+        if(file === null) {
+            state.book.name = ""
+            state.book.file = null
+        }
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        //var blob = file.slice(0, file.size, file.type)
+        //var newFile = new File([blob], state.selected.title + "_" +(state.detailList.length+1) + "." + fieldName, {type: file.type})
+
+        state.book.name = file.name
+        state.book.file = file
+
+        this.setState(state)
+    }
+
+    handleUploadClick = (value) => {
+        var state = this.state
+        state.upload = value
+        if(value === false) {
+            state.book = {title:"", name:"선택 파일 없음", file:null}
+        }
+        this.setState(state)
+    }
+
+    handleTitleChange = (evt) => {
+        var state = this.state;
+        state.book.title = evt.target.value;
+        this.setState(state);
+    }
+
+    handleRegister = async() => {
+        var state = this.state
+        if(state.book.title === "") {
+            alert("제목을 입력해주세요")
+            return;
+        }
+        
+        if(state.book.file === null) {
+            alert("등록할 파일을 선택해주세요")
+            return;
+        }
+
+        const data = new FormData()
+
+        var file = state.book.file
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.selectedBook.title + "_" +(state.detailList.length+1) + ".pdf", {type: file.type})
+
+        data.append("page_number", null)
+        data.append("file", newFile)
+        data.append("book_id", state.selectedBook.id)
+        data.append("title", state.book.title)
+        data.append("round", state.detailTotal+1)
+
+        try {
+            const res = await API.sendData(URL.api.register.bookDetail, data)
+            if(res.status === 201) {
+                var detail = res.data.detail
+                state.detailList.push({file:detail.file, round:detail.round, title:detail.title, id: detail.id})
+                state.book = {title:"", name:"선택 파일 없음", file:null}
+                this.setState(state);
+                alert("작품을 등록하였습니다!")
+            }
+        } catch(e) {
+            alert("등록 실패하였습니다.")
         }
     }
 
     downloadAction = async(book_detail_id) => {
-        const res = await API.sendGet(URL.api.book.dowload+ "/" + book_detail_id + "?type=" + "file");
+        const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=" + "file");
         let downloadUrl = res.data.url;
         window.open(downloadUrl);
     }
@@ -324,7 +409,7 @@ class Author extends Component {
     render() {
         var state = this.state;
         var bookList = state.bookList;
-        var selected = state.selected;
+        var selectedBook = state.selectedBook;
 
         return (
             <div id="author-page" className="page2">
@@ -336,52 +421,88 @@ class Author extends Component {
                     >
                         <div className="book-detail-modal">
                             <div className="book-detail-header">
-                                <h3>{state.selected.title}</h3>
+                                <h3>{state.selectedBook.title}</h3>
                             </div>
 
                             <em className="close" onClick={this.handleCloseClick}> &times; </em>
+                            <div className="table-wrap">
+                                <table className="book-detail-table">
+                                    <tbody>
+                                        {
+                                            state.detailList.map((detail, idx) => {
+                                                return (
+                                                    <tr key={idx} className="book-detail">
+                                                        <td className="book-detail-idx"> <span> {detail.round}회차. </span> </td>
+                                                        <td className="book-detail-title"> <span> {detail.title} </span></td>
+                                                        {
+                                                            parseInt(this.props.authorId) === state.user.id ?
+                                                            <td className="icon">
+                                                                <em className="download"  onClick={() => this.downloadAction(detail.id)}/>
+                                                            </td>
+                                                            :
+                                                            !!detail.purchases.length ?
+                                                            <td className="icon"> <em className="download"/> </td>
+                                                            :
+                                                            <td className="icon"> <em className="lock"/> </td>
+                                                        }
+                                                        {
+                                                            parseInt(this.props.authorId) === state.user.id &&
+                                                            <td className="icon">
+                                                                <em className="modify"/>
+                                                            </td>
+                                                        }
+                                                        {
+                                                            parseInt(this.props.authorId) === state.user.id &&
+                                                            <td className="icon">
+                                                                <em className="x" onClick={() => this.handleDetailDelete(detail)}/>
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            {
+                                state.upload &&
+                                <div className="upload">
+                                    <div className="header">
+                                        <h2>업로드</h2>
+                                    </div>
 
-                            <table className="book-details">
-                                <tbody>
-                                    {
-                                        state.detailList.map((detail, idx) => {
-                                            return (
-                                                <tr key={idx} className="book-detail">
-                                                    <td className="book-detail-idx"> <span> {idx+1}회차. </span> </td>
-                                                    <td className="book-detail-title"> <span> {detail.title} </span></td>
-                                                    {
-                                                        parseInt(this.props.authorId) === state.user.id ?
-                                                        <td className="icon">
-                                                            <em className="download"  onClick={() => this.downloadAction(detail.id)}/>
-                                                        </td>
-                                                        :
-                                                        !!detail.purchases.length ?
-                                                        <td className="icon"> <em className="download"/> </td>
-                                                        :
-                                                        <td className="icon"> <em className="lock"/> </td>
+                                    <span>
+                                        {state.detailTotal+1}회차.
+                                    </span>
+                                    <div className="upload-info">
+                                        <input className="title box" value={state.book.title} onChange={this.handleTitleChange} placeholder={"제목을 입력해주세요"}/>
 
-                                                    }
-                                                    {
-                                                        parseInt(this.props.authorId) === state.user.id &&
-                                                        <td className="icon">
-                                                            <em className="modify"/>
-                                                        </td>
-                                                    }
-                                                    {
-                                                        parseInt(this.props.authorId) === state.user.id &&
-                                                        <td className="icon">
-                                                            <em className="x" onClick={() => this.handleDetailDelete(detail.id)}/>
-                                                        </td>
-                                                    }
-                                                </tr>
-                                            )
-                                        })
-                                    }
-                                </tbody>
-                            </table>
-                            <button className="btn btn-block btn-bottom">
-                                + 새로운 회차 등록하기
-                            </button>
+                                        <div className="file-upload box">
+                                            {state.book.name}
+                                        </div>
+                                        <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
+                                        <label htmlFor="book">
+                                            <div className="btn btn-color-2 upload-btn">파일 업로드</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                            {
+                                state.upload === true ?
+                                <div className="btn-wrap">
+                                    <button className="btn btn-color-2" onClick={this.handleRegister}>
+                                        완료
+                                    </button>
+                                    <button className="btn" onClick={() => this.handleUploadClick(false)}>
+                                        취소
+                                    </button>
+                                </div>
+                                :
+                                <button className="btn btn-block btn-bottom" onClick={() => this.handleUploadClick(true)}>
+                                    + 새로운 회차 등록하기
+                                </button>
+                            }
+
                         </div>
                     </Modal>
                 }
