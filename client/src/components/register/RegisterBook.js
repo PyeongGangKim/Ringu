@@ -118,8 +118,12 @@ class RegisterBook extends Component {
             return;
         }
         var reader = new FileReader();
-        var file = evt.target.files[0]
+        var file = evt.target.files[0];
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
 
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "_thumbnail." + fieldName, {type: file.type})
 
         reader.onloadend = (e) => {
             const base64 = reader.result;
@@ -128,9 +132,9 @@ class RegisterBook extends Component {
                 this.setState(state)
             }
         }
-        if (file) {
-            reader.readAsDataURL(file);
-            state.thumbnail.file = file
+        if (newFile) {
+            reader.readAsDataURL(newFile);
+            state.thumbnail.file = newFile
 
             this.setState(state)
         }
@@ -139,8 +143,19 @@ class RegisterBook extends Component {
     handlePreviewFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
-        state.preview.name = file.name
-        state.preview.file = file
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
+
+        state.preview.name = newFile.name
+        state.preview.file = newFile
 
         this.setState(state)
     }
@@ -148,8 +163,19 @@ class RegisterBook extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
-        state.book.name = file.name
-        state.book.file = file
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
+
+        state.book.name = newFile.name
+        state.book.file = newFile
 
         this.setState(state)
     }
@@ -161,8 +187,6 @@ class RegisterBook extends Component {
             .sort(([, a], [, b]) => a.value - b.value)
             .map(item => {return item[1].label})
             .join('')
-
-
 
         this.setState(state)
     }
@@ -228,7 +252,7 @@ class RegisterBook extends Component {
             data.append("content", state.contents.val)
             data.append("preview", state.preview.file)
             data.append("file", state.book.file)
-            data.append("page_count", state.page_count.val)
+            data.append("page_number", state.page_count.val)
         } else {
             data.append("serialization_day", state.day.val)
         }
@@ -379,7 +403,9 @@ class RegisterBook extends Component {
                             <div className="upload">
                                 <div className="btn btn-outline header">미리보기 </div>
                                 <div className="file-wrap">
-                                    <input className="filename" value={state.preview.name}/>
+                                    <div className="filename" >
+                                        {state.preview.name}
+                                    </div>
                                 </div>
                                 <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
                                 <label htmlFor="preview">
@@ -390,7 +416,9 @@ class RegisterBook extends Component {
                             <div className="upload">
                                 <div className="btn btn-outline header">작품등록 </div>
                                 <div className="file-wrap">
-                                    <input className="filename" value={state.book.name}/>
+                                    <div className="filename" >
+                                        {state.book.name}
+                                    </div>
                                 </div>
                                 <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
                                 <label htmlFor="book">
