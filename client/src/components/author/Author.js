@@ -326,9 +326,11 @@ class Author extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
-        if(file === null) {
+        if(!file) {
             state.book.name = ""
             state.book.file = null
+            this.setState(state)
+            return;
         }
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
@@ -368,7 +370,7 @@ class Author extends Component {
             alert("제목을 입력해주세요")
             return;
         }
-        
+
         if(state.book.file === null) {
             alert("등록할 파일을 선택해주세요")
             return;
