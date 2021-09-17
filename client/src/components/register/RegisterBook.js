@@ -113,12 +113,15 @@ class RegisterBook extends Component {
 
     handleThumbnailChange = evt => {
         var state = this.state
-
-        if(!evt.target.files.length) {
+        var file = evt.target.files[0];
+        if(!file) {
+            state.tmp = null
+            state.thumbnail.file = null
+            this.setState(state)
             return;
         }
+
         var reader = new FileReader();
-        var file = evt.target.files[0];
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -142,7 +145,14 @@ class RegisterBook extends Component {
 
     handlePreviewFileChange = evt => {
         var state = this.state
-        var file = evt.target.files[0]
+        var file = evt.target.files[0];
+
+        if(!file) {
+            state.preview.name = ""
+            state.preview.file = null
+            this.setState(state)
+            return;
+        }
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -151,11 +161,11 @@ class RegisterBook extends Component {
             return;
         }
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
+        //var blob = file.slice(0, file.size, file.type)
+        //var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
 
-        state.preview.name = newFile.name
-        state.preview.file = newFile
+        state.preview.name = file.name
+        state.preview.file = file
 
         this.setState(state)
     }
@@ -163,6 +173,12 @@ class RegisterBook extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
+        if(!file) {
+            state.book.name = ""
+            state.book.file = null
+            this.setState(state)
+            return;
+        }
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -171,11 +187,11 @@ class RegisterBook extends Component {
             return;
         }
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
+        //var blob = file.slice(0, file.size, file.type)
+        //var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
 
-        state.book.name = newFile.name
-        state.book.file = newFile
+        state.book.name = file.name
+        state.book.file = file
 
         this.setState(state)
     }
@@ -240,6 +256,20 @@ class RegisterBook extends Component {
             return;
         }
 
+        if(this.type === 2) {
+            if(!state.preview.file) {
+                alert('미리보기 파일을 선택해주세요.')
+                this.setState(state)
+                return;
+            }
+
+            if(!state.book.file) {
+                alert('등록할 파일을 선택해주세요.')
+                this.setState(state)
+                return;
+            }
+        }
+
         const data = new FormData()
         data.append("img", state.thumbnail.file)
         data.append("price", state.price.val)
@@ -249,6 +279,14 @@ class RegisterBook extends Component {
         data.append("type", this.type)
 
         if(this.type === 2) {
+            var book = state.book.file
+            var blob1 = book.slice(0, book.size, book.type)
+            var newBook = new File([blob1], state.title.val + ".pdf", {type: book.type})
+
+            var preview = state.preview.file
+            var blob2 = book.slice(0, preview.size, preview.type)
+            var newPreview = new File([blob2], state.title.val + "_preview.pdf", {type: preview.type})
+
             data.append("content", state.contents.val)
             data.append("preview", state.preview.file)
             data.append("file", state.book.file)
@@ -262,6 +300,7 @@ class RegisterBook extends Component {
             if(res.status === 201) {
                 state.modal = true;
                 this.setState(state);
+                window.scrollTo(0,0);
             }
         } catch(e) {
             console.error(e)
@@ -402,10 +441,8 @@ class RegisterBook extends Component {
                         <div className="upload-wrap">
                             <div className="upload">
                                 <div className="btn btn-outline header">미리보기 </div>
-                                <div className="file-wrap">
-                                    <div className="filename" >
-                                        {state.preview.name}
-                                    </div>
+                                <div className="filename">
+                                    {state.preview.name}
                                 </div>
                                 <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
                                 <label htmlFor="preview">
@@ -415,10 +452,8 @@ class RegisterBook extends Component {
                             </div>
                             <div className="upload">
                                 <div className="btn btn-outline header">작품등록 </div>
-                                <div className="file-wrap">
-                                    <div className="filename" >
-                                        {state.book.name}
-                                    </div>
+                                <div className="filename">
+                                    {state.book.name}
                                 </div>
                                 <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
                                 <label htmlFor="book">
