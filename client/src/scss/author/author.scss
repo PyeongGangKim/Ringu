@@ -204,6 +204,64 @@
         }
     }
 
+    .btn-wrap {
+        width: 60%;
+        margin: 0 auto;
+        button {
+            margin: 0 10px;
+            border-width: 2px;
+        }
+    }
+
+    .upload {
+        span {
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 75px;
+            text-align: right;
+            padding-right: 10px;
+        }
+        input[type=file] {
+            display: none;
+        }
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 30px;
+
+        .upload-btn {
+            font-size: 16px;
+            width: 100px;
+            padding: 8px 10px;
+        }
+
+        .upload-text{
+            font-weight: 500;
+            font-size: 12px;
+        }
+    }
+
+    .file-wrap {
+        margin-right: 5px;
+        width: 380px;
+        height: 40px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        padding: 4px 8px;
+        margin-right: 20px;
+
+        .filename {
+            line-height: 28px;
+            font-size: 14px;
+            font-weight: 500;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width:100%;
+        }
+    }
+
     .add-btn {
         width: 60%;
     }
