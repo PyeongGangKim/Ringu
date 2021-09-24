@@ -54,39 +54,45 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
-router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
     let member_id = req.user.id;
-    let book_detail_id = req.body.book_detail_id;
+    let book_detail_id = req.query.book_detail_id;
     try{
-        const duplicate_result = await review.findOne({
+        const result = await review.findOne({
             where : {
                 member_id : member_id,
                 book_detail_id : book_detail_id,
                 status : 1,
             }
         });
-        console.log(StatusCodes.CONFLICT)
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
-            return;
+
+        if(result){
+            res.status(StatusCodes.CONFLICT).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
+
+
+
 router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     try{
         var member_id = ("member_id" in req.query && req.query.member_id !== null) ? req.query.member_id : null;
@@ -200,6 +206,47 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
         });
     }
 });
+
+router.get('/stats', async (req, res, next) => {
+    var id = req.body.id;
+    var group = req.body.group;
+
+    var where = {
+    }
+
+    if(group === 'author_id') {
+        where['author_id'] = id
+    } else if (group === 'book_id') {
+        where['book_id'] = id
+    } else if (group === 'book_detail_id') {
+        where['book_detail_id'] = id
+    }
+
+    try {
+        const stats = await review_statistics.findAll({
+            attributes: [
+                [sequelize.literal("SUM(score_amount)"),"total"],
+                [sequelize.literal("SUM(person_number)"),"count"],
+            ],
+            where: where,
+            group: group,
+        })
+        if(stats.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                stats: stats,
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+})
 
 /*router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
     var author_id = req.params.author_id

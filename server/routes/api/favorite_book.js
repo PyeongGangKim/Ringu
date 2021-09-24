@@ -54,23 +54,27 @@ router.post('/', isLoggedIn,async (req, res, next) => {
         console.error(err);
     }
 });
-router.post('/duplicate', isLoggedIn,async (req, res, next) => {
+router.get('/duplicate', isLoggedIn,async (req, res, next) => {
     var member_id = req.user.id;
-    var book_id = req.body.book_id;
+    var book_id = req.query.book_id;
 
     try{
-        const duplicate_result = await favorite_book.findOne({
+        const result = await favorite_book.findOne({
             where: {
                 member_id : member_id,
                 book_id : book_id,
                 status : 1,
             }
         })
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
+        if(result){
+            res.status(StatusCodes.CONFLICT).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
@@ -85,9 +89,6 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
     var book_id = req.params.bookId;
 
-    console.log(member_id)
-    console.log(book_id)
-
     try {
         const fav = await favorite_book.findOne({
             where: {
@@ -100,6 +101,11 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
             res.status(StatusCodes.OK).json({
                 "favoriteBook": fav,
             })
+        }
+        else{
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
         }
     }
     catch(err){

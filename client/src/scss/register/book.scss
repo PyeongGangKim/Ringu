@@ -51,6 +51,15 @@
         height: 40px;
     }
 
+    .error {
+        border-color: red !important;
+
+        &:focus {
+            transition: 0.5s;
+            border: 2px solid red !important;
+        }
+    }
+
     .upload-wrap {
         .header {
             padding: 2px 8px;
@@ -92,17 +101,16 @@
         padding: 10px;
     }
 
-    .file-wrap {
-        margin-right: 5px;
-        width: 200px;
+    .filename {
+        width:200px;
         height: 100%;
-        border: 1px solid #ccc;
+        border: 2px solid #ddd;
         border-radius: 4px;
-        padding: 2px 4px;
-
-        .filename {
-            width:100%;
-        }
+        padding: 0px 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 5px;
     }
 
     .btn-wrap {
@@ -113,13 +121,13 @@
 
     .img-area {
         margin-right: 60px;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
 
         .thumbnail-box {
             position: relative;
             width: 250px;
             height: 250px;
-            border: 1px solid #999;
+            border: 2px solid #ddd;
             border-radius: 5px;
 
             img {
@@ -140,9 +148,26 @@
                 align-items: center;
                 justify-content: center;
                 color: var(--color-1);
-                font-weight: 500;
+                font-weight: 600;
                 cursor: pointer;
             }
         }
+    }
+
+
+}
+.modal.register {
+    .header {
+        .em {
+            font-weight: 600;
+            color: var(--color-1);
+        }
+    }
+    .content {
+        margin-bottom: 50px;
+    }
+    button {
+        width: 150px;
+        margin: auto;
     }
 }

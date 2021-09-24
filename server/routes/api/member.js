@@ -171,16 +171,16 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
     // DB LOAD
 
 });
-router.post('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
-    let nickname = req.body.nickname;
+router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
+    let nickname = req.query.nickname;
     try{
-        const result = await member.findAll({
+        const result = await member.findOne({
             where: {
                 nickname : nickname,
             }
         });
 
-        if(result.length != 0){
+        if(result !== null){
             res.status(StatusCodes.CONFLICT).json({
                 "message" : "duplicate",
             });

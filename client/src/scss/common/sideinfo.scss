@@ -81,10 +81,52 @@
 
 
 .side-info{
+    position:relative;
     width: 100%;
     border: 2px solid var(--color-5);
     border-radius: 6px;
     text-align: center;
+
+    .favorite-box {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 20px;
+        right: 25px;
+        border-radius: 4px;
+        transition: 0.5s;
+
+        &:hover{
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .favorite-btn {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+
+            .favorite {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 35px;
+                height: 35px;
+                background-image: url("/heart_empty.png");
+                background-repeat: no-repeat;
+                background-size: contain;
+                z-index: 11;
+
+                &.on {
+                    background-image: url("/heart.png");
+                }
+            }
+        }
+    }
 
     .profile {
         width: 180px;
@@ -92,9 +134,13 @@
         margin: 50px auto 20px auto;
         border-radius: 70%;
         position:relative;
-        box-shadow: 0 0 10px  rgba(0,0,0,0.6);
+        background-color: #f2f3f7;
+        box-shadow: 0 0 20px  rgba(0,0,0,0.2);
 
-
+        .img-area {
+            width: 100%;
+            height: 100%;
+        }
 
         em {
             position: absolute;
@@ -102,9 +148,6 @@
             right:10px;
             width: 35px;
             height: 35px;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
             background-image: url("/write.png");
             transition: 0.2s;
             padding: 5px;
@@ -131,9 +174,21 @@
             border-radius: 50%;
         }
 
-    }
+        .img-dummy {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
 
-    .name {
+    }
+    .nickname-dummy {
+        margin: 0 auto;
+        width: 80%;
+        height: 45px;
+        border-radius: 10px;
+        background-color: #f2f3f7;
+    }
+    .nickname {
         font-size: 30px;
         font-weight: 700;
     }

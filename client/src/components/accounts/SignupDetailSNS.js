@@ -113,30 +113,33 @@ class SignupDetailSNS extends Component {
         this.setState(state);
     }
 
-    verifyNickname = evt => {
+    verifyNickname = async(evt) => {
         var state = this.state;
         var params = {
             nickname: state.nickname.val,
         }
 
-        API.sendPost(URL.api.auth.verify_nickname, params).then(res => {
-            var status = res.status;
-
-            if(status === 200) {
+        try {
+            const duplicate = await API.sendGet(URL.api.auth.nickname_duplicate, params)
+            if(duplicate.status === 200) {
                 state.nickname.clear = true;
                 state.nickname.btn = false;
+                this.setState(state);
                 alert("사용 가능한 닉네임입니다.")
-
-            } else {
-                if(res.reason === "duplicate")
-                state.nickname.class = "form-control error";
-                state.nickname.clear = false;
-                state.nickname.btn = false;
+            }
+        } catch(e) {
+            var error = e.response;
+            state.nickname.class = "form-control error";
+            state.nickname.clear = false;
+            state.nickname.btn = false;
+            if(error.status === 409) {
                 state.nickname.msg = "이미 존재하는 닉네임입니다";
             }
-
-            this.setState(state);
-        })
+            else {
+                state.nickname.msg = "중복확인에 실패하였습니다. 잠시 후 다시 시도해주세요.";
+            }
+            this.setState(state)
+        }
     }
 
     handleSubmit = evt => {
@@ -159,7 +162,7 @@ class SignupDetailSNS extends Component {
             if(status === 201) {
                 var token = res.data.token;
                 if( token ) {
-                    Cookies.set('RINGU_TOKEN', token, {expires: 7, path: '/'})
+                    Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'})
                 }
 
                 this.props.history.push({

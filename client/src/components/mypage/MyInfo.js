@@ -71,21 +71,33 @@ class MyInfo extends Component {
         this.setState(state);
     }
 
-    handleNicknameDuplicateCheck = (evt) => {
+    handleNicknameDuplicateCheck = async(evt) => {
         var state = this.state;
         var params = {
             nickname: this.state.data.nickname.value,
         }
 
-        API.sendPost(URL.api.member.verify_nickname, params).then(res => {
+        try {
+            const res = await API.sendGet(URL.api.member.nickname_duplicate, params)
             if(res.status === 200){
-                alert("변경 가능한 닉네임입니다.")
                 state.data.nickname.clear = true;
                 this.setState(state)
-            } else {
+                alert("변경 가능한 닉네임입니다.")
+            }
+        }
+        catch(e) {
+            var error = e.response
+            if(error.status === 401) {
+                alert("로그인이 필요합니다.")
+                window.location = URL.service.accounts.login;
+            }
+            else if(error.status === 409) {
                 alert("이미  사용 중인 닉네임입니다.")
             }
-        });
+            else {
+                alert("알 수 없는 에러가 발생했습니다. 잠시 후 다시 시도해주세요.")
+            }
+        }
     }
 
     componentDidMount() {
@@ -150,7 +162,7 @@ class MyInfo extends Component {
 
                             </h3>
 
-                            <input className="textbox" type="text" name="nickname" autoComplete="off" value={this.state.data.nickname.value} onChange={this.handleNicknameChange}/>
+                            <input className="textbox" type="text" name="nickname" disabled={this.state.data.nickname.isModifying === false} autoComplete="off" value={this.state.data.nickname.value} onChange={this.handleNicknameChange}/>
                             {
                                 (this.state.data.nickname.isModifying === true) &&
                                 (

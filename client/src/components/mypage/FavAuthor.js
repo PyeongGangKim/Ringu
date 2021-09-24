@@ -55,67 +55,76 @@ class FavAuthor extends Component {
 
                 <hr/>
 
-                <div className="container">
-                    <div id="favauthor-area">
-                        {
-                            favoriteList.map(item => {
-                                return (
-                                    <div key={item.id} className="fa-box">
-                                        <div className="profile">
-                                            <div>
-                                                <img src={item.profile ? item.profile : "/blank.jpg"}/>
+                {
+                    favoriteList.length > 0 ?
+                    <div className="container">
+                        <div id="favauthor-area">
+                            {
+                                favoriteList.map(item => {
+                                    return (
+                                        <div key={item.id} className="fa-box">
+                                            <div className="profile">
+                                                <div>
+                                                    <img src={item.profile ? item.profile : "/blank.jpg"}/>
+                                                </div>
+
+                                                <span className="author-name">{item.author_nickname}</span>
+                                                &nbsp;작가
                                             </div>
 
-                                            <span className="author-name">{item.author_nickname}</span>
-                                            &nbsp;작가
+                                            <div className="details">
+                                                <div className="stat-area">
+                                                    <span className="stat">
+                                                        <em className="heart"/>
+                                                        42,785
+                                                    </span>
+                                                    |
+                                                    <span  className="stat">
+                                                        <em className="star"/>
+                                                        {(item.review_score && item.review_count) ? (item.review_score / item.review_count).toFixed(1) : "0.0"}
+                                                    </span>
+                                                    |
+                                                    <span  className="stat">
+                                                        <em className="review"/>
+                                                        {item.review_count ? item.review_count : 0}개
+                                                    </span>
+                                                </div>
+
+                                                <div className="tip-area">
+                                                    <span className="tip">#생활/취미</span>
+                                                    <span className="tip">#글쓰기</span>
+                                                    <span className="tip">#자기계발</span>
+                                                </div>
+                                                <p className="description">
+                                                    {item.author_description}
+                                                </p>
+                                            </div>
+
+                                            <div className="favorite">
+                                                <button onClick={() => this.handleDelete(item.id)} className="favorite-icon">
+                                                    <img src="/heart.png"/>
+                                                </button>
+                                            </div>
+
+                                            <Link to={URL.service.author + item.author_id}>
+                                                <div className="detail">
+                                                    <em className="right_arrow"/>
+                                                </div>
+                                            </Link>
                                         </div>
 
-                                        <div className="details">
-                                            <div className="stat-area">
-                                                <span className="stat">
-                                                    <em className="heart"/>
-                                                    42,785
-                                                </span>
-                                                |
-                                                <span  className="stat">
-                                                    <em className="star"/>
-                                                    {(item.review_score && item.review_count) ? (item.review_score / item.review_count).toFixed(1) : "0.0"}
-                                                </span>
-                                                |
-                                                <span  className="stat">
-                                                    <em className="review"/>
-                                                    {item.review_count ? item.review_count : 0}개
-                                                </span>
-                                            </div>
-
-                                            <div className="tip-area">
-                                                <span className="tip">#생활/취미</span>
-                                                <span className="tip">#글쓰기</span>
-                                                <span className="tip">#자기계발</span>
-                                            </div>
-                                            <p className="description">
-                                                {item.author_description}
-                                            </p>
-                                        </div>
-
-                                        <div className="favorite">
-                                            <button onClick={() => this.handleDelete(item.id)} className="favorite-icon">
-                                                <img src="/heart.png"/>
-                                            </button>
-                                        </div>
-
-                                        <Link to={URL.service.author + item.author_id}>
-                                            <div className="detail">
-                                                <em className="right_arrow"/>
-                                            </div>
-                                        </Link>
-                                    </div>
-
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
+                        </div>
                     </div>
-                </div>
+                    :
+                    <div className="container">
+                        <div className="no-content">
+                            찜한 작가가 없습니다.
+                        </div>
+                    </div>
+                }
             </div>
 
         )

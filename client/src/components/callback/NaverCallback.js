@@ -12,7 +12,6 @@ const NaverCallback = ({location, history, ...props}) => {
 
 
     const getUserProfile = async () => {
-        console.log(NAVER.BASE_URL+NAVER.CALLBACK_URL)
         try {
             var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.BASE_URL+NAVER.CALLBACK_URL);
 
@@ -35,43 +34,44 @@ const NaverCallback = ({location, history, ...props}) => {
                         history.replace(URL.service.accounts.signup);
                     }
 
-                    const email_check_res = await API.sendGet(URL.api.auth.email.duplicate, params={email:email})
-
+                    const res = await API.sendGet(URL.api.auth.email.duplicate, params={email:email})
                     // 중복없는 경우
                     // 회원가입 페이지로 넘어가기
-                    if(email_check_res.status === 200) {
+                    if(res.status === 200) {
                         history.push({
                             pathname:   URL.service.accounts.signup_step,
                             search:     `?sns=naver&email=${email}&id=${id}`,
                         });
                     }
-                    // 중복 있는 경우
-                    // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
-                    // 2. 이미 등록된 계정이면 에러 메시지
-                    else {
+                } catch(err) {
+                    var resp = err.response
+                    if(resp.status === 401) { // 인증 실패
+                        alert("인증이 실패하였습니다")
+                        window.location.href = URL.service.accounts.login
+                    }
+                    if(resp.status === 409) { // 중복
+                        // 중복 있는 경우
+                        // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
+                        // 2. 이미 등록된 계정이면 에러 메시지
                         const res = await API.sendGet(URL.api.auth.sns.naver, params={id:id, email:email, sns: 'naver'})
                         if(res.status === 200) {
                             var token = res.data.token;
-                            if( token ) Cookies.set('RINGU_TOKEN', token, {expires: 7, path: '/'});
+                            if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
                             history.push(URL.service.home);
                         }
+                    } else {
+                        console.log(resp.status)
+                        console.error(resp.data.message)
                     }
-                } catch(err) {
-                    var resp = err.response
-                    console.log(resp)
                 }
-            } else {
-
             }
         } catch(err){
             var resp = err.response
             if(resp.status === 401) { // 인증 실패
-                console.log(resp.data.message)
-            } else {
-                console.log(err)
+                alert("인증이 실패하였습니다")
+                window.location.href = URL.service.accounts.login
             }
         }
-
     }
 
     return null;

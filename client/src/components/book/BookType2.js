@@ -52,8 +52,8 @@ class BookType2 extends Component {
                 book_detail_id: state.book.book_details[0].id,
             }
 
-            const duplicate = await API.sendPost(URL.api.cart.duplicate, params)
-            console.log(duplicate)
+            const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
+
             if(duplicate.status === 200) {
                 const res = await API.sendPost(URL.api.cart.create, params)
 
@@ -63,17 +63,17 @@ class BookType2 extends Component {
                     }
                 }
             }
-            else if(duplicate.status === 409) {
-                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
-                    this.props.history.push(URL.service.mypage.carts)
-                }                
-            } else {
-                alert("장바구니에 담지 못하였습니다.")
-            }
         }
         catch(err){
-            console.log(err.response)
-            console.err(err)
+            var error = err.response;
+            if(error.status === 409) {
+                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.carts)
+                }
+            }
+            else {
+                alert("장바구니에 담지 못하였습니다.")
+            }
         }
     }
 
@@ -93,6 +93,9 @@ class BookType2 extends Component {
                         this.setState(state);
                     }
                 }
+                else if(res.status === 204) {
+                    console.log("no content")
+                }
             } catch(e) {
                 console.log(e)
             }
@@ -104,7 +107,7 @@ class BookType2 extends Component {
                     book_id: book.id,
                 }
 
-                const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
 
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.book.create, params)
@@ -112,20 +115,33 @@ class BookType2 extends Component {
                         state.isFavorite = true;
                         this.setState(state);
                     }
-                    else {
-                        alert("즐겨찾기에 추가하지 못하였습니다.")
-                    }
-                } else if(duplicate.status === 403) {
+                }
+            } catch(e) {
+                var error = e.response;
+                if(error.status === 409) {
+                    alert("이미 찜한 작품입니다.")
+                }
+                else if(error.status === 403) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
                 }
                 else {
-                    alert("이미 즐겨찾기되어 있습니다.")
+                    alert("즐겨찾기에 추가하지 못하였습니다. 잠시 후 다시 시도해주세요.")
                 }
-            } catch(e) {
-                console.log(e)
             }
+        }
+    }
+
+    downloadAction = async() => {
+        var detail = this.state.book.book_details[0]
+        const res = await API.sendGet(URL.api.book.download+ "/" + detail.id + "?type=preview");
+        if(res.status === 200) {
+            let downloadUrl = res.data.url;
+            window.open(downloadUrl);
+        }
+        else {
+            alert("오류가 발생했습니다.")
         }
     }
 
@@ -133,21 +149,24 @@ class BookType2 extends Component {
         var state = this.state;
 
         try {
-            const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, {book_id: state.book.id})
+            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
             if(duplicate.status === 200) {
                 state.isFavorite = false;
                 this.setState(state)
             }
-            else {
+        }
+        catch(e) {
+            var error = e.response
+            if(error.status === 409) {
                 state.isFavorite = true;
                 this.setState(state)
             }
+        }
 
+        try {
             const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
-
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
-                this.setState(state)
             }
 
             window.addEventListener('scroll', this.handleScroll)
@@ -161,7 +180,7 @@ class BookType2 extends Component {
             this.setState(state)
         }
         catch(e) {
-            console.err(e)
+            var error = e.response
         }
     }
 
@@ -264,8 +283,8 @@ class BookType2 extends Component {
                         </div>
 
                         <div className="book-detail-box">
-                            <span className="book-detail">저자 : {book.author_nickname}</span>
-                            <span className="book-detail">페이지수 : {book.page_number}페이지</span>
+                            <span className="book-detail">{book.author_nickname}</span>
+                            <span className="book-detail">총 {book.page_number}페이지</span>
                         </div>
 
                         <h3 className="book-title">{book.title}</h3>
@@ -289,7 +308,10 @@ class BookType2 extends Component {
                             <div id="content-area" className="inner-box" ref={this.contentRef}>
                                 <div className="inner-header"> 목차</div>
                                 <div className="inner-content">
-
+                                    <div className="preview">
+                                        <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
+                                    </div>
+                                    {book.content}
                                 </div>
                             </div>
 
@@ -300,7 +322,7 @@ class BookType2 extends Component {
                                         <div className="author-profile">
                                             <Link to={URL.service.author + book.author_id}>
                                                 <div className="author-thumbnail-box">
-                                                    <img src="/blank.jpg" style={{width:"100px", height:"100px", textAlign:"center", borderRadius:"50%"}}/>
+                                                    <img src={!!state.book.author_profile ? state.book.author_profile : "/blank.jpg"}/>
                                                 </div>
 
                                                 <div className="btn btn-block btn-color-2 btn-rounded">작가 공간</div>
@@ -335,7 +357,7 @@ class BookType2 extends Component {
                                         {
                                             state.reviewList.map(item => {
                                                 return (
-                                                    <div className="review-item" >
+                                                    <div className="review-item" key={item.id}>
                                                         <div style={{marginBottom: "15px"}}>
                                                             <span style={{fontSize:"12px"}}> {item.author} </span>
                                                             <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>

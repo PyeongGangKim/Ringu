@@ -1,14 +1,14 @@
 import React, { Component, Fragment } from 'react';
 
 import RegisterBookSelect from '../components/register/RegisterBookSelect';
-import RegisterBook1 from '../components/register/RegisterBook1';
-import RegisterBook2 from '../components/register/RegisterBook2';
+import RegisterBook from '../components/register/RegisterBook';
+
 
 import Header from '../components/common/Header';
 
 class RegisterDetailPage extends Component {
     constructor(props) {
-        super(props);        
+        super(props);
     }
 
     render() {
@@ -19,10 +19,7 @@ class RegisterDetailPage extends Component {
                 <Header history={this.props.history}></Header>
                 <div id="wrap">
                     {
-                        bookType === 2 ?
-                        <RegisterBook2 location={this.props.location}/>
-                        :
-                        <RegisterBook1 location={this.props.location}/>
+                        <RegisterBook location={this.props.location}/>
                     }
                 </div>
             </Fragment>

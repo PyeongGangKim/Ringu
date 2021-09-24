@@ -1,11 +1,11 @@
 module.exports = {
     api : {
         auth: {
-            login:          "/auth/login",
-            signup:         "/auth/signup",
+            login:              "/auth/login",
+            signup:             "/auth/signup",
             user: {
-                get:        "/auth/user",
-                edit:       "/auth/user/edit",
+                get:            "/auth/user",
+                edit:           "/auth/user/edit",
             },
             email: {
                 code:           "/auth/email/code",
@@ -13,8 +13,8 @@ module.exports = {
                 identification: "/auth/email/identification",
             },
             company: {
-                get:        "/auth/company",
-                edit:       "/auth/company/edit",
+                get:            "/auth/company",
+                edit:           "/auth/company/edit",
             },
             sns:{
                 naver_callback: "/auth/naver/callback",
@@ -22,19 +22,20 @@ module.exports = {
                 naver:          "/auth/naver",
                 kakao:          "/auth/kakao",
             },
-            verify_nickname:  "/auth/nickname/duplicate",
+            nickname_duplicate: "/auth/nickname/duplicate",
+
         },
         member: {
-            get:              "/member",
-            getById:          "/member/",
-            verify_nickname:  "/member/nickname/duplicate",
-            password:         "/member/password",
-            passwordCheck:    "/member/password/check",
-            upload_profile:   "/member/upload_profile",
-            profile:          "/member/profile/",
-            certification:    "/member/certification",
-            update:           "/member/",
-            delete:           "/member",
+            get:                "/member",
+            getById:            "/member/",
+            nickname_duplicate: "/member/nickname/duplicate",
+            password:           "/member/password",
+            passwordCheck:      "/member/password/check",
+            upload_profile:     "/member/upload_profile",
+            profile:            "/member/profile/",
+            certification:      "/member/certification",
+            update:             "/member/",
+            delete:             "/member",
         },
         cart: {
             create:             "/cart",
@@ -49,8 +50,9 @@ module.exports = {
         book: {
             get:                "/book/",
             list:               "/book",
-            modify:             "/book/modify" ,
-            dowload:            "/book/download",
+            modify:             "/book/modify",
+            download:           "/book/download",
+            preview:            "/book/preview",
             getDetailList:      "/book/detail/",
             main:               "/book/main",
             delete:             "/book/",
@@ -67,9 +69,11 @@ module.exports = {
         },
         favorite: {
             author: {
-                get:            "/favorit_author/",
+                create:         "/favorite_author",
+                get:            "/favorite_author/",
                 list:           "/favorite_author",
                 delete:         "/favorite_author/",
+                duplicate:      "/favorite_author/duplicate",
             },
             book: {
                 create:         "/favorite_book",
@@ -86,9 +90,11 @@ module.exports = {
             getByBook:          "/review/book/",
             register:           "/review",
             duplicate:          "/review/duplicate",
+            stats:              "/review/stats",
         },
         register: {
             book:               "/book",
+            bookDetail:         "/book_detail"
         },
         notification: {
             getNotification:    "/notification/",
@@ -99,11 +105,31 @@ module.exports = {
             deleteNotification: "/notification/delete",
         },
         payment: {
-            create:             "/payment",
+            create              :"/payment",
         },
     },
     service : {
-        home    : "/home",
+        accounts: {
+            login               : "/login",
+            signup              : "/signup",
+            signup_step         : "/signup/step",
+            welcome             : "/welcome",
+        },
+        auth: {
+            naver               : "/auth/callback/naver",
+            kakao               : "/auth/callback/kakao",
+            google              : "/auth/callback/google",
+        },
+        author                  : "/author/",
+        book: {
+            book                : "/book/",
+            modify              : "/modify/book/",
+        },
+        buy : {
+            buy                 : "/buy",
+            complete            : "/complete",
+        },
+        home                    : "/home",
         mypage  : {
             info                : "/mypage",
             password_change     : "/mypage/password/update",
@@ -115,33 +141,13 @@ module.exports = {
             fav_book            : "/favorite/book",
             register            : "/register/author/",
         },
-        author                  : "/author/",
+        notification    : "/notification/",
+        search          : "/search",
         register : {
             author              : "/register/author",
             author_detail       : "/register/author/detail",
             book                : "/register/book/",
         },
-        book: {
-            book                : "/book/",
-            modify              : "/modify/book/",
-        },
-        buy : {
-            buy         : "/buy",
-            complete    : "/complete",
-        },
-        accounts: {
-            login       : "/login",
-            signup      : "/signup",
-            signup_step : "/signup/step",
-            welcome     : "/welcome",
-        },
-        auth: {
-            naver       : "/auth/callback/naver",
-            kakao       : "/auth/callback/kakao",
-            google      : "/auth/callback/google",
-        },
-        search          : "/search",
         review          : "/review/",
-        notification    : "/notification/",
     }
 };

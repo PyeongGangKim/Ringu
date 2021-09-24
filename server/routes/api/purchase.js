@@ -149,31 +149,35 @@ router.post('/kakaopay', isLoggedIn, async(req, res, next) => {
 
     })
 })
-router.post('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
 
-    let member_id = req.body.member_id;
-    let book_detail_id = req.body.book_detail_id;
+    let member_id = req.query.member_id;
+    let book_detail_id = req.query.book_detail_id;
 
     try{
-        const duplicate_result = await purchase.findOne({
+        const result = await purchase.findOne({
             where : {
                 member_id : member_id,
                 book_detail_id : book_detail_id,
                 status: 1,
             }
         });
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
+        if(result){
+            res.status(StatusCodes.CONFLICT).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매

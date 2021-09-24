@@ -49,7 +49,7 @@ class SideNav extends Component {
                             <li className={path === "/mypage" ? "on" : ""}><Link to={URL.service.mypage.info}>나의 정보</Link></li>
                             <li className={path === "/mypage/notification/update" ? "on" : ""}><Link to={URL.service.mypage.notification_change}>알림 설정 변경</Link></li>
                             <li className={path === "/mypage/password/update" ? "on" : ""}><Link to={URL.service.mypage.password_change}>비밀번호 변경</Link></li>
-                            <li className={path.includes("/register/author") ? "on" : ""}><Link to={URL.service.mypage.register}>작가 인증</Link></li>
+                            {/*<li className={path.includes("/register/author") ? "on" : ""}><Link to={URL.service.mypage.register}>작가 인증</Link></li>*/}
                             <li className={path === "/leave" ? "on" : ""}><Link to={URL.service.mypage.leave}>회원 탈퇴</Link></li>
 
                         </ul>

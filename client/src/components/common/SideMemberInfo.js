@@ -23,6 +23,9 @@ class SideMemberInfo extends Component {
             profile: "/blank.jpg",
             user: userInfo,
             host: {},
+            reviewTotal: 0,
+            reviewCount: 0,
+            isFavorite: false,
         }
     }
 
@@ -33,6 +36,8 @@ class SideMemberInfo extends Component {
             var favoriteAuthorList = []
             var purchaseList = []
             var cartList = []
+            var reviewStats = {};
+            var user = {};
 
             if (this.props.isAuthor === false) {
                 const fav1 = await API.sendGet(URL.api.favorite.book.list)
@@ -55,6 +60,15 @@ class SideMemberInfo extends Component {
                 if(carts.status === 200) {
                     cartList = carts.data.cartList
                 }
+            } else {
+                var params = {
+                    group: "author_id",
+                    id: this.props.authorId,
+                }
+                const res = await API.sendGet(URL.api.review.stats, params)
+                if(res.status === 200) {
+                    reviewStats = res.data.stats[0]
+                }
             }
 
             var id;
@@ -68,22 +82,43 @@ class SideMemberInfo extends Component {
                 id = state.user.id
             }
 
+            if (this.props.isHost === false) {
+                const res = await API.sendGet(URL.api.favorite.author.get, {author_id: this.props.authorId})
+                if(res.status === 200) {
+                    var fa = res.data.favoriteAuthor;
+                    state.isFavorite = true;
+                    this.setState(state);
+                }
+            }
+
             const userRes = await API.sendGet(URL.api.member.getById + id)
+            if(userRes.status === 200) {
+                user = userRes.data.user
+            }
             this.setState({
                 favorites: favoriteBookList.length + favoriteAuthorList.length,
                 purchases: purchaseList.length,
                 carts: cartList.length,
-                host: userRes.data.user,
+                host: user,
+                total: parseInt(reviewStats.total),
+                count: parseInt(reviewStats.count),
             })
         } catch(e) {
-            console.log(e)
+            console.error(e)
         }
     }
 
     handleProfileChange = async(e) => {
         var state = this.state
+        var file = e.target.files[0]
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.user.nickname + "." + fieldName, {type: file.type})
+
         const data = new FormData()
-        data.append('img', e.target.files[0])
+        data.append('img', newFile)
 
         const res = await API.sendData(URL.api.member.upload_profile, data)
         if (res.status === 200) {
@@ -95,17 +130,79 @@ class SideMemberInfo extends Component {
         }
     }
 
+    handleFavoriteClick = async() => {
+        var state = this.state;
+
+        if(state.isFavorite) {
+            try {
+                const res = await API.sendGet(URL.api.favorite.author.get + this.props.authorId)
+                if(res.status === 200) {
+                    var fa = res.data.favoriteAuthor;
+
+                    const res2 = await API.sendDelete(URL.api.favorite.author.delete + fa.id)
+                    if(res2.status === 200) {
+                        state.isFavorite = false;
+                        this.setState(state);
+                    }
+                }
+            } catch(e) {
+                alert("찜하기를 취소하지 못했습니다.")
+            }
+        }
+        // 즐찾 추가
+        else {
+            try {
+                var params = {
+                    author_id: this.props.authorId,
+                }
+                const duplicate = await API.sendGet(URL.api.favorite.author.duplicate, params)
+
+                if(duplicate.status === 200) {
+                    const res = await API.sendPost(URL.api.favorite.author.create, params)
+                    if(res.status === 201) {
+                        state.isFavorite = true;
+                        this.setState(state);
+                    }
+                }
+            } catch(e) {
+                var error = e.response;
+                if(error.status === 401) {
+                    if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                        window.location.href = URL.service.accounts.login;
+                    }
+                }
+                else if(error.status === 409) {
+                    alert("이미 찜한 작가입니다.")
+                }
+                else {
+                    alert("찜하기에 실패하였습니다.")
+                }
+            }
+        }
+    }
+
     render() {
         var state = this.state
 
         return (
             <div className="side-info">
-                <form>
-                    <div className="profile">
+                {
+                    this.props.isHost === false &&
+                    <div className="favorite-box">
+                        <button className="favorite-btn" onClick={this.handleFavoriteClick}>
+                            <em className={"favorite " + (state.isFavorite ? "on" : "")}/>
+                        </button>
+                    </div>
+                }
+
+                <div className="profile">
                     {
                         this.props.isAuthor === true ?
                         <div className="img-area">
                             {
+                                typeof state.host.profile === 'undefined' ?
+                                <div className="img-dummy"/>
+                                :
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
@@ -116,6 +213,9 @@ class SideMemberInfo extends Component {
                         <div className="img-area">
                             <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
                             {
+                                typeof state.host.profile === 'undefined' ?
+                                <div className="img-dummy"/>
+                                :
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
@@ -126,18 +226,26 @@ class SideMemberInfo extends Component {
                             </label>
                         </div>
                     }
-                    </div>
-                </form>
+                </div>
 
-                <strong className="name"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
+
+                {
+                    typeof state.host.nickname === 'undefined' || state.host.nickname === '' ?
+                    <div className="nickname-dummy"></div>
+                    :
+                    <strong className="nickname"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
+                }
+
 
                 {
                     this.props.isAuthor === true ?
                     <div className="info-area">
                         <div className="author-box">
                             <div className="author-details">
-                                <span className="stars"> ★ ★ ★ ★ ★ </span>
-                                <span className="score"> 5.0 </span>
+                                <span className="stars">
+                                    {"★".repeat((state.total/state.count))}
+                                </span>
+                                <span className="score"> {(state.total/state.count) ? parseFloat((state.total/state.count)).toFixed(1) : parseFloat(0).toFixed(1)} </span>
                             </div>
 
 

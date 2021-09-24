@@ -1,4 +1,5 @@
 header {
+    border-bottom: 1px solid #c2c2c2;
     background-color: white;
     position: absolute;
     top: 0;
@@ -66,9 +67,9 @@ header {
             font-size: 16px;
 
             a {
+                font-weight: 500;
                 margin: 0 10px;
                 width: 105px;
-                height: 40px;
                 text-align: center;
 
                 .btn {
@@ -92,7 +93,7 @@ header {
             color: #999999;
 
 
-            #author-page, #notification-page {
+            #author-page {
                 width: 70px;
                 height: 100%;
                 margin: 0 5px;
@@ -104,7 +105,20 @@ header {
                     margin: 0 auto 10px auto;
                 }
             }
+            #notification-page{
+                width: 70px;
+                height: 100%;
+                margin: 0 5px;
+                vertical-align: top;
 
+                img {
+                    
+                    display:block;
+                    width: 45px;
+                    height: 45px;
+                    margin: 0 auto 0px auto;
+                }
+            }
 
 
             #user-nb {

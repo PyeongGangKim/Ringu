@@ -33,7 +33,6 @@ class Book extends Component {
         if(state.isFavorite) {
             try {
                 const res = await API.sendGet(URL.api.favorite.book.get + book.id)
-                console.log(res)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 
@@ -43,7 +42,6 @@ class Book extends Component {
                         this.setState(state);
                     }
                 }
-
             } catch(e) {
                 console.log(e)
             }
@@ -54,27 +52,28 @@ class Book extends Component {
                 var params = {
                     book_id: book.id,
                 }
-                const duplicate = await API.sendPost(URL.api.favorite.book.duplicate, params)
-
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
                     const res = await API.sendPost(URL.api.favorite.book.create, params)
                     if(res.status === 201) {
                         state.isFavorite = true;
                         this.setState(state);
                     }
-                    else {
-                        alert("즐겨찾기에 추가하지 못하였습니다.")
-                    }
-                } else if(duplicate.status === 403) {
+                }
+            } catch(e) {
+                var error = e.response
+                if(error.status === 401) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
                 }
-                else {
-                    alert("이미 즐겨찾기되어 있습니다.")
+                else if(error.status === 409) {
+                    alert("이미 찜한 작품입니다.")
+
                 }
-            } catch(e) {
-                console.log(e)
+                else {
+                    alert("찜하기에 실패하였습니다.")
+                }
             }
         }
 
@@ -164,20 +163,20 @@ class Book extends Component {
                                 </div>
                                 <div className="review-info">
                                     <span className="star"> ★ </span>
-                                    <span> {book.mean_score ? parseFloat(book.mean_score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
+                                    <span> {book.score ? parseFloat(book.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
                                 </div>
                             </div>
                         </div>
                         {
                             isHost === true &&
                             <div className="btn-wrap">
+                                <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
                                 {
                                     status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
                                 }
                                 {
                                     status.includes('pub') && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
                                 }
-                                <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
                             </div>
                         }
                     </div>

@@ -90,18 +90,20 @@ router.post("/signup/sns", async (req, res, next) => {
     }
 });
 
-router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
-    let nickname = req.body.nickname;
+router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시 nickname 중복 체크.
+    let nickname = req.query.nickname;
 
     try{
-        const result = await member.findAll({
+        const result = await member.findOne({
             where: {
                 nickname : nickname,
+                status: 1,
             }
         });
-        if(result.length != 0){
+
+        if(result !== null){
             res.status(StatusCodes.CONFLICT).json({
-                "message" : "Duplicate",
+                "message" : "duplicate",
             });
         }
         else{
@@ -111,25 +113,27 @@ router.post('/nickname/duplicate', async(req, res, next) => { // 회원 가입�
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
         })
     }
 });
 
-router.get('/email/duplicate', async(req, res, next) => {//email duplicate체크하는 api
+router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하는 api
     var email = req.query.email;
 
     try{
         const result = await member.findOne({
             where : {
-                email: email
+                email: email,
+                status: 1,
             }
         });
-        console.log(result);
-        if(result){
+
+        if(result !== null){
             res.status(StatusCodes.CONFLICT).json({
-                "message" : "Duplicate",
+                "message" : "duplicate",
             });
         }
         else {
@@ -171,7 +175,6 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
 //naver login
 router.get('/naver', passport.authenticate('naver', {session: false}),
     function(req, res) {
-        console.log('naver')
         const token = jwt.sign({
             id: req.user.id,
             type: req.user.type,
@@ -185,20 +188,6 @@ router.get('/naver', passport.authenticate('naver', {session: false}),
         });
     }
 )
-
-
-
-/*router.get( '/naver/callback',passport.authenticate('naver', { failureRedirect: '/auth/login', session: false }),
-  function (req, res) {
-      const token = jwt.sign({
-           id: req.user.id
-          }, secretKey, {
-              expiresIn: '12h',
-              issuer: 'ringu',
-          });
-      res.cookie('token', token).redirect(redirect_url);
-  },
-);*/
 
 router.get('/naver/callback', function(req, res) {
     try {
@@ -230,10 +219,20 @@ router.get('/naver/callback', function(req, res) {
 
 })
 //kakao login
-router.get('/kakao', passport.authenticate('kakao', {
-    session: false,
-    scope: ['account_email'],
-  }),
+router.get('/kakao', passport.authenticate('kakao', {session: false}),
+    function(req, res) {
+        const token = jwt.sign({
+            id: req.user.id,
+            type: req.user.type,
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
+        });
+
+        res.status(StatusCodes.OK).json({
+            token: token
+        });
+    }
 );
 
 router.get( '/kakao/callback',passport.authenticate('kakao', { failureRedirect: '/auth/login', session: false }),

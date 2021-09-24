@@ -12,8 +12,6 @@ const { isLoggedIn } = require("../../middlewares/auth");
 
 
 router.post('/', isLoggedIn, async (req, res, next) => {
-
-
     var member_id = req.user.id;
     var author_id = req.body.author_id;
     const t = await sequelize.transaction();
@@ -46,42 +44,78 @@ router.post('/', isLoggedIn, async (req, res, next) => {
             transaction: t,
         });
         await t.commit();
-        res.status(StatusCodes.OK).send("success like");
+        res.status(StatusCodes.CREATED).send("success like");
     }
     catch(err){
         await t.rollback();
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 router.post('/duplicate', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
-    var author_id = req.body.author_id;
+    var author_id = req.query.author_id;
 
     try{
-        const duplicate_result = await favorite_author.findOne({
+        const result = await favorite_author.findOne({
             where: {
                 member_id : member_id,
                 author_id : author_id,
                 status : 1,
             }
         });
-        if(duplicate_result){
-            res.status(StatusCodes.CONFLICT).send("Duplicate");
+        if(result !== null){
+            res.status(StatusCodes.CONFLICT).json({
+                "message" : "duplicate",
+            });
         }
         else{
-            res.status(StatusCodes.OK).send("No Duplicate");
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
         }
     }
     catch(err){
+        console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
 
 });
+
+router.get('/:authorId', isLoggedIn, async (req, res, next) => {
+    var member_id = req.user.id;
+    var author_id = req.params.authorId;
+
+    try {
+        const fav = await favorite_author.findOne({
+            where: {
+                member_id: member_id,
+                author_id: author_id
+            }
+        })
+
+        if(fav) {
+            res.status(StatusCodes.OK).json({
+                "favoriteAuthor": fav,
+            })
+        }
+        else{
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+})
 
 router.get('/', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
@@ -180,7 +214,7 @@ router.delete('/:favoriteAuthorId', isLoggedIn, async (req, res, next) => {
         res.status(StatusCodes.OK).json({
             "message" : "OK",
         });
-        
+
     }
     catch(err){
         await t.rollback();

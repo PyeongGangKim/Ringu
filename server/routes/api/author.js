@@ -78,14 +78,13 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
             res.status(StatusCodes.NO_CONTENT).json({
                 "message" : "NO_CONTENT",
             });
-            
         }
     }
     catch(err){
         console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "server error",
-        });;
+            "error": "server error"
+        });
     }
 });
 router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
@@ -163,8 +162,8 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
     catch(err){
         console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            msg: "server error",
-        });;
+            "error": "server error"
+        });
     }
 });
 module.exports = router;
