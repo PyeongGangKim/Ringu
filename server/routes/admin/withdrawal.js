@@ -130,7 +130,7 @@ router.get("/:withdrawalId/remittance", async (req, res, next) => {
             member_id : cur_author_id,
             content : noti_content_withdrawal,
             title: noti_title,
-            type : 4,
+            type : 2,
         },{
             transaction: t,
         });

@@ -274,6 +274,7 @@ router.post("/login", async (req, res, next) => {
     try {
         passport.authenticate("local", { session: false },(passportError, user, info) => {
             if(passportError || !user){
+                console.log(info);
                 res.status(400).json({message: info.message});
                 return;
             }
@@ -437,7 +438,9 @@ router.post('/phone/identification/number', isLoggedIn, async (req, res, next) =
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "server error",
+        });;
     }
 });
 
@@ -495,7 +498,9 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            msg: "server error",
+        });;
     }
 });
 

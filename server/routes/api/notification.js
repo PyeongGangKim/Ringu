@@ -9,8 +9,12 @@ const {sequelize, notification , member, Sequelize : {Op}} = require("../../mode
 //type : 1.작품 알림, 2.출금알림, 3.공지사항
 router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification 모든 종류 다 가져오기.
 
-    let member_id = req.user.id;
-
+    const member_id = req.user.id;
+    const type = (req.query.type === undefined) ? [1,2,3] : req.query.type;
+    const offset = req.query.offset * 1;
+    const limit = 10;
+    console.log(req.query);
+    console.log(offset);
     try{
         const notifications = await notification.findAll({
             attributes : [
@@ -24,15 +28,18 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
             ],
             where : {
                 member_id : member_id,
-                status : 1,  
+                status : 1, 
+                type: type, 
             },
             include : {
                 as: "member",
                 model: member,
                 attributes: [],
             },
+            limit : limit,
+            offset: offset,
             order: [
-                ["created_date_time", "ASC"]
+                ["created_date_time", "DESC"]
             ],
         });
         res.status(StatusCodes.OK).json({
@@ -46,7 +53,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
         });
     }
 });
-router.get('/newNotiCount', isLoggedIn, async(req, res, next) => {
+router.get('/allNewNotiCount', isLoggedIn, async(req, res, next) => {
     let member_id = req.user.id;
     try{
         const newNotiCount = await notiCount.findOne({
@@ -66,51 +73,15 @@ router.get('/newNotiCount', isLoggedIn, async(req, res, next) => {
         });
     }
 });
-router.get('/book', isLoggedIn, async (req, res, next) => {
+router.get('/newNotiCnt', isLoggedIn, async (req, res, next) => {
     let member_id = req.user.id;
-    try{
-        const book_notifications = await notification.findAll({
-            attributes : [
-                "id",
-                [sequelize.literal("member.nickname"), "nickname"],
-                "title",
-                "content",
-                "is_read",
-                ["created_date_time", "date"],
-            ],
-            where: {
-                member_id : member_id,
-                status : 1,
-                type: 1,
-            },
-            include : {
-                as: "member",
-                model: member,
-                attributes:[],
-            },
-            order: [
-                ["created_date_time", "ASC"]
-            ],
-        });
-        res.status(StatusCodes.OK).json({
-            book_notification_list: book_notifications,
-        });
-    }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "message" : "server error",
-        });
-    }
-});
-router.get('/book/newNotiCnt', isLoggedIn, async (req, res, next) => {
-    let member_id = req.user.id;
+    let type = req.query.type;
     try{
         const unread_cnt = await notification.count({
             where : {
                 member_id : member_id,
                 status : 1,
-                type: 1,
+                type: type,
                 is_read : 0,
             }   
         });
@@ -125,95 +96,19 @@ router.get('/book/newNotiCnt', isLoggedIn, async (req, res, next) => {
         });
     }
 });
-router.get('/withdrawal', isLoggedIn, async (req, res, next) => {
-    let member_id = req.user.id;
-    try{
-        const withdrawal_notifications = await notification.findAll({
-            attributes : [
-                "id",
-                [sequelize.literal("member.nickname"), "nickname"],
-                "title",
-                "content",
-                "is_read",
-                ["created_date_time", "date"],
-            ],
-            where: {
-                member_id : member_id,
-                status : 1,
-                type: 4,
-            },
-            include : {
-                as: "member",
-                model: member,
-                attributes:[],
-            },
-            order: [
-                ["created_date_time", "ASC"]
-            ],
-        });
-        res.status(StatusCodes.OK).json({
-            withdrawal_notification_list: withdrawal_notifications,
-        });
-
-    }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "message" : "server error",
-        });
-    }
-});
-router.get('/withdrawal/newNotiCnt', isLoggedIn, async (req, res, next) => {
-    let member_id = req.user.id;
+router.get('/allCount', isLoggedIn, async(req, res, next) => {
+    const member_id = req.user.id;
+    const type = req.query.type;
     try{
         const unread_cnt = await notification.count({
             where : {
                 member_id : member_id,
                 status : 1,
-                type: 4,
-                is_read : 0,
+                type: type,
             }   
         });
         res.status(StatusCodes.OK).json({
-            unread_count : unread_cnt
-        });
-
-    }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "message" : "server error",
-        });
-    }
-});
-router.get('/notice', isLoggedIn, async (req, res, next) => {
-    let member_id = req.user.id;
-    try{
-        const notice_notifications = await notification.findAll({
-            attributes : [
-                "id",
-                [sequelize.literal("member.nickname"), "nickname"],
-                "title",
-                "content",
-                "is_read",
-                ["created_date_time", "date"],
-            ],
-            where: {
-                member_id : member_id,
-                status : 1,
-                type: 3,
-            },
-            include : {
-                as: "member",
-                model: member,
-                attributes:[],
-            },
-            order: [
-                ["created_date_time", "ASC"]
-            ],
-        });
-        res.status(StatusCodes.OK).json({
-            normal_notification_list : notice_notifications,
+            all_count : unread_cnt
         });
     }
     catch(err){
@@ -222,36 +117,14 @@ router.get('/notice', isLoggedIn, async (req, res, next) => {
             "message" : "server error",
         });
     }
-});
-router.get('/notice/newNotiCnt', isLoggedIn, async (req, res, next) => {
-    let member_id = req.user.id;
-    try{
-        const unread_cnt = await notification.count({
-            where : {
-                member_id : member_id,
-                status : 1,
-                type: 2,
-                is_read : 0,
-            }   
-        });
-        res.status(StatusCodes.OK).json({
-            unread_count : unread_cnt
-        });
-    }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "message" : "server error",
-        });
-    }
-});
-router.delete('/:notificationId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
-    let notification_id = req.params.notificationId;
-
+})
+router.post('/delete', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
+    let notification_ids = req.body.notificationIds;
+    console.log(notification_ids)
     try{
         await notification.destroy({
             where : {
-                id : notification_id,
+                id : notification_ids,
             }
         })
         res.status(StatusCodes.OK).json({
