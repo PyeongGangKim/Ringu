@@ -93,7 +93,7 @@ header {
             color: #999999;
 
 
-            #author-page {
+            #author-page, #notification-page {
                 width: 70px;
                 height: 100%;
                 margin: 0 5px;
@@ -105,21 +105,6 @@ header {
                     margin: 0 auto 10px auto;
                 }
             }
-            #notification-page{
-                width: 70px;
-                height: 100%;
-                margin: 0 5px;
-                vertical-align: top;
-
-                img {
-                    
-                    display:block;
-                    width: 45px;
-                    height: 45px;
-                    margin: 0 auto 0px auto;
-                }
-            }
-
 
             #user-nb {
                 position: relative;

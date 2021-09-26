@@ -34,7 +34,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {
             orderParams.push(['created_date_time', 'DESC'])
         }
-
+        /* 소개도 키워드를 찾을 수 있게 하기.*/
         var where = {
             status: 1,
             author_id : {

@@ -138,7 +138,7 @@ class BookType2 extends Component {
         const res = await API.sendGet(URL.api.book.download+ "/" + detail.id + "?type=preview");
         if(res.status === 200) {
             let downloadUrl = res.data.url;
-            window.open(downloadUrl);
+            window.location.assign(downloadUrl);
         }
         else {
             alert("오류가 발생했습니다.")
