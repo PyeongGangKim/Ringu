@@ -783,7 +783,7 @@ router.get("/approved/:bookId", async (req,res,next) => {
                 member_id : following_member.member_id,
                 content: noti_content,
                 title: noti_title,
-                type : 4,
+                type : 1,
             })
         }
         try{

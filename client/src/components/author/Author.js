@@ -256,10 +256,12 @@ class Author extends Component {
         }
 
         const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = params)
-        var reviewData = reviewRes.data
+        if(reviewRes.status === 200){
+            var reviewData = reviewRes.data
 
-        state.reviewList = reviewData.reviewList
-        this.setState(state)
+            state.reviewList = reviewData.reviewList
+            this.setState(state)
+        }
     }
 
     handleCloseClick = () => {
@@ -590,62 +592,76 @@ class Author extends Component {
                                 }
                             </div>
                         </div>
-
-
-                        <div id="review-area" className="inner-box" ref={this.reviewRef}>
-                            <div className="inner-header">
-                                <span> 리뷰 </span>
-                                <div className="inner-subheader-wrap">
-                                    <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
-                                    {
-                                        this.state.reviewTitleList.map((item, title_idx) => {
-                                            return (
-                                                <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
-                                            )
-                                        })
-                                    }
+                        {
+                            this.state.reviewTitleList.length === 0 ?
+                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                                <div className="no-content">
+                                    등록된 작품이 없습니다.
                                 </div>
                             </div>
-                            <div className="inner-content">
-                                <div className="review-area">
+                            :
+                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                                <div className="inner-header">
+                                    <span> 리뷰 </span>
+                                    <div className="inner-subheader-wrap">
+                                        <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
+                                        {
+                                            this.state.reviewTitleList.map((item, title_idx) => {
+                                                return (
+                                                    <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                                <div className="inner-content">
                                     {
-                                        this.state.reviewList.map((item, review_idx) => {
-                                            return (
-                                                <div key={item.id} className="review-box">
-                                                    <div className="review-details">
-                                                        <strong className="title"> {item.book_title}</strong>
-                                                        <span className="user"> {item.nickname} </span>
-                                                        <span className="sep">  | </span>
-                                                        <span className="stars">
-                                                            {"★".repeat(item.score)}
-                                                        </span>
+                                        this.state.reviewList.length === 0 ?
+                                        <div className="no-content">
+                                            작성된 리뷰가 없습니다.
+                                        </div>
+                                        :
+                                        <div className="review-area">
+                                            {
+                                                this.state.reviewList.map((item, review_idx) => {
+                                                    return (
+                                                        <div key={item.id} className="review-box">
+                                                            <div className="review-details">
+                                                                <strong className="title"> {item.book_title}</strong>
+                                                                <span className="user"> {item.nickname} </span>
+                                                                <span className="sep">  | </span>
+                                                                <span className="stars">
+                                                                    {"★".repeat(item.score)}
+                                                                </span>
 
-                                                        <span className="score"> {item.score ? parseFloat(item.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
-                                                    </div>
-                                                    {
-                                                        item.book_type === 1 &&
-                                                        <div className="review-subtitle">
-                                                            {item.subtitle}
+                                                                <span className="score"> {item.score ? parseFloat(item.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
+                                                            </div>
+                                                            {
+                                                                item.book_type === 1 &&
+                                                                <div className="review-subtitle">
+                                                                    {item.subtitle}
+                                                                </div>
+                                                            }
+
+                                                            <div className="review-content">
+                                                                {item.description}
+                                                            </div>
                                                         </div>
-                                                    }
+                                                    )
+                                                })
+                                            }
 
-                                                    <div className="review-content">
-                                                        {item.description}
-                                                    </div>
+                                            {
+                                                this.state.reviewList.length >= 5 &&
+                                                <div className="add-btn">
+                                                    <button className="add-btn btn btn-transparent"> + 더보기 </button>
                                                 </div>
-                                            )
-                                        })
-                                    }
-
-                                    {
-                                        this.state.reviewList.length >= 5 &&
-                                        <div className="add-btn">
-                                            <button className="add-btn btn btn-transparent"> + 더보기 </button>
+                                            }
                                         </div>
                                     }
                                 </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
             </div>

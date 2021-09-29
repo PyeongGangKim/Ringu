@@ -72,7 +72,6 @@ class SideMemberInfo extends Component {
             }
 
             var id;
-
             // 작가 페이지일 때 페이지 주인의 정보를 가져온다
             if("authorId" in this.props && this.props.authorId !== undefined) {
                 id = this.props.authorId
@@ -82,8 +81,8 @@ class SideMemberInfo extends Component {
                 id = state.user.id
             }
 
-            if (this.props.isHost === false) {
-                const res = await API.sendGet(URL.api.favorite.author.get, {author_id: this.props.authorId})
+            if (this.props.isHost === false && state.user !== null) {
+                const res = await API.sendGet(URL.api.favorite.author.get + this.props.authorId)
                 if(res.status === 200) {
                     var fa = res.data.favoriteAuthor;
                     state.isFavorite = true;
@@ -243,7 +242,7 @@ class SideMemberInfo extends Component {
                         <div className="author-box">
                             <div className="author-details">
                                 <span className="stars">
-                                    {"★".repeat((state.total/state.count))}
+                                    ★
                                 </span>
                                 <span className="score"> {(state.total/state.count) ? parseFloat((state.total/state.count)).toFixed(1) : parseFloat(0).toFixed(1)} </span>
                             </div>

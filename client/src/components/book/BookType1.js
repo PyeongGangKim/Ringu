@@ -245,7 +245,7 @@ class BookType1 extends Component {
         const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=file");
         if(res.status === 200) {
             let downloadUrl = res.data.url;
-            window.open(downloadUrl);
+            window.location.assign(downloadUrl);
         }
         else {
             alert("오류가 발생했습니다.")

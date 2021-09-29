@@ -189,7 +189,7 @@ class SignupDetail extends Component {
         } else {
             state.password.clear = false;
             state.password.class = "form-control error";
-            state.password.msg = "비밀 번호가 조건에 맞지 않습니다.";
+            state.password.msg = "비밀번호는 8자 이상의 영문/숫자/특수 문자 조합으로 구성되어야 합니다.";
         }
 
         if(state.passwordCheck.val !== "") {

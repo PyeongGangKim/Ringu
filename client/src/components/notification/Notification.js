@@ -2,11 +2,14 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
 import User from '../../utils/user';
+
 import NormalNotification from "./NormalNotification";
 import BookNotification from "./BookNotification";
 import WithdrawalNotification from "./WithdrawalNotification";
 import '../../scss/mypage/cart.scss';
-import '../../scss/common/button.scss';
+import '../../scss/common/tab.scss';
+import '../../scss/common/page.scss';
+import '../../scss/notification/notification.scss';
 
 import date from '../../helper/date';
 import parse from '../../helper/parse';
@@ -14,11 +17,13 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
 
+
 class Notification extends Component {
     constructor(props){
         super(props)
         
         this.state = {
+            tab: "book",
             selectedNotification : 1, // 1: 작품, 2: 출금, 3: 공지사항
             data: {
                 bookNotification: {
@@ -36,9 +41,9 @@ class Notification extends Component {
 
     async componentDidMount() {
         let state = this.state;
-        const book_res = await API.sendGet(URL.api.notification.getBookNewNotiCount);
-        const withdrawawl_res = await API.sendGet(URL.api.notification.getWithdrawalNewNotiCount);
-        const normal_res = await API.sendGet(URL.api.notification.getNormalNewNotiCount);
+        const book_res = await API.sendGet(URL.api.notification.getNewNotiCount, {type: "1"});
+        const withdrawawl_res = await API.sendGet(URL.api.notification.getNewNotiCount, {type: "2"});
+        const normal_res = await API.sendGet(URL.api.notification.getNewNotiCount, {type: "3"});
         
         if(book_res.status == 200){
             let newBookNotificationCount = book_res.data.unread_count;
@@ -55,21 +60,17 @@ class Notification extends Component {
             state.data.normalNotification.unread_count = newNormalNotificationCount;
             this.setState(state);
         }
-        console.log(state);
     }
-    handleSelectedPage(pageNum){
+    handleSelectedPage(pageNum, selectedtab){
         let state = this.state;
         state.selectedNotification = pageNum;
+        state.tab = selectedtab
         this.setState({
-            selectedNotification : pageNum,
-            ...this.state.data
+            state
         });
-        //console.log(this.state);
-
     }
   
     handleRead(){
-        console.log("hehe");
         let state = this.state;
         switch(state.selectedNotification){
             case 1: 
@@ -86,38 +87,50 @@ class Notification extends Component {
     }
 
     render(){
+        const state = this.state;
         const body = () => {
             switch(this.state.selectedNotification){
                 case 1: 
-                    return <BookNotification />;
+                    return <BookNotification handleRead = {this.handleRead.bind(this)}/>;
                 case 2: 
-                    return <WithdrawalNotification />;
-                case 3: 
-                    return <NormalNotification />;
+                    return <WithdrawalNotification handleRead = {this.handleRead.bind(this)}/>;
+                case 3:
+                    return <NormalNotification handleRead = {this.handleRead.bind(this)}/>;
             }
             
         }
         return(
-            <div id="notificationpage">
-                <div>
-                    <button onClick={() => this.handleSelectedPage(1)} decreaseUnReadCnt = {this.handleRead.bind(this)}>작품알림</button>
-                    {
-                        (this.state.data.bookNotification.unread_count != 0) &&  <span>{this.state.data.bookNotification.unread_count}</span>
-                    }
-                    <button onClick={() => this.handleSelectedPage(2)} decreaseUnReadCnt = {this.handleRead.bind(this)}>출금알림</button>
-                    {
-                        (this.state.data.withdrawalNotification.unread_count != 0) &&  <span>{this.state.data.withdrawalNotification.unread_count}</span>
-                    }
-                    <button onClick={() => this.handleSelectedPage(3)} decreaseUnReadCnt = {this.handleRead.bind(this)}>공지사항</button>
-                    {
-                        (this.state.data.normalNotification.unread_count != 0) &&  <span>{this.state.data.normalNotification.unread_count}</span>
-                    }
+            <div id="notification" className = "main">
+                <div className="tab-nav">
+                    <ul >
+                        <div className = "merge">
+                            <button className={"tab-btn " + (state.tab === "book" ? "active" : "")} onClick={() => this.handleSelectedPage(1,"book")} >작품알림</button>
+                            {
+                                (this.state.data.bookNotification.unread_count != 0) &&  <span className = "span-new-noti">{this.state.data.bookNotification.unread_count}</span>
+                            }
+                        </div>
+                        <div className = "merge">
+                            <button className={"tab-btn " + (state.tab === "withdrawal" ? "active" : "")} onClick={() => this.handleSelectedPage(2,"withdrawal")} >출금알림</button>
+                            {
+                                (this.state.data.withdrawalNotification.unread_count != 0) &&  <span className = "span-new-noti">{this.state.data.withdrawalNotification.unread_count}</span>
+                            }
+                        </div>
+                        <div className = "merge">
+                            <button className={"tab-btn " + (state.tab === "normal" ? "active" : "")} onClick={() => this.handleSelectedPage(3,"normal")}>공지사항</button>
+                            {
+                                (this.state.data.normalNotification.unread_count != 0) &&  <span className = "span-new-noti">{this.state.data.normalNotification.unread_count}</span>
+                            }
+                        </div>
+                    </ul>
+                    
                 </div>
                 <div>
-                   {
-                       body()
-                   }
+                    
+                    {
+                        body()
+                    }
                 </div>
+
             </div>
 
         );

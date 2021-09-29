@@ -108,7 +108,7 @@ class Header extends Component {
                             ?
                             <div id="user-page">
                                 <Link to={URL.service.notification} id="notification-page">
-                                    <img src="/notification.png"/>
+                                    <img src="/notification.png" />
                                     <span>알림</span>
                                 </Link>
                                 {
