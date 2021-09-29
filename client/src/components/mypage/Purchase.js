@@ -65,7 +65,7 @@ class Purchase extends Component {
     async downloadAction(book_detail_id){
         const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=" + "file");
         let downloadUrl = res.data.url;
-        window.open(downloadUrl);
+        window.location.assign(downloadUrl);
     }
     render() {
         var purchaseList = this.state.data.purchaseList

@@ -1,10 +1,11 @@
-var express = require("express");
-var bcrypt = require("bcrypt");
+const express = require("express");
+const bcrypt = require("bcrypt");
 
 //var member = require("../../model/member");
-var member = require("../../models").member;
+const member = require("../../models").member;
+const { secretKey } = require('../../config/jwt_secret');
 
-var router = express.Router();
+const router = express.Router();
 
 router.get("/", function(req, res, next) {
 
@@ -16,20 +17,20 @@ router.get("/", function(req, res, next) {
 
 router.post("/attempt/", async(req, res, next) => {
     // POST
-    var email       = req.body["email"];
-    var password    = req.body["password"];
-    var rurl        = req.body["rurl"];
+    let email       = req.body["email"];
+    let password    = req.body["password"];
+    let rurl        = req.body["rurl"];
 
     try {
         // GET EMAIL
-        var result = await member.findOne({
+        let result = await member.findOne({
             where: {email: email}
         })
 
         if (result) {
-            if(result.password == password && result.is_admin == 1){
+            const pwd_result = await bcrypt.compare(password, result.password);
+            if(pwd_result && result.is_admin){
                 req.session.sess_is_login = 1;
-
                 if (rurl != "") {                    
                     res.redirect(rurl);
                 } else {

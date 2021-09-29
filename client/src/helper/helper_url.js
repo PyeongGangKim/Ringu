@@ -98,14 +98,11 @@ module.exports = {
         },
         notification: {
             getNotification:    "/notification/",
-            getNewNoticount:    "/notification/newNotiCount",
-            getBookNotification:     "/notification/book",
-            getNormalNotification:  "/notification/notice",
-            getWithdrawalNotification: "/notification/withdrawal",
+            getAllNotiCount:    "/notification/allCount",
+            getAllNewNoticount:    "/notification/allNewNotiCount",
             putReadNotification:    "/notification/",
-            getBookNewNotiCount: "/notification/book/newNotiCnt",
-            getWithdrawalNewNotiCount: "/notification/withdrawal/newNotiCnt",
-            getNormalNewNotiCount: "/notification/notice/newNotiCnt",
+            getNewNotiCount: "/notification/newNotiCnt",
+            deleteNotification: "/notification/delete",
         },
         payment: {
             create              :"/payment",

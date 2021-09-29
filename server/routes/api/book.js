@@ -1,3 +1,5 @@
+'use strict';
+
 const { CodeGuruReviewer } = require("aws-sdk");
 var express = require("express");
 var router = express.Router();
@@ -7,7 +9,7 @@ const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
-
+const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
@@ -32,7 +34,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {
             orderParams.push(['created_date_time', 'DESC'])
         }
-
+        /* 소개도 키워드를 찾을 수 있게 하기.*/
         var where = {
             status: 1,
             author_id : {
@@ -344,10 +346,10 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
 
     let title = req.body.title;
     let type = req.body.type;
-    let is_finished_serialization = (type == 2) ? 1 : 0;
+    let is_finished_serialization = (dontKnowTypeStringOrNumber(type,2)) ? 1 : 0;
     let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
-    let preview = (req.files.preview == null) ? null : req.files.preview[0].key;
+    let preview = (req.files.preview === null) ? null : req.files.preview[0].key;
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
@@ -367,15 +369,14 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             is_finished_serialization : is_finished_serialization,
             serialization_day: serialization_day,
         });
-
-        if(new_book.type === 2){//단행본 일때,
+        console.log(typeof new_book.type, typeof type);
+        if(dontKnowTypeStringOrNumber(new_book.type, 2)){//단행본 일때,
             const new_single_book = await book_detail.create({
                 title: new_book.title,
                 book_id : new_book.id,
                 page_number : page_number,
                 file : file,
             });
-
             res.status(StatusCodes.CREATED).send("single_published_book created");
         }
         else{
