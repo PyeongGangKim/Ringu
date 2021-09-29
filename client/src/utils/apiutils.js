@@ -1,7 +1,7 @@
 var axios = require('axios');
 var Cookies = require('js-cookie');
 
-var apiHost = 'http://13.209.85.116:8000/api'
+var apiHost = 'http://3.35.37.22:8000/api'
 //let apiHost = 'http://localhost:8000/api'
 if( process.env.REACT_APP_APIHOST ) apiHost = process.env.REACT_APP_APIHOST;
 var headers = {
@@ -15,7 +15,6 @@ module.exports = {
             headers['Authorization'] = 'Bearer ' + token;
         }
         url = apiHost + url
-
 
         try {
             var ret = axios.post(url, JSON.stringify(params), { headers: headers })
@@ -55,12 +54,11 @@ module.exports = {
 
         var ret = axios.post(url, data, { headers: headers })
             .then(res => {
-
                 var status = res.status;
                 var data = res.data;
                 var reason = "";
 
-                if (status === 200) {
+                if (status === 200 || status === 201) {
                     return { status: status, data: data, reason: reason };
                 } else {
                     if (!!res.data.reason) reason = res.data.reason;
@@ -80,7 +78,7 @@ module.exports = {
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
-        var url = apiHost + url        
+        var url = apiHost + url
         var ret = axios.get(url, { params:params, headers: headers }).then(res => {
             return res;
         })
@@ -121,7 +119,6 @@ module.exports = {
 
         var ret = axios.delete(url, {params: params, headers: headers} )
             .then(res => {
-                console.log(url)
                 var status = res.status;
                 var data = res.data;
                 var reason = "";
