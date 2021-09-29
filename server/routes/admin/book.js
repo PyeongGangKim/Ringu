@@ -136,7 +136,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
                     price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
                     '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
                     title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
-                    '$author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                    '$author.nickname$' : (fields.member_name != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
                 },
                 status : 1,
             },
@@ -431,7 +431,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
                         [Op.like] : (fields.title != "") ? ("%"+fields.title+"%") : ("%%")
                     },
                     '$author.nickname$' : {
-                        [Op.like] : (fields.title != "") ? ("%"+fields.member_name+"%") : ("%%")
+                        [Op.like] : (fields.member_name != "") ? ("%"+fields.member_name+"%") : ("%%")
                     }
                 },
                 status : 1,
