@@ -13,7 +13,7 @@
             border: 0;
         }
         .form-group {
-            .form-control {
+            .input {
                 line-height: 14px;
             }
             .error-wrap {
@@ -37,10 +37,6 @@
         }
     }
 
-    .btn-wrap {
-        width: 60%;
-        margin: 0 auto;
-    }
     .phone-auth-box {
         padding-top: 40px;
         text-align: center;
@@ -68,5 +64,30 @@
 
             }
         }
+    }
+
+    .term-box {
+        margin-left: 50px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 500;
+
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .check {
+            display:flex;
+            align-items: center;
+
+            input {
+                margin: 0 4px;
+            }
+
+            input, label {
+                cursor: pointer;
+            }
+        }
+
     }
 }

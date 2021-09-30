@@ -3,7 +3,7 @@
         margin-left: 50px;
         margin-bottom: 30px;
 
-        .form-control {
+        .input {
             font-size: 15px;
             padding: 10px 20px;
             border: 1px solid #bbb;
@@ -95,7 +95,7 @@
         cursor: pointer;
 
         em {
-            background-image: url("/arrow-up.png");
+            background-image: url("/assets/img/arrow-up.png");
             background-repeat: no-repeat;
             background-color: unset;
             background-size: contain;
