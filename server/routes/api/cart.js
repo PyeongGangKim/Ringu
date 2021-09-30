@@ -69,6 +69,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 [sequelize.literal("book_detail.title"), "title"],
 
                 // 임시
+                [sequelize.literal("`book_detail->book`.id"), "book_id"],
                 [sequelize.literal("`book_detail->book`.title"), "book_title"],
                 [sequelize.literal("`book_detail->book`.type"), "type"],
                 [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished"],
