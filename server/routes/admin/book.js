@@ -12,6 +12,7 @@ const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/thir
 
 const { book, notiCount, favorite_author ,notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
+const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 
 router.get("/", async (req, res, next) => {
     //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
@@ -34,6 +35,7 @@ router.get("/", async (req, res, next) => {
         "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
         "is_picked"     : ("is_picked" in req.query) ? [req.query.is_picked] : [0,1],
+        "is_recommending_phrase" : ("is_recommending_phrase" in req.query) ? [req.query.is_recommending_phrase] : [0,1],
     }
 
     try{
@@ -44,6 +46,9 @@ router.get("/", async (req, res, next) => {
                     },
                     is_approved : {
                         [Op.in] : fields.is_approved
+                    },
+                    is_recommending_phrase: {
+                        [Op.in] : fields.is_recommending_phrase
                     },
                     price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
                     '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
@@ -93,8 +98,9 @@ router.get("/", async (req, res, next) => {
         });
         console.log(count);
         let total_count = count;
-        let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
-        renderingPage = (fields.is_picked == 1) ? "admin/pages/pickedBookList" : renderingPage;
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
+        renderingPage = (dontKnowTypeStringOrNumber(fields.is_recommending_phrase, 1)) ? "admin/pages/bookRecommendingPhraseList" : renderingPage;
+        renderingPage = (dontKnowTypeStringOrNumber(fields.is_picked, 1)) ? "admin/pages/pickedBookList" : renderingPage;
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
@@ -136,7 +142,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
                     price : (fields.price != "") ?{[Op.lte] : fields.price} : {[Op.gte] : 0},
                     '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
                     title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
-                    '$author.nickname$' : (fields.title != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                    '$author.nickname$' : (fields.member_name != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
                 },
                 status : 1,
             },
@@ -431,7 +437,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
                         [Op.like] : (fields.title != "") ? ("%"+fields.title+"%") : ("%%")
                     },
                     '$author.nickname$' : {
-                        [Op.like] : (fields.title != "") ? ("%"+fields.member_name+"%") : ("%%")
+                        [Op.like] : (fields.member_name != "") ? ("%"+fields.member_name+"%") : ("%%")
                     }
                 },
                 status : 1,
@@ -896,6 +902,22 @@ router.get('/:bookId/pickedForm', async(req, res, next) => {
     catch(err){
         console.error(err);
     }
+});
+router.get('/:bookId/bookRecommendingPhraseForm', async(req, res, next) => {
+    const book_id = req.params.bookId;
+    try{
+        const recommendingBook = await book.findOne({
+            where: {
+                id: book_id,
+            }
+        });
+        res.render("admin/pages/bookRecommendingPhraseForm",{
+            book: recommendingBook,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
     
 });
 router.post('/:bookId/picked', async (req,res,next) => {
@@ -923,6 +945,31 @@ router.post('/:bookId/picked', async (req,res,next) => {
     }
 });
 
+router.post('/:bookId/recommendingPhrase', async (req,res,next) => {
+    checkLogin(req, res, "/admin/book/" + "?is_approved=1");
+    const bookId = req.params.bookId;
+    const is_recommending_phrase = 1;
+    const recommending_phrase = req.body.recommending_phrase;
+    try{
+        const result = await book.update(
+            {
+                is_recommending_phrase : is_recommending_phrase,
+                recommending_phrase : recommending_phrase
+            },
+            {
+                where: {
+                    id : bookId,
+                }
+            }
+        );
+        const url = base_url + "admin/book/?is_recommending_phrase=1"  
+        res.redirect(url);
+    }  
+    catch(err){
+        console.error(err);
+    }
+});
+
 router.get('/:bookId/unpicked', async (req,res,next) => {
     checkLogin(req, res, "/admin/book/" + "?is_approved=1");
     const bookId = req.params.bookId;
@@ -933,6 +980,31 @@ router.get('/:bookId/unpicked', async (req,res,next) => {
             {
                 is_picked : is_picked,
                 rank : rank
+            },
+            {
+                where: {
+                    id : bookId,
+                }
+            }
+        );
+        const url = base_url + "admin/book/?is_picked=1"  
+        res.redirect(url);
+    }  
+    catch(err){
+        console.error(err);
+    }
+});
+
+router.get('/:bookId/unrecommendingPhrase', async (req,res,next) => {
+    checkLogin(req, res, "/admin/book/" + "?is_approved=1");
+    const bookId = req.params.bookId;
+    const is_recommending_phrase = 0;
+    const recommending_phrase = null;
+    try{
+        const result = await book.update(
+            {
+                is_recommending_phrase : is_recommending_phrase,
+                recommending_phrase : recommending_phrase
             },
             {
                 where: {
