@@ -66,6 +66,7 @@ module.exports = {
         },
         author: {
             get:                "/author/",
+            create:             "/author",
         },
         favorite: {
             author: {
