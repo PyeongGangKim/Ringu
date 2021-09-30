@@ -21,7 +21,6 @@ class RegisterAuthorDetail extends Component {
     constructor(props) {
         super(props)
 
-
         if(this.user.type === 1) {
             alert("이미 작가로 등록하였습니다.")
             window.location.href = URL.service.home
@@ -29,23 +28,41 @@ class RegisterAuthorDetail extends Component {
 
 
         this.state = {
-            name: {val: "", msg: "", clear: false, class: "form-control"},
-            phone: {val: "", msg: "", clear: false, class: "form-control"},
-            bank: {val: "", msg: "", clear: false, class: "form-control"},
-            account: {val: "", msg: "", clear: false, class: "form-control"},
+            name: {val: "", msg: "", clear: false, class: "input"},
+            phone: {val: "", msg: "", clear: false, class: "input"},
+            bank: {val: "", msg: "", clear: false, class: "input"},
+            account: {val: "", msg: "", clear: false, class: "input"},
+            tax_term: "",
+            promotion_term: "",
             certificated: false,
             accountCertificated: false,
+            agree: false,
+            sign: false,
         }
+    }
+
+    handleAgree = evt => {
+        var state = this.state;
+        state.agree = evt.target.checked;
+
+        this.setState(state);
+    }
+
+    handleSign = evt => {
+        var state = this.state;
+        state.sign = evt.target.checked;
+
+        this.setState(state);
     }
 
     handleNameChange = (e) => {
         var state = this.state;
         if(/([^가-힣ㄱ-ㅎㅏ-ㅣ\x20])/i.test(e.target.value)) {
-            state.name.class = "form-control error";
+            state.name.class = "input error";
             state.name.msg = "한글만 입력해주세요."
         } else {
 
-            state.name.class = "form-control";
+            state.name.class = "input";
             state.name.msg = ""
             state.name.clear = true;
         }
@@ -59,11 +76,11 @@ class RegisterAuthorDetail extends Component {
     handlePhoneChange = (e) => {
         var state = this.state;
         if(/^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/.test(e.target.value) === false) {
-            state.phone.class = "form-control error";
+            state.phone.class = "input error";
             state.phone.msg = "휴대폰 번호를 입력해주세요."
         } else {
 
-            state.phone.class = "form-control";
+            state.phone.class = "input";
             state.phone.msg = ""
             state.phone.clear = true;
 
@@ -95,7 +112,7 @@ class RegisterAuthorDetail extends Component {
         e.preventDefault();
 
         if(state.name.msg !== "" || state.name.val === "") {
-            state.name.class = "form-control error";
+            state.name.class = "input error";
             state.name.msg = "이름을 입력해주세요."
             this.setState(state)
             alert("이름을 올바르게 입력해주세요")
@@ -104,7 +121,7 @@ class RegisterAuthorDetail extends Component {
 
 
         if(state.phone.msg !== "" || state.phone.val === "") {
-            state.phone.class = "form-control error";
+            state.phone.class = "input error";
             state.phone.msg = "휴대폰 번호를 입력해주세요."
             this.setState(state)
             alert("휴대폰 번호를 올바르게 입력해주세요")
@@ -125,30 +142,15 @@ class RegisterAuthorDetail extends Component {
                 async(rsp) => {
                     console.log(rsp)
                     if(rsp.success) {
-                        //state.certificated = true;
-                        var params = {
-                            type: 1,
-                        }
+                        state.certificated = true;
+                        this.setState(state)
 
-                        const res = await API.sendPut(URL.api.member.update, params)
+                        console.log(state.certificated)
 
-                        if(res.status === 200) {
-                            // TODO
-                            var token = res.data.token;
-                            if( token ) {
-                                Cookies.remove('RINGU_JWT');
-                                Cookies.remove('RINGU_JWT', { path: '/'});
-                                Cookies.remove('RINGU_JWT', { path: '/detail' });
-                                Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
-                            }
-
-                            alert("인증이 완료되었습니다")
-                            window.location.href = URL.service.author + User.getInfo().id
-                        }
-
+                        alert("인증이 완료되었습니다.")
                     }
                     else {
-                        console.log('fail')
+                        alert("인증이 실패하였습니다.")
                     }
             });
 
@@ -158,8 +160,57 @@ class RegisterAuthorDetail extends Component {
         }
     }
 
-    handleSubmit = () => {
+    handleSubmit = async() => {
+        var state = this.state;        
+        if(state.certificated === false) {
+            alert("본인 인증을 완료해주세요.")
+            return;
+        }
 
+        if(state.bank.val === "") {
+            state.bank.class = "input error";
+            state.bank.msg = "은행명을 입력해주세요."
+            alert("은행명을 입력해주세요.")
+            return;
+        }
+
+        if(state.account.val === "") {
+            state.account.class = "input error";
+            state.account.msg = "계좌 번호를 입력해주세요."
+            alert("계좌 번호를 입력해주세요.")
+            return;
+        }
+
+        if(state.agree === false) {
+            alert("약관에 동의해주세요")
+            return;
+        }
+
+        if(state.sign === false) {
+            alert("약관에 동의해주세요")
+            return;
+        }
+        var params = {
+            name: state.name.val,
+            bank: state.bank.val,
+            account: state.account.val,
+            tel: state.phone.val,
+            tax_agreement: true,
+            promotion_agency_agreement: true,
+        }
+        const res = await API.sendPost(URL.api.author.create, params)
+        if(res.status === 201) {
+            var token = res.data.token;
+            if( token ) {
+                Cookies.remove('RINGU_JWT');
+                Cookies.remove('RINGU_JWT', { path: '/'});
+                Cookies.remove('RINGU_JWT', { path: '/detail' });
+                Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
+            }
+
+            alert("인증이 완료되었습니다.")
+            window.location.href = URL.service.author + User.getInfo().id
+        }
     }
 
     render() {
@@ -169,7 +220,7 @@ class RegisterAuthorDetail extends Component {
             this.user.type === 0 &&
             <div id="register-author" className="page3">
                 <div className="title-wrap">
-                    <h2 className="title">기본 인증 및 정보</h2>
+                    <h2 className="title">본인 인증</h2>
                 </div>
 
                 <hr/>
@@ -199,14 +250,21 @@ class RegisterAuthorDetail extends Component {
                                     </div>
                                 }
                             </div>
-                            <button className="btn btn-auth" disabled={state.name.certificated} onClick={this.onCertificationClick}>
+                            <button className="btn btn-auth" disabled={state.certificated} onClick={this.onCertificationClick}>
                                 {(state.certificated) ? "인증 완료"  : "본인 인증"}
                             </button>
                         </div>
                     </div>
-                    {/*<div className="row">
+                </div>
+                <div className="title-wrap">
+                    <h2 className="title">계좌 정보</h2>
+                </div>
+
+                <hr/>
+                <div className="content">
+                    <div className="row">
                         <div className="input-box">
-                            <h3 className="header"> 은행 </h3>
+                            <h3 className="header"> 은행명 </h3>
                             <div className="form-group">
                                 <input type="text" className={state.bank.class} onChange={this.handleBankChange}/>
                             </div>
@@ -217,9 +275,6 @@ class RegisterAuthorDetail extends Component {
                             <div className="form-group">
                                 <input type="number" className={state.account.class} onChange={this.handleAccountChange}/>
                             </div>
-                            <button className="btn btn-auth">
-                                계좌 인증
-                            </button>
                             {
                                 state.account.msg &&
                                 <div className="error-wrap">
@@ -227,19 +282,68 @@ class RegisterAuthorDetail extends Component {
                                 </div>
                             }
                         </div>
-                    </div>*/}
+                    </div>
+
                 </div>
-                {/*<div className="title-wrap">
+
+                <div className="title-wrap">
                     <h2 className="title">약관 동의 및 서명</h2>
                 </div>
 
                 <hr/>
                 <div className="content">
+
+                    <div className="input-box">
+                        <h3 className="header"> 서비스 판매시 '세금' 관련 유의사항 </h3>
+                        <div>
+                            <textarea rows={7} value={state.tax_term} style={{"overflow":"auto"}}/>
+                        </div>
+                    </div>
+
+                    <div className="input-box">
+                        <h3 className="header"> Ringu 판매홍보 대행 약관 </h3>
+                        <div>
+                            <textarea rows={7} value={state.promotion_term}/>
+                        </div>
+                        {
+                            state.account.msg &&
+                            <div className="error-wrap">
+                                <span>{state.account.msg}</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div className="term-box">
+                        <span className="term">
+                            본인은 위 약관의 내용을 모두 확인하였으며, Ringu 전문가로서 약관에 따라 성실히 활동할 것에 동의합니다.
+                        </span>
+                        <span className="check">
+                            <input type="checkbox" id="agree-tax" onClick={this.handleAgree} checked={state.agree}/>
+                            <label htmlFor="agree-tax">
+                                동의함
+                            </label>
+                        </span>
+                    </div>
+
+                    <div className="term-box">
+                        <span className="term">
+                            본인은 본 약관에 서명을 등록함으로써 종이 문서의 서명과 동일한 효력을 갖는데 동의합니다.
+                        </span>
+                        <span className="check">
+                            <input type="checkbox" id="agree-promotion" onClick={this.handleSign} checked={state.sign}/>
+                            <label htmlFor="agree-promotion">
+                                동의함
+                            </label>
+                        </span>
+                    </div>
+
                 </div>
+
                 <div className="btn-wrap">
-                    <button/>
-                    <button className="btn btn-color btn-color-2" disabled={state.name.clear && state.phone.clear && state.bank.clear && state.account.clear} onClick={this.handleSubmit}> 완료</button>
-                </div>*/}
+                    <button className="btn btn-color-2" onClick={this.handleSubmit}>
+                        완료
+                    </button>
+                </div>
             </div>
         )
     }
