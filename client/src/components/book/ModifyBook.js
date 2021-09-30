@@ -19,11 +19,11 @@ class ModifyBook extends Component {
 
         this.state = {
             thumbnail: {file:null, clear:false},
-            price: {val: "", msg: "", clear: false, class: "form-control"},
-            page_count: {val: 0, msg: "", clear: false, class: "form-control"},
-            title: {val: "", msg: "", clear: false, class: "form-control"},
-            bookDescription: {val: "", msg: "", clear: false, class: "form-control"},
-            content: {val: "", msg: "", clear: false, class: "form-control"},
+            price: {val: "", msg: "", clear: false, class: "input"},
+            page_count: {val: 0, msg: "", clear: false, class: "input"},
+            title: {val: "", msg: "", clear: false, class: "input"},
+            bookDescription: {val: "", msg: "", clear: false, class: "input"},
+            content: {val: "", msg: "", clear: false, class: "input"},
             preview: {name:"", file:null, clear: false},
             book: {name:"", file:null, clear:false},
             bookDetail: {},

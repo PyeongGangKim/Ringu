@@ -94,11 +94,11 @@ class Login extends Component {
                 <div id="login-area">
                     <div className="login-wrap">
                         <div id="email-form" className="form-group">
-                            <input type="email" name="email" autoComplete="off" className="form-control" ref="email" placeholder="이메일을 입력해주세요."/>
+                            <input type="email" name="email" autoComplete="off" className="input" ref="email" placeholder="이메일을 입력해주세요."/>
                         </div>
 
                         <div id="password-form" className="form-group">
-                            <input type="password" name="password" autoComplete="off" className="form-control" ref="password" placeholder="비밀번호를 입력해주세요."/>
+                            <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>
                         </div>
 
                         <button className="btn btn-block btn-login" onClick={this.handleLogin}>
