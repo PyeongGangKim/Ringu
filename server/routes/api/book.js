@@ -147,6 +147,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
     let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
+    console.log(book_id)
 
     try{
         const book_detail_info = await book.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
@@ -273,7 +274,6 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             model: purchase,
             as : "purchases",
             required: false,
-            attributes: [],
             where: {
                 member_id: member_id,
             }
@@ -349,7 +349,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
     let is_finished_serialization = (dontKnowTypeStringOrNumber(type,2)) ? 1 : 0;
     let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
-    let preview = (req.files.preview === null) ? null : req.files.preview[0].key;
+    let preview = (typeof req.files.preview !== 'undefined') ? req.files.preview[0].key : null;
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
@@ -369,7 +369,7 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             is_finished_serialization : is_finished_serialization,
             serialization_day: serialization_day,
         });
-        console.log(typeof new_book.type, typeof type);
+
         if(dontKnowTypeStringOrNumber(new_book.type, 2)){//단행본 일때,
             const new_single_book = await book_detail.create({
                 title: new_book.title,
