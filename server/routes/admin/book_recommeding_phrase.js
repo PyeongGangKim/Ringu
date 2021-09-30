@@ -65,12 +65,11 @@ router.get("/", async (req, res, next) => {
         });
         console.log(count);
         let total_count = count;
-        let renderingPage = (fields.is_approved == 1) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
-        renderingPage = (fields.is_picked == 1) ? "admin/pages/pickedBookList" : renderingPage;
-        let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
+        let renderingPage =  "admin/pages/book_recommending_phrase_list" ; 
+        let pagination_html = helper_pagination.html(config_url.base_url + "admin/bookRecommedingPhrase", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
-            "book_list"       : rows,
+            "book_recommending_phrase_list"       : rows,
             "total_count"       : total_count,
             "pagination_html"   : pagination_html,
             "limit"             : limit,
@@ -80,6 +79,23 @@ router.get("/", async (req, res, next) => {
         console.log(err);
     }
 });
+
+router.post("/", async(req,res,next) => {
+    checkLogin(req, res, "/admin/book/?is_approved=1");
+
+    const book_id = req.body.book_id;
+    const phrase = req.body.phrase
+    try{
+        await book_recommending_phrase.create({
+            book_id : book_id,
+            phrase : phrase,
+        });
+        res.redirect(config_url.base_url+ "admin/bookRecommedingPhrase");
+    }
+    catch(err){
+        console.error(err);
+    }
+})
 
 
 module.exports = router;

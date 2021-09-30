@@ -24,6 +24,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
         let is_approved = ("is_approved" in req.query && typeof req.query.is_approved !== 'undefined') ? req.query.is_approved : null;
         let is_picked = ("is_picked" in req.query && typeof req.query.is_picked !== 'undefined') ? req.query.is_picked : null;
+        let is_recommending_phrase = ("is_recommending_phrase" in req.query && typeof req.query.is_recommending_phrase !== 'undefined') ? req.query.is_recommending_phrase : null;
         order = ("is_picked" in req.query && req.query.is_picked) ? "rank" : order;
         orderBy = ("is_picked" in req.query && req.query.is_picked) ? "ASC" : orderBy;
 
@@ -52,6 +53,15 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 '$author.nickname$' : {
                     [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
                 },
+                '$author.nickname$' : {
+                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                },
+                '$book.description$' : {
+                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                },
+                '$book.recommending_phrase$': {
+                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  keyword,
+                }
             },
         }
 
@@ -61,6 +71,9 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
         if(is_picked !== null) {
             where['is_picked'] = is_picked;
+        }
+        if(is_recommending_phrase !== null){
+            where['is_recommending_phrase'] = is_recommending_phrase;
         }
 
         const bookList = await book.findAll({
@@ -74,6 +87,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 "is_finished_serialization",
                 "is_approved",
                 "created_date_time",
+                "recommending_phrase",
                 [sequelize.literal("COUNT(`book_details->purchases`.id)"), "sales"],
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"score" ],
@@ -164,6 +178,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 "description",
                 "content",
                 "preview",
+                "recommending_phrase",
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("author.id"), "author_id"],
                 [sequelize.literal("author.nickname"), "author_nickname"],
@@ -369,7 +384,6 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             is_finished_serialization : is_finished_serialization,
             serialization_day: serialization_day,
         });
-        console.log(typeof new_book.type, typeof type);
         if(dontKnowTypeStringOrNumber(new_book.type, 2)){//단행본 일때,
             const new_single_book = await book_detail.create({
                 title: new_book.title,
