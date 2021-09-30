@@ -54,7 +54,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
         });
     }
 });
-router.post('/duplicate', isLoggedIn, async (req, res, next) => {
+router.get('/duplicate', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
     var author_id = req.query.author_id;
 
