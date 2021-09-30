@@ -9,8 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     title: {
       type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "revised_book_title_uindex"
+      allowNull: false
     },
     file: {
       type: DataTypes.STRING(100),
@@ -58,14 +57,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-        ]
-      },
-      {
-        name: "revised_book_title_uindex",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "title" },
         ]
       },
       {

@@ -245,38 +245,48 @@ class Search extends Component {
                             <span> 카테고리</span>
                             <em/>
                         </div>
-                        <div className="filter" onClick={() => this.handleDisplayClick(2)}>
-                            <span> 정렬</span>
-                            <em/>
-                        </div>
+                        {
+                            state.searchList.length !== 0 &&
+                            <div className="filter" onClick={() => this.handleDisplayClick(2)}>
+                                <span> 정렬</span>
+                                <em/>
+                            </div>
+                        }
                     </div>
 
-                    <div id="search-list" className="booklist-area">
-                        <ul>
-                            {
-                                searchList.map(item => {
-                                    var status = ""
-                                    if (item.type === 2) {
-                                        status = "pub"
-                                    }
-                                    else if (item.is_finished) {
-                                        status = "ser-ed"
-                                    }
-                                    else {
-                                        status = "ser"
-                                    }
-                                    return (
-                                        <Book
-                                            key={item.id}
-                                            book={item}
-                                            status={status}
-                                            favorite
-                                        />
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
+                    {
+                        state.searchList.length === 0 ?
+                        <div className="no-content">
+                            검색 결과가 없습니다.
+                        </div>
+                        :
+                        <div id="search-list" className="booklist-area">
+                            <ul>
+                                {
+                                    searchList.map(item => {
+                                        var status = ""
+                                        if (item.type === 2) {
+                                            status = "pub"
+                                        }
+                                        else if (item.is_finished) {
+                                            status = "ser-ed"
+                                        }
+                                        else {
+                                            status = "ser"
+                                        }
+                                        return (
+                                            <Book
+                                                key={item.id}
+                                                book={item}
+                                                status={status}
+                                                favorite
+                                            />
+                                        )
+                                    })
+                                }
+                            </ul>
+                        </div>
+                    }
                 </div>
             </div>
         );
