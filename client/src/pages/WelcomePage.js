@@ -23,7 +23,7 @@ class WelcomePage extends Component {
                                 </div>
                                 <div className="content-wrap">
                                     {/*<button className="btn btn-block btn-transparent btn-full content-btn">나의 관심사</button>*/}
-                                    <Link to={URL.service.mypage.info}>
+                                    <Link to={URL.service.home}>
                                         <button className="btn btn-block btn-color-1 btn-full content-btn">지금 바로 보러가기</button>
                                     </Link>
                                 </div>
