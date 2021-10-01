@@ -64,20 +64,23 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         const cartList = await cart.findAll({
             attributes: [
                 "id",
-                "created_date_time",
-                [sequelize.literal("book_detail.id"), "book_detail_id"],
-                [sequelize.literal("book_detail.title"), "title"],
-
-                // 임시
                 [sequelize.literal("`book_detail->book`.id"), "book_id"],
                 [sequelize.literal("`book_detail->book`.title"), "book_title"],
-                [sequelize.literal("`book_detail->book`.type"), "type"],
-                [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished"],
-                [sequelize.literal("`book_detail->book`.description"), "book_description"],
-                [sequelize.literal("`book_detail->book`.serialization_day"), "serialization_day"],
+                "created_date_time",
                 [sequelize.literal("`book_detail->book`.price"), "price"],
                 [sequelize.literal("`book_detail->book`.img"), "img"],
-                [sequelize.literal("`book_detail->book->author`.nickname"), "author"],
+                [sequelize.literal("book_detail.id"), "book_detail_id"],
+                [sequelize.literal("book_detail.round"), "round"],
+                [sequelize.literal("book_detail.title"), "title"],
+                [sequelize.literal("`book_detail->book`.type"), "type"],
+                [sequelize.literal("`book_detail->book`.serialization_day"), "serialization_day"],
+                [sequelize.literal("`book_detail->book`.is_finished_serialization"), "is_finished_serialization"],
+                [sequelize.literal("`book_detail->book`.description"), "book_description"],
+                [sequelize.literal("`book_detail->book->author`.id"), "author_id"],
+                [sequelize.literal("`book_detail->book->author`.nickname"), "author_nickname"],
+                [sequelize.literal("book_detail.page_number"),"page_count"],
+                [sequelize.literal("book_detail.file"),"file"],
+
             ],
             where: {
                 member_id : member_id,

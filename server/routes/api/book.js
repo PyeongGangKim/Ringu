@@ -155,14 +155,16 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 id: book_id,
             },
             attributes : [
-                "id",
+                ["id", "book_id"],
+                ["title", "book_title"],
                 "price",
                 "img",
-                "title",
+                [sequelize.literal("book_details.id"),"id"],
+                [sequelize.literal("book_details.title"),"title"],
                 "type",//type 1이 연재본, 2가 단행본.
                 "serialization_day",
                 "is_finished_serialization",
-                "description",
+                ["description", "book_description"],
                 "content",
                 "preview",
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
