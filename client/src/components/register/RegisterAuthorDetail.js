@@ -57,18 +57,11 @@ class RegisterAuthorDetail extends Component {
 
     handleNameChange = (e) => {
         var state = this.state;
-        if(/([^가-힣ㄱ-ㅎㅏ-ㅣ\x20])/i.test(e.target.value)) {
-            state.name.class = "input error";
-            state.name.msg = "한글만 입력해주세요."
-        } else {
-
-            state.name.class = "input";
-            state.name.msg = ""
-            state.name.clear = true;
-        }
-
+        state.name.class = "input";
+        state.name.msg = ""
+        state.name.clear = true;
         state.name.val = e.target.value;
-        state.name.clear = false;
+
 
         this.setState(state)
     }
@@ -78,31 +71,48 @@ class RegisterAuthorDetail extends Component {
         if(/^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/.test(e.target.value) === false) {
             state.phone.class = "input error";
             state.phone.msg = "휴대폰 번호를 입력해주세요."
+            state.phone.clear = false;
         } else {
-
             state.phone.class = "input";
             state.phone.msg = ""
             state.phone.clear = true;
-
         }
+
         state.phone.val = e.target.value;
-        state.phone.clear = false;
 
         this.setState(state)
     }
 
     handleBankChange = (e) => {
         var state = this.state;
+        if(/^[a-zA-Z가-힣]*$/.test(e.target.value) === true || e.target.value === "") {
+            state.bank.msg = ""
+            state.bank.clear = true;
+            state.bank.class = "input";
+        } else {
+            state.bank.class = "input error";
+            state.bank.msg = "은행명을 올바르게 입력해주세요"
+            state.bank.clear = false;
+        }
         state.bank.val = e.target.value;
-        state.bank.clear = false;
 
         this.setState(state)
     }
 
     handleAccountChange = (e) => {
         var state = this.state;
+
+        if(/^[0-9]*$/.test(e.target.value) === true || e.target.value === "") {
+            state.account.msg = ""
+            state.account.clear = true;
+            state.account.class = "input";
+        } else {
+            state.account.class = "input error";
+            state.account.msg = "숫자만 입력해주세요"
+            state.account.clear = false;
+        }
+
         state.account.val = e.target.value;
-        state.account.clear = false;
 
         this.setState(state)
     }
@@ -111,14 +121,13 @@ class RegisterAuthorDetail extends Component {
         var state = this.state;
         e.preventDefault();
 
-        if(state.name.msg !== "" || state.name.val === "") {
+        if(/^[가-힣]*$/.test(state.name.val) === false) {
             state.name.class = "input error";
-            state.name.msg = "이름을 입력해주세요."
+            state.name.msg = "이름을 올바르게 입력해주세요."
             this.setState(state)
             alert("이름을 올바르게 입력해주세요")
             return;
         }
-
 
         if(state.phone.msg !== "" || state.phone.val === "") {
             state.phone.class = "input error";
@@ -140,12 +149,9 @@ class RegisterAuthorDetail extends Component {
                 phone: state.phone.val,
             },
                 async(rsp) => {
-                    console.log(rsp)
                     if(rsp.success) {
                         state.certificated = true;
                         this.setState(state)
-
-                        console.log(state.certificated)
 
                         alert("인증이 완료되었습니다.")
                     }
@@ -161,7 +167,7 @@ class RegisterAuthorDetail extends Component {
     }
 
     handleSubmit = async() => {
-        var state = this.state;        
+        var state = this.state;
         if(state.certificated === false) {
             alert("본인 인증을 완료해주세요.")
             return;
@@ -170,6 +176,7 @@ class RegisterAuthorDetail extends Component {
         if(state.bank.val === "") {
             state.bank.class = "input error";
             state.bank.msg = "은행명을 입력해주세요."
+            this.setState(state)
             alert("은행명을 입력해주세요.")
             return;
         }
@@ -177,6 +184,7 @@ class RegisterAuthorDetail extends Component {
         if(state.account.val === "") {
             state.account.class = "input error";
             state.account.msg = "계좌 번호를 입력해주세요."
+            this.setState(state)
             alert("계좌 번호를 입력해주세요.")
             return;
         }
@@ -267,20 +275,26 @@ class RegisterAuthorDetail extends Component {
                             <h3 className="header"> 은행명 </h3>
                             <div className="form-group">
                                 <input type="text" className={state.bank.class} onChange={this.handleBankChange}/>
+                                {
+                                    state.bank.msg &&
+                                    <div className="error-wrap">
+                                        <span>{state.bank.msg}</span>
+                                    </div>
+                                }
                             </div>
                         </div>
 
                         <div className="input-box">
                             <h3 className="header"> 계좌번호 </h3>
                             <div className="form-group">
-                                <input type="number" className={state.account.class} onChange={this.handleAccountChange}/>
+                                <input type="text" className={state.account.class} onChange={this.handleAccountChange} value={state.account.val}/>
+                                {
+                                    state.account.msg &&
+                                    <div className="error-wrap">
+                                        <span>{state.account.msg}</span>
+                                    </div>
+                                }
                             </div>
-                            {
-                                state.account.msg &&
-                                <div className="error-wrap">
-                                    <span>{state.account.msg}</span>
-                                </div>
-                            }
                         </div>
                     </div>
 
@@ -304,13 +318,7 @@ class RegisterAuthorDetail extends Component {
                         <h3 className="header"> Ringu 판매홍보 대행 약관 </h3>
                         <div>
                             <textarea rows={7} value={state.promotion_term}/>
-                        </div>
-                        {
-                            state.account.msg &&
-                            <div className="error-wrap">
-                                <span>{state.account.msg}</span>
-                            </div>
-                        }
+                        </div>                        
                     </div>
 
                     <div className="term-box">
