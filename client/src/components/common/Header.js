@@ -74,7 +74,7 @@ class Header extends Component {
             Cookies.remove('RINGU_JWT', { path: '/'});
             Cookies.remove('RINGU_JWT', { path: '/detail' });
 
-            window.location = "/home";
+            window.location = URL.service.home;
         } else {
             return false;
         }
