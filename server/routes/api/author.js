@@ -2,6 +2,9 @@ var express = require("express");
 var router = express.Router();
 const {StatusCodes} = require("http-status-codes");
 
+const jwt = require('jsonwebtoken');
+const { secretKey } = require('../../config/jwt_secret');
+
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { sequelize, book_detail ,book, purchase, withdrawal, member, author } = require("../../models");
@@ -10,38 +13,54 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     let name = req.body.name;
     let bank = req.body.bank;
     let account = req.body.account;
-    let description = req.body.description;
+    let tel = req.body.tel;
+    //let description = req.body.description;
     let tax_agreement = req.body.tax_agreement;
     let promotion_agency_agreement = req.body.promotion_agency_agreement;
+    let id = req.user.id;
+    const t = await sequelize.transaction();
 
     try{
         const result = await author.create({
             name : name,
             bank : bank,
             account : account,
-            description : description,
+            //description : description,
             member_id : req.user.id,
             tax_agreement : (tax_agreement) ? 1 : 0,
             promotion_agency_agreement : (promotion_agency_agreement) ? 1 : 0,
-        });
+        }, {transaction: t});
 
         if(result){
-            await member.update({
+            const updateResult = await member.update({
                 type: 1,
+                tel: tel,
             },{
                 where : {
-                     id : req.user.id
-                }
+                     id : id,
+                },
+                transaction: t
             });
-            if(changedMeberType){
+
+            const token = jwt.sign({
+                id: id,
+                type: 1,
+            }, secretKey, {
+                expiresIn: '12h',
+                issuer: 'ringu',
+            });
+            await t.commit();
+            if(updateResult){
                 res.status(StatusCodes.CREATED).json({
                     author: result,
+                    token: token
                 });
             }
         }
     }
     catch(err){
-        console.error(err);
+        console.error(err)
+        await t.rollback();
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });

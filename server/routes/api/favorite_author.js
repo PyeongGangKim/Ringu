@@ -54,7 +54,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
         });
     }
 });
-router.post('/duplicate', isLoggedIn, async (req, res, next) => {
+router.get('/duplicate', isLoggedIn, async (req, res, next) => {
     var member_id = req.user.id;
     var author_id = req.query.author_id;
 
@@ -129,6 +129,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 [sequelize.literal("author.profile"), "profile"],
                 [sequelize.literal("SUM(`author->review_statistics`.score_amount)"), "review_score"],
                 [sequelize.literal("SUM(`author->review_statistics`.person_number)"), "review_count"],
+                [sequelize.literal("SUM(`author->favorite_author_statistic`.favorite_person_number)"), "favorite_count"],
             ],
             where: {
                 member_id : member_id,
@@ -153,6 +154,11 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                                 "person_number",
                             ],
                         },
+                        {
+                            model: favorite_author_statistics,
+                            as: "favorite_author_statistic",
+                            attributes : [],
+                        }
                     ],
                 },
             ],
