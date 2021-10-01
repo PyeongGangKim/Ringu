@@ -82,7 +82,7 @@ class Buy extends Component {
             name: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
             amount: 100,
             buyer_email: state.user.email,
-            buyer_name: '임유빈',
+            buyer_name: state.user.nickname,
             buyer_tel: !!state.user.tel ? state.user.tel : null,
             buyer_addr: '',
             buyer_postcode: '',
@@ -119,7 +119,7 @@ class Buy extends Component {
                     {
                         state.purchaseList.map(item => {
                             return (
-                                <div key={item.id} className="product-box">
+                                <div key={item.book_detail_id} className="product-box">
                                     <div className="img-box">
                                         <img src={item.img}/>
                                     </div>
