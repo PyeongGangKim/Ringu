@@ -340,6 +340,11 @@ class RegisterBook extends Component {
                             <div className="content">
                                 <p>등록일 기준으로 2~3일 내에 <strong>작품승인</strong>이 완료되며</p>
                                 <p>불건전한 내용일시 <strong>임의삭제</strong>될 수 있다는 점을 말씀드립니다.</p>
+
+                                {
+                                    this.type === 1 &&
+                                    <p> 연재본 업로드는 승인 완료 후 작가 공간에서 가능합니다</p>
+                                }
                             </div>
 
                             <Link to={URL.service.author + state.author.id}>
