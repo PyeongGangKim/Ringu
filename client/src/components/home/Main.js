@@ -32,12 +32,17 @@ class Main extends Component {
             is_picked: 1,
         }
 
-
-        const res = await API.sendGet(URL.api.book.list, params)
-        if(res.status === 200) {
-            state.bookList = res.data.bookList
-            this.setState(state)
+        try {
+            const res = await API.sendGet(URL.api.book.list, params)
+            if(res.status === 200) {
+                state.bookList = res.data.bookList
+                console.log(state.bookList)
+                this.setState(state)
+            }
+        } catch(e) {
+            console.error(e)
         }
+
     }
 
     handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
