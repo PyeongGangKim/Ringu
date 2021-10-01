@@ -70,7 +70,7 @@ class FavAuthor extends Component {
                                         <div key={item.id} className="fa-box">
                                             <div className="profile">
                                                 <div>
-                                                    <img src={item.profile ? item.profile : "/blank.jpg"}/>
+                                                    <img src={item.profile ? item.profile : "/assets/img/blank.jpg"}/>
                                                 </div>
 
                                                 <span className="author-name">{item.author_nickname}</span>
@@ -107,7 +107,7 @@ class FavAuthor extends Component {
 
                                             <div className="favorite">
                                                 <button onClick={() => this.handleDelete(item.id)} className="favorite-icon">
-                                                    <img src="/heart.png"/>
+                                                    <img src="/assets/img/heart.png"/>
                                                 </button>
                                             </div>
 

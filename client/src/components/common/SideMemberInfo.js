@@ -203,7 +203,7 @@ class SideMemberInfo extends Component {
                                 <div className="img-dummy"/>
                                 :
                                 state.host.profile === null || !state.host.profile ?
-                                <img src="/blank.jpg"/>
+                                <img src="/assets/img/blank.jpg"/>
                                 :
                                 <img src={state.host.profile}/>
                             }
@@ -216,7 +216,7 @@ class SideMemberInfo extends Component {
                                 <div className="img-dummy"/>
                                 :
                                 state.host.profile === null || !state.host.profile ?
-                                <img src="/blank.jpg"/>
+                                <img src="/assets/img/blank.jpg"/>
                                 :
                                 <img src={state.host.profile}/>
                             }

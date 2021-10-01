@@ -129,7 +129,7 @@ class Login extends Component {
                                     <img src="/naver.png"/>
                                 </a>*/}
                                 <a id="kakao-login" className="btn-sns" onClick={this.handleKaKaoLogin}>
-                                    <img src="/kakao.jpg"/>
+                                    <img src="/assets/img/kakao.jpg"/>
                                 </a>
                                 <FacebookLogin
                                     appId={FACEBOOK.APP_ID}
@@ -139,13 +139,13 @@ class Login extends Component {
                                     redirectUri={"/signup/facebook/callback"}
                                     render={(renderProps) => (
                                         <button id="facebook-login" className="btn-sns" onClick={renderProps.onClick}>
-                                            <img src="/facebook.jpg"/>
+                                            <img src="/assets/img/facebook.jpg"/>
                                         </button>
                                     )}
                                 />
 
                                 <a href="" id="google-login" className="btn-sns">
-                                    <img src="/google.png"/>
+                                    <img src="/assets/img/google.png"/>
                                 </a>
                             </div>
                         </div>
@@ -160,7 +160,7 @@ class Login extends Component {
                     {/* login-wrap */}
 
                     <div className="login-bg-wrap">
-                        <img src="/login-img.png"/>
+                        <img src="/assets/img/login-img.png"/>
                     </div>
                     {/* login-bg-wrap */}
 

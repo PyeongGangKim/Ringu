@@ -310,7 +310,7 @@ class BookType2 extends Component {
                 <div className="book-content">
                     <div className="book-info">
                         <div className="book-thumbnail-box">
-                            <img src={!!state.book.img ? state.book.img : "/ringu_thumbnail.png" } />
+                            <img src={!!state.book.img ? state.book.img : "/assets/img/ringu_thumbnail.png" } />
 
                             <div className="favorite-box">
                                 <button className="favorite-btn">
@@ -359,7 +359,7 @@ class BookType2 extends Component {
                                         <div className="author-profile">
                                             <Link to={URL.service.author + book.author_id}>
                                                 <div className="author-thumbnail-box">
-                                                    <img src={!!state.book.author_profile ? state.book.author_profile : "/blank.jpg"}/>
+                                                    <img src={!!state.book.author_profile ? state.book.author_profile : "/assets/img/blank.jpg"}/>
                                                 </div>
 
                                                 <div className="btn btn-block btn-color-2 btn-rounded">작가 공간</div>

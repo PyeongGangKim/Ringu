@@ -37,7 +37,7 @@ class BuyComplete extends Component {
                             지금 바로 책을 펴보실 수 있어요!
 
                             <div className="img-box">
-                                <img src="/buy-complete.png"/>
+                                <img src="/assets/img/buy-complete.png"/>
                             </div>
 
                             <a href={URL.service.home}>
@@ -64,8 +64,7 @@ class BuyComplete extends Component {
                                 <th>다운로드</th>
                             </tr>
                             {
-                                state.purchaseList.map((item, idx) => {
-                                    console.log(item)
+                                state.purchaseList.map((item, idx) => {                                    
                                     return(
                                         <tr key={item.id}>
                                             <td className="img">

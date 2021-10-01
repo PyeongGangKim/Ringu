@@ -89,7 +89,7 @@ class Header extends Component {
                 <div id="header" className={this.props.searchVisible ? "bottom-line" : ""}>
                     <h1 id="logo">
                         <Link to="/home">
-                            <img src="logo.png" width="220px" height="70px"/>
+                            <img src="/assets/img/logo.png" width="220px" height="70px"/>
                         </Link>
                     </h1>
                     <div id="search-area">
@@ -108,7 +108,7 @@ class Header extends Component {
                             ?
                             <div id="user-page">
                                 <Link to={URL.service.notification} id="notification-page">
-                                    <img src="/notification.png" />
+                                    <img src="/assets/img/notification.png" />
                                     <span>알림</span>
                                 </Link>
                                 {
@@ -116,9 +116,9 @@ class Header extends Component {
                                     <Link to={URL.service.author + this.state.id} id="author-page">
                                         {
                                             this.props.author === true ?
-                                            <img src="/author_clicked.png"/>
+                                            <img src="/assets/img/author_clicked.png"/>
                                             :
-                                            <img src="/author.png"/>
+                                            <img src="/assets/img/author.png"/>
                                         }
 
                                         <span>작가 공간</span>
@@ -127,9 +127,9 @@ class Header extends Component {
                                     <Link to={URL.service.register.author} id="author-page">
                                         {
                                             this.props.author === true ?
-                                            <img src="/author_clicked.png"/>
+                                            <img src="/assets/img/author_clicked.png"/>
                                             :
-                                            <img src="/author.png"/>
+                                            <img src="/assets/img/author.png"/>
                                         }
 
                                         <span>작가 등록</span>
@@ -141,11 +141,11 @@ class Header extends Component {
                                     {
                                         this.state.display || this.props.mypage ?
                                         <div id="nb-box">
-                                            <img src="/mypage-active.png" alt="마이페이지"/>
+                                            <img src="/assets/img/mypage-active.png" alt="마이페이지"/>
                                         </div>
                                         :
                                         <div id="nb-box">
-                                            <img src="/mypage.png" alt="마이페이지"/>
+                                            <img src="/assets/img/mypage.png" alt="마이페이지"/>
                                         </div>
                                     }
 
