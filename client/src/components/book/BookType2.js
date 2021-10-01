@@ -34,57 +34,15 @@ class BookType2 extends Component {
     }
 
     handlePurchaseClick = async() => {
-        if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
-            try {
-                var params = {
-                    member_id: User.getInfo().id,
-                    book_detail_id: this.state.book.book_details[0].id,
-                }
-
-                try {
-                    const res = await API.sendGet(URL.api.purchase.duplicate, params)
-                    if(res.status === 200) {
-                        var book = this.state.book;
-                        var purchase = {
-                            author: book.author_nickname,
-                            book_description: book.description,
-                            book_detail_id: book.book_details[0].id,
-                            book_id: book.id,
-                            book_title: book.title,
-                            img: book.img,
-                            price: book.price,
-                            serailization_day: book.serailization_day,
-                            title: book.book_details[0].title,
-                            type: book.type,
-                        }
-                        this.props.history.push({
-                            pathname: URL.service.buy.buy,
-                            state: {
-                                purchaseList: [purchase]
-                            }
-                        })
-                    }
-
-                } catch(e) {
-                    if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
-                        this.props.history.push(URL.service.mypage.purchase)
-                    }
-                }
-
-            } catch(e) {
-                console.error(e)
-                alert("에러가 발생했습니다.")
-            }
-        }
-    }
-
-    handleCartClick = async() => {
-        var state = this.state;
-
         try {
-            try {
-                const res = await API.sendGet(URL.api.purchase.duplicate, params)
-                if(res.status === 200) {
+            var params = {
+                member_id: User.getInfo().id,
+                book_detail_id: this.state.book.book_details[0].id,
+            }
+
+            const res = await API.sendGet(URL.api.purchase.duplicate, params)
+            if(res.status === 200) {
+                if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
                     var book = this.state.book;
                     var purchase = {
                         author: book.author_nickname,
@@ -105,35 +63,62 @@ class BookType2 extends Component {
                         }
                     })
                 }
-
-            } catch(e) {
+            }
+        } catch(e) {
+            if(e.response.status === 409) {
                 if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
-                    this.props.history.push(URL.service.mypage.purchase)
+                    this.props.history.push(URL.service.mypage.purchases)
                 }
-                return;
-            }
-
-            var params = {
-                book_detail_id: state.book.book_details[0].id,
-            }
-
-            const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
-
-            if(duplicate.status === 200) {
-                const res = await API.sendPost(URL.api.cart.create, params)
-
-                if(res.status === 201) {
-                    if(window.confirm(`${this.state.book.title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
-                        this.props.history.push(URL.service.mypage.carts)
-                    }
-                }
+            } else {
+                alert("에러가 발생했습니다.")
             }
         }
-        catch(err){
-            var error = err.response;
-            if(error.status === 409) {
-                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
-                    this.props.history.push(URL.service.mypage.carts)
+    }
+
+    handleCartClick = async() => {
+        var state = this.state;
+        var params = {
+            member_id: User.getInfo().id,
+            book_detail_id: state.book.book_details[0].id,
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.purchase.duplicate, params)
+            if(res.status === 200) {
+                try {
+                    var params = {
+                        book_detail_id: state.book.book_details[0].id,
+                    }
+
+                    const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
+
+                    if(duplicate.status === 200) {
+                        const res = await API.sendPost(URL.api.cart.create, params)
+
+                        if(res.status === 201) {
+                            if(window.confirm(`${this.state.book.title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
+                                this.props.history.push(URL.service.mypage.carts)
+                            }
+                        }
+                    }
+                } catch(err){
+                    var error = err.response;
+                    if(error.status === 409) {
+                        if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
+                            this.props.history.push(URL.service.mypage.carts)
+                        }
+                    }
+                    else {
+                        alert("장바구니에 담지 못하였습니다.")
+                    }
+                }
+
+            }
+        } catch(e) {
+            console.error(e.response)
+            if(e.response.status === 409) {
+                if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.purchases)
                 }
             }
             else {
