@@ -46,9 +46,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             },
             attributes : [
                 "id",
-                [sequelize.literal("book_detail.title"),"subtitle"],
+                ["title","subtitle"],
                 [sequelize.literal("`book->author`.id"),"author_id"],
                 [sequelize.literal("`book->author`.nickname"),"author"],
+                [sequelize.literal("book.img"),"img"],
                 [sequelize.literal("book.id"),"book_id"],
                 [sequelize.literal("book.price"),"price"],
                 [sequelize.literal("book.type"),"type"],
@@ -60,23 +61,18 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     model : book,
                     as : "book",
                     attributes: [
-                        "title",
-                        "price",
-                        "type",
                     ],
                     include: [
                         {
                             model : member,
                             as : "author",
                             attributes: [
-                                "nickname",
                             ],
                         },
                         {
                             model : category,
                             as : "category",
                             attributes : [
-
                             ],
                         },
                     ]
@@ -88,6 +84,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            book_detail_info.dataValues.img = imageLoad(book_detail_info.dataValues.img)
             res.status(StatusCodes.OK).json({
                 "book": book_detail_info,
             });
