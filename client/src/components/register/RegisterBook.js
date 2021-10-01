@@ -122,11 +122,6 @@ class RegisterBook extends Component {
         }
 
         var reader = new FileReader();
-        var token = file.name.split('.')
-        var fieldName = token[token.length - 1]
-
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "_thumbnail." + fieldName, {type: file.type})
 
         reader.onloadend = (e) => {
             const base64 = reader.result;
@@ -135,9 +130,9 @@ class RegisterBook extends Component {
                 this.setState(state)
             }
         }
-        if (newFile) {
-            reader.readAsDataURL(newFile);
-            state.thumbnail.file = newFile
+        if (file) {
+            reader.readAsDataURL(file);
+            state.thumbnail.file = file
 
             this.setState(state)
         }
@@ -160,9 +155,6 @@ class RegisterBook extends Component {
             alert('PDF 파일만 업로드 해주세요.')
             return;
         }
-
-        //var blob = file.slice(0, file.size, file.type)
-        //var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
 
         state.preview.name = file.name
         state.preview.file = file
@@ -271,25 +263,34 @@ class RegisterBook extends Component {
         }
 
         const data = new FormData()
-        data.append("img", state.thumbnail.file)
         data.append("price", state.price.val)
         data.append("book_description", state.bookDescription.val)
         data.append("title", state.title.val)
         data.append("category_id", this.category)
         data.append("type", this.type)
 
+        var file = state.thumbnail.file;
+        if(file) {
+            var blob = file.slice(0, file.size, file.type);
+            var token = file.name.split('.')
+            var fieldName = token[token.length - 1]
+            var newFile = new File([blob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: file.type})
+        }
+
+        data.append("img", newFile)
+
         if(this.type === 2) {
             var book = state.book.file
             var blob1 = book.slice(0, book.size, book.type)
-            var newBook = new File([blob1], state.title.val + ".pdf", {type: book.type})
+            var newBook = new File([blob1], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
 
             var preview = state.preview.file
-            var blob2 = book.slice(0, preview.size, preview.type)
-            var newPreview = new File([blob2], state.title.val + "_preview.pdf", {type: preview.type})
+            var blob2 = preview.slice(0, preview.size, preview.type)
+            var newPreview = new File([blob2], state.title.val.slice(0, 10) + "_preview.pdf", {type: preview.type})
 
             data.append("content", state.contents.val)
-            data.append("preview", state.preview.file)
-            data.append("file", state.book.file)
+            data.append("preview", newPreview)
+            data.append("file", newBook)
             data.append("page_number", state.page_count.val)
         } else {
             data.append("serialization_day", state.day.val)
@@ -429,7 +430,7 @@ class RegisterBook extends Component {
                         <div className="input-box">
                             <h3 className="header"> 목차 </h3>
                             <div>
-                                <textarea rows={5} className={state.contents.class} onChange={this.handleContentsChange} value={state.contents.val}/>
+                                <textarea rows={5} cols={5} className={state.contents.class} onChange={this.handleContentsChange} value={state.contents.val} wrap="hard"/>
                             </div>
                         </div>
                     }
@@ -437,7 +438,7 @@ class RegisterBook extends Component {
                     <div className="input-box">
                         <h3 className="header"> 책 소개 </h3>
                         <div>
-                            <textarea rows={5} className={state.bookDescription.class}  onChange={this.handleBookDescriptionChange} value={state.bookDescription.val}/>
+                            <textarea rows={5} cols={5} className={state.bookDescription.class}  onChange={this.handleBookDescriptionChange} value={state.bookDescription.val} wrap="hard"/>
                         </div>
                     </div>
 

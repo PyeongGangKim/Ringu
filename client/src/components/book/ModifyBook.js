@@ -183,9 +183,26 @@ class ModifyBook extends Component {
             const data = new FormData()
             data.append("book_id", this.props.bookId)
             data.append("book_detail_id", book_detail_id)
-            data.append("file", state.book.file)
-            data.append("img", state.thumbnail.file)
+
+            var book = state.book.file
+            var bookblob = book.slice(0, book.size, book.type)
+            var newBook = new File([bookblob], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
+            data.append("file", newBook)
+
+            var preview = state.preview.file
+            var previewblob = book.slice(0, preview.size, preview.type)
+            var newBook = new File([previewblob], state.title.val.slice(0, 10) + ".pdf", {type: preview.type})
             data.append("preview", state.preview.file)
+
+            var img = state.thumbnail.file;
+            if(img) {
+                var imgblob = img.slice(0, img.size, img.type);
+                var token = img.name.split('.')
+                var fieldName = token[token.length - 1]
+                var newImg = new File([imgblob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: img.type})
+            }
+            data.append("img", newImg)
+
             data.append("price", state.price.val)
             data.append("page_count", state.page_count.val)
             data.append("content", state.content.val)
