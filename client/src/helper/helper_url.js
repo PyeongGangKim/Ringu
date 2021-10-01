@@ -131,7 +131,7 @@ module.exports = {
             buy                 : "/buy",
             complete            : "/complete",
         },
-        home                    : "/home",
+        home                    : "/",
         mypage  : {
             info                : "/mypage",
             password_change     : "/mypage/password/update",
