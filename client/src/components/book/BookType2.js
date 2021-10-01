@@ -334,7 +334,7 @@ class BookType2 extends Component {
 
                         <div className="book-detail-box">
                             <span className="book-detail">{book.author_nickname}</span>
-                            <span className="book-detail">총 {book.page_number}페이지</span>
+                            <span className="book-detail">총 {book.page_count} 페이지</span>
                         </div>
 
                         <h3 className="book-title">{book.title}</h3>
