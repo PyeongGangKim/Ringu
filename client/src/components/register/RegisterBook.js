@@ -278,13 +278,13 @@ class RegisterBook extends Component {
 
         if(this.type === 2) {
             if(!state.preview.file) {
-                alert('미리보기 파일을 선택해주세요.')
+                alert('미리보기 파일을 업로드해주세요.')
                 this.setState(state)
                 return;
             }
 
             if(!state.book.file) {
-                alert('등록할 파일을 선택해주세요.')
+                alert('등록할 파일을 업로드해주세요.')
                 this.setState(state)
                 return;
             }
