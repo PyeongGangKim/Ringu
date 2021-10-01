@@ -131,7 +131,7 @@ class Book extends Component {
                     status === 'wait' ?
                     <div className="thumbnail-box">
                         <div className="img-area">
-                            <img src={!!book.img ? book.img : "/assets/img/ringu_thumbnail.png"}/>
+                            <img src={!!book.img ? book.img : "/ringu_thumbnail.png"}/>
                         </div>
                         {
                             favorite &&
@@ -148,7 +148,7 @@ class Book extends Component {
                     <Link to={URL.service.book.book + book.id}>
                         <div className="thumbnail-box">
                             <div className="img-area">
-                                <img src={!!book.img ? book.img : "/assets/img/ringu_thumbnail.png"}/>
+                                <img src={!!book.img ? book.img : "/ringu_thumbnail.png"}/>
                             </div>
                             {
                                 favorite &&

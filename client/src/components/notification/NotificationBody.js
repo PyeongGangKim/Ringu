@@ -163,7 +163,7 @@ class NotificationBody extends Component {
                     <div className= "select-all">
                         <span >전체선택</span>
                         <button className= "trash-button" onClick = {() => this.handleDeleteButton() }>
-                            <img src="/assets/img/trashcan.png" padding-right= "15px" width="20px" height="25px" />
+                            <img src="/trashcan.png" padding-right= "15px" width="20px" height="25px" />
                         </button>
                         <span className= "erase-span" >삭제</span>
                     </div>
@@ -203,10 +203,10 @@ class NotificationBody extends Component {
                 <div className= "bottom-navigator">
                     <span>{this.state.totalCount}개 중 {startItem}-{endItem} </span>
                     <button onClick = {this.handlePrevPageChange}>
-                        <img src="/assets/img/prev_arrow.png" width="27px" height="32px" />
+                        <img src="/prev_arrow.png" width="27px" height="32px" />
                      </button>
                     <button onClick = {this.handleNextPageChange}>
-                        <img src="/assets/img/next_arrow.png" width="27px" height="32px" />
+                        <img src="/next_arrow.png" width="27px" height="32px" />
                     </button>
                 </div>
             </div>
