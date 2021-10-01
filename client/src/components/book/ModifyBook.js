@@ -42,8 +42,8 @@ class ModifyBook extends Component {
 
                 state.price.val = !!book.price ? book.price : 0;
                 state.page_count.val = !!book.page_count ? book.page_count : 0;
-                state.title.val = book.title;
-                state.bookDescription.val = book.description;
+                state.title.val = book.book_title;
+                state.bookDescription.val = book.book_description;
                 state.content.val = book.content;
                 state.thumbnail.file = book.img;
                 state.preview.name = book.preview;
