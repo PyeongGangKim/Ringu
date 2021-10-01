@@ -274,7 +274,7 @@ class BookType1 extends Component {
                             <span className="book-detail">{book.author_nickname}</span>
                         </div>
 
-                        <h3 className="book-title">{book.title}</h3>
+                        <h3 className="book-title">{book.book_title}</h3>
                     </div>
 
                     <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
@@ -288,7 +288,7 @@ class BookType1 extends Component {
                             <div id="intro-area" className="inner-box" ref={this.introRef}>
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.description}
+                                    {book.book_description}
                                 </div>
                             </div>
 

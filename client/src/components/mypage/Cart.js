@@ -192,7 +192,7 @@ class Cart extends Component {
                                             </Link>
                                             <div className="details">
                                                 <Link to={URL.service.book.book + item.book_id}  title="상세 페이지로 이동합니다">
-                                                    <h3 className="title">{item.title}</h3>
+                                                    <h3 className="title">{item.book_title}</h3>
                                                 </Link>
                                                 <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
                                             </div>

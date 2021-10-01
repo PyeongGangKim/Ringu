@@ -42,24 +42,11 @@ class BookType2 extends Component {
 
             const res = await API.sendGet(URL.api.purchase.duplicate, params)
             if(res.status === 200) {
-                if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
-                    var book = this.state.book;
-                    var purchase = {
-                        author: book.author_nickname,
-                        book_description: book.description,
-                        book_detail_id: book.book_details[0].id,
-                        book_id: book.id,
-                        book_title: book.title,
-                        img: book.img,
-                        price: book.price,
-                        serailization_day: book.serailization_day,
-                        title: book.book_details[0].title,
-                        type: book.type,
-                    }
+                if(window.confirm(`${this.state.book.book_title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
                     this.props.history.push({
                         pathname: URL.service.buy.buy,
                         state: {
-                            purchaseList: [purchase]
+                            purchaseList: [this.state.book]
                         }
                     })
                 }
@@ -96,7 +83,7 @@ class BookType2 extends Component {
                         const res = await API.sendPost(URL.api.cart.create, params)
 
                         if(res.status === 201) {
-                            if(window.confirm(`${this.state.book.title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
+                            if(window.confirm(`${this.state.book.book_title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
                                 this.props.history.push(URL.service.mypage.carts)
                             }
                         }
@@ -311,7 +298,7 @@ class BookType2 extends Component {
             <div id="book" className="page3" >
                 <div className="merchant-bar">
                     <div className="merchant-box">
-                        <span className="title">{book.title}</span>
+                        <span className="title">{book.book_title}</span>
                         <div className="payment-wrap">
                             <span className="price">{parse.numberWithCommas(book.price)}원</span>
                             <button className="btn btn-color-4" onClick={this.handleCartClick}> 장바구니 </button>
@@ -337,7 +324,7 @@ class BookType2 extends Component {
                             <span className="book-detail">총 {book.page_count} 페이지</span>
                         </div>
 
-                        <h3 className="book-title">{book.title}</h3>
+                        <h3 className="book-title">{book.book_title}</h3>
                     </div>
 
                     <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
@@ -351,7 +338,7 @@ class BookType2 extends Component {
                             <div id="intro-area" className="inner-box" ref={this.introRef}>
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.description}
+                                    {book.book_description}
                                 </div>
                             </div>
 
