@@ -35,25 +35,46 @@ class BookType2 extends Component {
 
     handlePurchaseClick = async() => {
         if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
-            var book = this.state.book;
-            var purchase = {
-                author: book.author_nickname,
-                book_description: book.description,
-                book_detail_id: book.book_details[0].id,
-                book_id: book.id,
-                book_title: book.title,
-                img: book.img,
-                price: book.price,
-                serailization_day: book.serailization_day,
-                title: book.book_details[0].title,
-                type: book.type,
-            }
-            this.props.history.push({
-                pathname: URL.service.buy.buy,
-                state: {
-                    purchaseList: [purchase]
+            try {
+                var params = {
+                    member_id: User.getInfo().id,
+                    book_detail_id: this.state.book.book_details[0].id,
                 }
-            })
+
+                try {
+                    const res = await API.sendGet(URL.api.purchase.duplicate, params)
+                    if(res.status === 200) {
+                        var book = this.state.book;
+                        var purchase = {
+                            author: book.author_nickname,
+                            book_description: book.description,
+                            book_detail_id: book.book_details[0].id,
+                            book_id: book.id,
+                            book_title: book.title,
+                            img: book.img,
+                            price: book.price,
+                            serailization_day: book.serailization_day,
+                            title: book.book_details[0].title,
+                            type: book.type,
+                        }
+                        this.props.history.push({
+                            pathname: URL.service.buy.buy,
+                            state: {
+                                purchaseList: [purchase]
+                            }
+                        })
+                    }
+
+                } catch(e) {
+                    if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                        this.props.history.push(URL.service.mypage.purchase)
+                    }
+                }
+
+            } catch(e) {
+                console.error(e)
+                alert("에러가 발생했습니다.")
+            }
         }
     }
 
@@ -61,6 +82,37 @@ class BookType2 extends Component {
         var state = this.state;
 
         try {
+            try {
+                const res = await API.sendGet(URL.api.purchase.duplicate, params)
+                if(res.status === 200) {
+                    var book = this.state.book;
+                    var purchase = {
+                        author: book.author_nickname,
+                        book_description: book.description,
+                        book_detail_id: book.book_details[0].id,
+                        book_id: book.id,
+                        book_title: book.title,
+                        img: book.img,
+                        price: book.price,
+                        serailization_day: book.serailization_day,
+                        title: book.book_details[0].title,
+                        type: book.type,
+                    }
+                    this.props.history.push({
+                        pathname: URL.service.buy.buy,
+                        state: {
+                            purchaseList: [purchase]
+                        }
+                    })
+                }
+
+            } catch(e) {
+                if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.purchase)
+                }
+                return;
+            }
+
             var params = {
                 book_detail_id: state.book.book_details[0].id,
             }
