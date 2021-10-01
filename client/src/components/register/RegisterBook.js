@@ -209,6 +209,20 @@ class RegisterBook extends Component {
             return;
         }
 
+        if(state.price.val < 100) {
+            alert('최소 가격은 100원입니다.')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(/^[0-9]*$/.test(state.day.val) === true) {
+            alert('가격은 숫자만 입력해주세요.')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
         if(this.type === 1) {
             if(!state.day.val) {
                 alert('연재 주기를 입력해주세요')
@@ -219,6 +233,20 @@ class RegisterBook extends Component {
         } else {
             if(!state.page_count.val) {
                 alert('페이지 수를 입력해주세요')
+                state.page_count.class = "textbox error";
+                this.setState(state)
+                return;
+            }
+
+            if(state.page_count.val < 100) {
+                alert('최소 페이지는 100페이지입니다.')
+                state.page_count.class = "textbox error";
+                this.setState(state)
+                return;
+            }
+
+            if(/^[0-9]*$/.test(state.page_count.val) === true) {
+                alert('페이지는 숫자만 입력해주세요.')
                 state.page_count.class = "textbox error";
                 this.setState(state)
                 return;

@@ -179,6 +179,83 @@ class ModifyBook extends Component {
         var state = this.state
         var book_id = this.props.bookId
 
+        if(!state.price.val) {
+            alert('가격을 입력해주세요')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(state.price.val < 100) {
+            alert('최소 가격은 100원입니다.')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(/^[0-9]*$/.test(state.day.val) === true) {
+            alert('가격은 숫자만 입력해주세요.')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(!state.page_count.val) {
+            alert('페이지 수를 입력해주세요')
+            state.page_count.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(state.page_count.val < 100) {
+            alert('최소 페이지는 100페이지입니다.')
+            state.page_count.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(/^[0-9]*$/.test(state.page_count.val) === true) {
+            alert('페이지는 숫자만 입력해주세요.')
+            state.page_count.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(!state.title.val) {
+            alert('제목을 입력해주세요')
+            state.title.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(!state.contents.val) {
+            alert('목차를 입력해주세요')
+            state.contents.class = "error";
+            this.setState(state)
+            return;
+        }
+
+
+        if(!state.bookDescription.val) {
+            alert('책 소개를 입력해주세요')
+            state.bookDescription.class = "error";
+            this.setState(state)
+            return;
+        }
+
+        if(!state.preview.file) {
+            alert('미리보기 파일을 업로드해주세요.')
+            this.setState(state)
+            return;
+        }
+
+        if(!state.book.file) {
+            alert('등록할 파일을 업로드해주세요.')
+            this.setState(state)
+            return;
+        }
+
+
         try {
             const data = new FormData()
             data.append("book_id", this.props.bookId)
