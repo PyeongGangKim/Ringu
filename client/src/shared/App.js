@@ -16,7 +16,7 @@ class App extends Component {
     render() {
         return (
             <Switch>
-                <Route exact path="/home" component={Home} />{}
+                <Route exact path="/" component={Home} />{}
                 <Route path="/mypage/password/update" component={PasswordChangePage} />{}
                 <Route path="/mypage/notification/update" component={NotificationChangePage} />{}
                 <Route path="/mypage" component={MyPage} />{}
