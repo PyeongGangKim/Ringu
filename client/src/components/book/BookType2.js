@@ -35,10 +35,23 @@ class BookType2 extends Component {
 
     handlePurchaseClick = async() => {
         if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
+            var book = this.state.book;
+            var purchase = {
+                author: book.author_nickname,
+                book_description: book.description,
+                book_detail_id: book.book_details[0].id,
+                book_id: book.id,
+                book_title: book.title,
+                img: book.img,
+                price: book.price,
+                serailization_day: book.serailization_day,
+                title: book.book_details[0].title,
+                type: book.type,
+            }
             this.props.history.push({
                 pathname: URL.service.buy.buy,
                 state: {
-                    purchaseList: [this.state.book]
+                    purchaseList: [purchase]
                 }
             })
         }
