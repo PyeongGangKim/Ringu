@@ -216,7 +216,7 @@ class RegisterBook extends Component {
             return;
         }
 
-        if(/^[0-9]*$/.test(state.day.val) === true) {
+        if(/^[0-9]*$/.test(state.day.val) === false) {
             alert('가격은 숫자만 입력해주세요.')
             state.price.class = "textbox error";
             this.setState(state)
