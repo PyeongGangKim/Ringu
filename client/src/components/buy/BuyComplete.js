@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
-import helper_url from '../../helper/helper_url';
+import URL from '../../helper/helper_url';
+import parse from '../../helper/parse';
 import User from '../../utils/user';
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
@@ -11,38 +12,48 @@ class BuyComplete extends Component {
     constructor(props) {
         super(props)
         let userInfo = User.getInfo();
+
+        var propsState = this.props.history.location.state;
+
+        this.state = {
+            purchaseList: 'purchaseList' in propsState && typeof propsState['purchaseList'] !== 'undefined' ? propsState.purchaseList : [],
+            user: 'user' in propsState && typeof propsState['user'] !== 'undefined' ? propsState.user : userInfo,
+            amount: 'amount' in propsState && typeof propsState['amount'] !== 'undefined' ? propsState.amount : 0,
+            card: 'card' in propsState && typeof propsState['card'] !== 'undefined' ? propsState.card : '',
+        }
     }
 
     render() {
+        var state = this.state;
+
         return (
             <div className="page1">
                 <div className="complete-container">
-                    <h3>결제/주문완료</h3>
+                    <h3 className="header">결제/주문완료</h3>
                     <div className="complete-box">
-                        <div style={{textAlign:"center", margin:"0 auto", fontSize:"18px", lineHeight:"1.6", width: "450px"}}>
-                            <span className="color-2" style={{fontWeight:"700"}}>고은혜</span>님, 주문하신 상품의 결제가 완료되었습니다.
+                        <div className="content">
+                            <span className="nickname">{state.user.nickname}</span>님, 주문하신 상품의 결제가 완료되었습니다.
                             <br/>
                             지금 바로 책을 펴보실 수 있어요!
 
-                            <div style={{width:"200px", height:"200px", margin: "40px auto"}}>
-                                <img src="/buy-complete.png" style={{width:"100%", height:"100%"}}/>
+                            <div className="img-box">
+                                <img src="/buy-complete.png"/>
                             </div>
 
-                            <a href={helper_url.service.home}>
-                                <div className="btn btn-outline" style={{fontSize:"20px", width: "100%"}}>
+                            <a href={URL.service.home}>
+                                <div className="btn btn-outline">
                                     계속 둘러보기
                                 </div>
                             </a>
 
-                            <div style={{marginTop:"10px"}}>
-                                <img src="/download.png" style={{width:"20px", height:"20px", verticalAlign:"middle"}}/>
-                                <span style={{fontSize:"13px", verticalAlign:"middle"}}> 구매내역에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
+                            <div className="txt">
+                                <span> 구매내역에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
                             </div>
                         </div>
 
                     </div>
 
-                    <h3>구매정보 ({"3"}건)</h3>
+                    <h3 className="header">구매정보 ({state.purchaseList.length}건)</h3>
                     <table>
                         <tbody>
                             <tr>
@@ -52,66 +63,58 @@ class BuyComplete extends Component {
                                 <th>적립금</th>
                                 <th>다운로드</th>
                             </tr>
-                            <tr>
-                                <td style={{padding:"5px 20px", textAlign:"center"}}><img style={{borderRadius:"4px"}} src="/travel.jpg"/></td>
-                                <td>
-                                    <div style={{fontSize: "15px", lineHeight: "25px"}}>
-                                        <span style={{fontSize:"16px"}}>알면 알수록 도움되는 주식투자 노하우 </span><br/>
-                                        저자: 리미 <br/>
-                                        페이지수: 60p <br/>
-                                        연재형식: 단행본
-                                    </div>
-                                </td>
-                                <td><span style={{fontSize:"23px"}}>15,000</span><span style={{fontWeight:"100", fontSize:"15px"}}>원</span></td>
-                                <td><span style={{fontSize:"23px"}}>20</span><span style={{fontWeight:"100", fontSize:"15px"}}>원</span></td>
-                                <td><div className="btn btn-color-2" style={{fontSize: "15px", width: "95%"}}>PDF 다운받기 <img style={{marginLeft: "5px"}} src="/download.png" width="15px" height="15px"/></div></td>
-                            </tr>
-                            <tr>
-                                <td style={{padding:"5px 20px", textAlign:"center"}}><img style={{borderRadius:"4px"}} src="/travel.jpg"/></td>
-                                <td>
-                                    <div style={{fontSize: "15px", lineHeight: "25px"}}>
-                                        <span style={{fontSize:"16px"}}>알면 알수록 도움되는 주식투자 노하우 </span><br/>
-                                        저자: 리미 <br/>
-                                        페이지수: 60p <br/>
-                                        연재형식: 단행본
-                                    </div>
-                                </td>
-                                <td><span style={{fontSize:"23px"}}>15,000</span><span style={{fontWeight:"100", fontSize:"15px"}}>원</span></td>
-                                <td><span style={{fontSize:"23px"}}>20</span><span style={{fontWeight:"100", fontSize:"15px"}}>원</span></td>
-                                <td><div className="btn btn-color-2" style={{fontSize: "15px", width: "95%"}}>PDF 다운받기 <img style={{marginLeft: "5px"}} src="/download.png" width="15px" height="15px"/></div></td>
-                            </tr>
-                            <tr>
-                                <td style={{padding:"5px 20px", textAlign:"center"}}><img style={{borderRadius:"4px"}} src="/travel.jpg"/></td>
-                                <td>
-                                    <div style={{fontSize: "15px", lineHeight: "25px"}}>
-                                        <span style={{fontSize:"16px"}}>알면 알수록 도움되는 주식투자 노하우 </span><br/>
-                                        저자: 리미 <br/>
-                                        페이지수: 60p <br/>
-                                        연재형식: 단행본
-                                    </div>
-                                </td>
-                                <td><span style={{fontSize:"23px"}}>15,000</span><span style={{fontWeight:"100", fontSize:"15px"}}>원</span></td>
-                                <td><span style={{fontSize:"23px"}}>20</span><span style={{fontWeight:"100", fontSize:"15px"}}>원</span></td>
-                                <td><div className="btn btn-color-2" style={{fontSize: "15px", width: "95%"}}>PDF 다운받기 <img style={{marginLeft: "5px"}} src="/download.png" width="15px" height="15px"/></div></td>
-                            </tr>
+                            {
+                                state.purchaseList.map((item, idx) => {
+                                    console.log(item)
+                                    return(
+                                        <tr key={item.id}>
+                                            <td className="img">
+                                                <div className="img-box">
+                                                    <img src={item.img}/>
+                                                </div>
+                                            </td>
+                                            <td className="info">
+                                                <div>
+                                                    <span className="book_title">{item.book_title} </span><br/>
+                                                    {item.type === 1 && <span className="book_detail_title">{item.title}<br/> </span>}
+                                                    저자: {item.author_nickname} <br/>
+                                                    연재형식: {item.type === 1 ? "연재본" : "단행본"}<br/>
+                                                    {item.type === 2 && <span>페이지수: {item.page_count} <br/></span>}
+                                                </div>
+                                            </td>
+                                            <td className="price"><strong>{parse.numberWithCommas(item.price)}</strong> 원</td>
+                                            <td className="mileage"><strong>0</strong> 원</td>
+                                            {
+                                                idx === 0 &&
+                                                <td className="download" rowSpan={state.purchaseList.length}>
+                                                    <Link to={URL.service.mypage.purchases}>
+                                                        <button className="btn btn-color-2">
+                                                            다운로드 하러가기
+                                                        </button>
+                                                    </Link>
+                                                </td>
+                                            }
 
+                                        </tr>
+                                    )
+                                })
+                            }
                         </tbody>
 
                     </table>
 
-                    <h3>결제정보</h3>
+                    <h3 className="header">결제정보</h3>
                     <table className="summary">
                         <tbody>
-                            <tr style={{width:"100%"}}>
-                                <td style={{padding:"15px", width: "180px"}}>결제금액</td>
-                                <td style={{padding:"15px 30px", width: "1020px"}}><span style={{fontSize: "23px", fontWeight: "700"}}>{"42,750"}</span>원</td>
+                            <tr>
+                                <td>결제금액</td>
+                                <td><span className="total">{parse.numberWithCommas(state.amount)}</span> 원</td>
                             </tr>
                             <tr>
-                                <td style={{padding:"15px"}}>결제수단</td>
-                                <td style={{padding:"15px 30px"}}>
-                                    <div style={{fontSize:"15px", lineHeight:"26px"}}>
-                                        신용카드 (IBK 기업은행) <br/>
-                                        현금 영수증 발행 (소득 공제용) 010-1234-5678
+                                <td>결제수단</td>
+                                <td>
+                                    <div>
+                                        {state.card}
                                     </div>
                                 </td>
                             </tr>

@@ -80,7 +80,7 @@ class Buy extends Component {
             pay_method: 'card',
             merchant_uid: 'merchant_' + new Date().getTime(),
             name: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
-            amount: 100,
+            amount: state.amount,
             buyer_email: state.user.email,
             buyer_name: state.user.nickname,
             buyer_tel: !!state.user.tel ? state.user.tel : null,
@@ -91,12 +91,20 @@ class Buy extends Component {
                 var msg
                 if (rsp.success) {
                     msg = "결제가 완료되었습니다."
-
+                    console.log(rsp)
                     let params = rsp;
                     params.purchaseList = state.purchaseList;
                     const res = await API.sendPost(URL.api.payment.create, params)
                     if(res.status === 200) {
-                        window.location.href = "/home"
+                        this.props.history.push({
+                            pathname : URL.service.buy.complete,
+                            state: {
+                                card: params.card_name,
+                                amount: state.amount,
+                                user: state.user,
+                                purchaseList: state.purchaseList
+                            }
+                        })
                     }
                     /*).catch((err) => {
                         console.log(err);
@@ -127,7 +135,7 @@ class Buy extends Component {
                                         <strong className="title">(책 제목:{item.book_title})</strong>
                                         <span className="subtitle">{item.title}</span>
                                         <div className="detail">
-                                            <p>저자:{item.author}</p>
+                                            <p>저자:{item.author_nickname}</p>
                                             <p>출간방식:{item.type === 2 ? "단행본" : "연재본"}</p>
                                             {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
                                             <p>파일형식:{"PDF"}</p>
