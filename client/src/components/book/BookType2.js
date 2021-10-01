@@ -399,25 +399,25 @@ class BookType2 extends Component {
                                             <em className={book.review_score >= 3 ? "on" : "off"}/>
                                             <em className={book.review_score >= 4 ? "on" : "off"}/>
                                             <em className={book.review_score >= 5 ? "on" : "off"}/>
-                                            <div style={{fontSize: "12px"}}>{book.review_count ? book.review_count : 0} 개의 후기</div>
+                                            <div className="review-cnt">{book.review_count ? book.review_count : 0} 개의 후기</div>
                                         </div>
 
                                     </div>
-                                    <div className="review-box" style={{marginLeft:"10px"}}>
+                                    <div className="review-box">
                                         {
                                             state.reviewList.map(item => {
                                                 return (
                                                     <div className="review-item" key={item.id}>
-                                                        <div style={{marginBottom: "15px"}}>
-                                                            <span style={{fontSize:"12px"}}> {item.author} </span>
-                                                            <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>
+                                                        <div className="info">
+                                                            <span> {item.nickname} </span>
+                                                            <span className="sep"> | </span>
                                                             <em className={item.score >= 1 ? "on" : "off"}/>
                                                             <em className={item.score >= 2 ? "on" : "off"}/>
                                                             <em className={item.score >= 3 ? "on" : "off"}/>
                                                             <em className={item.score >= 4 ? "on" : "off"}/>
                                                             <em className={item.score >= 5 ? "on" : "off"}/>
                                                         </div>
-                                                        <span>
+                                                        <span className="review">
                                                             {item.description}
                                                         </span>
                                                     </div>

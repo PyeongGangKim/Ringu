@@ -385,20 +385,17 @@ class BookType1 extends Component {
                                         {
                                             state.reviewList.map((item, review_idx) => {
                                                 return (
-                                                    <div key={item.id} className="review-item">
-                                                        <div style={{marginBottom: "15px"}}>
-                                                            <span style={{fontSize:"12px"}}> {item.author} </span>
-                                                            <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>
+                                                    <div className="review-item" key={item.id}>
+                                                        <div className="info">
+                                                            <span> {item.nickname} </span>
+                                                            <span className="sep"> | </span>
                                                             <em className={item.score >= 1 ? "on" : "off"}/>
                                                             <em className={item.score >= 2 ? "on" : "off"}/>
                                                             <em className={item.score >= 3 ? "on" : "off"}/>
                                                             <em className={item.score >= 4 ? "on" : "off"}/>
                                                             <em className={item.score >= 5 ? "on" : "off"}/>
                                                         </div>
-                                                        <div className="review-subtitle">
-                                                            {item.subtitle}
-                                                        </div>
-                                                        <span>
+                                                        <span className="review">
                                                             {item.description}
                                                         </span>
                                                     </div>
