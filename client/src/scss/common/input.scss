@@ -108,6 +108,10 @@ textarea {
 
         &.error {
             border: 2px solid red;
+
+            &:focus {
+                border: 2px solid red !important;
+            }
         }
     }
 
