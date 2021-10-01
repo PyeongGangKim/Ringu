@@ -22,7 +22,7 @@ class Header extends Component {
 
         if (props.mypage && !userInfo) {
             alert("로그인이 필요합니다.")
-            window.location.href = "/home"
+            window.location.href = URL.service.home
         }
 
         var search = props.search ? parse.searchToDict(props.search) : {}
