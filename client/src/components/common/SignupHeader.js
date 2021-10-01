@@ -20,7 +20,7 @@ class SignupHeader extends Component {
             <header>
                 <div id="signup-header" className="bottom-line">
                     <h1 id="signup-logo">
-                        <Link to="/home">
+                        <Link to={URL.service.home}>
                             <img src="/logo.png" height="70px"/>
                         </Link>
                     </h1>

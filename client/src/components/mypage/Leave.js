@@ -68,7 +68,7 @@ class Leave extends Component {
             Cookies.remove('RINGU_JWT');
             Cookies.remove('RINGU_JWT', { path: '/'});
             Cookies.remove('RINGU_JWT', { path: '/detail' });
-            window.location = "/home";
+            window.location = URL.service.home;
         }
         else {
             alert("회원 탈퇴가 완료되지 못했습니다. 잠시 후 다시 시도해주세요")
@@ -108,7 +108,7 @@ class Leave extends Component {
                                 <input placeholder="RINGU에 가입하신 이메일을 적어주세요" value={state.email} onChange={this.handleEmailChange}/>
                             </div>
 
-                            <div className="btn-wrap">                                
+                            <div className="btn-wrap">
                                 <button className="btn btn-color-2" onClick={this.handleSubmit}>
                                     탈퇴하기
                                 </button>

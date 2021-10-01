@@ -74,7 +74,7 @@ class Login extends Component {
                 if( token ) {
                     Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
                 }
-                window.location.href = "/home";
+                window.location.href = URL.service.home;
             } else if (status === 400){
                 alert(res.data.message);
             } else {

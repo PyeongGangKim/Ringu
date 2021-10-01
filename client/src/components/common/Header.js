@@ -88,7 +88,7 @@ class Header extends Component {
             <header>
                 <div id="header" className={this.props.searchVisible ? "bottom-line" : ""}>
                     <h1 id="logo">
-                        <Link to="/home">
+                        <Link to={URL.service.home}>
                             <img src="/logo.png" width="220px" height="70px"/>
                         </Link>
                     </h1>
