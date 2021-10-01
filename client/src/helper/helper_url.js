@@ -46,6 +46,7 @@ module.exports = {
         },
         purchase: {
             list:               "/purchase",
+            duplicate:          "/duplicate",
         },
         book: {
             get:                "/book/",
