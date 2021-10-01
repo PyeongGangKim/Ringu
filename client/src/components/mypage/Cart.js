@@ -85,13 +85,18 @@ class Cart extends Component {
     handleDelete = async(id) => {
         var state = this.state
 
-        const res = await API.sendDelete(URL.api.cart.delete + id)
-        if(res.status === 200) {
-            var filteredArray = this.state.data.cartList.filter(item => item.id !== id)
-            var data = {...state.data, cartList: filteredArray}
-            this.setState({data: data})
-            this.sum(filteredArray);
-            alert("물품이 삭제되었습니다.")
+        try {
+            const res = await API.sendDelete(URL.api.cart.delete, {id: id})
+            if(res.status === 200) {
+                var filteredArray = this.state.data.cartList.filter(item => item.id !== id)
+                var data = {...state.data, cartList: filteredArray}
+                this.setState({data: data})
+                this.sum(filteredArray);
+                alert("장바구니에서 삭제되었습니다.")
+            }
+        } catch(e) {
+            console.error(e)
+            alert("장바구니에서 삭제하지 못하였습니다.")
         }
     }
 
