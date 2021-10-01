@@ -82,6 +82,15 @@ module.exports = function(sequelize, DataTypes) {
     rank: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    is_recommending_phrase:{
+      type: DataTypes.TINYINT,
+      allowNull: true,
+      defaultValue: 0,
+    },
+    recommending_phrase:{
+      type: DataTypes.STRING(100),
+      allowNull: true,
     }
   }, {
     sequelize,

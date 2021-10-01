@@ -1,0 +1,102 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h1>책 추천 문구(조회: <%=total_count%>)</h1>
+
+        <form method="GET" action="/admin/book/?is_approved=0" class="panel-options input-inline">
+            <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
+            <input type="text" class="input" name="title" value="<%=fields.name%>" placeholder="책 이름"/>
+            <input type="text" class="input" name="price" value="<%=fields.email%>" placeholder="가격 이하"/>
+            <input type="number" class="input" name="is_approved" value="<%=fields.tel%>" placeholder="발간 여부" style="width: 100px;"/>
+            <input type="number" class="input text-center" name="limit" value="<%=fields.limit%>" placeholder="개수" style="width: 60px;"/>
+            <button type="submit" class="btn btn-success" style="height: 23px;">검색</button>
+            <a href="/admin/book/?is_approved=0">
+                <div class="btn" id="filter-clear">초기화</div>
+            </a>
+        </form>
+        <!--/.panel-options-->
+    </div>
+    <!--/.panel-header-->
+
+    <div class="panel-body padTopNone">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th style="width: 60px;">작가 이름</th>
+                    <th style="width: 60px;">카테고리</th>
+                    <th style="width: 120px;">책 이름</th>
+                    <th style="width: 200px;">책 추천 문구</th>
+                    <th style="width: 80px;">파일 다운로드</th>
+                    <th style="width: 80px;">미리보기 다운로드</th>
+                    <th style="width: 80px;">문구 변경하기</th>
+                    <th style="width: 100px;">추천 취소</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!book_list.length) { %>
+                    <tr>
+                        <td colspan="6" class="text-center">조회 되는 결과가 없습니다.</td>
+                    </tr>
+                <% } %>
+                <% book_list.forEach(function(book, index) { %>
+                    <tr>
+                        <td class="text-center">
+                            <%=book.id%>
+                        </td>
+                        <td class="text-center">
+                            <%=book.author.nickname%>
+                        </td>
+                        <td class="text-center">
+                            <%=book.category.name%>
+                        </td>
+                        <td class="text-center">
+                            <%=book.title%>  
+                        </td>
+                        <td class="text-center">
+                            <%=book.recommending_phrase%> 
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/download/<%=book.book_details[0].id%>/?type=file">
+                                <div class="menu-item">
+                                    파일 다운로드
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/download/<%=book.book_details[0].id%>/?type=preview">
+                                <div class="menu-item">
+                                    미리보기 다운로드
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/<%=book.id%>/bookRecommendingPhraseForm">
+                                <div class="btn btn-sm btn-fail">문구 변경하기</div>
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/<%=book.id%>/unrecommendingPhrase">
+                                <div class="btn btn-sm btn-fail">추천 문구 취소하기</div>
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!--/.panel-body-->
+
+    <div class="panel-block text-center">
+        <%- pagination_html%>
+    </div>
+    <!--/.panel-block-->
+</div>
+<!--/.panel-->
+<script >
+
+</script>
+<%- include("../templates/foot"); %>

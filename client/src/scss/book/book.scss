@@ -177,11 +177,11 @@
                                     background-size: contain;
 
                                     &.lock {
-                                        background-image: url(/locked.png);
+                                        background-image: url(/assets/img/locked.png);
                                     }
 
                                     &.download {
-                                        background-image: url(/download.png);
+                                        background-image: url(/assets/img/download.png);
                                     }
 
                                 }
@@ -202,11 +202,11 @@
                         background-size: contain;
 
                         &.off {
-                            background-image: url(/star-off.png);
+                            background-image: url(/assets/img/star-off.png);
                         }
 
                         &.on {
-                            background-image: url(/star.png);
+                            background-image: url(/assets/img/star.png);
                         }
                     }
 
@@ -313,13 +313,13 @@
                             margin: auto;
                             width: 40px;
                             height: 40px;
-                            background-image: url("/heart_empty.png");
+                            background-image: url("/assets/img/heart_empty.png");
                             background-repeat: no-repeat;
                             background-size: contain;
                             z-index: 11;
 
                             &.on {
-                                background-image: url("/heart.png");
+                                background-image: url("/assets/img/heart.png");
                             }
                         }
                     }
@@ -411,11 +411,11 @@
                     background-size: contain;
 
                     &.off {
-                        background-image: url(/star-off.png);
+                        background-image: url(/assets/img/star-off.png);
                     }
 
                     &.on {
-                        background-image: url(/star.png);
+                        background-image: url(/assets/img/star.png);
                     }
                 }
 

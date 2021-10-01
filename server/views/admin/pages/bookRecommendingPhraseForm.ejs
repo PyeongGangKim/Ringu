@@ -1,0 +1,17 @@
+<%- include("../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2><%=book.title%> recommending하기</h2>
+    </div>
+    <div class="panel-body padTopNone">
+        <form method="POST" action="/admin/book/<%=book.id%>/recommendingPhrase">
+            <div class="form-group">
+                <label>recommending_phrase</label>
+                <input type="text" class="form-control" name="recommending_phrase" value="<%=book.recommending_phrase%>">
+            </div>
+            <button type="submit" class="btn btn-primary">recommending하기</button>
+        </form>
+    </div>
+</div>
+<%- include("../templates/foot"); %>

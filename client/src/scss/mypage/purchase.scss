@@ -42,12 +42,12 @@
                         margin: 10px auto;
                         width: 40px;
                         height: 40px;
-                        background-image: url('/download-rounded.png');
+                        background-image: url('/assets/img/download-rounded.png');
                         background-repeat: no-repeat;
                         background-position: center;
                         background-size: contain;
                         cursor: pointer;
-                    }                    
+                    }
                 }
 
                 &:nth-child(2) {
@@ -103,7 +103,7 @@
                 color: #999;
             }
             em {
-                background-image: url("/star.png");
+                background-image: url("/assets/img/star.png");
                 background-repeat: no-repeat;
                 background-color: unset;
                 background-size: contain;

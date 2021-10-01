@@ -202,23 +202,23 @@
                     background-size: contain;
 
                     &.modify {
-                        background-image: url(/review.png);
+                        background-image:  url(/assets/img/review.png);
                     }
 
                     &.x {
                         width: 15px;
                         height: 15px;
-                        background-image: url(/x.png);
+                        background-image:  url(/assets/img/x.png);
                     }
 
                     &.lock {
-                        background-image: url(/locked.png);
+                        background-image:  url(/assets/img/locked.png);
                     }
 
                     &.download {
                         width: 18px;
                         height: 18px;
-                        background-image: url(/download.png);
+                        background-image:  url(/assets/img/download.png);
                     }
                 }
             }

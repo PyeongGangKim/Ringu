@@ -67,7 +67,7 @@
         }
     }
 
-    .row {        
+    .row {
         padding-bottom: 30px;
 
         h3 {
@@ -93,11 +93,11 @@
             cursor: pointer;
 
             &.off {
-                background-image: url("/star-off.png");
+                background-image: url("/assets/img/star-off.png");
             }
 
             &.on {
-                background-image: url("/star.png");
+                background-image: url("/assets/img/star.png");
             }
 
         }

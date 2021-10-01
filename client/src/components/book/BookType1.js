@@ -53,7 +53,7 @@ class BookType1 extends Component {
                     }
                 }
                 else if(res.status === 204) {
-                    console.log("no content")
+                    alert("이미 삭제되었습니다.")
                 }
             } catch(e) {
                 console.error(e)
