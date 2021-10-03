@@ -7,7 +7,7 @@ import '../../scss/common/common.scss'
 import '../../scss/common/header.scss';
 import '../../scss/common/input.scss';
 
-import helper_url from '../../helper/helper_url';
+import URL from '../../helper/helper_url';
 
 class SignupHeader extends Component {
     constructor(props) {
