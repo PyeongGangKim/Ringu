@@ -39,8 +39,8 @@
     "react-select": "^4.3.1"
   },
   "scripts": {
-    "start": "cross-env NODE_PATH=src react-scripts start",
-    "build": "cross-env NODE_PATH=src GENERATE_SOURCEMAP=false react-scripts build",
+    "start": "cross-env react-scripts start",
+    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
