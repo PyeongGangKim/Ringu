@@ -57,6 +57,7 @@ router.get("/", async (req, res, next) => {
                 
             ]
         });
+        console.log(rows);
         let total_count = count;
         let renderingPage = "admin/pages/account_list";
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/account/", page, limit, total_count, fields);

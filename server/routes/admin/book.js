@@ -646,15 +646,15 @@ router.get("/finishedSerializing/:serializationId", async (req, res, next) => {
 });
 router.get("/unapproved/reason", async (req, res, next) => {
     checkLogin(req, res, "/unapproved/reason");
-    const book_detail_id = req.query.book_detail_id;
+    const book_id = req.query.book_id;
     try{
-        const rejecting_book_detail = await book_detail.findOne({
+        const rejecting_book = await book.findOne({
             where: {
-                id : book_detail_id
+                id : book_id
             }
         });
         res.render("admin/pages/reject_approving_book",{
-            "book"                  : rejecting_book_detail,
+            "book"                  : rejecting_book,
             "helper_date"           : helper_date,
         });
     }

@@ -6,7 +6,7 @@ const {StatusCodes} = require("http-status-codes");
 var iamport = require("../../config/iamport");
 var axios = require('axios');
 
-const { payment,sequelize, purchase, cart, Sequelize: {Op} } = require("../../models");
+const { payment,sequelize, purchase, cart, book_detail, book, account, Sequelize: {Op} } = require("../../models");
 const {kakaopay} = require("../../config/pay.js");
 const url = require("../../config/url.js");
 const request = require("request");
@@ -88,6 +88,66 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 data.purchaseList[i]['member_id'] = req.user.id
                 bookDetailList.push(data.purchaseList[i]['book_detail_id'])
             }
+            let purchasedBookAuthorList = [];
+            let purchasedBookPriceList = [];
+            let purchasedBookChargeList = [];
+            for(let bookDetailId of bookDetailList ){
+                let purchasedBook = await book_detail.findOne({
+                    attributes : [
+                        "id",
+                        "charge",
+                        [sequelize.literal("book.price"), "price"],
+                        [sequelize.literal("book.author_id"), "author_id"],
+                    ],
+                    where: {
+                        id : bookDetailId,
+                    },
+                    include: [
+                        {
+                            model : book,
+                            as : "book",
+                            attributes: []
+                        }
+        
+                    ],
+                    transaction: t,
+                });
+                purchasedBookAuthorList.push(purchasedBook.dataValues.author_id);
+                purchasedBookPriceList.push(purchasedBook.dataValues.price);
+                purchasedBookChargeList.push(purchasedBook.dataValues.charge);
+            }
+            for(let i = 0 ; i < purchasedBookAuthorList.length ; i++){
+                let earnedMoney =  purchasedBookPriceList[i] - (purchasedBookPriceList[i] * (purchasedBookChargeList[i] / 100));
+                let [author_account, created] = await account.findOrCreate({
+                    where : {
+                        author_id : purchasedBookAuthorList[i],
+                    },
+                    defaults : {
+                        author_id : purchasedBookAuthorList[i],
+                        total_earned_money : earnedMoney,
+                        total_withdrawal_amount: 0,
+                        amount_available_withdrawal: earnedMoney
+                    },
+                    transaction : t,
+                });
+        
+                if(!created){
+                    let update_total_earned_money = Number(author_account.total_earned_money) + Number(earnedMoney);
+                    let update_amount_available_withdrawal = Number(author_account.amount_available_withdrawal) + Number(earned_money);
+                    await account.update({
+                        total_earned_money: update_total_earned_money,
+                        amount_available_withdrawal : update_amount_available_withdrawal,
+                    },
+                    {
+                        where: {
+                            id: author_account.id,
+                        },
+                        transaction: t,
+                    });
+                }
+            }
+
+            
 
             await purchase.bulkCreate(data.purchaseList,{transaction: t});
 
