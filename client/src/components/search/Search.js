@@ -126,10 +126,9 @@ class Search extends Component {
     }
 
     handleSearch = async(mounted) => {
-        var state = this.state;
-
+        var state = this.state;        
         var params = {
-            member_id: User.getInfo().id,
+            member_id: (User.getInfo() !== null ? User.getInfo().id : null),
             is_approved: 1,
             keyword: state.keyword,
         }
