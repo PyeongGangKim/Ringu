@@ -34,6 +34,12 @@ class BookType2 extends Component {
     }
 
     handlePurchaseClick = async() => {
+        if(User.getInfo() === null) {
+            if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = URL.service.accounts.login;
+            }
+            return;
+        }
         try {
             var params = {
                 member_id: User.getInfo().id,
@@ -63,6 +69,12 @@ class BookType2 extends Component {
     }
 
     handleCartClick = async() => {
+        if(User.getInfo() === null) {
+            if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = URL.service.accounts.login;
+            }
+            return;
+        }
         var state = this.state;
         var params = {
             member_id: User.getInfo().id,
