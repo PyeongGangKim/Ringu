@@ -109,9 +109,9 @@ class Login extends Component {
                             <div className="checkbox-wrap">
                                 <input type="checkbox" id="remember"/>
                                 <label htmlFor="remember">
-                                    <div className="checkbox-text">
+                                    <span className="checkbox-text">
                                         로그인 상태 유지
-                                    </div>
+                                    </span>
                                 </label>
                             </div>
 
@@ -157,7 +157,7 @@ class Login extends Component {
                     {/* login-wrap */}
 
                     <div className="login-bg-wrap">
-                        <img src="/login-img.png"/>
+                        <em/>
                     </div>
                     {/* login-bg-wrap */}
 
