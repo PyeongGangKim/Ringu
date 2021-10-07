@@ -42,7 +42,7 @@ class BookType1 extends Component {
         // 즐찾 삭제
         if(state.isFavorite) {
             try {
-                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                const res = await API.sendGet(URL.api.favorite.book.get + book.book_id)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 
@@ -63,7 +63,7 @@ class BookType1 extends Component {
         else {
             try {
                 var params = {
-                    book_id: book.id,
+                    book_id: book.book_id,
                 }
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
@@ -92,21 +92,30 @@ class BookType1 extends Component {
 
     async componentDidMount() {
         var state = this.state;
+        var userInfo = User.getInfo();
+
+        if(User.getInfo() !== null) {
+            try {
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
+                if(duplicate.status === 200) {
+                    state.isFavorite = false;
+                    this.setState(state)
+                }
+            }
+            catch(e) {
+                var error = e.response
+                if(error.status === 409) {
+                    state.isFavorite = true;
+                    this.setState(state)
+                }
+            }
+        }
 
         try {
-            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
-            if(duplicate.status === 200) {
-                state.isFavorite = false;
-            }
-            else {
-                state.isFavorite = true;
-            }
-
-            let userInfo = User.getInfo();
             if (userInfo.id === state.book.author_id) {
                 state.author = true;
             }
-            const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+            const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
 
             if(res1.status === 200) {
                 state.reviewList = res1.data.reviewList
@@ -116,7 +125,7 @@ class BookType1 extends Component {
                 member_id : userInfo !== null ? userInfo.id : null
             }
 
-            const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
+            const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.book_id, params)
             if(res2.status === 200) {
                 state.detailList = res2.data.detailList
             }
@@ -381,7 +390,7 @@ class BookType1 extends Component {
                                         </div>
 
                                     </div>
-                                    <div className="review-box" style={{marginLeft:"10px"}}>
+                                    <div className="review-box">
                                         {
                                             state.reviewList.map((item, review_idx) => {
                                                 return (

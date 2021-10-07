@@ -132,7 +132,7 @@ class BookType2 extends Component {
         // 즐찾 삭제
         if(state.isFavorite) {
             try {
-                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                const res = await API.sendGet(URL.api.favorite.book.get + book.book_id)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 
@@ -153,7 +153,7 @@ class BookType2 extends Component {
         else {
             try {
                 var params = {
-                    book_id: book.id,
+                    book_id: book.book_id,
                 }
 
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
@@ -197,23 +197,25 @@ class BookType2 extends Component {
     async componentDidMount() {
         var state = this.state;
 
-        try {
-            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
-            if(duplicate.status === 200) {
-                state.isFavorite = false;
-                this.setState(state)
+        if(User.getInfo() !== null) {
+            try {
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
+                if(duplicate.status === 200) {
+                    state.isFavorite = false;
+                    this.setState(state)
+                }
             }
-        }
-        catch(e) {
-            var error = e.response
-            if(error.status === 409) {
-                state.isFavorite = true;
-                this.setState(state)
+            catch(e) {
+                var error = e.response
+                if(error.status === 409) {
+                    state.isFavorite = true;
+                    this.setState(state)
+                }
             }
         }
 
         try {
-            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
             }

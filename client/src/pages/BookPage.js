@@ -8,6 +8,7 @@ import date from '../helper/date';
 import parse from '../helper/parse';
 import URL from '../helper/helper_url';
 import API from '../utils/apiutils';
+import User from '../utils/user';
 
 class BookPage extends Component {
     constructor(props) {
@@ -20,7 +21,10 @@ class BookPage extends Component {
 
     async componentDidMount() {
         var state = this.state;
-        const res = await API.sendGet(URL.api.book.get + state.book)
+        var params = {
+            member_id: User.getInfo().id
+        }
+        const res = await API.sendGet(URL.api.book.get + state.book, params)
 
         if(res.status === 200) {
             var book = res.data.book
