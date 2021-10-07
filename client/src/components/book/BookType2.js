@@ -132,7 +132,7 @@ class BookType2 extends Component {
         // 즐찾 삭제
         if(state.isFavorite) {
             try {
-                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                const res = await API.sendGet(URL.api.favorite.book.get + book.book_id)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 
@@ -153,7 +153,7 @@ class BookType2 extends Component {
         else {
             try {
                 var params = {
-                    book_id: book.id,
+                    book_id: book.book_id,
                 }
 
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
@@ -197,23 +197,25 @@ class BookType2 extends Component {
     async componentDidMount() {
         var state = this.state;
 
-        try {
-            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
-            if(duplicate.status === 200) {
-                state.isFavorite = false;
-                this.setState(state)
+        if(User.getInfo() !== null) {
+            try {
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
+                if(duplicate.status === 200) {
+                    state.isFavorite = false;
+                    this.setState(state)
+                }
             }
-        }
-        catch(e) {
-            var error = e.response
-            if(error.status === 409) {
-                state.isFavorite = true;
-                this.setState(state)
+            catch(e) {
+                var error = e.response
+                if(error.status === 409) {
+                    state.isFavorite = true;
+                    this.setState(state)
+                }
             }
         }
 
         try {
-            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
             }
@@ -387,50 +389,59 @@ class BookType2 extends Component {
 
                             <div id="review-area" className="inner-box" ref={this.reviewRef}>
                                 <div className="inner-header"> 리뷰</div>
-                                <div className="inner-content review">
-                                    <div className="review-header">
-                                        <div className="review-score">
-                                            {book.review_score ? (book.review_score).toFixed(1) : 0.0}
+                                {
+                                    state.reviewList.length === 0 ?
+                                    <div className="no-content">
+                                        등록된 리뷰가 없습니다.
+                                    </div>
+                                    :
+                                    <div className="inner-content review">
+                                        <div className="review-header">
+                                            <div className="review-score">
+                                                {book.review_score ? (book.review_score).toFixed(1) : (0).toFixed(1)}
+                                            </div>
+                                            <div className="review-star">
+                                                <em className={book.review_score >= 1 ? "on" : "off"}/>
+                                                <em className={book.review_score >= 2 ? "on" : "off"}/>
+                                                <em className={book.review_score >= 3 ? "on" : "off"}/>
+                                                <em className={book.review_score >= 4 ? "on" : "off"}/>
+                                                <em className={book.review_score >= 5 ? "on" : "off"}/>
+                                                <div style={{fontSize: "12px"}}>{book.review_count ? book.review_count : 0} 개의 후기</div>
+                                            </div>
+
                                         </div>
-                                        <div className="review-star">
-                                            <em className={book.review_score >= 1 ? "on" : "off"}/>
-                                            <em className={book.review_score >= 2 ? "on" : "off"}/>
-                                            <em className={book.review_score >= 3 ? "on" : "off"}/>
-                                            <em className={book.review_score >= 4 ? "on" : "off"}/>
-                                            <em className={book.review_score >= 5 ? "on" : "off"}/>
-                                            <div className="review-cnt">{book.review_count ? book.review_count : 0} 개의 후기</div>
+                                        <div className="review-box">
+                                            {
+                                                state.reviewList.map((item, review_idx) => {
+                                                    return (
+                                                        <div className="review-item" key={item.id}>
+                                                            <div className="info">
+                                                                <span> {item.nickname} </span>
+                                                                <span className="sep"> | </span>
+                                                                <em className={item.score >= 1 ? "on" : "off"}/>
+                                                                <em className={item.score >= 2 ? "on" : "off"}/>
+                                                                <em className={item.score >= 3 ? "on" : "off"}/>
+                                                                <em className={item.score >= 4 ? "on" : "off"}/>
+                                                                <em className={item.score >= 5 ? "on" : "off"}/>
+                                                            </div>
+                                                            <span className="review">
+                                                                {item.description}
+                                                            </span>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
                                         </div>
 
-                                    </div>
-                                    <div className="review-box">
                                         {
-                                            state.reviewList.map(item => {
-                                                return (
-                                                    <div className="review-item" key={item.id}>
-                                                        <div className="info">
-                                                            <span> {item.nickname} </span>
-                                                            <span className="sep"> | </span>
-                                                            <em className={item.score >= 1 ? "on" : "off"}/>
-                                                            <em className={item.score >= 2 ? "on" : "off"}/>
-                                                            <em className={item.score >= 3 ? "on" : "off"}/>
-                                                            <em className={item.score >= 4 ? "on" : "off"}/>
-                                                            <em className={item.score >= 5 ? "on" : "off"}/>
-                                                        </div>
-                                                        <span className="review">
-                                                            {item.description}
-                                                        </span>
-                                                    </div>
-                                                )
-                                            })
+                                            this.state.reviewList.length >= 5 &&
+                                            <div className="add-btn">
+                                                <button className="add-btn btn btn-transparent"> + 더보기 </button>
+                                            </div>
                                         }
+
                                     </div>
-                                    {
-                                        state.reviewList.length === 4 &&
-                                        <div className="btn-box" >
-                                            <button>+ 더보기</button>
-                                        </div>
-                                    }
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>

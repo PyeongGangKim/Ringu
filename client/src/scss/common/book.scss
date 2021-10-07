@@ -21,6 +21,10 @@
 }
 
 .book-box.ser {
+    &:focus, &:hover {
+        box-shadow: 0 0 1px 1px var(--color-ser);
+    }
+
     .book-type-wrap {
         background-color: var(--color-ser);
     }
@@ -30,6 +34,10 @@
 }
 
 .book-box.ser-ed {
+    &:focus, &:hover {
+        box-shadow: 0 0 1px 1px var(--color-ser-ed);
+    }
+
     .book-type-wrap {
         background-color: var(--color-ser-ed);
     }
@@ -39,6 +47,10 @@
 }
 
 .book-box.pub {
+    &:focus, &:hover {
+        box-shadow: 0 0 1px 1px var(--color-pub);
+    }
+
     .book-type-wrap {
         background-color: var(--color-pub);
     }
@@ -73,6 +85,7 @@
 
     .book-type-wrap {
         position: absolute;
+        top: -10px;
         height: 20px;
         z-index: 2;
         padding: 0 20px;
@@ -87,7 +100,6 @@
     }
 
     .thumbnail-box {
-        margin-top: 10px;
         position: relative;
         height: 220px;
 
