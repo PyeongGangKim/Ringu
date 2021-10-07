@@ -37,7 +37,7 @@
         .login-settings {
             margin-top: 10px;
             font-size: 14px;
-            font-weight: 400;
+            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -130,9 +130,13 @@
     .login-bg-wrap {
         margin-left: 120px;
         width: 500px;
+        height: 500px;
 
-        img {
+        em {
             width: 100%;
+            height: 100%;
+            display:block;
+            background-image:  url(/assets/img/login-img.png);
         }
     }
 
