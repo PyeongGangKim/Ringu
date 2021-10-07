@@ -122,11 +122,6 @@ class RegisterBook extends Component {
         }
 
         var reader = new FileReader();
-        var token = file.name.split('.')
-        var fieldName = token[token.length - 1]
-
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "_thumbnail." + fieldName, {type: file.type})
 
         reader.onloadend = (e) => {
             const base64 = reader.result;
@@ -135,9 +130,9 @@ class RegisterBook extends Component {
                 this.setState(state)
             }
         }
-        if (newFile) {
-            reader.readAsDataURL(newFile);
-            state.thumbnail.file = newFile
+        if (file) {
+            reader.readAsDataURL(file);
+            state.thumbnail.file = file
 
             this.setState(state)
         }
@@ -160,9 +155,6 @@ class RegisterBook extends Component {
             alert('PDF 파일만 업로드 해주세요.')
             return;
         }
-
-        //var blob = file.slice(0, file.size, file.type)
-        //var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
 
         state.preview.name = file.name
         state.preview.file = file
@@ -217,6 +209,20 @@ class RegisterBook extends Component {
             return;
         }
 
+        if(state.price.val < 100) {
+            alert('최소 가격은 100원입니다.')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(/^[0-9]*$/.test(state.price.val) === false) {
+            alert('가격은 숫자만 입력해주세요.')
+            state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
         if(this.type === 1) {
             if(!state.day.val) {
                 alert('연재 주기를 입력해주세요')
@@ -227,6 +233,20 @@ class RegisterBook extends Component {
         } else {
             if(!state.page_count.val) {
                 alert('페이지 수를 입력해주세요')
+                state.page_count.class = "textbox error";
+                this.setState(state)
+                return;
+            }
+
+            if(state.page_count.val < 100) {
+                alert('최소 페이지는 100페이지입니다.')
+                state.page_count.class = "textbox error";
+                this.setState(state)
+                return;
+            }
+
+            if(/^[0-9]*$/.test(state.page_count.val) === false) {
+                alert('페이지는 숫자만 입력해주세요.')
                 state.page_count.class = "textbox error";
                 this.setState(state)
                 return;
@@ -258,38 +278,47 @@ class RegisterBook extends Component {
 
         if(this.type === 2) {
             if(!state.preview.file) {
-                alert('미리보기 파일을 선택해주세요.')
+                alert('미리보기 파일을 업로드해주세요.')
                 this.setState(state)
                 return;
             }
 
             if(!state.book.file) {
-                alert('등록할 파일을 선택해주세요.')
+                alert('등록할 파일을 업로드해주세요.')
                 this.setState(state)
                 return;
             }
         }
 
         const data = new FormData()
-        data.append("img", state.thumbnail.file)
         data.append("price", state.price.val)
         data.append("book_description", state.bookDescription.val)
         data.append("title", state.title.val)
         data.append("category_id", this.category)
         data.append("type", this.type)
 
+        var file = state.thumbnail.file;
+        if(file) {
+            var blob = file.slice(0, file.size, file.type);
+            var token = file.name.split('.')
+            var fieldName = token[token.length - 1]
+            var newFile = new File([blob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: file.type})
+        }
+
+        data.append("img", newFile)
+
         if(this.type === 2) {
             var book = state.book.file
             var blob1 = book.slice(0, book.size, book.type)
-            var newBook = new File([blob1], state.title.val + ".pdf", {type: book.type})
+            var newBook = new File([blob1], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
 
             var preview = state.preview.file
-            var blob2 = book.slice(0, preview.size, preview.type)
-            var newPreview = new File([blob2], state.title.val + "_preview.pdf", {type: preview.type})
+            var blob2 = preview.slice(0, preview.size, preview.type)
+            var newPreview = new File([blob2], state.title.val.slice(0, 10) + "_preview.pdf", {type: preview.type})
 
             data.append("content", state.contents.val)
-            data.append("preview", state.preview.file)
-            data.append("file", state.book.file)
+            data.append("preview", newPreview)
+            data.append("file", newBook)
             data.append("page_number", state.page_count.val)
         } else {
             data.append("serialization_day", state.day.val)
@@ -340,6 +369,11 @@ class RegisterBook extends Component {
                             <div className="content">
                                 <p>등록일 기준으로 2~3일 내에 <strong>작품승인</strong>이 완료되며</p>
                                 <p>불건전한 내용일시 <strong>임의삭제</strong>될 수 있다는 점을 말씀드립니다.</p>
+
+                                {
+                                    this.type === 1 &&
+                                    <p> 연재본 업로드는 승인 완료 후 작가 공간에서 가능합니다</p>
+                                }
                             </div>
 
                             <Link to={URL.service.author + state.author.id}>
@@ -424,7 +458,7 @@ class RegisterBook extends Component {
                         <div className="input-box">
                             <h3 className="header"> 목차 </h3>
                             <div>
-                                <textarea rows={5} className={state.contents.class} onChange={this.handleContentsChange} value={state.contents.val}/>
+                                <textarea rows={5} cols={5} className={state.contents.class} onChange={this.handleContentsChange} value={state.contents.val} wrap="hard"/>
                             </div>
                         </div>
                     }
@@ -432,7 +466,7 @@ class RegisterBook extends Component {
                     <div className="input-box">
                         <h3 className="header"> 책 소개 </h3>
                         <div>
-                            <textarea rows={5} className={state.bookDescription.class}  onChange={this.handleBookDescriptionChange} value={state.bookDescription.val}/>
+                            <textarea rows={5} cols={5} className={state.bookDescription.class}  onChange={this.handleBookDescriptionChange} value={state.bookDescription.val} wrap="hard"/>
                         </div>
                     </div>
 

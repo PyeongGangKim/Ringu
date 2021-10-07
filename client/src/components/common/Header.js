@@ -22,7 +22,7 @@ class Header extends Component {
 
         if (props.mypage && !userInfo) {
             alert("로그인이 필요합니다.")
-            window.location.href = "/home"
+            window.location.href = URL.service.home
         }
 
         var search = props.search ? parse.searchToDict(props.search) : {}
@@ -74,7 +74,7 @@ class Header extends Component {
             Cookies.remove('RINGU_JWT', { path: '/'});
             Cookies.remove('RINGU_JWT', { path: '/detail' });
 
-            window.location = "/home";
+            window.location = URL.service.home;
         } else {
             return false;
         }
@@ -88,8 +88,8 @@ class Header extends Component {
             <header>
                 <div id="header" className={this.props.searchVisible ? "bottom-line" : ""}>
                     <h1 id="logo">
-                        <Link to="/home">
-                            <img src="logo.png" width="220px" height="70px"/>
+                        <Link to={URL.service.home}>
+                            <img src="/logo.png" width="220px" height="70px"/>
                         </Link>
                     </h1>
                     <div id="search-area">

@@ -455,12 +455,12 @@ class Author extends Component {
                                                                 <em className="modify"/>
                                                             </td>
                                                         }
-                                                        {
+                                                        {/*
                                                             parseInt(this.props.authorId) === state.user.id &&
                                                             <td className="icon">
                                                                 <em className="x" onClick={() => this.handleDetailDelete(detail)}/>
                                                             </td>
-                                                        }
+                                                        */}
                                                     </tr>
                                                 )
                                             })

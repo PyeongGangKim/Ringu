@@ -126,10 +126,11 @@ class Book extends Component {
                 <div className="book-type-wrap">
                     <span> {mark[status]} </span>
                 </div>
-                <Link to={URL.service.book.book + book.id}>
+
+                {
+                    status === 'wait' ?
                     <div className="thumbnail-box">
                         <div className="img-area">
-
                             <img src={!!book.img ? book.img : "/ringu_thumbnail.png"}/>
                         </div>
                         {
@@ -143,17 +144,33 @@ class Book extends Component {
 
                         <h3 className="title">{book.title}</h3>
                     </div>
-                </Link>
+                    :
+                    <Link to={URL.service.book.book + book.id}>
+                        <div className="thumbnail-box">
+                            <div className="img-area">
+                                <img src={!!book.img ? book.img : "/ringu_thumbnail.png"}/>
+                            </div>
+                            {
+                                favorite &&
+                                <div className="favorite-box">
+                                    <button className="favorite-btn">
+                                        <em onClick={(e) => this.onFavoriteClick(e, book)} className={"favorite " + (isFavorite ? "on" : "")}/>
+                                    </button>
+                                </div>
+                            }
 
-                {
-                    status === 'wait' ?
-                    <div className="book-info-box">
+                            <h3 className="title">{book.title}</h3>
+                        </div>
+                    </Link>
+                }
+
+                <div className="book-info-box">
+                    {
+                        status === 'wait' ?
                         <div className="wait">
                             승인 대기중
                         </div>
-                    </div>
-                    :
-                    <div className="book-info-box">
+                        :
                         <div className="book-info">
                             <span className="price">{parse.numberWithCommas(book.price)}원</span>
                             <div className="details">
@@ -167,22 +184,21 @@ class Book extends Component {
                                 </div>
                             </div>
                         </div>
-                        {
-                            isHost === true &&
-                            <div className="btn-wrap">
-                                <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
-                                {
-                                    status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
-                                }
-                                {
-                                    status.includes('pub') && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
-                                }
-                            </div>
-                        }
-                    </div>
-                }
+                    }
 
-
+                    {
+                        isHost === true &&
+                        <div className="btn-wrap">
+                            <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
+                            {
+                                status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
+                            }
+                            {
+                                (status.includes('pub') || status.includes('wait')) && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
+                            }
+                        </div>
+                    }
+                </div>
             </li>
         )
     }

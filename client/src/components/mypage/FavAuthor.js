@@ -25,10 +25,14 @@ class FavAuthor extends Component {
     async componentDidMount() {
         var state = this.state;
 
-        const res = await API.sendGet(URL.api.favorite.author.list)
-        if(res.status === 200) {
-            var favoriteList = res.data.favoriteAuthorList
-            this.setState({favoriteList: favoriteList})
+        try {
+            const res = await API.sendGet(URL.api.favorite.author.list)
+            if(res.status === 200) {
+                var favoriteList = res.data.favoriteAuthorList
+                this.setState({favoriteList: favoriteList})
+            }
+        } catch(e) {
+            console.error(e)
         }
     }
 
@@ -61,6 +65,7 @@ class FavAuthor extends Component {
                         <div id="favauthor-area">
                             {
                                 favoriteList.map(item => {
+                                    console.log(item)
                                     return (
                                         <div key={item.id} className="fa-box">
                                             <div className="profile">
@@ -76,7 +81,7 @@ class FavAuthor extends Component {
                                                 <div className="stat-area">
                                                     <span className="stat">
                                                         <em className="heart"/>
-                                                        42,785
+                                                        {(!!item.favorite_count) ? parse.numberWithCommas(item.favorite_count) : 0}
                                                     </span>
                                                     |
                                                     <span  className="stat">
@@ -90,11 +95,11 @@ class FavAuthor extends Component {
                                                     </span>
                                                 </div>
 
-                                                <div className="tip-area">
+                                                {/*<div className="tip-area">
                                                     <span className="tip">#생활/취미</span>
                                                     <span className="tip">#글쓰기</span>
                                                     <span className="tip">#자기계발</span>
-                                                </div>
+                                                </div>*/}
                                                 <p className="description">
                                                     {item.author_description}
                                                 </p>

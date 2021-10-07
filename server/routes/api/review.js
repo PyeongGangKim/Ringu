@@ -208,8 +208,8 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
 });
 
 router.get('/stats', async (req, res, next) => {
-    var id = req.body.id;
-    var group = req.body.group;
+    var id = req.query.id;
+    var group = req.query.group;
 
     var where = {
     }

@@ -6,14 +6,15 @@ import Header from '../components/common/Header';
 class BuyCompletePage extends Component {
     constructor(props) {
         super(props);
+
     }
 
     render() {
         return (
             <Fragment>
-                <Header></Header>
+                <Header history={this.props.history}></Header>
                 <div id="wrap">
-                    <BuyComplete/>
+                    <BuyComplete history={this.props.history}/>
                 </div>
             </Fragment>
         )

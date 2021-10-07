@@ -14,7 +14,7 @@ import API from '../../utils/apiutils';
 class NotificationBody extends Component {
     constructor(props){
         super(props)
-        
+
         this.state = {
             totalCount: 0,
             type : 1,
@@ -30,7 +30,7 @@ class NotificationBody extends Component {
             prevButton : "<",
             nextButton : ">",
         }
-    
+
     }
     async getData(state){
         const noti_res = await API.sendGet(URL.api.notification.getNotification, {type: state.type, offset: (state.curPage - 1) * state.countPerPage,});
@@ -47,7 +47,7 @@ class NotificationBody extends Component {
         let state = this.state;
         state.type = this.props.type;
         await this.getData(state);
-        
+
     }
 
      handlePrevPageChange = async () => {
@@ -55,7 +55,7 @@ class NotificationBody extends Component {
         if(state.curPage !== 1){
             state.curPage--;
             await this.getData(state);
-        } 
+        }
     }
     handleNextPageChange = async () => {
         // 만약 setPage + 1
@@ -81,7 +81,7 @@ class NotificationBody extends Component {
             }
         }
         this.setState(state);
-        
+
     }
 
     handleCheckBox = (idx) => {
@@ -110,7 +110,7 @@ class NotificationBody extends Component {
                 state.data.notificationList[idx].is_read = 1;
                 this.parentFunction();
             }
-            
+
             this.setState({
                 state
             });
@@ -144,7 +144,7 @@ class NotificationBody extends Component {
             state.data.allCheck = false;
             await this.getData(state);
         }
-        
+
     }
 
 
@@ -176,14 +176,14 @@ class NotificationBody extends Component {
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id={item.id}>
-            
+
                                     <button class={"accordion-button " + (item.id === spanNoti ? "" : "collapsed")} type="button" data-bs-toggle="collapse" data-bs-target={item.id + "data"}  aria-expanded={(item.id === spanNoti) ? "true" : "false"} aria-controls={item.id + "data"} onClick = {() => this.handleSpanList(item.id,idx)}>
-                                    <input type="checkbox" onClick={() => this.handleCheckBox(idx)} checked = {this.state.data.selectedNotiList[idx]}/> 
+                                    <input type="checkbox" onClick={() => this.handleCheckBox(idx)} checked = {this.state.data.selectedNotiList[idx]}/>
                                         <div className="title-outside">
                                             {
-                                            (item.is_read === 0)  && <span className="span-new"> New </span> 
+                                            (item.is_read === 0)  && <span className="span-new"> New </span>
                                             }
-                    
+
                                             <div className = {"title-noti " + (item.is_read === 0 ? "new" : "")}>{item.title}</div>
                                         </div>
                                         <Moment className = "date" format="MM월 DD일 HH:MM">{item.date}</Moment>
@@ -197,24 +197,24 @@ class NotificationBody extends Component {
                                 </div>
                             </div>
                         );
-                    }) 
+                    })
                 }
                 </div>
                 <div className= "bottom-navigator">
                     <span>{this.state.totalCount}개 중 {startItem}-{endItem} </span>
-                    <button onClick = {this.handlePrevPageChange}> 
+                    <button onClick = {this.handlePrevPageChange}>
                         <img src="/prev_arrow.png" width="27px" height="32px" />
                      </button>
-                    <button onClick = {this.handleNextPageChange}> 
+                    <button onClick = {this.handleNextPageChange}>
                         <img src="/next_arrow.png" width="27px" height="32px" />
                     </button>
                 </div>
             </div>
         );
-            
-        
-            
-   
+
+
+
+
     }
 }
 

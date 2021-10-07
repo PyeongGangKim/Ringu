@@ -10,13 +10,14 @@
         margin-bottom: 50px;
 
         .thumbnail-box {
+            border-radius: 4px;
             width: 220px;
             height: 150px;
-            margin-right: 20px;
-
+            margin-right: 40px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            overflow: hidden;
 
             img {
-                border-radius: 4px;
                 width:100%;
                 height: 100%;
             }
@@ -67,7 +68,7 @@
         }
     }
 
-    .row {        
+    .row {
         padding-bottom: 30px;
 
         h3 {
@@ -93,11 +94,11 @@
             cursor: pointer;
 
             &.off {
-                background-image: url("/star-off.png");
+                background-image: url("/assets/img/star-off.png");
             }
 
             &.on {
-                background-image: url("/star.png");
+                background-image: url("/assets/img/star.png");
             }
 
         }

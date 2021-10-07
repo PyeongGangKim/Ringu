@@ -74,7 +74,7 @@ class Login extends Component {
                 if( token ) {
                     Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
                 }
-                window.location.href = "/home";
+                window.location.href = URL.service.home;
             } else if (status === 400){
                 alert(res.data.message);
             } else {
@@ -94,11 +94,11 @@ class Login extends Component {
                 <div id="login-area">
                     <div className="login-wrap">
                         <div id="email-form" className="form-group">
-                            <input type="email" name="email" autoComplete="off" className="form-control" ref="email" placeholder="이메일을 입력해주세요."/>
+                            <input type="email" name="email" autoComplete="off" className="input" ref="email" placeholder="이메일을 입력해주세요."/>
                         </div>
 
                         <div id="password-form" className="form-group">
-                            <input type="password" name="password" autoComplete="off" className="form-control" ref="password" placeholder="비밀번호를 입력해주세요."/>
+                            <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>
                         </div>
 
                         <button className="btn btn-block btn-login" onClick={this.handleLogin}>
@@ -124,13 +124,10 @@ class Login extends Component {
                         <div className="sns-wrap">
                             <p className="sns-text">SNS계정으로 간단히 로그인하세요.</p>
                             <div className="sns-login-btn-wrap">
-                                <div id="naver_id_login"/>
-                                {/*<a href="" id="naver-login" className="btn-sns">
-                                    <img src="/naver.png"/>
-                                </a>*/}
-                                <a id="kakao-login" className="btn-sns" onClick={this.handleKaKaoLogin}>
-                                    <img src="/kakao.jpg"/>
-                                </a>
+                                <div id="naver_id_login" className="btn-sns"/>
+                                <div id="kakao-login" className="btn-sns" onClick={this.handleKaKaoLogin}>
+                                    <em/>
+                                </div>
                                 <FacebookLogin
                                     appId={FACEBOOK.APP_ID}
                                     autoLoad={false}
@@ -138,15 +135,15 @@ class Login extends Component {
                                     disableMobileRedirect={true}
                                     redirectUri={"/signup/facebook/callback"}
                                     render={(renderProps) => (
-                                        <button id="facebook-login" className="btn-sns" onClick={renderProps.onClick}>
-                                            <img src="/facebook.jpg"/>
-                                        </button>
+                                        <div id="facebook-login" className="btn-sns" onClick={renderProps.onClick}>
+                                            <em/>
+                                        </div>
                                     )}
                                 />
 
-                                <a href="" id="google-login" className="btn-sns">
-                                    <img src="/google.png"/>
-                                </a>
+                                <div id="google-login" className="btn-sns">
+                                    <em/>
+                                </div>
                             </div>
                         </div>
                         {/* sns-wrap */}

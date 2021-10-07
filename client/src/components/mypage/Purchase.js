@@ -80,10 +80,10 @@ class Purchase extends Component {
                 {
                     purchaseList.length > 0 ?
                     <div className="container">
-                        <div className="filter">
+                        {/*<div className="filter">
                             최신순
                             <em/>
-                        </div>
+                        </div>*/}
 
                         {
                             purchaseList.map(item => {

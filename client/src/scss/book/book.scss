@@ -177,11 +177,11 @@
                                     background-size: contain;
 
                                     &.lock {
-                                        background-image: url(/locked.png);
+                                        background-image: url(/assets/img/locked.png);
                                     }
 
                                     &.download {
-                                        background-image: url(/download.png);
+                                        background-image: url(/assets/img/download.png);
                                     }
 
                                 }
@@ -202,11 +202,11 @@
                         background-size: contain;
 
                         &.off {
-                            background-image: url(/star-off.png);
+                            background-image: url(/assets/img/star-off.png);
                         }
 
                         &.on {
-                            background-image: url(/star.png);
+                            background-image: url(/assets/img/star.png);
                         }
                     }
 
@@ -231,10 +231,18 @@
                             font-weight: 500;
                             text-align: left;
                         }
+
+                        .review-cnt {
+                            font-size: 12px;
+                            font-weight: 500;
+                        }
                     }
 
                     .review-box {
+                        margin-left: 10px;
                         .review-item {
+                            font-size: 12px;
+                            font-weight: 500;
                             border-bottom: 1px solid #ccc;
                             padding: 15px 0 25px 0;
 
@@ -242,6 +250,19 @@
                                 width: 10px;
                                 height: 10px;
                                 margin-right: 5px;
+                            }
+
+                            .info {
+                                margin-bottom: 15px;
+                            }
+
+                            .sep {
+                                color: #c2c2c2;
+                                margin: 0 10px;
+                            }
+
+                            .review {
+                                font-size: 14px;
                             }
                         }
                     }
@@ -313,13 +334,13 @@
                             margin: auto;
                             width: 40px;
                             height: 40px;
-                            background-image: url("/heart_empty.png");
+                            background-image: url("/assets/img/heart_empty.png");
                             background-repeat: no-repeat;
                             background-size: contain;
                             z-index: 11;
 
                             &.on {
-                                background-image: url("/heart.png");
+                                background-image: url("/assets/img/heart.png");
                             }
                         }
                     }
@@ -411,11 +432,11 @@
                     background-size: contain;
 
                     &.off {
-                        background-image: url(/star-off.png);
+                        background-image: url(/assets/img/star-off.png);
                     }
 
                     &.on {
-                        background-image: url(/star.png);
+                        background-image: url(/assets/img/star.png);
                     }
                 }
 
@@ -439,19 +460,6 @@
                         font-size: 16px;
                         font-weight: 500;
                         text-align: left;
-                    }
-                }
-
-                .review-box {
-                    .review-item {
-                        border-bottom: 1px solid #ccc;
-                        padding: 15px 0 25px 0;
-
-                        em {
-                            width: 10px;
-                            height: 10px;
-                            margin-right: 5px;
-                        }
                     }
                 }
 

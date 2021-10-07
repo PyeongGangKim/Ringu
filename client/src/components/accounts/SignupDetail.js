@@ -17,11 +17,11 @@ class SignupDetail extends Component {
         super(props);
 
         this.state = {
-            email: {val: "", msg: "", clear: false, class: "form-control", btn: false, success: false,},
-            emailCode: {val: "", msg: "", clear: false, class: "form-control", visible: false, success: false},
-            nickname: {val: "", msg: "", clear: false, class: "form-control", visible: false, success: false},
-            password: {val: "", msg: "", clear: false, class: "form-control", success: false},
-            passwordCheck: {val: "", msg: "", clear: false, class: "form-control", success: false},
+            email: {val: "", msg: "", clear: false, class: "input", btn: false, success: false,},
+            emailCode: {val: "", msg: "", clear: false, class: "input", visible: false, success: false},
+            nickname: {val: "", msg: "", clear: false, class: "input", visible: false, success: false},
+            password: {val: "", msg: "", clear: false, class: "input", success: false},
+            passwordCheck: {val: "", msg: "", clear: false, class: "input", success: false},
             checkAll: false,
             ageCheck: false,
             serviceAgree: false,
@@ -48,7 +48,7 @@ class SignupDetail extends Component {
 
         if(evt.target.value === "") {
             state.email.btn = false;
-            state.email.class = "form-control";
+            state.email.class = "input";
             state.email.msg = "";
             this.setState(state);
             return;
@@ -56,12 +56,12 @@ class SignupDetail extends Component {
 
         if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(evt.target.value)) {  // Regex으로 이메일 형식 맞는지 확인
             state.email.btn = true;
-            state.email.class = "form-control";
+            state.email.class = "input";
             state.email.msg = "";
         } else {
             state.email.btn = false;
             state.email.clear = false;
-            state.email.class = "form-control error";
+            state.email.class = "input error";
             state.email.msg = "이메일 형식이 유효하지 않습니다.";
         }
 
@@ -115,7 +115,7 @@ class SignupDetail extends Component {
             }
         } catch(e) {
             var error = e.response
-            state.email.class = "form-control error";
+            state.email.class = "input error";
             state.email.clear = false;
             state.email.btn = false;
 
@@ -136,7 +136,7 @@ class SignupDetail extends Component {
 
         if(evt.target.value === "") {
             state.emailCode.btn = false;
-            state.emailCode.class = "form-control";
+            state.emailCode.class = "input";
             state.emailCode.msg = "";
             this.setState(state);
             return;
@@ -144,12 +144,12 @@ class SignupDetail extends Component {
 
         if (evt.target.value.length === 6) {
             state.emailCode.btn = true;
-            state.emailCode.class = "form-control";
+            state.emailCode.class = "input";
             state.emailCode.msg = "";
         } else {
             state.emailCode.btn = false;
             state.emailCode.clear = false;
-            state.emailCode.class = "form-control error";
+            state.emailCode.class = "input error";
             state.emailCode.msg = "인증 번호는 6자리입니다.";
         }
 
@@ -163,14 +163,14 @@ class SignupDetail extends Component {
 
         if(evt.target.value === "") {
             state.nickname.btn = false;
-            state.nickname.class = "form-control";
+            state.nickname.class = "input";
             state.nickname.msg = "";
             this.setState(state);
             return;
         }
 
         state.nickname.btn = true;
-        state.nickname.class = "form-control";
+        state.nickname.class = "input";
         state.nickname.msg = "";
 
         this.setState(state);
@@ -183,12 +183,12 @@ class SignupDetail extends Component {
         state.password.clear = false;
 
         if (passRule.test(evt.target.value)) {  // Regex으로 비밀번호 형식 맞는지 확인
-            state.password.class = "form-control";
+            state.password.class = "input";
             state.password.msg = "";
             state.password.success = true;
         } else {
             state.password.clear = false;
-            state.password.class = "form-control error";
+            state.password.class = "input error";
             state.password.msg = "비밀번호는 8자 이상의 영문/숫자/특수 문자 조합으로 구성되어야 합니다.";
         }
 
@@ -205,14 +205,14 @@ class SignupDetail extends Component {
         if(evt.target.value !== state.password.val) {
             state.passwordCheck.clear = false;
             state.password.clear = false;
-            state.passwordCheck.class = "form-control error";
+            state.passwordCheck.class = "input error";
             state.passwordCheck.msg = "비밀번호가 일치하지 않습니다"
         } else {
             state.password.success = true;
             state.passwordCheck.success = true;
             state.passwordCheck.clear = true;
             state.password.clear = true;
-            state.passwordCheck.class = "form-control";
+            state.passwordCheck.class = "input";
             state.passwordCheck.msg = ""
         }
 
@@ -284,7 +284,7 @@ class SignupDetail extends Component {
             state.timer.active = false;
             this.setState(state);
         } else {
-            state.emailCode.class = "form-control error";
+            state.emailCode.class = "input error";
             state.emailCode.clear = false;
             state.emailCode.msg = "인증에 실패하였습니다.";
 
@@ -310,7 +310,7 @@ class SignupDetail extends Component {
         }
         catch(e) {
             var error = e.response;
-            state.nickname.class = "form-control error";
+            state.nickname.class = "input error";
             state.nickname.clear = false;
             state.nickname.btn = false;
 
@@ -418,7 +418,7 @@ class SignupDetail extends Component {
                 <div className="header"> 닉네임 </div>
                 <div className="nickname-wrap">
                     <div id="nickname" className="form-group">
-                        <input type="text" name="nickname" autoComplete="off" className="form-control" placeholder="닉네임을 입력해주세요." value={state.nickname.val} onChange={this.handleNicknameChange}/>
+                        <input type="text" name="nickname" autoComplete="off" className="input" placeholder="닉네임을 입력해주세요." value={state.nickname.val} onChange={this.handleNicknameChange}/>
                         <button className="btn"  disabled={!state.nickname.btn} onClick={this.verifyNickname}>
                             {
                                 state.nickname.clear === true ? "확인완료" : "중복확인"
@@ -436,7 +436,7 @@ class SignupDetail extends Component {
                 <div className="header"> 비밀번호 </div>
                 <div className="password-wrap">
                     <div id="password" className="form-group">
-                        <input type="password" name="password" autoComplete="off" className="form-control" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
+                        <input type="password" name="password" autoComplete="off" className="input" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
                         {
                             state.password.msg &&
                             <div className="error-wrap">
@@ -445,7 +445,7 @@ class SignupDetail extends Component {
                         }
                     </div>
                     <div id="password-confirm" className="form-group">
-                        <input type="password" name="password-check" autoComplete="off" className="form-control" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
+                        <input type="password" name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
                         {
                             state.passwordCheck.msg &&
                             <div className="error-wrap">

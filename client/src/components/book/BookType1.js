@@ -42,7 +42,7 @@ class BookType1 extends Component {
         // 즐찾 삭제
         if(state.isFavorite) {
             try {
-                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                const res = await API.sendGet(URL.api.favorite.book.get + book.book_id)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 
@@ -53,7 +53,7 @@ class BookType1 extends Component {
                     }
                 }
                 else if(res.status === 204) {
-                    console.log("no content")
+                    alert("이미 삭제되었습니다.")
                 }
             } catch(e) {
                 console.error(e)
@@ -63,7 +63,7 @@ class BookType1 extends Component {
         else {
             try {
                 var params = {
-                    book_id: book.id,
+                    book_id: book.book_id,
                 }
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
@@ -92,21 +92,30 @@ class BookType1 extends Component {
 
     async componentDidMount() {
         var state = this.state;
+        var userInfo = User.getInfo();
+
+        if(User.getInfo() !== null) {
+            try {
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
+                if(duplicate.status === 200) {
+                    state.isFavorite = false;
+                    this.setState(state)
+                }
+            }
+            catch(e) {
+                var error = e.response
+                if(error.status === 409) {
+                    state.isFavorite = true;
+                    this.setState(state)
+                }
+            }
+        }
 
         try {
-            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
-            if(duplicate.status === 200) {
-                state.isFavorite = false;
-            }
-            else {
-                state.isFavorite = true;
-            }
-
-            let userInfo = User.getInfo();
             if (userInfo.id === state.book.author_id) {
                 state.author = true;
             }
-            const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+            const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
 
             if(res1.status === 200) {
                 state.reviewList = res1.data.reviewList
@@ -116,7 +125,7 @@ class BookType1 extends Component {
                 member_id : userInfo !== null ? userInfo.id : null
             }
 
-            const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.id, params)
+            const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.book_id, params)
             if(res2.status === 200) {
                 state.detailList = res2.data.detailList
             }
@@ -274,7 +283,7 @@ class BookType1 extends Component {
                             <span className="book-detail">{book.author_nickname}</span>
                         </div>
 
-                        <h3 className="book-title">{book.title}</h3>
+                        <h3 className="book-title">{book.book_title}</h3>
                     </div>
 
                     <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
@@ -288,7 +297,7 @@ class BookType1 extends Component {
                             <div id="intro-area" className="inner-box" ref={this.introRef}>
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.description}
+                                    {book.book_description}
                                 </div>
                             </div>
 
@@ -381,24 +390,21 @@ class BookType1 extends Component {
                                         </div>
 
                                     </div>
-                                    <div className="review-box" style={{marginLeft:"10px"}}>
+                                    <div className="review-box">
                                         {
                                             state.reviewList.map((item, review_idx) => {
                                                 return (
-                                                    <div key={item.id} className="review-item">
-                                                        <div style={{marginBottom: "15px"}}>
-                                                            <span style={{fontSize:"12px"}}> {item.author} </span>
-                                                            <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>
+                                                    <div className="review-item" key={item.id}>
+                                                        <div className="info">
+                                                            <span> {item.nickname} </span>
+                                                            <span className="sep"> | </span>
                                                             <em className={item.score >= 1 ? "on" : "off"}/>
                                                             <em className={item.score >= 2 ? "on" : "off"}/>
                                                             <em className={item.score >= 3 ? "on" : "off"}/>
                                                             <em className={item.score >= 4 ? "on" : "off"}/>
                                                             <em className={item.score >= 5 ? "on" : "off"}/>
                                                         </div>
-                                                        <div className="review-subtitle">
-                                                            {item.subtitle}
-                                                        </div>
-                                                        <span>
+                                                        <span className="review">
                                                             {item.description}
                                                         </span>
                                                     </div>

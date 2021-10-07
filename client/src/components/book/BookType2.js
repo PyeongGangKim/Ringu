@@ -34,41 +34,90 @@ class BookType2 extends Component {
     }
 
     handlePurchaseClick = async() => {
-        if(window.confirm(`${this.state.book.title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
-            this.props.history.push({
-                pathname: URL.service.buy.buy,
-                state: {
-                    purchaseList: [this.state.book]
+        if(User.getInfo() === null) {
+            if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = URL.service.accounts.login;
+            }
+            return;
+        }
+        try {
+            var params = {
+                member_id: User.getInfo().id,
+                book_detail_id: this.state.book.book_details[0].id,
+            }
+
+            const res = await API.sendGet(URL.api.purchase.duplicate, params)
+            if(res.status === 200) {
+                if(window.confirm(`${this.state.book.book_title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
+                    this.props.history.push({
+                        pathname: URL.service.buy.buy,
+                        state: {
+                            purchaseList: [this.state.book]
+                        }
+                    })
                 }
-            })
+            }
+        } catch(e) {
+            if(e.response.status === 409) {
+                if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.purchases)
+                }
+            } else {
+                alert("에러가 발생했습니다.")
+            }
         }
     }
 
     handleCartClick = async() => {
+        if(User.getInfo() === null) {
+            if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = URL.service.accounts.login;
+            }
+            return;
+        }
         var state = this.state;
+        var params = {
+            member_id: User.getInfo().id,
+            book_detail_id: state.book.book_details[0].id,
+        }
 
         try {
-            var params = {
-                book_detail_id: state.book.book_details[0].id,
-            }
+            const res = await API.sendGet(URL.api.purchase.duplicate, params)
+            if(res.status === 200) {
+                try {
+                    var params = {
+                        book_detail_id: state.book.book_details[0].id,
+                    }
 
-            const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
+                    const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
 
-            if(duplicate.status === 200) {
-                const res = await API.sendPost(URL.api.cart.create, params)
+                    if(duplicate.status === 200) {
+                        const res = await API.sendPost(URL.api.cart.create, params)
 
-                if(res.status === 201) {
-                    if(window.confirm(`${this.state.book.title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
-                        this.props.history.push(URL.service.mypage.carts)
+                        if(res.status === 201) {
+                            if(window.confirm(`${this.state.book.book_title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
+                                this.props.history.push(URL.service.mypage.carts)
+                            }
+                        }
+                    }
+                } catch(err){
+                    var error = err.response;
+                    if(error.status === 409) {
+                        if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
+                            this.props.history.push(URL.service.mypage.carts)
+                        }
+                    }
+                    else {
+                        alert("장바구니에 담지 못하였습니다.")
                     }
                 }
+
             }
-        }
-        catch(err){
-            var error = err.response;
-            if(error.status === 409) {
-                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
-                    this.props.history.push(URL.service.mypage.carts)
+        } catch(e) {
+            console.error(e.response)
+            if(e.response.status === 409) {
+                if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                    this.props.history.push(URL.service.mypage.purchases)
                 }
             }
             else {
@@ -83,7 +132,7 @@ class BookType2 extends Component {
         // 즐찾 삭제
         if(state.isFavorite) {
             try {
-                const res = await API.sendGet(URL.api.favorite.book.get + book.id)
+                const res = await API.sendGet(URL.api.favorite.book.get + book.book_id)
                 if(res.status === 200) {
                     var fb = res.data.favoriteBook;
 
@@ -104,7 +153,7 @@ class BookType2 extends Component {
         else {
             try {
                 var params = {
-                    book_id: book.id,
+                    book_id: book.book_id,
                 }
 
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
@@ -148,23 +197,25 @@ class BookType2 extends Component {
     async componentDidMount() {
         var state = this.state;
 
-        try {
-            const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.id})
-            if(duplicate.status === 200) {
-                state.isFavorite = false;
-                this.setState(state)
+        if(User.getInfo() !== null) {
+            try {
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
+                if(duplicate.status === 200) {
+                    state.isFavorite = false;
+                    this.setState(state)
+                }
             }
-        }
-        catch(e) {
-            var error = e.response
-            if(error.status === 409) {
-                state.isFavorite = true;
-                this.setState(state)
+            catch(e) {
+                var error = e.response
+                if(error.status === 409) {
+                    state.isFavorite = true;
+                    this.setState(state)
+                }
             }
         }
 
         try {
-            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.id})
+            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
             }
@@ -261,7 +312,7 @@ class BookType2 extends Component {
             <div id="book" className="page3" >
                 <div className="merchant-bar">
                     <div className="merchant-box">
-                        <span className="title">{book.title}</span>
+                        <span className="title">{book.book_title}</span>
                         <div className="payment-wrap">
                             <span className="price">{parse.numberWithCommas(book.price)}원</span>
                             <button className="btn btn-color-4" onClick={this.handleCartClick}> 장바구니 </button>
@@ -284,10 +335,10 @@ class BookType2 extends Component {
 
                         <div className="book-detail-box">
                             <span className="book-detail">{book.author_nickname}</span>
-                            <span className="book-detail">총 {book.page_number}페이지</span>
+                            <span className="book-detail">총 {book.page_count} 페이지</span>
                         </div>
 
-                        <h3 className="book-title">{book.title}</h3>
+                        <h3 className="book-title">{book.book_title}</h3>
                     </div>
 
                     <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
@@ -301,7 +352,7 @@ class BookType2 extends Component {
                             <div id="intro-area" className="inner-box" ref={this.introRef}>
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.description}
+                                    {book.book_description}
                                 </div>
                             </div>
 
@@ -349,25 +400,25 @@ class BookType2 extends Component {
                                             <em className={book.review_score >= 3 ? "on" : "off"}/>
                                             <em className={book.review_score >= 4 ? "on" : "off"}/>
                                             <em className={book.review_score >= 5 ? "on" : "off"}/>
-                                            <div style={{fontSize: "12px"}}>{book.review_count ? book.review_count : 0} 개의 후기</div>
+                                            <div className="review-cnt">{book.review_count ? book.review_count : 0} 개의 후기</div>
                                         </div>
 
                                     </div>
-                                    <div className="review-box" style={{marginLeft:"10px"}}>
+                                    <div className="review-box">
                                         {
                                             state.reviewList.map(item => {
                                                 return (
                                                     <div className="review-item" key={item.id}>
-                                                        <div style={{marginBottom: "15px"}}>
-                                                            <span style={{fontSize:"12px"}}> {item.author} </span>
-                                                            <span style={{fontSize:"12px", color:"#ccc", margin: "0 10px"}}> | </span>
+                                                        <div className="info">
+                                                            <span> {item.nickname} </span>
+                                                            <span className="sep"> | </span>
                                                             <em className={item.score >= 1 ? "on" : "off"}/>
                                                             <em className={item.score >= 2 ? "on" : "off"}/>
                                                             <em className={item.score >= 3 ? "on" : "off"}/>
                                                             <em className={item.score >= 4 ? "on" : "off"}/>
                                                             <em className={item.score >= 5 ? "on" : "off"}/>
                                                         </div>
-                                                        <span>
+                                                        <span className="review">
                                                             {item.description}
                                                         </span>
                                                     </div>

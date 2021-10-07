@@ -30,7 +30,7 @@ class SignupDetailSNS extends Component {
             email: query.email,
             id: query.id,
             sns: query.sns,
-            nickname: {val: "", msg: "", clear: false, class: "form-control", visible: false},
+            nickname: {val: "", msg: "", clear: false, class: "input", visible: false},
             checkAll: false,
             ageCheck: false,
             serviceAgree: false,
@@ -53,14 +53,14 @@ class SignupDetailSNS extends Component {
 
         if(evt.target.value === "") {
             state.nickname.btn = false;
-            state.nickname.class = "form-control";
+            state.nickname.class = "input";
             state.nickname.msg = "";
             this.setState(state);
             return;
         }
 
         state.nickname.btn = true;
-        state.nickname.class = "form-control";
+        state.nickname.class = "input";
         state.nickname.msg = "";
 
         this.setState(state);
@@ -129,7 +129,7 @@ class SignupDetailSNS extends Component {
             }
         } catch(e) {
             var error = e.response;
-            state.nickname.class = "form-control error";
+            state.nickname.class = "input error";
             state.nickname.clear = false;
             state.nickname.btn = false;
             if(error.status === 409) {
@@ -183,7 +183,7 @@ class SignupDetailSNS extends Component {
                 <div className="header"> 이메일 </div>
                 <div className="email-wrap">
                     <div id="email" className="form-group">
-                        <input type="email" name="email" autoComplete="off" value={this.state.email} className="form-control" disabled/>
+                        <input type="email" name="email" autoComplete="off" value={this.state.email} className="input" disabled/>
 
                     </div>
                 </div>
@@ -191,7 +191,7 @@ class SignupDetailSNS extends Component {
                 <div className="header"> 닉네임 </div>
                 <div className="nickname-wrap">
                     <div id="nickname" className="form-group">
-                        <input type="text" name="nickname" autoComplete="off" className="form-control" placeholder="닉네임을 입력해주세요." value={this.state.nickname.val} onChange={this.handleNicknameChange}/>
+                        <input type="text" name="nickname" autoComplete="off" className="input" placeholder="닉네임을 입력해주세요." value={this.state.nickname.val} onChange={this.handleNicknameChange}/>
                         <button className="btn"  disabled={!this.state.nickname.btn} onClick={this.verifyNickname}>
                             {
                                 this.state.nickname.clear === true ? "확인완료" : "중복확인"

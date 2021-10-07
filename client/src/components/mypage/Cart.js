@@ -85,13 +85,18 @@ class Cart extends Component {
     handleDelete = async(id) => {
         var state = this.state
 
-        const res = await API.sendDelete(URL.api.cart.delete + id)
-        if(res.status === 200) {
-            var filteredArray = this.state.data.cartList.filter(item => item.id !== id)
-            var data = {...state.data, cartList: filteredArray}
-            this.setState({data: data})
-            this.sum(filteredArray);
-            alert("물품이 삭제되었습니다.")
+        try {
+            const res = await API.sendDelete(URL.api.cart.delete, {id: id})
+            if(res.status === 200) {
+                var filteredArray = this.state.data.cartList.filter(item => item.id !== id)
+                var data = {...state.data, cartList: filteredArray}
+                this.setState({data: data})
+                this.sum(filteredArray);
+                alert("장바구니에서 삭제되었습니다.")
+            }
+        } catch(e) {
+            console.error(e)
+            alert("장바구니에서 삭제하지 못하였습니다.")
         }
     }
 
@@ -182,12 +187,12 @@ class Cart extends Component {
                                     return (
                                         <div key={item.id} className="cart-box">
                                             <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
-                                            <Link to={URL.service.book.book + item.id} title="상세 페이지로 이동합니다">
+                                            <Link to={URL.service.book.book + item.book_id} title="상세 페이지로 이동합니다">
                                                 <img src={item.img}/>
                                             </Link>
                                             <div className="details">
-                                                <Link to={URL.service.book.book + item.id}  title="상세 페이지로 이동합니다">
-                                                    <h3 className="title">{item.title}</h3>
+                                                <Link to={URL.service.book.book + item.book_id}  title="상세 페이지로 이동합니다">
+                                                    <h3 className="title">{item.book_title}</h3>
                                                 </Link>
                                                 <p className="type">출간 방식 : {item.type === 1 ? "연재" : "단행본"}</p>
                                             </div>

@@ -34,19 +34,19 @@
             }
 
             #account-icon {
-                background-image: url("/account-icon.png");
+                background-image: url("/assets/img/account-icon.png");
             }
 
             #purchase-icon {
-                background-image: url("/purchase-icon.png");
+                background-image: url("/assets/img/purchase-icon.png");
             }
 
             #cart-icon {
-                background-image: url("/cart-icon.png");
+                background-image: url("/assets/img/cart-icon.png");
             }
 
             #favorite-icon {
-                background-image: url("/favorite-icon.png");
+                background-image: url("/assets/img/favorite-icon.png");
             }
 
             ul {
@@ -62,18 +62,18 @@
 
         .lnb-item.on {
             #account-icon {
-                background-image: url("/account-icon-active.png");
+                background-image: url("/assets/img/account-icon-active.png");
             }
             #purchase-icon {
-                background-image: url("/purchase-icon-active.png");
+                background-image: url("/assets/img/purchase-icon-active.png");
             }
 
             #cart-icon {
-                background-image: url("/cart-icon-active.png");
+                background-image: url("/assets/img/cart-icon-active.png");
             }
 
             #favorite-icon {
-                background-image: url("/favorite-icon-active.png");
+                background-image: url("/assets/img/favorite-icon-active.png");
             }
         }
     }
@@ -116,13 +116,13 @@
                 margin: auto;
                 width: 35px;
                 height: 35px;
-                background-image: url("/heart_empty.png");
+                background-image: url("/assets/img/heart_empty.png");
                 background-repeat: no-repeat;
                 background-size: contain;
                 z-index: 11;
 
                 &.on {
-                    background-image: url("/heart.png");
+                    background-image: url("/assets/img/heart.png");
                 }
             }
         }
@@ -148,7 +148,7 @@
             right:10px;
             width: 35px;
             height: 35px;
-            background-image: url("/write.png");
+            background-image: url("/assets/img/write.png");
             transition: 0.2s;
             padding: 5px;
 

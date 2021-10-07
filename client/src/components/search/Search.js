@@ -7,6 +7,7 @@ import '../../scss/common/button.scss'
 
 import Book from '../../components/book/Book'
 
+import User from '../../utils/user';
 import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
@@ -125,9 +126,9 @@ class Search extends Component {
     }
 
     handleSearch = async(mounted) => {
-        var state = this.state;
-
+        var state = this.state;        
         var params = {
+            member_id: (User.getInfo() !== null ? User.getInfo().id : null),
             is_approved: 1,
             keyword: state.keyword,
         }
@@ -141,15 +142,20 @@ class Search extends Component {
             params['orderBy'] = state.order[1]
         }
 
-        const res = await API.sendGet(URL.api.book.list, params = params)
+        try {
+            const res = await API.sendGet(URL.api.book.list, params = params)
 
-        if(res.status === 200) {
-            state.searchList = res.data.bookList;
+            if(res.status === 200) {
+                state.searchList = res.data.bookList;
 
-            this.setState(state);
-            if(mounted) {
-                this.handleUpdateSearch()
+                this.setState(state);
+                if(mounted) {
+                    this.handleUpdateSearch()
+                }
             }
+        } catch(e) {
+            console.error(e)
+            alert("검색에 실패하였습니다.")
         }
     }
 

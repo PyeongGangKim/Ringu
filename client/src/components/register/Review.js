@@ -30,7 +30,6 @@ class Review extends Component {
     async componentDidMount() {
         var state = this.state;
         const res = await API.sendGet(URL.api.book_detail.get + state.book_detail)
-
         if(res.status === 200)
         {
             var book = res.data.book
@@ -108,7 +107,7 @@ class Review extends Component {
     }
 
     render() {
-        var state = this.state
+        var state = this.state        
 
         return (
             state.isSuccess &&
@@ -157,7 +156,7 @@ class Review extends Component {
                 <div>
                     <div className="review-box">
                         <div className="thumbnail-box">
-                            <img src="/travel.jpg"/>
+                            <img src={state.book.img}/>
                         </div>
                         <div className="book-info">
                             <div>

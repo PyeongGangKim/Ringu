@@ -46,6 +46,7 @@ module.exports = {
         },
         purchase: {
             list:               "/purchase",
+            duplicate:          "/purchase/duplicate",
         },
         book: {
             get:                "/book/",
@@ -66,6 +67,7 @@ module.exports = {
         },
         author: {
             get:                "/author/",
+            create:             "/author",
         },
         favorite: {
             author: {
@@ -129,7 +131,7 @@ module.exports = {
             buy                 : "/buy",
             complete            : "/complete",
         },
-        home                    : "/home",
+        home                    : "/",
         mypage  : {
             info                : "/mypage",
             password_change     : "/mypage/password/update",
