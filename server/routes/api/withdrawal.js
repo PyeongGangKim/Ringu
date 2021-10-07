@@ -3,7 +3,7 @@ var router = express.Router();
 const {StatusCodes} = require("http-status-codes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { sequelize,withdrawal, account , } = require("../../models");
+const { sequelize,withdrawal, account , member} = require("../../models");
 
 router.post('/', isLoggedIn, async(req, res, next) => {
     let amount = req.body.amount * 1;

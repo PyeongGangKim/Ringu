@@ -27,13 +27,13 @@ router.get("/", async (req, res, next) => {
         "nickname"         : ("nicknmae" in req.query) ? req.query.nickname : "",
         
     }
-
+    console.log(fields);
     try{
         const {count, rows} = await account.findAndCountAll({
             where: {
                 [Op.and] : {
-                    '$author.author.name$' : (fields.name != "") ?{ [Op.like]: "%"+fields.name+"%" } : {[Op.like] : "%%" } ,
-                    '$author.nickname$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.nickname+"%" } : {[Op.like] : "%%" } ,
+                    '$author.author.name$' : (fields.name != "") ? { [Op.like]: "%"+fields.name+"%" } : {[Op.like] : "%%" } ,
+                    '$author.nickname$' : (fields.nickname != "") ? { [Op.like]: "%"+fields.nickname+"%" } : {[Op.like] : "%%" } ,
                 },
             },
             limit : limit,
