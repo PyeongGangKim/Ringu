@@ -161,7 +161,6 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
     let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
-    console.log(book_id)
 
     try{
         const book_detail_info = await book.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
@@ -182,7 +181,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 "content",
                 "preview",
                 "recommending_phrase",
-                [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
+                //[sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("author.id"), "author_id"],
                 [sequelize.literal("author.nickname"), "author_nickname"],
                 [sequelize.literal("author.description"), "author_description"],
@@ -194,17 +193,6 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 [sequelize.literal("SUM(`book_details->review_statistics`.person_number)"),"review_count"],
             ],
             include : [
-                {
-                    model : favorite_book,
-                    as: 'favorite_books',
-                    attributes: [],
-                    required: false,
-                    where: {
-                        member_id : {
-                            [Op.like] : (member_id == null || member_id == "") ? "%%" : member_id,
-                        }
-                    }
-                },
                 {
                     model : member,
                     as : "author",
@@ -229,26 +217,6 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     ],
                     include : [
                         {
-                            model: review,
-                            as : "reviews",
-                            required: false,
-                            attributes: [
-                                "created_date_time",
-                                "description",
-                                "score",
-                            ],
-                            include : [
-                                {
-                                    model: member,
-                                    as : "member",
-                                    attributes: [
-                                        "nickname"
-                                    ],
-                                    required : false,
-                                }
-                            ]
-                        },
-                        {
                             model: review_statistics,
                             as : "review_statistics",
                             attributes : [],
@@ -256,13 +224,29 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     ]
                 }
             ],
+            group: 'book_id',
         });
+
         if(book_detail_info.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
+            book_detail_info.dataValues.is_favorite = false;
+
+            if(!!member_id) {
+                const favorite = await favorite_book.findOne({
+                    where: {
+                        book_id: book_id,
+                        member_id: member_id,
+                    }
+                })
+                if(!!favorite) {
+                    book_detail_info.dataValues.is_favorite = true
+                }
+            }
+
             book_detail_info.dataValues.author_profile = await imageLoad(book_detail_info.dataValues.author_profile);
-            book_detail_info.img = await imageLoad(book_detail_info.img);
+            book_detail_info.dataValues.img = await imageLoad(book_detail_info.img);
             res.status(StatusCodes.OK).json({
                 "book": book_detail_info,
             });
