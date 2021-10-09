@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
     //book_detail에서, where문으로 is_approved 확인하기.
     //book join해주고, book안에 category, author 조인 해준다.
     //근데 nested할 때, where문을 어떻게 쓰느냐가 중요함.
-    checkLogin(req, res, "/admin/book/" + "?is_approved="+ req.query.is_approved);
+    checkLogin(req, res, "/admin/member/");
 
     
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
@@ -31,7 +31,6 @@ router.get("/", async (req, res, next) => {
     let fields = {
         "title"         : ("title" in req.query) ? req.query.title : "",
         "price"         : ("price" in req.query) ? req.query.price : "",
-        "is_approved"   : ("is_approved" in req.query) ? [req.query.is_approved] : [0,1],
         "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
         "is_picked"     : ("is_picked" in req.query) ? [req.query.is_picked] : [0,1],
@@ -43,9 +42,6 @@ router.get("/", async (req, res, next) => {
             where: {
                     is_picked : {
                         [Op.in] : fields.is_picked
-                    },
-                    is_approved : {
-                        [Op.in] : fields.is_approved
                     },
                     is_recommending_phrase: {
                         [Op.in] : fields.is_recommending_phrase
@@ -98,7 +94,7 @@ router.get("/", async (req, res, next) => {
         });
         console.log(count);
         let total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_book_list" : "admin/pages/unapproved_book_list" ; 
+        let renderingPage = "";
         renderingPage = (dontKnowTypeStringOrNumber(fields.is_recommending_phrase, 1)) ? "admin/pages/bookRecommendingPhraseList" : renderingPage;
         renderingPage = (dontKnowTypeStringOrNumber(fields.is_picked, 1)) ? "admin/pages/pickedBookList" : renderingPage;
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
@@ -118,7 +114,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/serialization/cover", async (req, res, next) => {//연재본 커버만 보여주기.
     
-    checkLogin(req, res, "/admin/book/serialization/" );
+    checkLogin(req, res, "/admin/book/serialization/cover/" + "?is_approved="+ req.query.is_approved);
 
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
     let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "DESC";
@@ -129,7 +125,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
     let fields = {
         "title"         : ("title" in req.query) ? req.query.title : "",
         "price"         : ("price" in req.query) ? req.query.price : "",
-        "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
+        "is_approved"   : ("is_approved" in req.query) ? [req.query.is_approved] : [0,1],
         "category_name" : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
     }
@@ -143,6 +139,9 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
                     '$category.name$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.category_name+"%" } : {[Op.like] : "%%" } ,
                     title : (fields.title != "") ? { [Op.like]: "%"+fields.title+"%" } : {[Op.like] : "%%" } ,
                     '$author.nickname$' : (fields.member_name != "") ? { [Op.like]: "%"+fields.member_name+"%"} : {[Op.like] : "%%"},
+                    is_approved : {
+                        [Op.in] : fields.is_approved
+                    },
                 },
                 status : 1,
             },
@@ -166,8 +165,9 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
         });
         console.log(rows);
         var total_count = count;
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_serialization_cover_list" : "admin/pages/unapproved_serialization_cover_list" ; 
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization", page, limit, total_count, fields);
-        res.render("admin/pages/serialization_cover_list" , {
+        res.render(renderingPage , {
             "fields"      : fields,
             "book_list"       : rows,
             "total_count"       : total_count,
@@ -181,7 +181,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
 });
 
 router.get("/serialization/:serializationId", async(req, res, next) => {//cover 하나만 가져오기
-    checkLogin(req, res, "/admin/book/serialization");
+    checkLogin(req, res, "/admin/book/serialization/"+req.params.serializationId);
 
     let id = req.params.serializationId;
 
@@ -215,7 +215,7 @@ router.get("/serialization/:serializationId", async(req, res, next) => {//cover 
 });
 
 router.get("/serialization/content/list", async(req, res, next) => {//content 모두 가져오기
-    checkLogin(req, res, "/admin/book/serialization/");
+    checkLogin(req, res, "/admin/book/serialization/content/list");
 
     let serialization_book_id = req.query.serialization_book_id;
     let limit           = 10;
@@ -268,7 +268,7 @@ router.get("/serialization/content/list", async(req, res, next) => {//content �
 });
 router.get("/serialization/content/:bookId", async (req, res, next) => {//content 하나만 가져오기
     
-    checkLogin(req, res, "/admin/book/serialization/content");
+    checkLogin(req, res, "/admin/book/serialization/content" + req.params.bookId);
     
 
     let id = req.params.bookId;
@@ -395,7 +395,7 @@ router.post("/serialization/content", uploadFile, async (req, res, next) => {
 
 router.get("/singlePublished", async (req, res, next) => {//단행본 가져오기
 
-    checkLogin(req, res, "/admin/book/singlePublished/");
+    checkLogin(req, res, "/admin/book/singlePublished/"+ "?is_approved="+ req.query.is_approved);
     
 
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
@@ -407,7 +407,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
     let fields = {
         "title"         : ("title" in req.query) ? req.query.title : "",
         "price"         : ("price" in req.query) ? req.query.price : "",
-        "is_approved"   : ("is_approved" in req.query) ? req.query.is_approved : "",
+        "is_approved"   : ("is_approved" in req.query) ? [req.query.is_approved] : [0,1],
         "category_name"   : ("category_name" in req.query) ? req.query.category_name : "",
         "member_name"   : ("member_name" in req.query) ? req.query.member_name : "",
     }
@@ -438,7 +438,10 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
                     },
                     '$author.nickname$' : {
                         [Op.like] : (fields.member_name != "") ? ("%"+fields.member_name+"%") : ("%%")
-                    }
+                    },
+                    is_approved : {
+                        [Op.in] : fields.is_approved
+                    },
                 },
                 status : 1,
             },
@@ -469,8 +472,9 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
             ]
         });
         var total_count = count;
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_single_published_book_list" : "admin/pages/unapproved_single_published_book_list" ; 
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/singlePublished", page, limit, total_count, fields);
-        res.render("admin/pages/single_published_book_list", {
+        res.render(renderingPage, {
             "fields"      : fields,
             "book_list"       : rows,
             "total_count"       : total_count,
@@ -1030,10 +1034,20 @@ router.get('/download/:bookDetailId', async (req,res,next) => {
         const result = await book_detail.findOne({
             where : {
                 id : book_detail_id,
-            }
+            },
+            attributes : [
+                "file",
+                [sequelize.literal("book.preview"),"preview"],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: [],
+                }
+            ],
         });
-        const url = downloadFile(type, result.file);
-        console.log(url);
+        const url = downloadFile(type, result.dataValues[type]);
         res.redirect(url);
 
     }
