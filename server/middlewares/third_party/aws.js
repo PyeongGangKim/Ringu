@@ -12,10 +12,11 @@ const s3 = new AWS.S3({
 
 const storage = multerS3({
     s3: s3,
-
+    
     bucket: function(req,file, cb){
         cb(null, BUCKET+ "/" + file.fieldname);
     },
+    
     contentType: function(req, file, cb){
         let fieldName = file.fieldname;
         if(fieldName == "img"){
@@ -26,12 +27,7 @@ const storage = multerS3({
 
     key: function (req, file, cb) {
         const fileNameSplit = file.originalname.split('.');
-        var fileName = ""
-        for(var i=0; i < fileNameSplit.length-1; i++) {
-            fileName += fileNameSplit[i]
-        }
-        fileName += "_" + Date.now().toString() + "." + fileNameSplit[fileNameSplit.length-1]
-
+        const fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[1];
         cb(null, fileName);
     }, // 파일 이름
     acl: 'public-read',
@@ -42,14 +38,14 @@ const upload = multer({
 })
 
 const uploadFile = upload.fields([
-    {name: 'file', maxCount: 1},
+    {name: 'file', maxCount: 3},
     {name: 'img', maxCount: 1},
     {name: 'preview', maxCount: 1},
 ]);
 
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;
-
+    console.log(id);
     try{
         const findedBook = await book.findOne({
             where : {
@@ -70,7 +66,7 @@ const deleteFile = async (req, res, next) =>{
                         Key: DIRNAME + "/" + delFileName,
                     },
                     {
-                        Key: DIRNAME+ "/" + delImgNmae,
+                        Key: DIRNAME+ "/" + delImgNmae, 
                     }
                 ]
             }
@@ -90,7 +86,7 @@ const deleteFile = async (req, res, next) =>{
     }
 }
 const downloadFile = (fieldName ,fileName) => {
-    const signedUrlExpireSeconds = 60 * 5;
+    const signedUrlExpireSeconds = 60 * 1;
     const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
         Bucket: BUCKET,
@@ -100,9 +96,6 @@ const downloadFile = (fieldName ,fileName) => {
     return url
 }
 const imageLoad = (imgName) => {
-    if (imgName === null) {
-        return null;
-    }
     const signedUrlExpireSeconds = 3600 * 24;
     const fileKey = "img/" + imgName;
     const url = s3.getSignedUrl('getObject', {
