@@ -103,7 +103,7 @@ class Book extends Component {
     }
 
     handleModify = (book_id) => {
-        if(window.confirm("선택한 도서를 수정하시겠습니까?")) {
+        if(window.confirm("선택한 작품을 수정하시겠습니까?")) {
             window.location.href = URL.service.book.modify + book_id
         }
     }
