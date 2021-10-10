@@ -495,6 +495,11 @@
             margin-top: 10px;
             font-size: 14px;
             font-weight: 500;
+
+            a {
+                font-weight: 600;
+                color: var(--color-1);
+            }
         }
     }
 
@@ -559,7 +564,7 @@
         padding: 5px 20px;
         text-align: center;
 
-        .img-box {            
+        .img-box {
             height: 200px;
             border-radius: 4px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);

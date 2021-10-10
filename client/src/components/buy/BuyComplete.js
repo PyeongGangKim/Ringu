@@ -40,20 +40,20 @@ class BuyComplete extends Component {
                                 <img src="/buy-complete.png"/>
                             </div>
 
-                            <a href={URL.service.home}>
+                            <Link to={URL.service.home}>
                                 <div className="btn btn-outline">
                                     계속 둘러보기
                                 </div>
-                            </a>
+                            </Link>
 
                             <div className="txt">
-                                <span> 구매내역에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
+                                <span> <Link to={URL.service.mypage.purchases}>구매내역</Link>에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
                             </div>
                         </div>
 
                     </div>
 
-                    <h3 className="header">구매정보 ({state.purchaseList.length}건)</h3>
+                    {/*<h3 className="header">구매정보 ({state.purchaseList.length}건)</h3>
                     <table>
                         <tbody>
                             <tr>
@@ -100,7 +100,7 @@ class BuyComplete extends Component {
                             }
                         </tbody>
 
-                    </table>
+                    </table>*/}
 
                     <h3 className="header">결제정보</h3>
                     <table className="summary">
