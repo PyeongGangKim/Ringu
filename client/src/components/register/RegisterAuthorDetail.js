@@ -287,7 +287,7 @@ class RegisterAuthorDetail extends Component {
                         <div className="input-box">
                             <h3 className="header"> 계좌번호 </h3>
                             <div className="form-group">
-                                <input type="text" className={state.account.class} onChange={this.handleAccountChange} value={state.account.val}/>
+                                <input type="number" className={state.account.class} onChange={this.handleAccountChange} value={state.account.val}/>
                                 {
                                     state.account.msg &&
                                     <div className="error-wrap">
@@ -318,7 +318,7 @@ class RegisterAuthorDetail extends Component {
                         <h3 className="header"> Ringu 판매홍보 대행 약관 </h3>
                         <div>
                             <textarea rows={7} value={state.promotion_term}/>
-                        </div>                        
+                        </div>
                     </div>
 
                     <div className="term-box">
