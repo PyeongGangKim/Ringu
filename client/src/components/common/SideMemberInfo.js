@@ -9,7 +9,8 @@ import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import axios from 'axios';
+
+import Modal from '../../components/modal/Modal';
 
 class SideMemberInfo extends Component {
     constructor(props) {
@@ -180,11 +181,63 @@ class SideMemberInfo extends Component {
         }
     }
 
+    handleModalClick = () => {
+        var state = this.state;
+
+        state.modal = true;
+        this.setState(state)
+    }
+
+    handleCloseClick = () => {
+        var state = this.state;
+
+        state.modal = false;
+        this.setState(state)
+    }
+
     render() {
         var state = this.state
 
         return (
             <div className="side-info">
+                {
+                    state.modal === true &&
+                    <Modal
+                        onClose={this.handleCloseClick}
+                        overlay={true}
+                    >
+                        <div className="format-modal">
+                            <div className="header">
+                                <h3>원하시는 양식을 다운로드 해주세요</h3>
+                            </div>
+                            <em className="close" onClick={this.handleCloseClick}> &times; </em>
+
+                            <div className="format">
+                                <div className="item">
+                                    <div className="type" id="word">
+                                        <em/>
+                                        <span> 워드 파일 양식 </span>
+                                    </div>
+                                    <button className="download">
+                                        <em/>
+                                    </button>
+                                </div>
+                                <hr/>
+                                <div className="item">
+                                    <div className="type" id="hangeul">
+                                        <em/>
+                                        <span> 한글 파일 양식 </span>
+                                    </div>
+                                    <button className="download">
+                                        <em/>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </Modal>
+                }
                 {
                     this.props.isHost === false &&
                     <div className="favorite-box">
@@ -261,7 +314,7 @@ class SideMemberInfo extends Component {
                                         </button>
                                     </Link>
 
-                                    <button className="btn btn-outline btn-block">
+                                    <button className="btn btn-outline btn-block" onClick={this.handleModalClick}>
                                         책 양식 다운로드
                                     </button>
                                 </div>
