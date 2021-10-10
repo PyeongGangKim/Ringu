@@ -596,7 +596,7 @@ class Author extends Component {
                             this.state.reviewTitleList.length === 0 ?
                             <div id="review-area" className="inner-box" ref={this.reviewRef}>
                                 <div className="no-content">
-                                    등록된 작품이 없습니다.
+                                    등록된 리뷰가 없습니다.
                                 </div>
                             </div>
                             :
