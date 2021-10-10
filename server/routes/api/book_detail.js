@@ -1,8 +1,8 @@
 const { CodeGuruReviewer } = require("aws-sdk");
 var express = require("express");
 var router = express.Router();
-const {StatusCodes} = require("http-status-codes");
 
+const statusCodes = require("../../helper/statusCodes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
@@ -24,13 +24,13 @@ router.post('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
             round: round
         });
 
-        res.status(StatusCodes.CREATED).json({
+        res.status(statusCodes.CREATED).json({
             detail: detail
         })
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -81,11 +81,11 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
         });
 
         if(book_detail_info.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
             book_detail_info.dataValues.img = imageLoad(book_detail_info.dataValues.img)
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "book": book_detail_info,
             });
         }
@@ -93,7 +93,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -112,13 +112,13 @@ router.delete('/:bookDetailId', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }

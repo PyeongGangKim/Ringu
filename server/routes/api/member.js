@@ -12,10 +12,11 @@ const multer = require("multer");
 var helper_api = require("../../helper/api");
 var helper_security = require("../../helper/security");
 //var helper_email = require("../../helper/email");
+
 var helper_random = require("../../helper/random");
 var helper_date = require("../../helper/date");
 
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
 
 let { member } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
@@ -47,17 +48,17 @@ router.get('/', isLoggedIn, async(req, res, next) => {
         });
 
         if(user){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 user: user,
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(statusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -82,17 +83,17 @@ router.get('/:memberId', async(req, res, next) => {
 
         if(user){
             user.profile = imageLoad(user.profile)
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 user: user,
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(statusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -108,7 +109,7 @@ router.get('/profile/:memberId', async(req, res, next) => {
 
         const url = imageLoad(result.profile)
 
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "url" : url,
         });
     }
@@ -124,19 +125,19 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         const result = await bcrypt.compare(password, req.user.password);
 
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 check: true,
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 check: false,
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -157,13 +158,13 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
             },
         });
 
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             member: result
         })
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -181,12 +182,12 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
         });
 
         if(result !== null){
-            res.status(StatusCodes.CONFLICT).json({
+            res.status(statusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
 
@@ -194,7 +195,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -271,13 +272,13 @@ router.put('/', isLoggedIn, async (req, res, next) => {
                 ret['token'] = token;
             }
 
-            res.status(StatusCodes.OK).json(ret);
+            res.status(statusCodes.OK).json(ret);
         }
 
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -297,12 +298,12 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
         else{
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
                 "error": "name update error",
             });
         }
@@ -326,13 +327,13 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }

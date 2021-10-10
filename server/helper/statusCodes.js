@@ -2,7 +2,8 @@ const {StatusCodes} = require("http-status-codes");
 
 const statusCodes = {
     //duplicate때는 OK로 하고, message로 구별
-    OK: StatusCodes.OK, 
+    OK: StatusCodes.OK,
+    DUPLICATE: StatusCodes.OK, 
     CREATED: StatusCodes.CREATED,
     ACCEPTED: StatusCodes.ACCEPTED,
     BAD_REQUEST: StatusCodes.BAD_REQUEST,

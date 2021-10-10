@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
 
 var iamport = require("../../config/iamport");
 var axios = require('axios');
@@ -164,7 +164,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 transaction: t,
             })
             await t.commit();
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK"
             })
         }
@@ -172,7 +172,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     catch(err) {
         console.log(err)
         await t.rollback();
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "server error",
         });
     }
@@ -237,14 +237,14 @@ router.post('/kakaopay', /*isLoggedIn,*/ async(req, res, next) => {
                         tax_free_amount: tax_free_amount,
                     });
                     let payment_id = payment_ret.id;
-                    res.status(StatusCodes.OK).json({
+                    res.status(statusCodes.OK).json({
                         "redirect_url" : response.body.next_redirect_pc_url,
                         "payment_id" : payment_id,
                     });
                 }
                 catch(err){
                     console.error(err);
-                    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
                         "message" : "server error",
                     })
                 }
