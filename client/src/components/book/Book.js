@@ -86,15 +86,22 @@ class Book extends Component {
         var state = this.state
 
         try {
-            const res = await API.sendDelete(URL.api.book.delete + book.id)
-            if(res.status === 200) {
-                alert("작품이 삭제되었습니다")
-            }
-            else {
-                alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+            if(window.confirm("선택한 작품을 삭제하시겠습니까?")) {
+                const res = await API.sendDelete(URL.api.book.delete + book.id)
+                if(res.status === 200) {
+                    alert("작품이 삭제되었습니다")
+                }
+                else {
+                    alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+                    return;
+                }
+            } else {
+                return;
             }
         } catch(e) {
             console.log(e)
+            alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+            return;
         }
 
         if("handleUpdate" in this.props && typeof this.props.handleUpdate !== 'undefined'){
