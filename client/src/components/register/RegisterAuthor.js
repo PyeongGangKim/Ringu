@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 import Select from 'react-select'
-import queryString from 'query-string';
 
 import User from '../../utils/user';
 import '../../scss/common/page.scss';
@@ -19,8 +18,6 @@ import iamport from '../../config/iamport';
 class RegisterAuthor extends Component {
     constructor(props) {
         super(props)
-
-
     }
 
     handleSubmit = (e) => {
