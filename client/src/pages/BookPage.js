@@ -21,9 +21,11 @@ class BookPage extends Component {
 
     async componentDidMount() {
         var state = this.state;
-        var params = {
-            member_id: User.getInfo().id
+        var params = {}
+        if(User.getInfo() !== null) {
+            params['member_id'] = User.getInfo().id
         }
+
         const res = await API.sendGet(URL.api.book.get + state.book, params)
 
         if(res.status === 200) {
