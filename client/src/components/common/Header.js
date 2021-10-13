@@ -54,8 +54,17 @@ class Header extends Component {
     }
 
     handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
+    handleKeyPress = (evt) => {
+        if(evt.key === 'Enter') {
+            this.handleSearch()
+        }
+    }
     handleDisplay = (evt) =>{var state = this.state;state.display = !state.display;this.setState(state);}
     handleSearchClick = () => {
+        this.handleSearch()
+    }
+
+    handleSearch = () => {
         if(!this.state.keyword) {
             alert("검색어를 입력해주세요.")
             return;
@@ -96,7 +105,7 @@ class Header extends Component {
                         {
                             this.props.searchVisible !== false &&
                             <div className="search">
-                                <input type="text" maxLength="15" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange}/>
+                                <input type="text" maxLength="15" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
                             </div>
                         }
