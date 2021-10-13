@@ -24,6 +24,10 @@ class SignupSelect extends Component {
         };
     }
 
+    inPreparation = () => {
+        alert("준비 중입니다.")
+    }
+
     componentDidMount() {
         this.initializeNaverLogin();
     }
@@ -84,7 +88,7 @@ class SignupSelect extends Component {
                     </div>
                     <div className="sns">
                         <div className="sns-btn">
-                            <div id="sns-facebook" className="sns-content">
+                            <div id="sns-facebook" className="sns-content" onClick={this.inPreparation}>
                                 <img src="/facebook.jpg"/>
                                 <span className="sns-text"> 페이스북 간편 가입하기 </span>
                             </div>
@@ -92,7 +96,7 @@ class SignupSelect extends Component {
                     </div>
                     <div className="sns">
                         <div className="sns-btn">
-                            <div id="sns-google" className="sns-content">
+                            <div id="sns-google" className="sns-content" onClick={this.inPreparation}>
                                 <img src="/google.png"/>
                                 <span className="sns-text"> 구글 간편 가입하기 </span>
                             </div>

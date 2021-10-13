@@ -87,6 +87,10 @@ class Login extends Component {
 
     }
 
+    inPreparation = () => {
+        alert("준비 중입니다.")
+    }
+
     render() {
 
         return (
@@ -128,7 +132,7 @@ class Login extends Component {
                                 <div id="kakao-login" className="btn-sns" onClick={this.handleKaKaoLogin}>
                                     <em/>
                                 </div>
-                                <FacebookLogin
+                                {/*<FacebookLogin
                                     appId={FACEBOOK.APP_ID}
                                     autoLoad={false}
                                     fields="email"
@@ -139,9 +143,13 @@ class Login extends Component {
                                             <em/>
                                         </div>
                                     )}
-                                />
+                                />*/}
 
-                                <div id="google-login" className="btn-sns">
+                                <div id="facebook-login" className="btn-sns" onClick={this.inPreparation}>
+                                    <em/>
+                                </div>
+
+                                <div id="google-login" className="btn-sns"  onClick={this.inPreparation}>
                                     <em/>
                                 </div>
                             </div>
