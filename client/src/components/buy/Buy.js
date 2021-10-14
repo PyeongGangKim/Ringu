@@ -102,7 +102,7 @@ class Buy extends Component {
                                 card: params.card_name,
                                 amount: state.amount,
                                 user: state.user,
-                                purchaseList: state.purchaseList
+                                //purchaseList: state.purchaseList
                             }
                         })
                     }
@@ -127,7 +127,7 @@ class Buy extends Component {
                     {
                         state.purchaseList.map(item => {
                             return (
-                                <div key={item.book_detail_id} className="product-box">
+                                <div key={item.type === 2 ? item.book_detail_id : item.id} className="product-box">
                                     <div className="img-box">
                                         <img src={item.img}/>
                                     </div>
@@ -136,9 +136,8 @@ class Buy extends Component {
                                         <span className="subtitle">{item.title}</span>
                                         <div className="detail">
                                             <p>저자:{item.author_nickname}</p>
-                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"}</p>
-                                            {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
-                                            <p>파일형식:{"PDF"}</p>
+                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"} {item.type === 1 ? null : <span>연재주기:{"목,금"}</span>}</p>
+                                            <p>파일형식:PDF</p>
                                         </div>
                                     </div>
                                     <span className="price"> {parse.numberWithCommas(item.price)} 원</span>

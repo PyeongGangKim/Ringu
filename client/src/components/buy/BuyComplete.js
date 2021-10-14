@@ -16,7 +16,7 @@ class BuyComplete extends Component {
         var propsState = this.props.history.location.state;
 
         this.state = {
-            purchaseList: 'purchaseList' in propsState && typeof propsState['purchaseList'] !== 'undefined' ? propsState.purchaseList : [],
+            //purchaseList: 'purchaseList' in propsState && typeof propsState['purchaseList'] !== 'undefined' ? propsState.purchaseList : [],
             user: 'user' in propsState && typeof propsState['user'] !== 'undefined' ? propsState.user : userInfo,
             amount: 'amount' in propsState && typeof propsState['amount'] !== 'undefined' ? propsState.amount : 0,
             card: 'card' in propsState && typeof propsState['card'] !== 'undefined' ? propsState.card : '',
