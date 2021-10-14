@@ -8,7 +8,12 @@ const { sequelize, bank } = require("../../models");
 
 router.get('/', async (req, res, next) => {
     try{
-        const result = await bank.findAll();        
+        const result = await bank.findAll({
+            attributes: [
+                ["code", "value"],
+                ["bank", "label"],
+            ]
+        });
 
         if(result){
             res.status(StatusCodes.OK).json({
