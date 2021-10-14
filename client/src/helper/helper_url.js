@@ -28,6 +28,7 @@ module.exports = {
         author: {
             get:                "/author",
             update:             "/author",
+            create:             "/author",
         },
         bank: {
             get:                "/bank",
@@ -71,11 +72,7 @@ module.exports = {
         },
         category: {
             list:               "/category",
-        },
-        author: {
-            get:                "/author/",
-            create:             "/author",
-        },
+        },        
         favorite: {
             author: {
                 create:         "/favorite_author",
