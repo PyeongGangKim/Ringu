@@ -197,11 +197,9 @@ class Book extends Component {
                         isHost === true &&
                         <div className="btn-wrap">
                             <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
+                            <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
                             {
-                                status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
-                            }
-                            {
-                                (status.includes('pub') || status.includes('wait')) && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
+                                status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 회차 </button>
                             }
                         </div>
                     }

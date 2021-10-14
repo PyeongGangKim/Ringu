@@ -215,7 +215,6 @@ class MyInfo extends Component {
     }
 
     render() {
-
         const selectStyles = {
             control: (styles, {}) => ({
                 ...styles,
