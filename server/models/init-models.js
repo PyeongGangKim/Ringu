@@ -69,7 +69,7 @@ function initModels(sequelize) {
   account.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(account, { as: "accounts", foreignKey: "author_id"});
   author.belongsTo(member, { as: "member", foreignKey: "member_id"});
-  member.hasMany(author, { as: "authors", foreignKey: "member_id"});
+  member.hasOne(author, { as: "author", foreignKey: "member_id"});
   book.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(book, { as: "books", foreignKey: "author_id"});
   cart.belongsTo(member, { as: "member", foreignKey: "member_id"});

@@ -38,7 +38,8 @@ module.exports = function(sequelize, DataTypes) {
       references: {
         model: 'member',
         key: 'id'
-      }
+      },
+      unique: "author_member_id_fk"
     },
     tax_agreement: {
       type: DataTypes.TINYINT,
@@ -57,6 +58,22 @@ module.exports = function(sequelize, DataTypes) {
     indexes: [
       {
         name: "PRIMARY",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "id" },
+        ]
+      },
+      {
+        name: "member_id_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "member_id" },
+        ]
+      },
+      {
+        name: "id_UNIQUE",
         unique: true,
         using: "BTREE",
         fields: [
