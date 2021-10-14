@@ -25,6 +25,13 @@ module.exports = {
             nickname_duplicate: "/auth/nickname/duplicate",
 
         },
+        author: {
+            get:                "/author",
+            update:             "/author",
+        },
+        bank: {
+            get:                "/bank",
+        },
         member: {
             get:                "/member",
             getById:            "/member/",
