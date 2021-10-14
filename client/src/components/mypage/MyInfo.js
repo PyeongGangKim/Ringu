@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
+import Select from 'react-select'
+
 
 import User from '../../utils/user';
 import '../../scss/mypage/mypage.scss';
@@ -13,6 +15,8 @@ class MyInfo extends Component {
     constructor(props) {
         super(props)
 
+        this.bankOptions = []
+
         this.state = {
             ui: {
 
@@ -21,6 +25,11 @@ class MyInfo extends Component {
                 email:"",
                 originalNickname: "",
                 nickname: {value:"", isModifying: false, clear: false},
+                bank: {value:0, isModifying: false, clear: false},
+                account: {value:"", isModifying: false, clear: false},
+                originalBank: {},
+                originalAccount: "",
+                user: {},
             },
             msg: {
 
@@ -71,6 +80,67 @@ class MyInfo extends Component {
         this.setState(state);
     }
 
+    handleBankChange = (evt) => {
+        var state = this.state;
+        state.data.bank.value = evt;
+        state.data.bank.clear = true;
+        this.setState(state);
+    }
+
+    handleAccountChange = (evt) => {
+        var state = this.state;
+        state.data.account.value = evt.target.value;
+        state.data.account.clear = false;
+        this.setState(state);
+    }
+
+    handleAccountModifyClick = (evt) => {
+        var state = this.state;
+        state.data.bank.isModifying = true;
+        this.setState(state);
+    }
+
+    handleAccountModifyComplete = async(evt) => {
+        var state = this.state;
+
+        if((state.data.account.value === state.data.originalAccount) && (state.data.bank.value === state.data.originalBank)) {
+            state.data.bank.isModifying = false;
+            state.data.account.isModifying = false;
+            this.setState(state);
+            return;
+        }
+
+        if(!!state.data.bank.value && state.data.account.value !== '') {
+            state.data.bank.isModifying = false;
+            state.data.account.isModifying = false;
+
+            try {
+                const res = await API.sendPut(URL.api.author.update, {bank: state.data.bank.value.value, account: state.data.account.value})
+                if(res.status === 200){
+                    alert("계좌가 변경되었습니다.")
+                } else {
+                    alert("계좌 변경에 실패하였습니다.")
+                }
+            } catch(e) {
+                console.error(e)
+            }
+        } else {
+            alert("계좌 변경에 실패하였습니다.")
+        }
+
+        this.setState(state);
+    }
+
+    handleAccountModifyCancel = (evt) => {
+        var state = this.state;
+        state.data.bank.isModifying = false;
+        state.data.bank.clear = false;
+        state.data.bank.value = state.data.originalBank;
+        state.data.account.value = state.data.originalAccount;
+
+        this.setState(state);
+    }
+
     handleNicknameDuplicateCheck = async(evt) => {
         var state = this.state;
         var params = {
@@ -100,26 +170,82 @@ class MyInfo extends Component {
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         var state = this.state;
         var params = {
             id: User.getInfo().id,
         }
 
-        API.sendGet(URL.api.member.get, params).then(res => {
+        try {
+            const res = await API.sendGet(URL.api.member.get, params)
             if(res.status === 200){
                 var user = res.data.user;
+                state.data.user = user;
                 state.data.email = user.email;
                 state.data.nickname.value = user.nickname;
                 state.data.originalNickname = user.nickname;
 
                 this.setState(state)
+
+                if(user.type === 1) {
+                    const authorRes = await API.sendGet(URL.api.author.get, {id: user.id})
+                    if(authorRes.status === 200) {
+                        var author = authorRes.data.author;
+                        state.data.bank.value = author.bank_bank;
+                        state.data.account.value = author.account;
+                        state.data.originalBank = author.bank_bank;
+                        state.data.originalAccount = author.account;
+
+                        this.setState(state)
+                    }
+                }
+            };
+        } catch(e) {
+            console.error(e);
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.bank.get)
+            if(res.status === 200){
+                this.bankOptions = res.data.bank
             }
-        });
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     render() {
+
+        const selectStyles = {
+            control: (styles, {}) => ({
+                ...styles,
+                "&:hover": {
+                    borderColor: 'var(--color-1)',
+                },
+                "&:focus": {
+                    borderColor: 'var(--color-1)',
+                    boxShadow: 0,
+                },
+                boxShadow: 0,
+                borderWidth: '2px',
+            }),
+            container: (styles, {}) => ({
+                ...styles,
+                width: '300px',
+                marginRight: '30px',
+            }),
+            valueContainer: (styles, {  }) => ({
+                ...styles,
+                height: '40px',
+                padding: '10px 20px',
+                fontWeight: '500',
+            }),
+        }
+
+        var state = this.state;
+
         return (
+
             <div id="mypage" className="page2">
                 <div className="title-wrap">
                     <h2 className="title">나의 정보</h2>
@@ -133,14 +259,14 @@ class MyInfo extends Component {
                     <div className="content">
                         <div className="input-box">
                             <h3 className="header"> 이메일 </h3>
-                            <input className="textbox" type="email" name="email" autoComplete="off" value={this.state.data.email} disabled/>
+                            <input className="textbox" type="email" name="email" autoComplete="off" value={state.data.email} disabled/>
                         </div>
 
                         <div className="input-box">
                             <h3 className="header">
                                 닉네임
                                 {
-                                    this.state.data.nickname.isModifying === true ?
+                                    state.data.nickname.isModifying === true ?
                                     <div className="sub-wrap">
                                         <button className="modify-btn" onClick={this.handleNickNameModifyComplete}>
                                             <em/>
@@ -162,11 +288,11 @@ class MyInfo extends Component {
 
                             </h3>
 
-                            <input className="textbox" type="text" name="nickname" disabled={this.state.data.nickname.isModifying === false} autoComplete="off" value={this.state.data.nickname.value} onChange={this.handleNicknameChange}/>
+                            <input className="textbox" type="text" name="nickname" disabled={state.data.nickname.isModifying === false} autoComplete="off" value={state.data.nickname.value} onChange={this.handleNicknameChange}/>
                             {
-                                (this.state.data.nickname.isModifying === true) &&
+                                (state.data.nickname.isModifying === true) &&
                                 (
-                                    this.state.data.nickname.clear === false ?
+                                    state.data.nickname.clear === false ?
                                     <button className="btn sub" onClick={this.handleNicknameDuplicateCheck}>
                                         중복 확인
                                     </button>
@@ -179,6 +305,62 @@ class MyInfo extends Component {
 
                         </div>
                     </div>
+                    {
+                        state.data.user.type === 1 &&
+                        <div>
+                            <h2 className="subtitle"> 계좌 정보</h2>
+
+                            <div className="content">
+                                <div className="input-box">
+                                    <h3 className="header">
+                                        계좌
+                                        {
+                                            state.data.bank.isModifying === true ?
+                                            <div className="sub-wrap">
+                                                <button className="modify-btn" onClick={this.handleAccountModifyComplete}>
+                                                    <em/>
+                                                    완료
+                                                </button>
+                                                <button className="modify-btn" onClick={this.handleAccountModifyCancel}>
+                                                    <em/>
+                                                    취소
+                                                </button>
+                                            </div>
+                                            :
+                                            <div className="sub-wrap">
+                                                <button className="modify-btn" onClick={this.handleAccountModifyClick}>
+                                                    <em/>
+                                                    수정
+                                                </button>
+                                            </div>
+                                        }
+
+                                    </h3>
+                                    <div className="row">
+                                        <Select
+                                            value={state.data.bank.value}
+                                            options={this.bankOptions}
+                                            onChange={this.handleBankChange}
+                                            isSearchable={false}
+                                            defaultValue={0}
+                                            isDisabled={state.data.bank.isModifying === false}
+                                            placeholder={""}
+                                            styles={selectStyles}
+                                            theme={(theme) => ({
+                                                ...theme,
+                                                colors: {
+                                                    ...theme.colors,
+                                                    primary: 'var(--color-1)',
+                                                }
+                                            })}
+                                            maxMenuHeight="150px"/>
+
+                                        <input className="textbox" type="number" name="account" disabled={state.data.bank.isModifying === false} autoComplete="off" value={state.data.account.value} onChange={this.handleAccountChange}/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
 
