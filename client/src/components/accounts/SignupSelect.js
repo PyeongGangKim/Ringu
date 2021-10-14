@@ -72,7 +72,7 @@ class SignupSelect extends Component {
                         <div className="sns-btn" onClick={this.handleNaverLogin}>
                             <div id="naver_id_login" style={{"display": "none"}}/>
                             <div id="sns-naver" className="sns-content">
-                                <img src="/naver.png"/>
+                                <em/>
                                 <span className="sns-text"> 네이버 간편 가입하기 </span>
                             </div>
                         </div>
@@ -81,7 +81,7 @@ class SignupSelect extends Component {
                     <div className="sns">
                         <div id="kakao-login" className="sns-btn" onClick={this.handleKaKaoLogin}>
                             <div id="sns-kakao" className="sns-content">
-                                <img src="/kakao.jpg"/>
+                                <em/>
                                 <span className="sns-text"> 카카오 간편 가입하기 </span>
                             </div>
                         </div>
@@ -89,7 +89,7 @@ class SignupSelect extends Component {
                     <div className="sns">
                         <div className="sns-btn">
                             <div id="sns-facebook" className="sns-content" onClick={this.inPreparation}>
-                                <img src="/facebook.jpg"/>
+                                <em/>
                                 <span className="sns-text"> 페이스북 간편 가입하기 </span>
                             </div>
                         </div>
@@ -97,7 +97,7 @@ class SignupSelect extends Component {
                     <div className="sns">
                         <div className="sns-btn">
                             <div id="sns-google" className="sns-content" onClick={this.inPreparation}>
-                                <img src="/google.png"/>
+                                <em/>
                                 <span className="sns-text"> 구글 간편 가입하기 </span>
                             </div>
                         </div>
