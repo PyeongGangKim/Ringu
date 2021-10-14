@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     bank: {
-      type: DataTypes.STRING(30),
+      type: DataTypes.CHAR(3),
       allowNull: false
     },
     account: {
