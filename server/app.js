@@ -35,6 +35,7 @@ let admin_account = require('./routes/admin/account');
 let admin_withdrawal = require('./routes/admin/withdrawal');
 
 var api_authRouter = require('./routes/api/auth');
+var api_bankRouter = require('./routes/api/bank');
 var api_bookRouter = require('./routes/api/book');
 var api_bookDetailRouter = require('./routes/api/book_detail');
 var api_memberRouter = require('./routes/api/member');
@@ -99,6 +100,7 @@ app.use('/admin/account', admin_account);
 app.use('/admin/withdrawal', admin_withdrawal);
 
 app.use('/api/auth', api_authRouter);
+app.use('/api/bank', api_bankRouter);
 app.use('/api/book', api_bookRouter);
 app.use('/api/book_detail', api_bookDetailRouter);
 app.use('/api/member', api_memberRouter);
