@@ -168,7 +168,7 @@ class BookType1 extends Component {
         this.props.history.push({
             pathname: URL.service.buy.buy,
             state: {
-                purchaseList: purchaseList
+                purchaseList: purchaseList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
             }
         })
     }
@@ -328,7 +328,7 @@ class BookType1 extends Component {
                                                                 !state.isAuthor &&
                                                                 <td>
                                                                     {
-                                                                        item.purchases.length || item.round === 1 ?
+                                                                        !!item.purchases.length || item.round === 1 ?
                                                                         <em className="download" onClick={() => this.downloadAction(item.id)} />
                                                                         :
                                                                         <em className="lock"/>
