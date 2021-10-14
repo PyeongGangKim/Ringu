@@ -334,7 +334,7 @@ class RegisterAuthorDetail extends Component {
                         <div className="input-box">
                             <h3 className="header"> 계좌번호 </h3>
                             <div className="form-group">
-                                <input type="number" className={state.account.class} onChange={this.handleAccountChange} value={state.account.val}/>
+                                <input type="number" placeholder={"-빼고 입력해주세요"} className={state.account.class} onChange={this.handleAccountChange} value={state.account.val}/>
                                 {
                                     state.account.msg &&
                                     <div className="error-wrap">

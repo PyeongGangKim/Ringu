@@ -354,7 +354,7 @@ class MyInfo extends Component {
                                             })}
                                             maxMenuHeight="150px"/>
 
-                                        <input className="textbox" type="number" name="account" disabled={state.data.bank.isModifying === false} autoComplete="off" value={state.data.account.value} onChange={this.handleAccountChange}/>
+                                        <input className="textbox" type="number" name="account" placeholder={"-빼고 입력해주세요"} disabled={state.data.bank.isModifying === false} autoComplete="off" value={state.data.account.value} onChange={this.handleAccountChange}/>
                                     </div>
                                 </div>
                             </div>
