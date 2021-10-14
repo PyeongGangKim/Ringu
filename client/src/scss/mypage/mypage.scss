@@ -1,4 +1,16 @@
 #mypage {
+    .content {
+        input {
+            font-size: 14px;
+
+            &:disabled {
+                background-color: #f2f2f2;
+                color: #ababab;
+            }
+        }
+
+    }
+
     .form-group {
         margin-left: 50px;
         margin-bottom: 30px;
