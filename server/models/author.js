@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     bank: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.CHAR(3),
       allowNull: false,
       references: {
         model: 'bank',
@@ -71,7 +71,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "author_bank_fk_idx",
+        name: "author_bank_fk",
         using: "BTREE",
         fields: [
           { name: "bank" },
