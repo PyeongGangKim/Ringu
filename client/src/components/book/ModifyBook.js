@@ -207,8 +207,8 @@ class ModifyBook extends Component {
             return;
         }
 
-        if(state.page_count.val < 100) {
-            alert('최소 페이지는 100페이지입니다.')
+        if(state.page_count.val < 50) {
+            alert('최소 페이지는 50페이지입니다.')
             state.page_count.class = "textbox error";
             this.setState(state)
             return;
