@@ -10,7 +10,7 @@ router.get('/', async (req, res, next) => {
     try{
         const result = await bank.findAll({
             attributes: [
-                ["code", "value"],
+                ["id", "value"],
                 ["bank", "label"],
             ]
         });
