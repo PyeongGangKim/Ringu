@@ -21,6 +21,8 @@ class RegisterAuthorDetail extends Component {
     constructor(props) {
         super(props)
 
+        this.bankOptions = []
+
         if(this.user.type === 1) {
             alert("이미 작가로 등록하였습니다.")
             window.location.href = URL.service.home
@@ -30,7 +32,7 @@ class RegisterAuthorDetail extends Component {
         this.state = {
             name: {val: "", msg: "", clear: false, class: "input"},
             phone: {val: "", msg: "", clear: false, class: "input"},
-            bank: {val: "", msg: "", clear: false, class: "input"},
+            bank: {val: {}, msg: "", clear: false, class: "input"},
             account: {val: "", msg: "", clear: false, class: "input"},
             tax_term: "",
             promotion_term: "",
@@ -85,18 +87,10 @@ class RegisterAuthorDetail extends Component {
 
     handleBankChange = (e) => {
         var state = this.state;
-        if(/^[a-zA-Z가-힣]*$/.test(e.target.value) === true || e.target.value === "") {
-            state.bank.msg = ""
-            state.bank.clear = true;
-            state.bank.class = "input";
-        } else {
-            state.bank.class = "input error";
-            state.bank.msg = "은행명을 올바르게 입력해주세요"
-            state.bank.clear = false;
-        }
-        state.bank.val = e.target.value;
-
-        this.setState(state)
+        state.bank.val = e;
+        state.bank.clear = true;
+        state.bank.msg = ""
+        this.setState(state);
     }
 
     handleAccountChange = (e) => {
@@ -121,7 +115,7 @@ class RegisterAuthorDetail extends Component {
         var state = this.state;
         e.preventDefault();
 
-        if(/^[가-힣]*$/.test(state.name.val) === false) {
+        if(state.name.val === '' || /^[가-힣]*$/.test(state.name.val) === false) {
             state.name.class = "input error";
             state.name.msg = "이름을 올바르게 입력해주세요."
             this.setState(state)
@@ -173,11 +167,11 @@ class RegisterAuthorDetail extends Component {
             return;
         }
 
-        if(state.bank.val === "") {
+        if(!state.bank.val) {
             state.bank.class = "input error";
-            state.bank.msg = "은행명을 입력해주세요."
+            state.bank.msg = "은행을 선택해주세요."
             this.setState(state)
-            alert("은행명을 입력해주세요.")
+            alert("은행을 선택해주세요.")
             return;
         }
 
@@ -200,7 +194,7 @@ class RegisterAuthorDetail extends Component {
         }
         var params = {
             name: state.name.val,
-            bank: state.bank.val,
+            bank: state.bank.val.value,
             account: state.account.val,
             tel: state.phone.val,
             tax_agreement: true,
@@ -221,8 +215,47 @@ class RegisterAuthorDetail extends Component {
         }
     }
 
+    async componentDidMount() {
+        try {
+            const res = await API.sendGet(URL.api.bank.get)
+            console.log(res)
+            if(res.status === 200){
+                this.bankOptions = res.data.bank
+                this.setState(this.state)
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
     render() {
-        let state = this.state
+        const selectStyles = {
+            control: (styles, {}) => ({
+                ...styles,
+                "&:hover": {
+                    borderColor: 'var(--color-1)',
+                },
+                "&:focus": {
+                    borderColor: 'var(--color-1)',
+                    boxShadow: 0,
+                },
+                height: '60px',
+                boxShadow: 0,
+                borderWidth: '2px',
+            }),
+            container: (styles, {}) => ({
+                ...styles,
+            }),
+            valueContainer: (styles, {  }) => ({
+                ...styles,
+                fontSize: '16px',
+                height: '100%',
+                padding: '10px 20px',
+                fontWeight: '500',
+            }),
+        }
+
+        var state = this.state
 
         return (
             this.user.type === 0 &&
@@ -274,7 +307,21 @@ class RegisterAuthorDetail extends Component {
                         <div className="input-box">
                             <h3 className="header"> 은행명 </h3>
                             <div className="form-group">
-                                <input type="text" className={state.bank.class} onChange={this.handleBankChange}/>
+                                <Select
+                                    value={state.bank.val}
+                                    options={this.bankOptions}
+                                    onChange={this.handleBankChange}
+                                    isSearchable={false}
+                                    placeholder={""}
+                                    styles={selectStyles}
+                                    theme={(theme) => ({
+                                        ...theme,
+                                        colors: {
+                                            ...theme.colors,
+                                            primary: 'var(--color-1)',
+                                        }
+                                    })}
+                                    maxMenuHeight="150px"/>
                                 {
                                     state.bank.msg &&
                                     <div className="error-wrap">
