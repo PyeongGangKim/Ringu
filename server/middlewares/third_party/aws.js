@@ -1,7 +1,7 @@
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const AWS = require("aws-sdk");
-const {ACCESS_KEY_ID, SECRET_ACCESS_KEY, REGION, BUCKET, DIRNAME} = require("../../config/aws");
+const {ACCESS_KEY_ID, SECRET_ACCESS_KEY, REGION, MAIN_BUCKET, IMG_BUCKET, DIRNAME} = require("../../config/aws");
 const { book } = require("../../models");
 
 const s3 = new AWS.S3({
@@ -14,7 +14,11 @@ const storage = multerS3({
     s3: s3,
     
     bucket: function(req,file, cb){
-        cb(null, BUCKET+ "/" + file.fieldname);
+        let fieldName = file.fieldname;
+        if(fieldName == "img"){
+            cb(null, IMG_BUCKET);
+        }
+        else cb(null, MAIN_BUCKET+ "/" + file.fieldname);
     },
     
     contentType: function(req, file, cb){
