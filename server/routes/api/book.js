@@ -10,6 +10,7 @@ const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middl
 
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
+const {getImgURL} = require("../../utils/aws");
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
@@ -138,7 +139,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
         for(let i = 0 ; i < bookList.length ; i++){
             if(bookList[i].img == null || bookList[i].img[0] == 'h') continue;
-            bookList[i].img = await imageLoad(bookList[i].img);
+            bookList[i].img = getImgURL(bookList[i].img);
         }
         if(bookList.length == 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
@@ -244,8 +245,8 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 }
             }
 
-            book_detail_info.dataValues.author_profile = await imageLoad(book_detail_info.dataValues.author_profile);
-            book_detail_info.dataValues.img = await imageLoad(book_detail_info.img);
+            book_detail_info.dataValues.author_profile = AWS_IMG_BUCKET_URL + book_detail_info.dataValues.author_profile;
+            book_detail_info.dataValues.img = AWS_IMG_BUCKET_URL + book_detail_info.img;
             res.status(statusCodes.OK).json({
 
                 "book": book_detail_info,
@@ -317,7 +318,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
 
         for(var i = 0; i < detailList.length; i++){
             if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
-            detailList[i].dataValues.img = await imageLoad(detailList[i].dataValues.img);
+            detailList[i].dataValues.img = AWS_IMG_BUCKET_URL + detailList[i].dataValues.img;
         }
 
         if(detailList.length == 0){

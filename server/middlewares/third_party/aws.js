@@ -15,24 +15,31 @@ const storage = multerS3({
     
     bucket: function(req,file, cb){
         let fieldName = file.fieldname;
-        if(fieldName == "img"){
+        if(fieldName === "img"){
             cb(null, IMG_BUCKET);
         }
         else cb(null, MAIN_BUCKET+ "/" + file.fieldname);
+        
     },
     
     contentType: function(req, file, cb){
         let fieldName = file.fieldname;
-        if(fieldName == "img"){
+        if(fieldName === "img"){
             cb(null,file.mimetype);
         }
         else cb(null, "application/octet-stream");
     },
 
     key: function (req, file, cb) {
+        let fieldName = file.fieldname;
         const fileNameSplit = file.originalname.split('.');
-        const fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[1];
+        let fileName = ""
+        if(fieldName === "img"){
+            fileName = req.user.nickname + "_" + Date.now().toString() + "." + fileNameSplit[fileNameSplit.length - 1];
+        }
+        else fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[fileNameSplit.length - 1];
         cb(null, fileName);
+       
     }, // 파일 이름
     acl: 'public-read',
 });
@@ -63,7 +70,7 @@ const deleteFile = async (req, res, next) =>{
         const delFileName = fileUrl[fileUrlLength - 1];
         const delImgNmae = imgUrl[imgUrlLength - 1];
         const params = {
-            Bucket: BUCKET,
+            Bucket: MAIN_BUCKET,
             Delete: {
                 Objects: [
                     {
@@ -93,17 +100,18 @@ const downloadFile = (fieldName ,fileName) => {
     const signedUrlExpireSeconds = 60 * 1;
     const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
-        Bucket: BUCKET,
+        Bucket: MAIN_BUCKET,
         Key: fileKey,
         Expires: signedUrlExpireSeconds,
     });
     return url
 }
+
 const imageLoad = (imgName) => {
     const signedUrlExpireSeconds = 3600 * 24;
     const fileKey = "img/" + imgName;
     const url = s3.getSignedUrl('getObject', {
-        Bucket: BUCKET,
+        Bucket: MAIN_BUCKET,
         Key: fileKey,
         Expires: signedUrlExpireSeconds
     });

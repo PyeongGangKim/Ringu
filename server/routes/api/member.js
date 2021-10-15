@@ -26,7 +26,7 @@ const { upload } = require('../../utils/aws');
 
 
 const { salt } = require("../../config/salt");
-const aws = require("../../utils/aws");
+const {getImgURL} = require("../../utils/aws");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
     var id = req.user.id;
@@ -107,8 +107,8 @@ router.get('/profile/:memberId', async(req, res, next) => {
             }
         });
 
-        const url = imageLoad(result.profile)
-
+        const url = getImgURL(result.profile);
+        console.log(url);
         res.status(statusCodes.OK).json({
             "url" : url,
         });
@@ -286,6 +286,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
 
 router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => {
     let id = req.user.id;
+    
     let profile = req.files.img[0].key;
 
     try{
