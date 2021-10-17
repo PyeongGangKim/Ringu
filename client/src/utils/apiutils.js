@@ -77,7 +77,7 @@ module.exports = {
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
-        var url = apiHost + url
+        url = apiHost + url
         var ret = axios.get(url, { params:params, headers: headers }).then(res => {
             return res;
         })
@@ -85,7 +85,7 @@ module.exports = {
     },
 
     sendPut(url, params = {}) {
-        var url = apiHost + url
+        url = apiHost + url
         var token = Cookies.get('RINGU_JWT')
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
@@ -109,7 +109,7 @@ module.exports = {
 
 
     sendDelete(url, params = {}) {
-        var url = apiHost + url
+        url = apiHost + url
 
         var token = Cookies.get('RINGU_JWT')
         if (!!token) {
