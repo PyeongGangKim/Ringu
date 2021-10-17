@@ -272,13 +272,13 @@ class ModifyBook extends Component {
             data.append("preview", state.preview.file)
 
             var img = state.thumbnail.file;
-            if(img) {
+            if(typeof img !== 'string') {
                 var imgblob = img.slice(0, img.size, img.type);
                 var token = img.name.split('.')
                 var fieldName = token[token.length - 1]
                 var newImg = new File([imgblob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: img.type})
+                data.append("img", newImg)
             }
-            data.append("img", newImg)
 
             data.append("price", state.price.val)
             data.append("page_count", state.page_count.val)
