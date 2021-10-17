@@ -7,7 +7,7 @@ const { secretKey } = require('../../config/jwt_secret');
 
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { sequelize, book_detail ,book, purchase, withdrawal, member, author } = require("../../models");
+const { sequelize, book_detail, book, bank, purchase, withdrawal, member, author } = require("../../models");
 
 router.post('/', isLoggedIn, async(req, res, next) => {
     let name = req.body.name;
@@ -67,6 +67,51 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     }
 
 })
+
+router.get('/', isLoggedIn, async (req, res, next) => {
+    let id = req.query.id;
+    try{
+        const result = await author.findOne({
+            attributes: [
+                "id",
+                "description",
+                "member_id",
+                "account",
+                [sequelize.literal("author.name"),"name"],
+            ],
+            where: {
+                member_id : id
+            },
+            include : [
+                {
+                    model : bank,
+                    as : "bank_bank",
+                    attributes: [
+                        ["id", "value"],
+                        ["bank", "label"],
+                    ]
+                }
+            ],
+        });
+        if(result){
+            res.status(StatusCodes.OK).json({
+                author: result,
+            });
+        }
+        else{
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
 router.get('/:authorId', isLoggedIn, async (req, res, next) => {
 
     let id = req.params.authorId;
@@ -106,6 +151,9 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
         });
     }
 });
+
+
+
 router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
     // book 이랑 member(작가)와 관계가 있다.
     // purchase book_detail이랑 관계가 있음.
@@ -182,6 +230,49 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
         console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
+        });
+    }
+});
+
+router.put('/', isLoggedIn, async (req, res, next) => {
+    let id = req.user.id;
+    let params = req.body;
+    console.log(params)
+    console.log(id)
+    // patch로 변경필요
+    try{
+        const result = await author.update(
+            params,
+            {
+                where : {
+                    member_id : id,
+                }
+        });
+        console.log(result)
+        if(result){
+            var ret = {
+                "message" : "update completed!",
+            }
+
+            if ('type' in params && typeof params.type !== 'undefined') {
+                const token = jwt.sign({
+                    id: id,
+                    type: params.type,
+                }, secretKey, {
+                    expiresIn: '12h',
+                    issuer: 'ringu',
+                });
+                ret['token'] = token;
+            }
+
+            res.status(StatusCodes.OK).json(ret);
+        }
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
         });
     }
 });
