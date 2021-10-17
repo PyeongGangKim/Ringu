@@ -456,17 +456,25 @@ router.delete('/round/:bookDetailId', isLoggedIn, async(req, res, next) => {
 
 router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) => {
     try {
-        let book_id = req.body.book_id;
-        let book_detail_id = req.body.book_detail_id;
+        var book_id = req.body.book_id;
+        var book_detail_id = null;
+        if ("book_detail_id" in req.body) {
+            book_detail_id = req.body.book_detail_id;
+        }
 
         var params = {
             "title": req.body.title,
             "price": req.body.price,
             "description": req.body.book_description,
-            "content": req.body.content,
         }
 
+        if (typeof req.body.content !== 'undefined') {
+            params['content'] = req.body.content;
+        }
 
+        if (typeof req.body.day !== 'undefined') {
+            params['serialization_day'] = req.body.day;
+        }
 
         if (typeof req.files.img !== 'undefined') {
             params['img'] = req.files.img[0].key;
@@ -477,8 +485,9 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
         }
 
 
-        const t = await sequelize.transaction();
 
+        const t = await sequelize.transaction();
+        console.log(params)
         const updateBook = await book.update(
             params,
         {
@@ -488,22 +497,24 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
             transaction: t
         })
 
-        params = {
-            "page_number": req.body.page_count,
-        }
+        if(book_detail_id !== null) {
+            params = {
+                "page_number": req.body.page_count,
+            }
 
-        if (typeof req.files.file !== 'undefined') {
-            params['file'] = req.files.file[0].key;
-        }
+            if (typeof req.files.file !== 'undefined') {
+                params['file'] = req.files.file[0].key;
+            }
 
-        const updateBookDetail = await book_detail.update(
-            params,
-        {
-            where: {
-                id: book_detail_id
-            },
-            transaction: t
-        })
+            const updateBookDetail = await book_detail.update(
+                params,
+            {
+                where: {
+                    id: book_detail_id
+                },
+                transaction: t
+            })
+        }
 
         await t.commit();
         res.status(StatusCodes.OK).json({
