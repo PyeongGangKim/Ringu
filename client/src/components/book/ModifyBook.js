@@ -304,7 +304,7 @@ class ModifyBook extends Component {
         return (
             <div id="register-book" className="page3">
                 <div className="title-wrap">
-                    <h2 className="title">새 작품 등록하기</h2>
+                    <h2 className="title">수정하기</h2>
                 </div>
 
                 <hr/>
