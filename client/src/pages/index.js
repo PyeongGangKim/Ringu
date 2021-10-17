@@ -12,6 +12,7 @@ export { default as AuthorRegisterDetailPage } from './AuthorRegisterDetailPage'
 export { default as AuthorPage } from './AuthorPage';
 export { default as BookPage } from './BookPage';
 export { default as ModifyBookPage } from './ModifyBookPage';
+export { default as ModifyBookSeriesPage } from './ModifyBookSeriesPage';
 export { default as RegisterPage } from './RegisterPage';
 export { default as RegisterDetailPage } from './RegisterDetailPage';
 export { default as BuyPage } from './BuyPage';

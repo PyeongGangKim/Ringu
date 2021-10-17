@@ -109,9 +109,13 @@ class Book extends Component {
         }
     }
 
-    handleModify = (book_id) => {
+    handleModify = (book_id, type) => {
         if(window.confirm("선택한 작품을 수정하시겠습니까?")) {
-            window.location.href = URL.service.book.modify + book_id
+            if(type === 1) {
+                window.location.href = URL.service.book.modify_series + book_id
+            } else {
+                window.location.href = URL.service.book.modify + book_id
+            }
         }
     }
 
@@ -197,7 +201,7 @@ class Book extends Component {
                         isHost === true &&
                         <div className="btn-wrap">
                             <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
-                            <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
+                            <button className="btn" onClick={() => {book.type === 1 ? this.handleModify(book.id, 1) : this.handleModify(book.id, 2)}}> 수정 </button>
                             {
                                 status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 회차 </button>
                             }
