@@ -72,7 +72,7 @@ module.exports = {
         },
         category: {
             list:               "/category",
-        },        
+        },
         favorite: {
             author: {
                 create:         "/favorite_author",
@@ -129,7 +129,8 @@ module.exports = {
         author                  : "/author/",
         book: {
             book                : "/book/",
-            modify              : "/modify/book/",
+            modify              : "/modify/pub/",
+            modify_series       : "/modify/series/",
         },
         buy : {
             buy                 : "/buy",
