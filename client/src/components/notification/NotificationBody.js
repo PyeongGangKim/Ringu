@@ -3,7 +3,6 @@ import React, { Component, Fragment } from 'react';
 import Moment from 'react-moment';
 
 
-import '../../scss/mypage/cart.scss';
 import '../../scss/common/button.scss';
 import '../../scss/notification/notification.scss';
 
@@ -159,13 +158,17 @@ class NotificationBody extends Component {
         return(
             <div>
                 <div className = "top-buttons">
-                    <input type="checkbox" onClick={() => this.handleAllCheckBox()} checked = {this.state.data.allCheck}/>
-                    <div className= "select-all">
-                        <span >전체선택</span>
-                        <button className= "trash-button" onClick = {() => this.handleDeleteButton() }>
-                            <img src="/trashcan.png" padding-right= "15px" width="20px" height="25px" />
-                        </button>
-                        <span className= "erase-span" >삭제</span>
+                    <label className = "select-all-label" for = "select-all">
+                        <input id = "select-all" type="checkbox" onClick={() => this.handleAllCheckBox()} checked = {this.state.data.allCheck}/>
+                        <span className= "word">전체선택</span>
+                    </label>
+                    <div className= "erase">
+                        <label className = "select-erase" for = "select-erase">
+                            <button id = "select-erase" className= "trash-button" onClick = {() => this.handleDeleteButton() }>
+                                <img src="/trashcan.png" padding-right= "15px" width="17px" height="22px" />
+                            </button>
+                            <span className= "erase-span" >삭제</span>
+                        </label>
                     </div>
                 </div>
                 <hr className = "main-line"/>
@@ -175,10 +178,9 @@ class NotificationBody extends Component {
                         return(
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">
-                                    <h2 class="accordion-header" id={item.id}>
-
-                                    <button class={"accordion-button " + (item.id === spanNoti ? "" : "collapsed")} type="button" data-bs-toggle="collapse" data-bs-target={item.id + "data"}  aria-expanded={(item.id === spanNoti) ? "true" : "false"} aria-controls={item.id + "data"} onClick = {() => this.handleSpanList(item.id,idx)}>
+                                    <div class={ "accordion-header " + (item.id === spanNoti ? "" : "collapsed")} id={item.id}>
                                     <input type="checkbox" onClick={() => this.handleCheckBox(idx)} checked = {this.state.data.selectedNotiList[idx]}/>
+                                    <button class={"accordion-button " } type="button" onClick = {() => this.handleSpanList(item.id,idx)}>
                                         <div className="title-outside">
                                             {
                                             (item.is_read === 0)  && <span className="span-new"> New </span>
@@ -188,25 +190,35 @@ class NotificationBody extends Component {
                                         </div>
                                         <Moment className = "date" format="MM월 DD일 HH:MM">{item.date}</Moment>
                                     </button>
-                                    </h2>
-                                    <div id={item.id + "data"} class={"accordion-collapse collapse " + (item.id === spanNoti ? "show" : "")} aria-labelledby={item.id} data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        {item.content}
                                     </div>
-                                    </div>
+                                    {
+                                        (item.id === spanNoti) &&
+                                        <div className = "body-div">
+                                            {item.content}
+                                        </div>
+                                    }
+                                    {
+                                        (item.id === spanNoti) &&
+                                        <hr size = "5"/>
+                                    }
+                                    {
+                                        (item.id !== spanNoti) &&
+                                        <hr className = "hr-not-span"/>
+                                    }
                                 </div>
+                                   
                             </div>
                         );
                     })
                 }
                 </div>
                 <div className= "bottom-navigator">
-                    <span>{this.state.totalCount}개 중 {startItem}-{endItem} </span>
+                    <span className = "bottom-count">{this.state.totalCount}개 중 {startItem}-{endItem} </span>
                     <button onClick = {this.handlePrevPageChange}>
                         <img src="/prev_arrow.png" width="27px" height="32px" />
                      </button>
                     <button onClick = {this.handleNextPageChange}>
-                        <img src="/next_arrow.png" width="27px" height="32px" />
+                        <img className = "next-arrow" src="/next_arrow.png" width="27px" height="32px" />
                     </button>
                 </div>
             </div>
