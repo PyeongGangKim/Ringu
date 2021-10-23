@@ -6,6 +6,10 @@
         color: #626262;
     }
 
+    button[disabled]:hover {
+        box-shadow: none;
+    }
+
     .btn:hover {
         box-shadow: 396px 0 0 0 rgba(0,0,0, 0.2) inset;
     }
