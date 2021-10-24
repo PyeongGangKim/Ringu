@@ -27,5 +27,15 @@ module.exports = {
 
         }
         return `${date.getFullYear().toString().substring(2,5)}. ${date.getMonth()+1}. ${date.getDate()}`
-    }
+    },
+
+    subtract: (date, type, count) => {
+        if(type === 'y'){
+            return new Date(date.getFullYear()-count, date.getMonth(), date.getDate())
+        } else if(type === 'm'){
+            return new Date(date.getFullYear(), date.getMonth()-count, date.getDate())
+        } else{
+            return new Date(date.getFullYear(), date.getMonth(), date.getDate()-count)
+        }
+    },
 }
