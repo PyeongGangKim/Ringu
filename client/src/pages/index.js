@@ -10,6 +10,7 @@ export { default as LeavePage } from './LeavePage';
 export { default as AuthorRegisterPage } from './AuthorRegisterPage';
 export { default as AuthorRegisterDetailPage } from './AuthorRegisterDetailPage';
 export { default as AuthorPage } from './AuthorPage';
+export { default as PaymentPage } from './PaymentPage';
 export { default as BookPage } from './BookPage';
 export { default as ModifyBookPage } from './ModifyBookPage';
 export { default as ModifyBookSeriesPage } from './ModifyBookSeriesPage';

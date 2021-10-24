@@ -30,6 +30,9 @@ module.exports = {
             update:             "/author",
             create:             "/author",
         },
+        withdrawal: {
+            create:             "/withdrawal",
+        },
         bank: {
             get:                "/bank",
         },
@@ -55,6 +58,8 @@ module.exports = {
         purchase: {
             list:               "/purchase",
             duplicate:          "/purchase/duplicate",
+            sales:              "/purchase/sales",
+            sales_amount_author:"/purchase/sales/amount/author",
         },
         book: {
             get:                "/book/",
