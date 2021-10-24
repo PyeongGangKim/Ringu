@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
 const { isLoggedIn } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const { sequelize, cart, book, book_detail, purchase, withdrawal, member, author } = require("../../models");
@@ -16,10 +16,10 @@ router.post('/', isLoggedIn,async (req, res, next) => {
                 book_detail_id : book_detail_id,
         });
 
-        res.status(StatusCodes.CREATED).send("success cart");
+        res.status(statusCodes.CREATED).send("success cart");
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -39,19 +39,19 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
             }
         })
         if(result){
-            res.status(StatusCodes.CONFLICT).json({
+            res.status(statusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -107,20 +107,20 @@ router.get('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(cartList.length === 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");
+            res.status(statusCodes.NO_CONTENT).send("No content");
         }
         else{
             for(let cart of cartList){
                 if(cart.dataValues.img== null || cart.dataValues.img[0] == 'h') continue;
                 cart.dataValues.img = await imageLoad(cart.dataValues.img);
             }
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 cartList : cartList,
             });
         }
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -146,7 +146,7 @@ router.put('/clear', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
     }
@@ -161,13 +161,13 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
                 id : id,
             }
         })
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "message" : "OK",
         });
 
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
     }

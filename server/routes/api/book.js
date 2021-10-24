@@ -3,18 +3,18 @@
 const { CodeGuruReviewer } = require("aws-sdk");
 var express = require("express");
 var router = express.Router();
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
+const {getImgURL} = require("../../utils/aws");
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
         let author_id = req.query.author_id;
-        let category_id = req.query.category_id;
         let keyword = req.query.keyword;
         let member_id = req.query.member_id;
         let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : [];
@@ -139,20 +139,20 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
         for(let i = 0 ; i < bookList.length ; i++){
             if(bookList[i].img == null || bookList[i].img[0] == 'h') continue;
-            bookList[i].img = await imageLoad(bookList[i].img);
+            bookList[i].img = getImgURL(bookList[i].img);
         }
         if(bookList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 bookList: bookList,
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -228,7 +228,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
         });
 
         if(book_detail_info.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
             book_detail_info.dataValues.is_favorite = false;
@@ -245,9 +245,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 }
             }
 
-            book_detail_info.dataValues.author_profile = await imageLoad(book_detail_info.dataValues.author_profile);
-            book_detail_info.dataValues.img = await imageLoad(book_detail_info.img);
-            res.status(StatusCodes.OK).json({
+            book_detail_info.dataValues.author_profile = AWS_IMG_BUCKET_URL + book_detail_info.dataValues.author_profile;
+            book_detail_info.dataValues.img = AWS_IMG_BUCKET_URL + book_detail_info.img;
+            res.status(statusCodes.OK).json({
+
                 "book": book_detail_info,
             });
         }
@@ -255,7 +256,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -317,14 +318,14 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
 
         for(var i = 0; i < detailList.length; i++){
             if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
-            detailList[i].dataValues.img = await imageLoad(detailList[i].dataValues.img);
+            detailList[i].dataValues.img = AWS_IMG_BUCKET_URL + detailList[i].dataValues.img;
         }
 
         if(detailList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "detailList": detailList,
                 "total": total,
             });
@@ -332,13 +333,16 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
 });
-router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
+router.post('/singlePublished' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
     //book table 에 넣는 attribute
+    /*
+        단행본만 넣기
+    */
     let price = req.body.price;
     let content = req.body.content;
     let book_description = req.body.book_description;
@@ -347,14 +351,83 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
 
     let title = req.body.title;
     let type = req.body.type;
-    let is_finished_serialization = (dontKnowTypeStringOrNumber(type,2)) ? 1 : 0;
-    let serialization_day = req.body.serialization_day;
+    let is_finished_serialization = 1;
+    //let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
     let preview = (typeof req.files.preview !== 'undefined') ? req.files.preview[0].key : null;
+
 
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
     let file = (req.files.file == null ) ? null : req.files.file[0].key;
+    
+    const t = await sequelize.transaction();
+
+    try{
+        const new_book = await book.create({
+            title: title,
+            price: price,
+            content: content,
+            description: book_description,
+            author_id : author_id,
+            img : img,
+            category_id : category_id,
+            preview: preview,
+            type: type,
+            is_finished_serialization : is_finished_serialization,
+            //serialization_day: serialization_day,
+        },{
+            transaction: t,
+        });
+
+        await book_detail.create({
+            title: new_book.title,
+            book_id : new_book.id,
+            page_number : page_number,
+            file : file,
+        },{
+            transaction: t,
+        });
+        await t.commit();
+        res.status(statusCodes.CREATED).send("single_published_book created");
+    }
+    catch(err){
+        console.error(err);
+        await t.rollback();
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
+    console.log(req.body)
+    let price = req.body.price;
+    let content = req.body.content;
+    let book_description = req.body.book_description;
+    let author_id = req.user.id;
+    let category_id = req.body.category_id;
+
+    let title = req.body.title;
+    let book_detail_titles = [];
+    for(let book_detail_title of req.body.book_detail_titles){
+        book_detail_titles.push(book_detail_title);
+    }
+    let type = req.body.type;
+    let is_finished_serialization = 1;
+    let serialization_day = req.body.serialization_day;
+    let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
+    let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
+
+
+    //book detail table에 넣는 attribute
+    let files = [];
+    console.log(req.files.file);
+    for(let file of req.files.file){
+        files.push(file.key);    
+    }
+
+
+    const t = await sequelize.transaction();
 
     try{
         const new_book = await book.create({
@@ -369,29 +442,30 @@ router.post('/' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { /
             type: type,
             is_finished_serialization : is_finished_serialization,
             serialization_day: serialization_day,
+        },{
+            transaction: t,
         });
-
-        if(dontKnowTypeStringOrNumber(new_book.type, 2)){//단행본 일때,
-            const new_single_book = await book_detail.create({
-                title: new_book.title,
+        for(let i = 0 ; i < book_detail_titles.length; i++){
+            await book_detail.create({
+                title: book_detail_titles[i],
                 book_id : new_book.id,
-                page_number : page_number,
-                file : file,
+                file : files[i],
+            },{
+                transaction: t,
             });
-            res.status(StatusCodes.CREATED).send("single_published_book created");
         }
-        else{
-            res.status(StatusCodes.CREATED).send("serialization_book_cover created");
-        }
+        await t.commit();
+        res.status(statusCodes.CREATED).send("serialization book created");
+
     }
     catch(err){
+        await t.rollback();
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
-});
-
+})
 router.delete('/:bookId', isLoggedIn, async(req, res, next) => {
     const bookId = req.params.bookId;
     const t = await sequelize.transaction();
@@ -420,14 +494,14 @@ router.delete('/:bookId', isLoggedIn, async(req, res, next) => {
             transaction: t
         });
         await t.commit();
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "message" : "OK",
         });
     }
     catch(err){
         console.error(err);
         await t.rollback();
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
     }
@@ -442,13 +516,13 @@ router.delete('/round/:bookDetailId', isLoggedIn, async(req, res, next) => {
                 id: bookDetailId,
             }
         });
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "message" : "OK",
         });
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
     }
@@ -517,14 +591,14 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
         }
 
         await t.commit();
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "message" : "OK",
         });
     }
     catch(err){
         console.error(err);
         await t.rollback();
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -551,15 +625,14 @@ router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
                 }
             ],
         });
-
         const url = downloadFile(type, result.dataValues[type]);
 
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "url" : url,
         });
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
         console.error(err);

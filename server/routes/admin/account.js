@@ -27,13 +27,13 @@ router.get("/", async (req, res, next) => {
         "nickname"         : ("nicknmae" in req.query) ? req.query.nickname : "",
         
     }
-
+    console.log(fields);
     try{
         const {count, rows} = await account.findAndCountAll({
             where: {
                 [Op.and] : {
-                    '$author.author.name$' : (fields.name != "") ?{ [Op.like]: "%"+fields.name+"%" } : {[Op.like] : "%%" } ,
-                    '$author.nickname$' : (fields.category_name != "") ? { [Op.like]: "%"+fields.nickname+"%" } : {[Op.like] : "%%" } ,
+                    '$author.author.name$' : (fields.name != "") ? { [Op.like]: "%"+fields.name+"%" } : {[Op.like] : "%%" } ,
+                    '$author.nickname$' : (fields.nickname != "") ? { [Op.like]: "%"+fields.nickname+"%" } : {[Op.like] : "%%" } ,
                 },
             },
             limit : limit,
@@ -57,6 +57,7 @@ router.get("/", async (req, res, next) => {
                 
             ]
         });
+        console.log(rows);
         let total_count = count;
         let renderingPage = "admin/pages/account_list";
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/account/", page, limit, total_count, fields);

@@ -7,25 +7,21 @@ let jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
 
 const bcrypt = require('bcrypt');
-const multer = require("multer");
 
-var helper_api = require("../../helper/api");
-var helper_security = require("../../helper/security");
-//var helper_email = require("../../helper/email");
-var helper_random = require("../../helper/random");
-var helper_date = require("../../helper/date");
 
-const {StatusCodes} = require("http-status-codes");
+let {makeNewPassowrd} = require("../../helper/makeNewPassword");
+
+
+const statusCodes = require("../../helper/statusCodes");
 
 let { member } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 const { uploadFile, imageLoad } = require("../../middlewares/third_party/aws");
 
-const { upload } = require('../../utils/aws');
 
-
-const { salt } = require("../../config/salt");
-const aws = require("../../utils/aws");
+const { salt,salt_num } = require("../../config/salt");
+const {getImgURL} = require("../../utils/aws");
+const { smtpTransport } = require("../../config/email");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
     var id = req.user.id;
@@ -47,17 +43,17 @@ router.get('/', isLoggedIn, async(req, res, next) => {
         });
 
         if(user){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 user: user,
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(statusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -82,17 +78,17 @@ router.get('/:memberId', async(req, res, next) => {
 
         if(user){
             user.profile = imageLoad(user.profile)
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 user: user,
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(statusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -106,9 +102,9 @@ router.get('/profile/:memberId', async(req, res, next) => {
             }
         });
 
-        const url = imageLoad(result.profile)
-
-        res.status(StatusCodes.OK).json({
+        const url = getImgURL(result.profile);
+        console.log(url);
+        res.status(statusCodes.OK).json({
             "url" : url,
         });
     }
@@ -124,19 +120,19 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         const result = await bcrypt.compare(password, req.user.password);
 
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 check: true,
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 check: false,
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -157,13 +153,13 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
             },
         });
 
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             member: result
         })
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -181,12 +177,12 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
         });
 
         if(result !== null){
-            res.status(StatusCodes.CONFLICT).json({
+            res.status(statusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
 
@@ -194,7 +190,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -271,13 +267,13 @@ router.put('/', isLoggedIn, async (req, res, next) => {
                 ret['token'] = token;
             }
 
-            res.status(StatusCodes.OK).json(ret);
+            res.status(statusCodes.OK).json(ret);
         }
 
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -285,6 +281,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
 
 router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => {
     let id = req.user.id;
+    
     let profile = req.files.img[0].key;
 
     try{
@@ -297,12 +294,12 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
         else{
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
                 "error": "name update error",
             });
         }
@@ -326,17 +323,78 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
 });
+router.put('/:email/newPassword', async(req,res,next) =>{
+    let newPwd = makeNewPassowrd(8);
+    let email = req.params.email;
+    let salt = await bcrypt.genSalt(parseInt(salt_num));
+    let hashed_password = await bcrypt.hash(newPwd, salt);
+    const mailOptions = {
+        from: "ringu9999@gmail.com",
+        to: email,
+        subject: "[RINGU] 초기화된 비밀번호 입니다.",
+        text: "초기화된 비밀 번호 입니다." + newPwd + "\n 보안을 위해 비밀번호를 재설정 해주십시오",
+    }
+    try{
+        let chagneMember = await member.findOne({
+            where: {
+                email: email,
+                status : 1,
+            }
+        });
+        if(!chagneMember){
+            res.status(statusCodes.NO_CONTENT).json({
+                "message" : "등록된 email이 없습니다."
+            })
+        }
+        else{
+            if(chagneMember.kakao_id !== null || chagneMember.naver_id !== null || chagneMember.google_id !== null || chagneMember.facebook_id !== null){
+                res.status(statusCodes.OK).json({
+                    "message": "sns"
+                });
+            }
+            else{
+                await member.update({
+                    password: hashed_password
+                },
+                {
+                    where: {
+                        email: email
+                    }
+                });
+                await smtpTransport.sendMail(mailOptions, (error, response) => {
+                    if(error){
+                        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+                            "message" : "email auth fail"
+                        });
+                    }
+                    smtpTransport.close();
+                });
+                res.status(statusCodes.OK).json({
+                    "message": "OK"
+                });
+            }
+            
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+    
+})
 
 
 module.exports = router;

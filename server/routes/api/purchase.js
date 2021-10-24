@@ -2,7 +2,8 @@ var express = require("express");
 var router = express.Router();
 var moment = require("moment");
 
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
+
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
@@ -89,12 +90,12 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
             });
         }
         await t.commit();
-        res.status(StatusCodes.OK).send("success purchasing");
+        res.status(statusCodes.OK).send("success purchasing");
 
     }
     catch(err){
         await t.rollback();
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -164,19 +165,19 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
             }
         });
         if(result){
-            res.status(StatusCodes.CONFLICT).json({
+            res.status(statusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -188,10 +189,10 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
             purchaseList,
         );
 
-        res.status(StatusCodes.OK).send("success purchasing");
+        res.status(statusCodes.OK).send("success purchasing");
     }
     catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -282,14 +283,14 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
         });
 
         if(purchaseList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");
+            res.status(statusCodes.NO_CONTENT).send("No content");
         }
         else{
             for(let i = 0 ; i < purchaseList.length ; i++){
                 if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
                 purchaseList[i].dataValues.img = await imageLoad(purchaseList[i].dataValues.img);
             }
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 purchaseList : purchaseList,
             });
         }
@@ -351,6 +352,7 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
                 ["created_date_time", "ASC"],
             ],
         });
+<<<<<<< HEAD
 
         if(sales.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
@@ -358,13 +360,27 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
         else{
             res.status(StatusCodes.OK).json({
                 sales : sales,
+=======
+        if(selling_list.length == 0){
+            console.log(selling_list);
+            res.status(statusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            console.log(selling_list);
+            res.status(statusCodes.OK).json({
+                selling_list : selling_list,
+>>>>>>> c52ae9af312add59fca2e14f7a60bd64bdf72dc0
             });
         }
 
     }
     catch(err){
+<<<<<<< HEAD
         console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+=======
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+>>>>>>> c52ae9af312add59fca2e14f7a60bd64bdf72dc0
             "error": "server error"
         });
     }
@@ -430,12 +446,12 @@ router.delete('/:purchaseId', isLoggedIn, async (req, res, next) => { // 필요�
                 id : id,
             }
         })
-        res.status(StatusCodes.OK);
+        res.status(statusCodes.OK);
 
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 

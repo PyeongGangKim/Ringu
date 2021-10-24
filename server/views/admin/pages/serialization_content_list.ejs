@@ -21,7 +21,6 @@
                     <th style="width: 60px;">#</th>
                     <th style="width: 60px;">제목</th>
                     <th>파일</th>
-                    <th style="width: 120px;">발간 여부</th>
                     <th style="width: 120px;"></th>
                     <th style="width: 120px;">다운로드</th>
                 </tr>
@@ -43,13 +42,6 @@
                         <td class="text-left">
                             <%=content.file%>
                         </td>
-                        <td class="text-center">
-                            <% if (content.is_approved) { %>
-                                발간 완료
-                            <% } else { %>
-                                발간 전
-                            <%} %>
-                        </td>
                         <td class="menu">
                             <a href="/admin/book/serialization/content/<%=content.id%>">
                                 <div class="menu-item">
@@ -59,7 +51,7 @@
                             </a>
                         </td>
                         <td class="menu">
-                            <a href="/admin/book/download/<%=content.id%>">
+                            <a href="/admin/book/download/<%=content.id%>/?type=file">
                                 <div class="menu-item">
                                     다운로드
                                 </div>

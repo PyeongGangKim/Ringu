@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
-const {StatusCodes} = require("http-status-codes");
+
+const statusCodes = require("../../helper/statusCodes");
 
 const jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
@@ -51,7 +52,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             });
             await t.commit();
             if(updateResult){
-                res.status(StatusCodes.CREATED).json({
+                res.status(statusCodes.CREATED).json({
                     author: result,
                     token: token
                 });
@@ -61,7 +62,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     catch(err){
         console.error(err)
         await t.rollback();
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -143,19 +144,19 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 author: result,
             });
         }
         else{
-            res.status(StatusCodes.NO_CONTENT).json({
+            res.status(statusCodes.NO_CONTENT).json({
                 "message" : "NO_CONTENT",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -235,7 +236,7 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }

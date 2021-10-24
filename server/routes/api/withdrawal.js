@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
-const {StatusCodes} = require("http-status-codes");
+
+const statusCodes = require("../../helper/statusCodes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { sequelize,withdrawal, account, author, purchase, book_detail, book,Sequelize: {Op} } = require("../../models");
+const { sequelize,withdrawal, account, author, purchase, book_detail, book, member, Sequelize: {Op} } = require("../../models");
 
 /*router.post('/', isLoggedIn, async(req, res, next) => {
     let amount = req.body.amount * 1;
@@ -40,14 +41,14 @@ const { sequelize,withdrawal, account, author, purchase, book_detail, book,Seque
         });
 
         await t.commit();
-        res.status(StatusCodes.CREATED).json({
+        res.status(statusCodes.CREATED).json({
             "withdrawal": newWithdrawal,
         });
     }
     catch(err){
         await t.rollback();
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 });*/
 
@@ -156,12 +157,12 @@ router.get('/', isLoggedIn, isAuthor,async (req, res, next) => {
             }
         });
         if(result){
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "withdrawal_list" : result,
             })
         }
         else{
-            res.status(StatusCodes.NO_CONTENT)
+            res.status(statusCodes.NO_CONTENT)
         }
     }
     catch(err){
