@@ -1,12 +1,12 @@
 var express = require("express");
 var router = express.Router();
 
-const statusCodes = require("../../helper/statusCodes");
+const StatusCodes = require("../../helper/statusCodes");
 
 const jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
 
-const { imageLoad } = require("../../middlewares/third_party/aws");
+const { getImgURL } = require("../../utils/aws");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { sequelize, book_detail, book, bank, purchase, withdrawal, member, author } = require("../../models");
 
@@ -52,7 +52,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             });
             await t.commit();
             if(updateResult){
-                res.status(statusCodes.CREATED).json({
+                res.status(StatusCodes.CREATED).json({
                     author: result,
                     token: token
                 });
@@ -62,7 +62,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     catch(err){
         console.error(err)
         await t.rollback();
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -103,7 +103,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         });
 
         if(result){
-            result.dataValues.profile = imageLoad(result.dataValues.profile)
+            result.dataValues.profile = getImgURL(result.dataValues.profile)
             res.status(StatusCodes.OK).json({
                 author: result,
             });
@@ -144,19 +144,19 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 author: result,
             });
         }
         else{
-            res.status(statusCodes.NO_CONTENT).json({
+            res.status(StatusCodes.NO_CONTENT).json({
                 "message" : "NO_CONTENT",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -236,7 +236,7 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
