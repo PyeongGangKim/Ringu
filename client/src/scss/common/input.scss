@@ -29,16 +29,20 @@ input {
     font-size: 14px;
     border:none;
 
-    &:focus {
+    &:focus, &:hover {
         transition: 0.5s;
-        border: 2px solid var(--color-1) !important;
+        border-color: var(--color-1) !important;
+    }
+
+    &:disabled {
+        border-color: #ddd !important;
     }
 }
 
 textarea {
-    &:focus {
+    &:focus, &:hover  {
         transition: 0.5s;
-        border: 2px solid var(--color-1) !important;
+        border-color: var(--color-1) !important;
     }
 }
 

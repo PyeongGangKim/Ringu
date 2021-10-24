@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
-
+import Select from 'react-select'
 
 import User from '../../utils/user';
 import '../../scss/common/page.scss';
@@ -13,20 +13,26 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-class ModifyBook extends Component {
+class ModifyBookSeries extends Component {
     constructor(props) {
         super(props)
 
+        this.dayOptions = [
+            {value: 1, label: "월"},
+            {value: 2, label: "화"},
+            {value: 3, label: "수"},
+            {value: 4, label: "목"},
+            {value: 5, label: "금"},
+            {value: 6, label: "토"},
+            {value: 7, label: "일"},
+        ]
+
         this.state = {
-            thumbnail: {file:null, clear:false},
             price: {val: "", msg: "", clear: false, class: "input"},
-            page_count: {val: 0, msg: "", clear: false, class: "input"},
             title: {val: "", msg: "", clear: false, class: "input"},
             bookDescription: {val: "", msg: "", clear: false, class: "input"},
-            content: {val: "", msg: "", clear: false, class: "input"},
-            preview: {name:"", file:null, clear: false},
-            book: {name:"", file:null, clear:false},
-            bookDetail: {},
+            day: {val: "", msg: "", clear: false, class: "input"},
+            thumbnail: {file:null, clear:false},
             tmp: null,
         }
     }
@@ -38,35 +44,27 @@ class ModifyBook extends Component {
             const res = await API.sendGet(URL.api.book.get + this.props.bookId)
             if(res.status === 200){
                 var book = res.data.book;
-                state.bookDetail = book.book_details[0];
-
                 state.price.val = !!book.price ? book.price : 0;
-                state.page_count.val = !!book.page_count ? book.page_count : 0;
                 state.title.val = book.book_title;
                 state.bookDescription.val = book.book_description;
-                state.content.val = book.content;
                 state.thumbnail.file = book.img;
-                state.preview.name = book.preview;
-                state.book.name = book.file;
+                var day = []
+                book.serialization_day.split('').forEach(d =>
+                    day.push(this.dayOptions.filter(item => item.label === d)[0])
+                )
+                state.day.val = day
 
                 this.setState(state)
             }
         }
         catch(e) {
-            console.log(e)
+            console.error(e)
         }
     }
 
     handlePriceChange = evt => {
         var state = this.state;
         state.price.val = evt.target.value;
-
-        this.setState(state);
-    }
-
-    handlePageCountChange = evt => {
-        var state = this.state;
-        state.page_count.val = evt.target.value;
 
         this.setState(state);
     }
@@ -81,20 +79,6 @@ class ModifyBook extends Component {
     handleBookDescriptionChange = evt => {
         var state = this.state;
         state.bookDescription.val = evt.target.value;
-
-        this.setState(state);
-    }
-
-    handleContentChange = evt => {
-        var state = this.state;
-        state.content.val = evt.target.value;
-
-        this.setState(state);
-    }
-
-    handleAuthorDescriptionChange = evt => {
-        var state = this.state;
-        state.authorDescription.val = evt.target.value;
 
         this.setState(state);
     }
@@ -128,42 +112,19 @@ class ModifyBook extends Component {
         }
     }
 
-    handlePreviewFileChange = evt => {
+    handleDayChange = (value) => {
         var state = this.state
-        var file = evt.target.files[0]
-        var token = file.name.split('.')
-        var fieldName = token[token.length - 1]
 
-        if(fieldName.toLowerCase() !== 'pdf') {
-            alert('PDF 파일만 업로드 해주세요.')
-            return;
-        }
+        var selectedDays = Object.entries(value)
+            .sort(([, a], [, b]) => a.value - b.value)
+            .map(item => {return item[1].label})
+            .join('')
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
-
-        state.preview.name = newFile.name
-        state.preview.file = newFile
-
-        this.setState(state)
-    }
-
-    handleBookFileChange = evt => {
-        var state = this.state
-        var file = evt.target.files[0]
-        var token = file.name.split('.')
-        var fieldName = token[token.length - 1]
-
-        if(fieldName.toLowerCase() !== 'pdf') {
-            alert('PDF 파일만 업로드 해주세요.')
-            return;
-        }
-
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
-
-        state.book.name = newFile.name
-        state.book.file = newFile
+        var day = []
+        selectedDays.split('').forEach(d =>
+            day.push(this.dayOptions.filter(item => item.label === d)[0])
+        )
+        state.day.val = day
 
         this.setState(state)
     }
@@ -175,7 +136,7 @@ class ModifyBook extends Component {
         }
     }
 
-    handleModify = async(book_detail_id) => {
+    handleModify = async() => {
         var state = this.state
         var book_id = this.props.bookId
 
@@ -200,41 +161,12 @@ class ModifyBook extends Component {
             return;
         }
 
-        if(!state.page_count.val) {
-            alert('페이지 수를 입력해주세요')
-            state.page_count.class = "textbox error";
-            this.setState(state)
-            return;
-        }
-
-        if(state.page_count.val < 50) {
-            alert('최소 페이지는 50페이지입니다.')
-            state.page_count.class = "textbox error";
-            this.setState(state)
-            return;
-        }
-
-        if(/^[0-9]*$/.test(state.page_count.val) === false) {
-            alert('페이지는 숫자만 입력해주세요.')
-            state.page_count.class = "textbox error";
-            this.setState(state)
-            return;
-        }
-
         if(!state.title.val) {
             alert('제목을 입력해주세요')
             state.title.class = "textbox error";
             this.setState(state)
             return;
         }
-
-        if(!state.contents.val) {
-            alert('목차를 입력해주세요')
-            state.contents.class = "error";
-            this.setState(state)
-            return;
-        }
-
 
         if(!state.bookDescription.val) {
             alert('책 소개를 입력해주세요')
@@ -243,33 +175,9 @@ class ModifyBook extends Component {
             return;
         }
 
-        if(!state.preview.file) {
-            alert('미리보기 파일을 업로드해주세요.')
-            this.setState(state)
-            return;
-        }
-
-        if(!state.book.file) {
-            alert('등록할 파일을 업로드해주세요.')
-            this.setState(state)
-            return;
-        }
-
-
         try {
             const data = new FormData()
             data.append("book_id", this.props.bookId)
-            data.append("book_detail_id", book_detail_id)
-
-            var book = state.book.file
-            var bookblob = book.slice(0, book.size, book.type)
-            var newBook = new File([bookblob], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
-            data.append("file", newBook)
-
-            var preview = state.preview.file
-            var previewblob = book.slice(0, preview.size, preview.type)
-            var newBook = new File([previewblob], state.title.val.slice(0, 10) + ".pdf", {type: preview.type})
-            data.append("preview", state.preview.file)
 
             var img = state.thumbnail.file;
             if(typeof img !== 'string') {
@@ -279,12 +187,14 @@ class ModifyBook extends Component {
                 var newImg = new File([imgblob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: img.type})
                 data.append("img", newImg)
             }
-
             data.append("price", state.price.val)
-            data.append("page_count", state.page_count.val)
-            data.append("content", state.content.val)
             data.append("book_description", state.bookDescription.val)
             data.append("title", state.title.val)
+            var daystrip = Object.entries(state.day.val)
+                .sort(([, a], [, b]) => a.value - b.value)
+                .map(item => {return item[1].label})
+                .join('')
+            data.append("day", daystrip)
 
             const res = await API.sendData(URL.api.book.modify, data)
             if(res.status === 200) {
@@ -300,6 +210,22 @@ class ModifyBook extends Component {
 
     render() {
         var state = this.state
+
+        const selectStyles = {
+            control: (styles, { isFocused }) => ({
+                ...styles,
+                border: isFocused ? '2px solid var(--color-1)' : '2px solid #ddd',
+                transition: '0.5s',
+                boxShadow: '0',
+                ':hover': {
+                    border: '2px solid var(--color-1)',
+                },
+            }),
+            valueContainer: (styles, {  }) => ({
+                ...styles,
+                height: '36px',
+            }),
+        }
 
         return (
             <div id="register-book" className="page3">
@@ -334,17 +260,24 @@ class ModifyBook extends Component {
                         </div>
                         <div style={{flex:"1 0 auto"}}>
                             <div className="input-box">
-                                <h3 className="header"> 가격 </h3>
+                                <h3 className="header"> 회차 당 가격 </h3>
                                 <div className="input-wrap">
-                                    <input type="number" className="textbox" onChange={this.handlePriceChange} value={state.price.val}/>
+                                    <input type="number" className={state.price.class} onChange={this.handlePriceChange} value={state.price.val}/>
                                 </div>
                             </div>
 
                             <div className="input-box">
-                                <h3 className="header"> 페이지수 </h3>
-                                <div className="input-wrap">
-                                    <input type="number" className="textbox" onChange={this.handlePageCountChange} value={state.page_count.val}/>
-                                </div>
+                                <h3 className="header"> 연재 주기
+                                    <span className="small"> (복수선택 가능) </span>
+                                </h3>
+                                    <Select
+                                        value={state.day.val}
+                                        options={this.dayOptions}
+                                        onChange={value => this.handleDayChange(value)}
+                                        styles={selectStyles}
+                                        isMulti
+                                        isSearchable={false}
+                                        placeholder={""}/>
                             </div>
                         </div>
                     </div>
@@ -356,46 +289,14 @@ class ModifyBook extends Component {
                     </div>
 
                     <div className="input-box">
-                        <h3 className="header"> 목차 </h3>
-                        <div>
-                            <textarea rows={7} onChange={this.handleContentChange} value={state.content.val}/>
-                        </div>
-                    </div>
-
-                    <div className="input-box">
                         <h3 className="header"> 책 소개 </h3>
                         <div>
                             <textarea rows={7} onChange={this.handleBookDescriptionChange} value={state.bookDescription.val}/>
                         </div>
                     </div>
 
-                    <div className="upload-wrap">
-                        <div className="upload">
-                            <div className="btn btn-outline header">미리보기 </div>
-                            <div className="file-wrap">
-                                <input className="filename" value={state.preview.name}/>
-                            </div>
-                            <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
-                            <label htmlFor="preview">
-                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                            </label>
-                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
-                        </div>
-                        <div className="upload">
-                            <div className="btn btn-outline header">작품등록 </div>
-                            <div className="file-wrap">
-                                <input className="filename" value={state.book.name}/>
-                            </div>
-                            <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
-                            <label htmlFor="book">
-                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                            </label>
-                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
-                        </div>
-                    </div>
-
                     <div className="btn-wrap">
-                        <button className="btn btn-color-2" onClick={() => this.handleModify(state.bookDetail.id)}>
+                        <button className="btn btn-color-2" onClick={() => this.handleModify()}>
                             수정하기
                         </button>
                         <button className="btn btn-outline" onClick={() => this.handleDelete()}>
@@ -408,4 +309,4 @@ class ModifyBook extends Component {
     }
 }
 
-export default ModifyBook;
+export default ModifyBookSeries;

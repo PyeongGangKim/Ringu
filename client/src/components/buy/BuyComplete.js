@@ -16,7 +16,7 @@ class BuyComplete extends Component {
         var propsState = this.props.history.location.state;
 
         this.state = {
-            purchaseList: 'purchaseList' in propsState && typeof propsState['purchaseList'] !== 'undefined' ? propsState.purchaseList : [],
+            //purchaseList: 'purchaseList' in propsState && typeof propsState['purchaseList'] !== 'undefined' ? propsState.purchaseList : [],
             user: 'user' in propsState && typeof propsState['user'] !== 'undefined' ? propsState.user : userInfo,
             amount: 'amount' in propsState && typeof propsState['amount'] !== 'undefined' ? propsState.amount : 0,
             card: 'card' in propsState && typeof propsState['card'] !== 'undefined' ? propsState.card : '',
@@ -40,20 +40,20 @@ class BuyComplete extends Component {
                                 <img src="/buy-complete.png"/>
                             </div>
 
-                            <a href={URL.service.home}>
+                            <Link to={URL.service.home}>
                                 <div className="btn btn-outline">
                                     계속 둘러보기
                                 </div>
-                            </a>
+                            </Link>
 
                             <div className="txt">
-                                <span> 구매내역에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
+                                <span> <Link to={URL.service.mypage.purchases}>구매내역</Link>에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
                             </div>
                         </div>
 
                     </div>
 
-                    <h3 className="header">구매정보 ({state.purchaseList.length}건)</h3>
+                    {/*<h3 className="header">구매정보 ({state.purchaseList.length}건)</h3>
                     <table>
                         <tbody>
                             <tr>
@@ -100,7 +100,7 @@ class BuyComplete extends Component {
                             }
                         </tbody>
 
-                    </table>
+                    </table>*/}
 
                     <h3 className="header">결제정보</h3>
                     <table className="summary">

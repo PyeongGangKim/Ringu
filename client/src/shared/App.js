@@ -3,9 +3,9 @@ import { BrowserRouter, Switch, Route ,Redirect } from 'react-router-dom';
 
 
 import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, AuthPage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegisterPage, AuthorRegisterDetailPage, AuthorPage, BookPage, RegisterPage, RegisterDetailPage, BuyPage, BuyCompletePage, SearchPage,NotificationPage} from '../pages';
-import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage } from '../pages';
+import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage, ModifyBookSeriesPage } from '../pages';
 
-import { ReviewPage } from '../pages';
+import { ReviewPage, PaymentPage } from '../pages';
 
 class App extends Component {
 
@@ -28,10 +28,12 @@ class App extends Component {
 
                 <Route path="/register/author/" component={AuthorRegisterDetailPage} />{}
                 <Route path="/author/:author_id" component={AuthorPage} />{}
+                <Route path="/payment" component={PaymentPage} />{}
                 <Route path="/book/:book" component={BookPage} />
                 <Route path="/register/book/:bookType" component={RegisterDetailPage} /> {}
                 <Route path="/register/book" component={RegisterPage} /> {}
-                <Route path="/modify/book/:bookId" component={ModifyBookPage} /> {}
+                <Route path="/modify/pub/:bookId" component={ModifyBookPage} /> {}
+                <Route path="/modify/series/:bookId" component={ModifyBookSeriesPage} /> {}
                 <Route path="/complete" component={BuyCompletePage} />{}
                 <Route path="/buy" component={BuyPage} />{}
                 <Route path="/search" component={SearchPage} />{}

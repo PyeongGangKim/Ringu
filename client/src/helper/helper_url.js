@@ -25,6 +25,17 @@ module.exports = {
             nickname_duplicate: "/auth/nickname/duplicate",
 
         },
+        author: {
+            get:                "/author",
+            update:             "/author",
+            create:             "/author",
+        },
+        withdrawal: {
+            create:             "/withdrawal",
+        },
+        bank: {
+            get:                "/bank",
+        },
         member: {
             get:                "/member",
             getById:            "/member/",
@@ -47,6 +58,8 @@ module.exports = {
         purchase: {
             list:               "/purchase",
             duplicate:          "/purchase/duplicate",
+            sales:              "/purchase/sales",
+            sales_amount_author:"/purchase/sales/amount/author",
         },
         book: {
             get:                "/book/",
@@ -64,10 +77,6 @@ module.exports = {
         },
         category: {
             list:               "/category",
-        },
-        author: {
-            get:                "/author/",
-            create:             "/author",
         },
         favorite: {
             author: {
@@ -125,7 +134,8 @@ module.exports = {
         author                  : "/author/",
         book: {
             book                : "/book/",
-            modify              : "/modify/book/",
+            modify              : "/modify/pub/",
+            modify_series       : "/modify/series/",
         },
         buy : {
             buy                 : "/buy",

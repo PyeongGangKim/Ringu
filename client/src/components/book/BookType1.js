@@ -31,7 +31,7 @@ class BookType1 extends Component {
             tabChange: false,
             dock: false,
             selected: {},
-            author: false,
+            isAuthor: false,
             isFavorite: false,
         }
     }
@@ -113,7 +113,7 @@ class BookType1 extends Component {
 
         try {
             if (userInfo.id === state.book.author_id) {
-                state.author = true;
+                state.isAuthor = true;
             }
             const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
 
@@ -168,7 +168,7 @@ class BookType1 extends Component {
         this.props.history.push({
             pathname: URL.service.buy.buy,
             state: {
-                purchaseList: purchaseList
+                purchaseList: purchaseList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
             }
         })
     }
@@ -310,11 +310,11 @@ class BookType1 extends Component {
                                                 state.detailList.map((item, i) => {
                                                     return (
                                                         <tr key={i}>
-                                                            <td>{(item.purchases.length === 0 && state.author === false) &&
+                                                            <td>{(item.purchases.length === 0 && state.isAuthor === false && item.round !== 1) &&
                                                                 <input type="checkbox" checked={(!!state.selected[item.id]) ? true : false} onChange={this.handleSelect} value={i} />}</td>
                                                             <td>{i+1}회차.</td>
                                                             {
-                                                                i === 0 ?
+                                                                item.round === 1 ?
                                                                 <td>
                                                                     {item.title}
                                                                     <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
@@ -325,10 +325,10 @@ class BookType1 extends Component {
                                                                 </td>
                                                             }
                                                             {
-                                                                !state.author &&
+                                                                !state.isAuthor &&
                                                                 <td>
                                                                     {
-                                                                        item.purchases.length || i === 0 ?
+                                                                        !!item.purchases.length || item.round === 1 ?
                                                                         <em className="download" onClick={() => this.downloadAction(item.id)} />
                                                                         :
                                                                         <em className="lock"/>
@@ -343,7 +343,7 @@ class BookType1 extends Component {
                                     </table>
 
                                     {
-                                        !state.author &&
+                                        !state.isAuthor &&
                                         <div className="buttons">
                                             <button className="btn btn-outline" onClick={() => this.handlePurchase(0)}> 선택 구매 </button>
                                             <button className="btn btn-color-2" onClick={() => this.handlePurchase(1)}> 전체 구매 </button>

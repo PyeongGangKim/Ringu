@@ -1,4 +1,16 @@
 #mypage {
+    .content {
+        input {
+            font-size: 14px;
+
+            &:disabled {
+                background-color: #f2f2f2;
+                color: #ababab;
+            }
+        }
+
+    }
+
     .form-group {
         margin-left: 50px;
         margin-bottom: 30px;
@@ -14,7 +26,7 @@
     }
     .modify-btn {
         font-size: 14px;
-        font-weight: 400;
+        font-weight: 600;
         color: var(--lightgray);
     }
     .modify {
