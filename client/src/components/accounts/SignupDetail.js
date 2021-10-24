@@ -102,15 +102,24 @@ class SignupDetail extends Component {
         try {
             const duplicate = await API.sendGet(URL.api.auth.email.duplicate, params)
             if(duplicate.status === 200){
-                const res = await API.sendPost(URL.api.auth.email.code, params)
-                var status = res.status;
+                if (duplicate.data.message === 'OK') {
+                    const res = await API.sendPost(URL.api.auth.email.code, params)
+                    var status = res.status;
 
-                if(status === 201) {
-                    this.setState({
-                        emailCode: {...state.emailCode, visible: true,},
-                        email: {...state.email, btn:false, },
-                        timer: {...state.timer, active:true},
-                    });
+                    if(status === 201) {
+                        this.setState({
+                            emailCode: {...state.emailCode, visible: true,},
+                            email: {...state.email, btn:false, },
+                            timer: {...state.timer, active:true},
+                        });
+                    }
+                }
+                else if(duplicate.data.message === 'duplicate') {
+                    state.email.class = "input error";
+                    state.email.clear = false;
+                    state.email.btn = false;
+                    state.email.msg = "이미 가입되어 있는 이메일입니다";
+                    this.setState(state);
                 }
             }
         } catch(e) {
@@ -118,13 +127,8 @@ class SignupDetail extends Component {
             state.email.class = "input error";
             state.email.clear = false;
             state.email.btn = false;
+            state.email.msg = "인증 코드 발송에 실패하였습니다. 다음에 다시 시도해주세요.";
 
-            if(error.status === 409) {
-                state.email.msg = "이미 가입되어 있는 이메일입니다";
-            }
-            else {
-                state.email.msg = "인증 코드 발송에 실패하였습니다. 다음에 다시 시도해주세요.";
-            }
             this.setState(state);
         }
     }
@@ -302,10 +306,18 @@ class SignupDetail extends Component {
         try {
             const duplicate = await API.sendGet(URL.api.auth.nickname_duplicate, params)
             if(duplicate.status === 200) {
-                state.nickname.clear = true;
-                state.nickname.success = true;
-                state.nickname.btn = false;
-                alert("사용 가능한 닉네임입니다.")
+                if(duplicate.data.message === 'OK') {
+                    state.nickname.clear = true;
+                    state.nickname.success = true;
+                    state.nickname.btn = false;
+                    alert("사용 가능한 닉네임입니다.")
+                }
+                else if(duplicate.data.message === 'duplicate') {
+                    state.nickname.class = "input error";
+                    state.nickname.clear = false;
+                    state.nickname.btn = false;
+                    state.nickname.msg = "이미 존재하는 닉네임입니다";
+                }
             }
         }
         catch(e) {
@@ -313,13 +325,7 @@ class SignupDetail extends Component {
             state.nickname.class = "input error";
             state.nickname.clear = false;
             state.nickname.btn = false;
-
-            if(error.status === 409) {
-                state.nickname.msg = "이미 존재하는 닉네임입니다";
-            }
-            else {
-                state.nickname.msg = "중복 확인이 실패하였습니다. 잠시 후 다시 이용해주세요.";
-            }
+            state.nickname.msg = "중복 확인이 실패하였습니다. 잠시 후 다시 이용해주세요.";
         }
 
         this.setState(state);

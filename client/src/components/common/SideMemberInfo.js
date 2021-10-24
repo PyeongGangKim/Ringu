@@ -158,10 +158,15 @@ class SideMemberInfo extends Component {
                 const duplicate = await API.sendGet(URL.api.favorite.author.duplicate, params)
 
                 if(duplicate.status === 200) {
-                    const res = await API.sendPost(URL.api.favorite.author.create, params)
-                    if(res.status === 201) {
-                        state.isFavorite = true;
-                        this.setState(state);
+                    if(duplicate.data.message === 'OK') {
+                        const res = await API.sendPost(URL.api.favorite.author.create, params)
+                        if(res.status === 201) {
+                            state.isFavorite = true;
+                            this.setState(state);
+                        }
+                    }
+                    else if(duplicate.data.message === 'duplicate') {
+                        alert("이미 찜한 작가입니다.")
                     }
                 }
             } catch(e) {
@@ -170,9 +175,6 @@ class SideMemberInfo extends Component {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
-                }
-                else if(error.status === 409) {
-                    alert("이미 찜한 작가입니다.")
                 }
                 else {
                     alert("찜하기에 실패하였습니다.")

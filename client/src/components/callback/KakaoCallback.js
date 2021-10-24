@@ -48,10 +48,24 @@ const KakaoCallback = ({location, history, ...props}) => {
                         // 중복없는 경우
                         // 회원가입 페이지로 넘어가기
                         if(res.status === 200) {
-                            history.push({
-                                pathname:   URL.service.accounts.signup_step,
-                                search:     `?sns=kakao&email=${email}&id=${id}`,
-                            });
+                            if(res.data.message === 'OK') {
+                                history.push({
+                                    pathname:   URL.service.accounts.signup_step,
+                                    search:     `?sns=kakao&email=${email}&id=${id}`,
+                                });
+                            }
+                            else if(res.data.message === 'duplicate') {
+                                // 중복 있는 경우
+                                // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
+                                // 2. 이미 등록된 계정이면 에러 메시지
+                                const res = await API.sendGet(URL.api.auth.sns.kakao, params={id:id, email:email, sns: 'kakao'})
+
+                                if(res.status === 200) {
+                                    var token = res.data.token;
+                                    if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
+                                    history.push(URL.service.home);
+                                }
+                            }
                         }
                     } catch(err){
                         var resp = err.response
@@ -59,18 +73,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                             alert("인증이 실패하였습니다")
                             window.location.href = URL.service.accounts.login
                         }
-                        if(resp.status === 409) { // 중복
-                            // 중복 있는 경우
-                            // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
-                            // 2. 이미 등록된 계정이면 에러 메시지
-                            const res = await API.sendGet(URL.api.auth.sns.kakao, params={id:id, email:email, sns: 'kakao'})
-
-                            if(res.status === 200) {
-                                var token = res.data.token;
-                                if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
-                                history.push(URL.service.home);
-                            }
-                        } else {
+                        else {
                             console.log(resp.status)
                             console.error(resp.data.message)
                         }

@@ -67,18 +67,19 @@ class BookType1 extends Component {
                 }
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
-                    const res = await API.sendPost(URL.api.favorite.book.create, params)
-                    if(res.status === 201) {
-                        state.isFavorite = true;
-                        this.setState(state);
+                    if(duplicate.data.message === 'OK') {
+                        const res = await API.sendPost(URL.api.favorite.book.create, params)
+                        if(res.status === 201) {
+                            state.isFavorite = true;
+                            this.setState(state);
+                        }
+                    } else if(duplicate.data.message === 'duplicate') {
+                        alert("이미 찜한 작품입니다.")
                     }
                 }
             } catch(e) {
                 var error = e.response;
-                if(error.status === 409) {
-                    alert("이미 찜한 작품입니다.")
-                }
-                else if(error.status === 403) {
+                if(error.status === 403) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
@@ -98,16 +99,18 @@ class BookType1 extends Component {
             try {
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
                 if(duplicate.status === 200) {
-                    state.isFavorite = false;
-                    this.setState(state)
+                    if(duplicate.data.message === 'OK') {
+                        state.isFavorite = false;
+                        this.setState(state)
+                    }
+                    if(duplicate.data.message === 'duplicate') {
+                        state.isFavorite = true;
+                        this.setState(state)
+                    }
                 }
             }
             catch(e) {
-                var error = e.response
-                if(error.status === 409) {
-                    state.isFavorite = true;
-                    this.setState(state)
-                }
+                var error = e.response                
             }
         }
 
