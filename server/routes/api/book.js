@@ -318,7 +318,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
 
         for(var i = 0; i < detailList.length; i++){
             if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
-            detailList[i].dataValues.img = AWS_IMG_BUCKET_URL + detailList[i].dataValues.img;
+            detailList[i].dataValues.img = getImgURL(detailList[i].dataValues.img);
         }
 
         if(detailList.length == 0){
@@ -360,7 +360,7 @@ router.post('/singlePublished' , isLoggedIn, isAuthor, uploadFile, async(req, re
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
     let file = (req.files.file == null ) ? null : req.files.file[0].key;
-    
+
     const t = await sequelize.transaction();
 
     try{
@@ -423,7 +423,7 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     let files = [];
     console.log(req.files.file);
     for(let file of req.files.file){
-        files.push(file.key);    
+        files.push(file.key);
     }
 
 
