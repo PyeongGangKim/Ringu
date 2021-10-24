@@ -146,6 +146,10 @@ class Payment extends Component {
 
     handleWithdraw = async(status) => {
         var state = this.state;
+        if(state.balance === 0) {
+            alert('출금 가능한 잔액이 없습니다.')
+            return 0;
+        }
         try {
             const res = await API.sendPost(URL.api.withdrawal.create, {amount: state.balance})
             if(res.status === 201) {
