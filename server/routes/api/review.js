@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
+
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -48,14 +49,14 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
                         id: statistics.id,
                 },
             });
-            res.status(StatusCodes.CREATED).send("review CREATED");
+            res.status(statusCodes.CREATED).send("review CREATED");
         });
 
 
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -73,19 +74,19 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         });
 
         if(result){
-            res.status(StatusCodes.CONFLICT).json({
+            res.status(statusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -188,10 +189,10 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
 
 
         if(reviewList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("no review");
+            res.status(statusCodes.NO_CONTENT).send("no review");
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 reviewList : reviewList,
                 reviewTitleList : reviewTitleList,
                 reviewListLength: reviewList.length,
@@ -201,7 +202,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -232,17 +233,17 @@ router.get('/stats', async (req, res, next) => {
             group: group,
         })
         if(stats.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            res.status(StatusCodes.OK).json({
+            res.status(statusCodes.OK).json({
                 stats: stats,
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -389,12 +390,12 @@ router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없
                 id : id,
             }
         })
-        res.status(StatusCodes.OK);
+        res.status(statusCodes.OK);
 
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 

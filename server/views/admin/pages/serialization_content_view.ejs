@@ -23,16 +23,6 @@
                     <div class="input"><%=book.file%></div>
                 </div>
                 <br />
-                <div class="row">
-                    <label>발간 여부</label>
-                    <div class="input">
-                        <% if (book.is_approved) { %>
-                            발간 완료
-                        <% } else {%>
-                            발간 전
-                        <%}%>
-                    </div>  
-                </div>
                 <br />
 			</div>
 			<!--/.col-2-->
@@ -43,9 +33,6 @@
     <div class="panel-block text-left">
         <a href="/admin/book/delete/<%=book["id"]%>" onclick=" return confirm('삭제하시겠습니까?'); ">
             <div class="btn btn-sm btn-danger">삭제</div>
-        </a>
-        <a href="/admin/book/approved/<%=book.id%>?type=file" onclick=" return confirm('발간하시겠습니까?'); ">
-            <div class="btn btn-sm btn-success">발간 하기</div>
         </a>
         <a href="/admin/book/<%=book.id%>/update/page">
             <div class="btn btn-sm btn-success">수정하기</div>

@@ -16,8 +16,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     bank: {
-      type: DataTypes.STRING(30),
-      allowNull: false
+      type: DataTypes.CHAR(3),
+      allowNull: false,
+      references: {
+        model: 'bank',
+        key: 'id'
+      }
     },
     account: {
       type: DataTypes.STRING(50),
@@ -46,6 +50,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 0
+    },
+    is_waiting: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,
@@ -61,11 +70,33 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "author_member_id_uindex",
+        name: "member_id_UNIQUE",
         unique: true,
         using: "BTREE",
         fields: [
           { name: "member_id" },
+        ]
+      },
+      {
+        name: "id_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "id" },
+        ]
+      },
+      {
+        name: "author_member_id_fk_idx",
+        using: "BTREE",
+        fields: [
+          { name: "member_id" },
+        ]
+      },
+      {
+        name: "author_bank_fk",
+        using: "BTREE",
+        fields: [
+          { name: "bank" },
         ]
       },
     ]

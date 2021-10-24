@@ -27,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "module": "^1.1.0",
+    "moment": "^2.29.1",
     "morgan": "^1.9.1",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",

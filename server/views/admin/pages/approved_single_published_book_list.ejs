@@ -31,7 +31,6 @@
                     <th style="width: 60px;">카테고리</th>
                     <th style="width: 120px;">책 이름</th>
                     <th style="width: 120px;">가격</th>
-                    <th style="width: 120px;">발간 여부</th>
                     <th style="width: 120px;"></th>
                     <th style="width: 120px;">파일 다운로드</th>
                     <th style="width: 120px;">미리보기 다운로드</th>
@@ -59,13 +58,6 @@
                         </td>
                         <td class="text-center">
                             <%=singlePublishedBook.price%>
-                        </td>
-                        <td class="text-center">
-                            <% if (singlePublishedBook.book_details[0].is_approved) { %>
-                                발간 완료
-                            <% } else { %>
-                                발간 전
-                            <%} %>
                         </td>
                         <td class="menu">
                             <a href="/admin/book/singlePublished/<%=singlePublishedBook.id%>">

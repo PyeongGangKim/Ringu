@@ -16,14 +16,26 @@
             height: 17px;
             
         }
-        .select-all{
+        .select-all-label{
+            height: 0px;
+        }
+        .word{
+            padding-left: 5px;
+            display: inline-block;
+            padding-right: 10px;
+            padding-bottom: 20px;
+            vertical-align: middle;
+        }
+        .erase{
             margin-top : 4px;
             display: inline-block;
-            padding-left : 12px;
+            padding-left : 0px;
             padding-bottom: 11px;
             vertical-align: top;
+          
             .trash-button{
                 padding-left : 10px;
+                height: 23px;
             }
             .erase-span{
                 padding-left: 5px;
@@ -123,6 +135,8 @@
         padding-left: 10px;
         font-size: 15px;
         width: 1130px;
+        vertical-align: middle;
+        line-height: 20px;
         &.new {
             font-weight: bold;
             width: 1070px;
@@ -132,6 +146,8 @@
         display: inline-block;
         font-size: 15px;
         padding-left: 10px;
+        height: 34px;
+        
         &.new {
             font-weight: bold;
             width: 1070px;
@@ -144,21 +160,24 @@
     }
     .bottom-navigator{
         text-align: right;
-        width: 1330px;
+        width: 1300px;
         font-size: 16px;
         margin-top: 15px;
         margin-right: 0px;
+        
+        display: inline-block;
+        height: 40px
     }
     .accordion-button::after{
         display:none;
     }
-    .accordion-button{
+    .accordion-header{
         padding-left : 0;
-        
         outline: none;
+        vertical-align: middle;
         input[type=checkbox] {
             zoom: 1.8;  
-            
+            margin-top: 5px;
         }
         input[type=checkbox]:checked + label:after{
             zoom: 1.8;  
@@ -192,10 +211,11 @@
         background-color: #F1EEFC;
         padding-top: 2px;
     }
-    .accordion-button:not(.collapsed) {
+    .accordion-header:not(.collapsed) {
         color: black;
         background-color: #F1EEFC;
-    
+        border-bottom: 1px;
+        vertical-align: middle;
     }
     button:focus:not(:focus-visible) {
         outline: 0 !important;
@@ -206,5 +226,25 @@
     }
     .accordion-body{
         padding-left: 45px;
+    }
+    .body-div{
+        overflow: hidden; 
+        height:auto;
+        padding-left : 58px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .hr-not-span{
+        size: 1px;
+        color: grey;
+        margin: 0px;
+    }
+    .bottom-count{
+        height: 40px;
+        display: inline-block !important;
+        vertical-align: middle;
+    }
+    .next-arrow{
+        padding-bottom: 1px;
     }
 }

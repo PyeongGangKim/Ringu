@@ -1,6 +1,7 @@
 var DataTypes = require("sequelize").DataTypes;
 var _account = require("./account");
 var _author = require("./author");
+var _bank = require("./bank");
 var _book = require("./book");
 var _book_detail = require("./book_detail");
 var _cart = require("./cart");
@@ -18,11 +19,11 @@ var _purchase = require("./purchase");
 var _review = require("./review");
 var _review_statistics = require("./review_statistics");
 var _withdrawal = require("./withdrawal");
-let _book_recommending_phrase = require("./book_recommending_phrase");
 
 function initModels(sequelize) {
   var account = _account(sequelize, DataTypes);
   var author = _author(sequelize, DataTypes);
+  var bank = _bank(sequelize, DataTypes);
   var book = _book(sequelize, DataTypes);
   var book_detail = _book_detail(sequelize, DataTypes);
   var cart = _cart(sequelize, DataTypes);
@@ -40,8 +41,9 @@ function initModels(sequelize) {
   var review = _review(sequelize, DataTypes);
   var review_statistics = _review_statistics(sequelize, DataTypes);
   var withdrawal = _withdrawal(sequelize, DataTypes);
-  let book_recommending_phrase = _book_recommending_phrase(sequelize,DataTypes);
 
+  author.belongsTo(bank, { as: "bank_bank", foreignKey: "bank"});
+  bank.hasMany(author, { as: "authors", foreignKey: "bank"});
   book_detail.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(book_detail, { as: "book_details", foreignKey: "book_id"});
   favorite_book.belongsTo(book, { as: "book", foreignKey: "book_id"});
@@ -96,12 +98,13 @@ function initModels(sequelize) {
   member.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
   purchase.belongsTo(payment, { as: "payment", foreignKey: "payment_id"});
   payment.hasMany(purchase, { as: "purchases", foreignKey: "payment_id"});
-  book_recommending_phrase.belongsTo(book, {as : "book", foreignKey: "book_id"});
-  book.hasOne(book_recommending_phrase, {as : "book_recommending_phrase", foreignKey: "book_id"});
+  purchase.belongsTo(withdrawal, { as: "withdrawal", foreignKey: "withdrawal_id"});
+  withdrawal.hasMany(purchase, { as: "purchases", foreignKey: "withdrawal_id"});
 
   return {
     account,
     author,
+    bank,
     book,
     book_detail,
     cart,
@@ -119,7 +122,6 @@ function initModels(sequelize) {
     review,
     review_statistics,
     withdrawal,
-    book_recommending_phrase,
   };
 }
 module.exports = initModels;

@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
+const statusCodes = require("../../helper/statusCodes");
 const { isLoggedIn } = require("../../middlewares/auth");
 
 
@@ -42,13 +42,13 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
                 ["created_date_time", "DESC"]
             ],
         });
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "notification_list" : notifications,
         });
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -62,13 +62,13 @@ router.get('/allNewNotiCount', isLoggedIn, async(req, res, next) => {
             }
         });
         console.log(newNotiCount.count);
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             new_notification_count: newNotiCount.count,
         });
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -85,13 +85,13 @@ router.get('/newNotiCnt', isLoggedIn, async (req, res, next) => {
                 is_read : 0,
             }   
         });
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             unread_count : unread_cnt
         });
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -107,13 +107,13 @@ router.get('/allCount', isLoggedIn, async(req, res, next) => {
                 type: type,
             }   
         });
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             all_count : unread_cnt
         });
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -127,14 +127,14 @@ router.post('/delete', isLoggedIn, async (req, res, next) => { // 필요없는 �
                 id : notification_ids,
             }
         })
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "message": "OK"
         });
     
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -150,13 +150,13 @@ router.put('/:notificationId', isLoggedIn, async(req, res, next) => { // 읽은 
                 id: notificatino_id,
             }
         });
-        res.status(StatusCodes.OK).json({
+        res.status(statusCodes.OK).json({
             "message": "ok",
         })
     }
     catch(err){
         console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }

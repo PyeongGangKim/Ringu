@@ -44,6 +44,19 @@ module.exports = function(sequelize, DataTypes) {
         model: 'payment',
         key: 'id'
       }
+    },
+    remit_status: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 0
+    },
+    withdrawal_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'withdrawal',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
@@ -77,6 +90,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "payment_id" },
+        ]
+      },
+      {
+        name: "purchase_withdrawal_fk_idx",
+        using: "BTREE",
+        fields: [
+          { name: "withdrawal_id" },
         ]
       },
     ]
