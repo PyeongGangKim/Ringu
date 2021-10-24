@@ -98,6 +98,8 @@ function initModels(sequelize) {
   member.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
   purchase.belongsTo(payment, { as: "payment", foreignKey: "payment_id"});
   payment.hasMany(purchase, { as: "purchases", foreignKey: "payment_id"});
+  purchase.belongsTo(withdrawal, { as: "withdrawal", foreignKey: "withdrawal_id"});
+  withdrawal.hasMany(purchase, { as: "purchases", foreignKey: "withdrawal_id"});
 
   return {
     account,
