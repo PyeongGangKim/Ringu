@@ -5,7 +5,7 @@ const {StatusCodes} = require("http-status-codes");
 const jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
 
-
+const { imageLoad } = require("../../middlewares/third_party/aws");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { sequelize, book_detail, book, bank, purchase, withdrawal, member, author } = require("../../models");
 
@@ -77,7 +77,9 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                 "description",
                 "member_id",
                 "account",
+                "is_waiting",
                 [sequelize.literal("author.name"),"name"],
+                [sequelize.literal("member.profile"),"profile"],
             ],
             where: {
                 member_id : id
@@ -90,10 +92,17 @@ router.get('/', isLoggedIn, async (req, res, next) => {
                         ["id", "value"],
                         ["bank", "label"],
                     ]
+                },
+                {
+                    model : member,
+                    as : "member",
+                    attributes: []
                 }
             ],
         });
+
         if(result){
+            result.dataValues.profile = imageLoad(result.dataValues.profile)
             res.status(StatusCodes.OK).json({
                 author: result,
             });
@@ -190,7 +199,7 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
             ],
             group: ["book_details.id"],
         });
-        console.log(revenues);
+
         const author_revenue = await author.findOne({
             raw: true,
             attributes: [
@@ -212,7 +221,6 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
                 },
             ],
         });
-        console.log(author_revenue);
 
         let sp_amount = 0;
         let serial_amount = 0;
@@ -221,7 +229,6 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
         }
         author_revenue.withdrawable_amount = serial_amount + sp_amount - author_revenue.withdrawal_amount;
         delete author_revenue.withdrawal_amount;
-        console.log(author_revenue);
         res.status(StatusCodes.OK).json({
             author_revenue : author_revenue,
         })
@@ -237,8 +244,6 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
 router.put('/', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;
     let params = req.body;
-    console.log(params)
-    console.log(id)
     // patch로 변경필요
     try{
         const result = await author.update(
@@ -248,7 +253,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
                     member_id : id,
                 }
         });
-        console.log(result)
+
         if(result){
             var ret = {
                 "message" : "update completed!",
@@ -276,4 +281,5 @@ router.put('/', isLoggedIn, async (req, res, next) => {
         });
     }
 });
+
 module.exports = router;
