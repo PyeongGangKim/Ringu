@@ -352,7 +352,6 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
                 ["created_date_time", "ASC"],
             ],
         });
-<<<<<<< HEAD
 
         if(sales.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
@@ -360,27 +359,13 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
         else{
             res.status(StatusCodes.OK).json({
                 sales : sales,
-=======
-        if(selling_list.length == 0){
-            console.log(selling_list);
-            res.status(statusCodes.NO_CONTENT).send("No content");;
-        }
-        else{
-            console.log(selling_list);
-            res.status(statusCodes.OK).json({
-                selling_list : selling_list,
->>>>>>> c52ae9af312add59fca2e14f7a60bd64bdf72dc0
             });
         }
 
     }
     catch(err){
-<<<<<<< HEAD
         console.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-=======
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
->>>>>>> c52ae9af312add59fca2e14f7a60bd64bdf72dc0
             "error": "server error"
         });
     }
