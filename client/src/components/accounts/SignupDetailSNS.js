@@ -122,22 +122,26 @@ class SignupDetailSNS extends Component {
         try {
             const duplicate = await API.sendGet(URL.api.auth.nickname_duplicate, params)
             if(duplicate.status === 200) {
-                state.nickname.clear = true;
-                state.nickname.btn = false;
-                this.setState(state);
-                alert("사용 가능한 닉네임입니다.")
+                if(duplicate.data.message === 'OK') {
+                    state.nickname.clear = true;
+                    state.nickname.btn = false;
+                    this.setState(state);
+                    alert("사용 가능한 닉네임입니다.")
+                }
+                else if(duplicate.data.message === 'duplicate') {
+                    state.nickname.class = "input error";
+                    state.nickname.clear = false;
+                    state.nickname.btn = false;
+                    state.nickname.msg = "이미 존재하는 닉네임입니다";
+                }
             }
         } catch(e) {
             var error = e.response;
             state.nickname.class = "input error";
             state.nickname.clear = false;
             state.nickname.btn = false;
-            if(error.status === 409) {
-                state.nickname.msg = "이미 존재하는 닉네임입니다";
-            }
-            else {
-                state.nickname.msg = "중복확인에 실패하였습니다. 잠시 후 다시 시도해주세요.";
-            }
+            state.nickname.msg = "중복확인에 실패하였습니다. 잠시 후 다시 시도해주세요.";
+
             this.setState(state)
         }
     }

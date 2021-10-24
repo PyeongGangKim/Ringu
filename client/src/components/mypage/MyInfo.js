@@ -150,9 +150,14 @@ class MyInfo extends Component {
         try {
             const res = await API.sendGet(URL.api.member.nickname_duplicate, params)
             if(res.status === 200){
-                state.data.nickname.clear = true;
-                this.setState(state)
-                alert("변경 가능한 닉네임입니다.")
+                if(res.data.message === 'OK') {
+                    state.data.nickname.clear = true;
+                    this.setState(state)
+                    alert("변경 가능한 닉네임입니다.")
+                }
+                else if(res.data.message === 'duplicate') {
+                    alert("이미  사용 중인 닉네임입니다.")
+                }
             }
         }
         catch(e) {
@@ -160,10 +165,7 @@ class MyInfo extends Component {
             if(error.status === 401) {
                 alert("로그인이 필요합니다.")
                 window.location = URL.service.accounts.login;
-            }
-            else if(error.status === 409) {
-                alert("이미  사용 중인 닉네임입니다.")
-            }
+            }            
             else {
                 alert("알 수 없는 에러가 발생했습니다. 잠시 후 다시 시도해주세요.")
             }
