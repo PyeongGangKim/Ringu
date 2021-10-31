@@ -41,11 +41,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    charge: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 10
-    }
+    
   }, {
     sequelize,
     tableName: 'book_detail',
