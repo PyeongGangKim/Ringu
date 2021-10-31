@@ -95,7 +95,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 let purchasedBook = await book_detail.findOne({
                     attributes : [
                         "id",
-                        "charge",
+                        [sequelize.literal("book.charge"), "charge"],
                         [sequelize.literal("book.price"), "price"],
                         [sequelize.literal("book.author_id"), "author_id"],
                     ],
