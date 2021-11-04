@@ -142,7 +142,81 @@
     }
 
     .history {
+        .react-tabs {
+            margin: 40px 110px;
 
+            ul {
+                border-bottom: 1px solid #c2c2c2;
+
+                li {
+                    cursor: pointer;
+                    display: inline-block;
+                    border: 0;
+                    position: relative;
+                    bottom: -3px;
+                    padding: 30px 0;
+                    margin-right: 40px;
+                    font-size: 21px;
+                }
+
+                li.react-tabs__tab--selected {
+                    font-weight: 600;
+                    border-bottom: 5px solid var(--color-1);
+
+                }
+            }
+
+            .react-tabs__tab-panel {
+                margin: 30px;
+                .table-box {
+                    padding: 0 20px;
+                    border: 1px solid #c2c2c2;
+                    table {
+                        width:100%;
+
+                        tr {
+                            border-bottom: 1px solid var(--color-1);
+                        }
+                        tr:nth-last-child(1) {
+                            border-bottom: 0;
+                        }
+                        td {
+                            white-space: nowrap;
+                            height: 100px;
+
+                            .price {
+                                font-size: 21px;
+                                font-weight: 500;
+                            }
+
+                            .order {
+                                font-size: 15px;
+                                font-weight: 400;
+
+                                span {
+                                    color: #828282;
+                                    margin-right: 40px;
+                                }
+                            }
+                        }
+                        td:nth-child(1) {
+                            display:inline-block;
+                            font-weight: 500;
+                            font-size: 20px;
+                            text-align: center;
+                            width: 110px;
+                            padding: 35px 0;
+                        }
+
+                        td:nth-child(2) {
+                            width: 100%;
+                            padding: 0 30px;
+                            text-align: left;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     hr {
@@ -150,5 +224,59 @@
         border-color: var(--color-1);
         background-color: var(--color-1);
         opacity: 0.5;
+    }
+}
+
+.withdraw-modal {
+    .header {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        font-size: 24px;
+        font-weight: 500;
+    }
+
+    .box {
+        width: 400px;
+        height: 220px;
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            position: relative;
+            top: 50px;
+            td {
+                height: 50px;
+                font-weight: 400;
+                font-size: 18px;
+                padding-right: 5px;
+            }
+            td:nth-child(1) {
+                width: 150px;
+                color: #808080;
+            }
+
+            td:nth-child(2) {
+                width: 50%;
+                text-align: right;
+
+                input {
+                    height: 40px;
+                    text-align: right;
+                    border: 2px solid #aaa;
+                    font-weight: 400;
+                    font-size: 18px;
+                    padding: 0;
+                    padding-right: 5px;
+                }
+            }
+        }
+
+        button {
+            font-size: 16px;
+            position: absolute;
+            right: 90px;
+            bottom: 25px;
+        }
     }
 }
