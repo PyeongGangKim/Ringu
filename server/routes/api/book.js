@@ -245,8 +245,8 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 }
             }
 
-            book_detail_info.dataValues.author_profile = AWS_IMG_BUCKET_URL + book_detail_info.dataValues.author_profile;
-            book_detail_info.dataValues.img = AWS_IMG_BUCKET_URL + book_detail_info.img;
+            book_detail_info.dataValues.author_profile = getImgURL(book_detail_info.dataValues.author_profile);
+            book_detail_info.dataValues.img = getImgURL(book_detail_info.img);
             res.status(statusCodes.OK).json({
 
                 "book": book_detail_info,
