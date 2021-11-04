@@ -2,13 +2,12 @@ var express = require("express");
 var router = express.Router();
 var moment = require("moment");
 
-const statusCodes = require("../../helper/statusCodes");
-
+const StatusCodes = require("../../helper/statusCodes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
+const { getImgURL } = require("../../utils/aws");
 const {account, book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
-const {imageLoad} = require("../../middlewares/third_party/aws.js");
 const {kakaopay} = require("../../config/pay.js");
 const url = require("../../config/url.js");
 const request = require("request");
@@ -90,12 +89,12 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
             });
         }
         await t.commit();
-        res.status(statusCodes.OK).send("success purchasing");
+        res.status(StatusCodes.OK).send("success purchasing");
 
     }
     catch(err){
         await t.rollback();
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -165,19 +164,19 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
             }
         });
         if(result){
-            res.status(statusCodes.DUPLICATE).json({
+            res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -189,10 +188,10 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
             purchaseList,
         );
 
-        res.status(statusCodes.OK).send("success purchasing");
+        res.status(StatusCodes.OK).send("success purchasing");
     }
     catch(err){
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -283,14 +282,14 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
         });
 
         if(purchaseList.length == 0){
-            res.status(statusCodes.NO_CONTENT).send("No content");
+            res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
             for(let i = 0 ; i < purchaseList.length ; i++){
                 if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
-                purchaseList[i].dataValues.img = await imageLoad(purchaseList[i].dataValues.img);
+                purchaseList[i].dataValues.img = getImgURL(purchaseList[i].dataValues.img);
             }
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 purchaseList : purchaseList,
             });
         }
@@ -431,12 +430,12 @@ router.delete('/:purchaseId', isLoggedIn, async (req, res, next) => { // 필요�
                 id : id,
             }
         })
-        res.status(statusCodes.OK);
+        res.status(StatusCodes.OK);
 
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 
