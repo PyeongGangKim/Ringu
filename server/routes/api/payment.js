@@ -91,11 +91,12 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             let purchasedBookAuthorList = [];
             let purchasedBookPriceList = [];
             let purchasedBookChargeList = [];
+
             for(let bookDetailId of bookDetailList ){
                 let purchasedBook = await book_detail.findOne({
                     attributes : [
                         "id",
-                        "charge",
+                        [sequelize.literal("book.charge"), "charge"],
                         [sequelize.literal("book.price"), "price"],
                         [sequelize.literal("book.author_id"), "author_id"],
                     ],
@@ -108,7 +109,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                             as : "book",
                             attributes: []
                         }
-        
+
                     ],
                     transaction: t,
                 });
@@ -130,7 +131,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                     },
                     transaction : t,
                 });
-        
+
                 if(!created){
                     let update_total_earned_money = Number(author_account.total_earned_money) + Number(earnedMoney);
                     let update_amount_available_withdrawal = Number(author_account.amount_available_withdrawal) + Number(earned_money);
@@ -147,7 +148,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 }
             }
 
-            
+
 
             await purchase.bulkCreate(data.purchaseList,{transaction: t});
 

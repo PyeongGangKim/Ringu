@@ -18,6 +18,8 @@ var _payment = require("./payment");
 var _purchase = require("./purchase");
 var _review = require("./review");
 var _review_statistics = require("./review_statistics");
+var _reward = require("./reward");
+var _reward_stat = require("./reward_stat");
 var _withdrawal = require("./withdrawal");
 
 function initModels(sequelize) {
@@ -40,6 +42,8 @@ function initModels(sequelize) {
   var purchase = _purchase(sequelize, DataTypes);
   var review = _review(sequelize, DataTypes);
   var review_statistics = _review_statistics(sequelize, DataTypes);
+  var reward = _reward(sequelize, DataTypes);
+  var reward_stat = _reward_stat(sequelize, DataTypes);
   var withdrawal = _withdrawal(sequelize, DataTypes);
 
   author.belongsTo(bank, { as: "bank_bank", foreignKey: "bank"});
@@ -94,12 +98,14 @@ function initModels(sequelize) {
   member.hasMany(review, { as: "reviews", foreignKey: "member_id"});
   review_statistics.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(review_statistics, { as: "review_statistics", foreignKey: "author_id"});
+  reward.belongsTo(member, { as: "member", foreignKey: "member_id"});
+  member.hasMany(reward, { as: "rewards", foreignKey: "member_id"});
+  reward_stat.belongsTo(member, { as: "member", foreignKey: "member_id"});
+  member.hasMany(reward_stat, { as: "reward_stats", foreignKey: "member_id"});
   withdrawal.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
   purchase.belongsTo(payment, { as: "payment", foreignKey: "payment_id"});
   payment.hasMany(purchase, { as: "purchases", foreignKey: "payment_id"});
-  purchase.belongsTo(withdrawal, { as: "withdrawal", foreignKey: "withdrawal_id"});
-  withdrawal.hasMany(purchase, { as: "purchases", foreignKey: "withdrawal_id"});
 
   return {
     account,
@@ -121,6 +127,8 @@ function initModels(sequelize) {
     purchase,
     review,
     review_statistics,
+    reward,
+    reward_stat,
     withdrawal,
   };
 }
