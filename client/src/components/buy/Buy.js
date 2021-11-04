@@ -91,7 +91,7 @@ class Buy extends Component {
                 var msg
                 if (rsp.success) {
                     msg = "결제가 완료되었습니다."
-                    console.log(rsp)
+
                     let params = rsp;
                     params.purchaseList = state.purchaseList;
                     const res = await API.sendPost(URL.api.payment.create, params)
