@@ -105,7 +105,7 @@ class Header extends Component {
                         {
                             this.props.searchVisible !== false &&
                             <div className="search">
-                                <input type="text" maxLength="15" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
+                                <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
                             </div>
                         }

@@ -66,7 +66,7 @@ class Main extends Component {
                             <p>당신이 찾는 모든 것들의 공간</p>
                             <form onSubmit={this.handleSearchClick}>
                                 <div className="search">
-                                    <input type="text" maxLength="15" autoComplete="off" value={this.state.keyword} onChange={this.handleKeywordChange}/>
+                                    <input type="text" autoComplete="off" value={this.state.keyword} onChange={this.handleKeywordChange}/>
                                     <button type="submit">
                                         검색
                                     </button>
