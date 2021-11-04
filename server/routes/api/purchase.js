@@ -19,7 +19,6 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
     let book_detail_id = req.body.book_detail_id;
     let payment_id = req.body.payment_id;
 
-
     const t = await sequelize.transaction();
     try{
         //book_detail_id로 수수료 가져와서 purchase할 때, withdrawal에 저장.
@@ -28,7 +27,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
         const purchased_book = await book_detail.findOne({
             attributes : [
                 "id",
-                "charge",
+                [sequelize.literal("book.charge"), "charge"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("book.author_id"), "author_id"],
             ],
@@ -372,12 +371,43 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
 
 router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) => {
     var author_id = req.query.author_id;
-
     try {
-        const amount = await purchase.findAll({
+        const amount = await account.findOne({
             attributes: [
-                "remit_status",
-                [sequelize.literal("SUM(purchase.price)"), "amount"],
+                'total_earned_money',
+                'total_withdrawal_amount',
+                'amount_available_withdrawal',
+                'request_withdrawal_amount',
+            ],
+            where: {
+                author_id: author_id,
+            },
+        });
+        if(amount.length === 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                amount : amount,
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+});
+
+router.get('/sales/author', isLoggedIn, isAuthor, async(req, res, next) => {
+    var author_id = req.query.author_id;
+    try {
+        const sales = await purchase.findAll({
+            attributes: [
+                'id',
+                'created_date_time',
+                'price',
+                [sequelize.literal("`book_detail->book`.charge"),"charge"],
+                [sequelize.literal("member.nickname"), "buyer"],
             ],
             where: {
                 status: 1,
@@ -399,17 +429,19 @@ router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) =
                         }
                     ]
                 },
-            ],
-            group: [
-                "remit_status"
+                {
+                    model: member,
+                    as : "member",
+                    attributes: [],
+                }
             ],
         });
-        if(amount.length === 0){
+        if(sales.length === 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
             res.status(StatusCodes.OK).json({
-                amount : amount,
+                sales : sales,
             });
         }
     }
