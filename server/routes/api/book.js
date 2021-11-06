@@ -11,6 +11,7 @@ const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middl
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 const {getImgURL} = require("../../utils/aws");
+const {AWS_IMG_BUCKET_URL} = require("../../config/aws");
 
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{

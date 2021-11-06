@@ -4,7 +4,6 @@ var router = express.Router();
 
 var helper_api = require("../../helper/api");
 
-
 const statusCodes = require("../../helper/statusCodes");
 
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");

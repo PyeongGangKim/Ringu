@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-const {StatusCodes} = require("http-status-codes");
 const statusCodes = require("../../helper/statusCodes");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
 const {favorite_book, favorite_book_statistics, member ,book, book_detail, review_statistics, Sequelize: {Op}, sequelize } = require("../../models");

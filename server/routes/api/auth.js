@@ -121,7 +121,7 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
 
 router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하는 api
     var email = req.query.email;
-
+    console.log(email);
     try{
         const result = await member.findOne({
             where : {
@@ -129,7 +129,7 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
                 status: 1,
             }
         });
-
+        console.log(result);
         if(result !== null){
             res.status(statusCodes.DUPLICATE).json({
                 "message" : "duplicate",
@@ -153,10 +153,24 @@ router.get('/google', passport.authenticate('google', {
       session: false,
       scope: ['profile', 'email'],
     }),
+    function(req, res) {
+        const token = jwt.sign({
+            id: req.user.id,
+            type: req.user.type,
+        }, secretKey, {
+            expiresIn: '12h',
+            issuer: 'ringu',
+        });
+
+        res.status(statusCodes.OK).json({
+            token: token
+        });
+    }
 );
 
 router.get( '/google/callback',passport.authenticate('google', { failureRedirect: '/auth/login', session: false }),
     function (req, res) {
+        console.log(req.user.message);
         const token = jwt.sign({
              id: req.user.id,
              type: req.user.type,
@@ -164,10 +178,30 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
                 expiresIn: '12h',
                 issuer: 'ringu',
             });
-        res.status(statusCodes.CREATED).json(
-            {
-                'token' :  token
-        }).redirect(redirect_url);
+            res.header("Access-Control-Allow-Origin","*");
+        if(req.user.message === "local sns") { // 이미 있는거
+            res.cookie('token', token).status(statusCodes.OK).json({
+                message: "already singup",
+            })
+        }
+        else{
+            if(req.user.message === "first"){
+                res.status(statusCodes.OK).json({
+                    email: req.user.email,
+                    message: "first",
+                });
+            }
+            else if(req.user.message === "err"){
+                res.status(statusCodes.UNAUTHORIZED).json({
+                    message: "unauthorized",
+                });
+            }
+            else if(req.user.message === "email"){
+                res.status(statusCodes.OK).json({
+                    message: "accept message"
+                })
+            }
+        }
     },
 );
 
