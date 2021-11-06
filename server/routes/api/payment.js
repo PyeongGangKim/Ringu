@@ -6,11 +6,12 @@ const statusCodes = require("../../helper/statusCodes");
 var iamport = require("../../config/iamport");
 var axios = require('axios');
 
-const { payment,sequelize, purchase, cart, book_detail, book, account, Sequelize: {Op} } = require("../../models");
+const { payment,sequelize, purchase, cart, book_detail, book, account, reward, reward_stat, Sequelize: {Op} } = require("../../models");
 const {kakaopay} = require("../../config/pay.js");
 const url = require("../../config/url.js");
 const request = require("request");
 const { isLoggedIn } = require("../../middlewares/auth");
+const {reward_percent} = require("../../helper/reward_percent");
 
 
 /*const { Iamporter, IamporterError } = require('iamporter');
@@ -91,6 +92,8 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             let purchasedBookAuthorList = [];
             let purchasedBookPriceList = [];
             let purchasedBookChargeList = [];
+            let rewardValueList = [];
+            let rewardAmount = 0;
             for(let bookDetailId of bookDetailList ){
                 let purchasedBook = await book_detail.findOne({
                     attributes : [
@@ -115,6 +118,9 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 purchasedBookAuthorList.push(purchasedBook.dataValues.author_id);
                 purchasedBookPriceList.push(purchasedBook.dataValues.price);
                 purchasedBookChargeList.push(purchasedBook.dataValues.charge);
+                let rewardValue = purchasedBook.dataValues.price * (reward_percent / 100);
+                rewardValueList.push(rewardValue);
+                rewardAmount += rewardValue;
             }
             for(let i = 0 ; i < purchasedBookAuthorList.length ; i++){
                 let earnedMoney =  purchasedBookPriceList[i] - (purchasedBookPriceList[i] * (purchasedBookChargeList[i] / 100));
@@ -133,7 +139,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         
                 if(!created){
                     let update_total_earned_money = Number(author_account.total_earned_money) + Number(earnedMoney);
-                    let update_amount_available_withdrawal = Number(author_account.amount_available_withdrawal) + Number(earned_money);
+                    let update_amount_available_withdrawal = Number(author_account.amount_available_withdrawal) + Number(earnedMoney);
                     await account.update({
                         total_earned_money: update_total_earned_money,
                         amount_available_withdrawal : update_amount_available_withdrawal,
@@ -147,10 +153,41 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                 }
             }
 
-            
+            for(let i = 0 ; i < rewardValueList.length ; i++){
+                await reward.create({
+                    amount : rewardValueList[i],
+                    type: 1,
+                    member_id: req.user.id,
+                },{
+                    transaction: t,
+                });
+            }
+
+            let [m_reward_statistics, created] = await reward_stat.findOrCreate({
+                where : {
+                    member_id : req.user.id,
+                },
+                defaults : {
+                    member_id: req.user.id,
+                    amount: rewardAmount
+                },
+                transaction : t,
+            });
+            if(!created){
+                let total_reward = Number(m_reward_statistics.amount) + Number(rewardAmount);
+                
+                await reward_stat.update({
+                    amount: total_reward,
+                },
+                {
+                    where: {
+                        id: m_reward_statistics.id,
+                    },
+                    transaction: t,
+                });
+            }
 
             await purchase.bulkCreate(data.purchaseList,{transaction: t});
-
             await cart.update({
                 status: 0,
             },
