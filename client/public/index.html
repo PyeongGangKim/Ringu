@@ -28,6 +28,22 @@
     <script type="text/javascript" src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script>Kakao.init("0772ad8e1c43338a7ef22e21838a80ac");</script>
     <script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js" charset="utf-8"></script>
+    <script>
+      function init() {
+          gapi.load('auth2', function() { 
+              var gauth = gapi.auth2.init({
+                  client_id: '947733551135-i2cejpepms5q8rjorup2js131fvrbjbj.apps.googleusercontent.com'
+              });
+              
+              gauth.then(function(){
+                  console.log('init success');
+              }, function(){
+                  console.error('init fail');
+              })
+          });
+      }
+  </script>
+  <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
     <!-- jQuery -->
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <!-- iamport.payment.js -->

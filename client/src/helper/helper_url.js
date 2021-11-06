@@ -21,6 +21,7 @@ module.exports = {
                 signup:         "/auth/signup/sns",
                 naver:          "/auth/naver",
                 kakao:          "/auth/kakao",
+                google:         "/auth/google",
             },
             nickname_duplicate: "/auth/nickname/duplicate",
 

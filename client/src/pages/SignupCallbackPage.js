@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 
 import NaverCallback from '../components/callback/NaverCallback';
 import KakaoCallback from '../components/callback/KakaoCallback';
+import GoogleCallback from '../components/callback/GoogleCallback';
+
 
 const SignupCallbackPage = ({... props}) => {
     var sns = props.match.params.sns;
@@ -19,6 +21,7 @@ const SignupCallbackPage = ({... props}) => {
             return <KakaoCallback location={location} history={history}/>
             break;
         case 'google':
+            return <GoogleCallback location={location} history={history}/>
             break;
         case 'facebook':
             break;

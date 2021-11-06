@@ -78,6 +78,7 @@ module.exports = {
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
+        headers['Access-Control-Allow-Origin'] = '*'; 
         var url = apiHost + url
         var ret = axios.get(url, { params:params, headers: headers }).then(res => {
             return res;
