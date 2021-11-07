@@ -323,7 +323,7 @@ class RegisterBook extends Component {
         } else {
             data.append("serialization_day", state.day.val)
         }
-
+        
         try {
             const res = await API.sendData(URL.api.register.book, data)
             if(res.status === 201) {

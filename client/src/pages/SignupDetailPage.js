@@ -1,4 +1,6 @@
 import React, { Component, Fragment } from 'react';
+import Helmet from 'react-helmet';
+import string from '../config/str';
 import SignupDetail from '../components/accounts/SignupDetail';
 import SignupDetailSNS from '../components/accounts/SignupDetailSNS';
 import SignupHeader from '../components/common/SignupHeader';
@@ -12,6 +14,7 @@ class SignupDetailPage extends Component {
     render() {
         return (
             <Fragment>
+                <Helmet title={string.signup + string.postfix}/>
                 <SignupHeader></SignupHeader>
                 <div id="wrap">
                     <div id="signup">

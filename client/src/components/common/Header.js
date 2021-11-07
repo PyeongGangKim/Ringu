@@ -25,12 +25,11 @@ class Header extends Component {
             window.location.href = URL.service.home
         }
 
-        var search = props.search ? parse.searchToDict(props.search) : {}
-        var searchParams = new URLSearchParams(props.search)
-
+        var searchParams = props.search
+        
         var params = {
             display: false,
-            keyword: (searchParams.has('keyword')) ? searchParams.get('keyword') : "",
+            keyword: (!!searchParams && searchParams.has('keyword')) ? searchParams.get('keyword') : "",
         }
 
         if (!!userInfo) {

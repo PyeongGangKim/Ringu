@@ -4,7 +4,8 @@ import SideMemberInfo from '../components/common/SideMemberInfo';
 import SideNav from '../components/mypage/SideNav';
 import MyInfo from '../components/mypage/MyInfo';
 import Header from '../components/common/Header';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class MyPage extends Component {
     constructor(props) {
         super(props);
@@ -23,6 +24,7 @@ class MyPage extends Component {
 
         return (
             <Fragment>
+                <Helmet title={string.mypage + string.postfix}/>
                 <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">

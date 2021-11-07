@@ -4,7 +4,8 @@ import SideMemberInfo from '../components/common/SideMemberInfo';
 import SideNav from '../components/mypage/SideNav';
 import Cart from '../components/mypage/Cart';
 import Header from '../components/common/Header';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class Carts extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +14,7 @@ class Carts extends Component {
     render() {
         return (
             <Fragment>
+                <Helmet title={string.cart + string.postfix}/>
                 <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
