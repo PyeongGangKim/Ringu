@@ -54,10 +54,15 @@ class Book extends Component {
                 }
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
-                    const res = await API.sendPost(URL.api.favorite.book.create, params)
-                    if(res.status === 201) {
-                        state.isFavorite = true;
-                        this.setState(state);
+                    if(duplicate.data.message === 'OK') {
+                        const res = await API.sendPost(URL.api.favorite.book.create, params)
+                        if(res.status === 201) {
+                            state.isFavorite = true;
+                            this.setState(state);
+                        }
+                    }
+                    else if(duplicate.data.message === 'duplicate') {
+                        alert("이미 찜한 작품입니다.")
                     }
                 }
             } catch(e) {
@@ -66,10 +71,6 @@ class Book extends Component {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
-                }
-                else if(error.status === 409) {
-                    alert("이미 찜한 작품입니다.")
-
                 }
                 else {
                     alert("찜하기에 실패하였습니다.")
@@ -86,15 +87,22 @@ class Book extends Component {
         var state = this.state
 
         try {
-            const res = await API.sendDelete(URL.api.book.delete + book.id)
-            if(res.status === 200) {
-                alert("작품이 삭제되었습니다")
-            }
-            else {
-                alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+            if(window.confirm("선택한 작품을 삭제하시겠습니까?")) {
+                const res = await API.sendDelete(URL.api.book.delete + book.id)
+                if(res.status === 200) {
+                    alert("작품이 삭제되었습니다")
+                }
+                else {
+                    alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+                    return;
+                }
+            } else {
+                return;
             }
         } catch(e) {
             console.log(e)
+            alert("작품을 삭제하지 못했습니다. 잠시 후 시도해주세요")
+            return;
         }
 
         if("handleUpdate" in this.props && typeof this.props.handleUpdate !== 'undefined'){
@@ -102,9 +110,13 @@ class Book extends Component {
         }
     }
 
-    handleModify = (book_id) => {
-        if(window.confirm("선택한 도서를 수정하시겠습니까?")) {
-            window.location.href = URL.service.book.modify + book_id
+    handleModify = (book_id, type) => {
+        if(window.confirm("선택한 작품을 수정하시겠습니까?")) {
+            if(type === 1) {
+                window.location.href = URL.service.book.modify_series + book_id
+            } else {
+                window.location.href = URL.service.book.modify + book_id
+            }
         }
     }
 
@@ -190,11 +202,9 @@ class Book extends Component {
                         isHost === true &&
                         <div className="btn-wrap">
                             <button className="btn" onClick={() => this.onDeleteClick(book)}> 삭제 </button>
+                            <button className="btn" onClick={() => {book.type === 1 ? this.handleModify(book.id, 1) : this.handleModify(book.id, 2)}}> 수정 </button>
                             {
-                                status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 연재정보 </button>
-                            }
-                            {
-                                (status.includes('pub') || status.includes('wait')) && <button className="btn" onClick={() => this.handleModify(book.id)}> 수정 </button>
+                                status.includes('ser') && <button className="btn" onClick={(e) => this.handleDisplayClick(e, book)}> 회차 </button>
                             }
                         </div>
                     }

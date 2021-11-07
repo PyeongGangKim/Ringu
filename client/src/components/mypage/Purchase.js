@@ -98,7 +98,7 @@ class Purchase extends Component {
                                                 {
                                                     (item.type === 1) &&
                                                     <div className="title-wrap">
-                                                        <h3 className="subtitle">{item.title}</h3>
+                                                        <h3 className="subtitle">{item.subtitle}</h3>
                                                     </div>
                                                 }
 

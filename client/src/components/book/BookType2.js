@@ -48,23 +48,24 @@ class BookType2 extends Component {
 
             const res = await API.sendGet(URL.api.purchase.duplicate, params)
             if(res.status === 200) {
-                if(window.confirm(`${this.state.book.book_title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
-                    this.props.history.push({
-                        pathname: URL.service.buy.buy,
-                        state: {
-                            purchaseList: [this.state.book]
-                        }
-                    })
+                if(res.data.message === 'OK') {
+                    if(window.confirm(`${this.state.book.book_title}을/를 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.`)) {
+                        this.props.history.push({
+                            pathname: URL.service.buy.buy,
+                            state: {
+                                purchaseList: [this.state.book]
+                            }
+                        })
+                    }
+                }
+                else if(res.data.message === 'duplicate') {
+                    if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                        this.props.history.push(URL.service.mypage.purchases)
+                    }
                 }
             }
         } catch(e) {
-            if(e.response.status === 409) {
-                if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
-                    this.props.history.push(URL.service.mypage.purchases)
-                }
-            } else {
-                alert("에러가 발생했습니다.")
-            }
+            alert("에러가 발생했습니다.")
         }
     }
 
@@ -84,45 +85,44 @@ class BookType2 extends Component {
         try {
             const res = await API.sendGet(URL.api.purchase.duplicate, params)
             if(res.status === 200) {
-                try {
-                    var params = {
-                        book_detail_id: state.book.book_details[0].id,
-                    }
+                if(res.data.message === 'OK') {
+                    try {
+                        var params = {
+                            book_detail_id: state.book.book_details[0].id,
+                        }
 
-                    const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
+                        const duplicate = await API.sendGet(URL.api.cart.duplicate, params)
 
-                    if(duplicate.status === 200) {
-                        const res = await API.sendPost(URL.api.cart.create, params)
+                        if(duplicate.status === 200) {
+                            if(duplicate.data.message === 'OK') {
+                                const res = await API.sendPost(URL.api.cart.create, params)
 
-                        if(res.status === 201) {
-                            if(window.confirm(`${this.state.book.book_title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
-                                this.props.history.push(URL.service.mypage.carts)
+                                if(res.status === 201) {
+                                    if(window.confirm(`${this.state.book.book_title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
+                                        this.props.history.push(URL.service.mypage.carts)
+                                    }
+                                }
+                            }
+                            else if(duplicate.data.message === 'duplicate') {
+                                if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
+                                    this.props.history.push(URL.service.mypage.carts)
+                                }
                             }
                         }
-                    }
-                } catch(err){
-                    var error = err.response;
-                    if(error.status === 409) {
-                        if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
-                            this.props.history.push(URL.service.mypage.carts)
-                        }
-                    }
-                    else {
+                    } catch(err){
+                        var error = err.response;
                         alert("장바구니에 담지 못하였습니다.")
                     }
                 }
-
+                else if(res.data.message === 'duplicate') {
+                    if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
+                        this.props.history.push(URL.service.mypage.purchases)
+                    }
+                }
             }
         } catch(e) {
             console.error(e.response)
-            if(e.response.status === 409) {
-                if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
-                    this.props.history.push(URL.service.mypage.purchases)
-                }
-            }
-            else {
-                alert("장바구니에 담지 못하였습니다.")
-            }
+            alert("장바구니에 담지 못하였습니다.")
         }
     }
 
@@ -159,18 +159,20 @@ class BookType2 extends Component {
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
 
                 if(duplicate.status === 200) {
-                    const res = await API.sendPost(URL.api.favorite.book.create, params)
-                    if(res.status === 201) {
-                        state.isFavorite = true;
-                        this.setState(state);
+                    if(duplicate.data.message === 'OK') {
+                        const res = await API.sendPost(URL.api.favorite.book.create, params)
+                        if(res.status === 201) {
+                            state.isFavorite = true;
+                            this.setState(state);
+                        }
+                    }
+                    else if(duplicate.data.message === 'duplicate') {
+                        alert("이미 찜한 작품입니다.")
                     }
                 }
             } catch(e) {
                 var error = e.response;
-                if(error.status === 409) {
-                    alert("이미 찜한 작품입니다.")
-                }
-                else if(error.status === 403) {
+                if(error.status === 403) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
@@ -201,16 +203,18 @@ class BookType2 extends Component {
             try {
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
                 if(duplicate.status === 200) {
-                    state.isFavorite = false;
-                    this.setState(state)
+                    if(duplicate.data.message === 'OK') {
+                        state.isFavorite = false;
+                        this.setState(state)
+                    }
+                    else if(duplicate.data.message === 'duplicate') {
+                        state.isFavorite = true;
+                        this.setState(state)
+                    }
                 }
             }
             catch(e) {
-                var error = e.response
-                if(error.status === 409) {
-                    state.isFavorite = true;
-                    this.setState(state)
-                }
+                var error = e.response                
             }
         }
 

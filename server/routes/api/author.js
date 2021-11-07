@@ -1,14 +1,14 @@
 var express = require("express");
 var router = express.Router();
 
-const statusCodes = require("../../helper/statusCodes");
+const StatusCodes = require("../../helper/statusCodes");
 
 const jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
 
-
+const { getImgURL } = require("../../utils/aws");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { sequelize, book_detail ,book, purchase, withdrawal, member, author } = require("../../models");
+const { sequelize, book_detail, book, bank, purchase, withdrawal, member, author } = require("../../models");
 
 router.post('/', isLoggedIn, async(req, res, next) => {
     let name = req.body.name;
@@ -52,7 +52,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             });
             await t.commit();
             if(updateResult){
-                res.status(statusCodes.CREATED).json({
+                res.status(StatusCodes.CREATED).json({
                     author: result,
                     token: token
                 });
@@ -62,12 +62,66 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     catch(err){
         console.error(err)
         await t.rollback();
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
 
 })
+
+router.get('/', isLoggedIn, async (req, res, next) => {
+    let id = req.query.id;
+    try{
+        const result = await author.findOne({
+            attributes: [
+                "id",
+                "description",
+                "member_id",
+                "account",
+                "is_waiting",
+                [sequelize.literal("author.name"),"name"],
+                [sequelize.literal("member.profile"),"profile"],
+            ],
+            where: {
+                member_id : id
+            },
+            include : [
+                {
+                    model : bank,
+                    as : "bank_bank",
+                    attributes: [
+                        ["id", "value"],
+                        ["bank", "label"],
+                    ]
+                },
+                {
+                    model : member,
+                    as : "member",
+                    attributes: []
+                }
+            ],
+        });
+
+        if(result){
+            result.dataValues.profile = getImgURL(result.dataValues.profile)
+            res.status(StatusCodes.OK).json({
+                author: result,
+            });
+        }
+        else{
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO_CONTENT",
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
 router.get('/:authorId', isLoggedIn, async (req, res, next) => {
 
     let id = req.params.authorId;
@@ -90,23 +144,26 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 author: result,
             });
         }
         else{
-            res.status(statusCodes.NO_CONTENT).json({
+            res.status(StatusCodes.NO_CONTENT).json({
                 "message" : "NO_CONTENT",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
 });
+
+
+
 router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
     // book 이랑 member(작가)와 관계가 있다.
     // purchase book_detail이랑 관계가 있음.
@@ -143,7 +200,7 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
             ],
             group: ["book_details.id"],
         });
-        console.log(revenues);
+
         const author_revenue = await author.findOne({
             raw: true,
             attributes: [
@@ -165,7 +222,6 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
                 },
             ],
         });
-        console.log(author_revenue);
 
         let sp_amount = 0;
         let serial_amount = 0;
@@ -174,16 +230,57 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
         }
         author_revenue.withdrawable_amount = serial_amount + sp_amount - author_revenue.withdrawal_amount;
         delete author_revenue.withdrawal_amount;
-        console.log(author_revenue);
-        res.status(statusCodes.OK).json({
+        res.status(StatusCodes.OK).json({
             author_revenue : author_revenue,
         })
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
 });
+
+router.put('/', isLoggedIn, async (req, res, next) => {
+    let id = req.user.id;
+    let params = req.body;
+    // patch로 변경필요
+    try{
+        const result = await author.update(
+            params,
+            {
+                where : {
+                    member_id : id,
+                }
+        });
+
+        if(result){
+            var ret = {
+                "message" : "update completed!",
+            }
+
+            if ('type' in params && typeof params.type !== 'undefined') {
+                const token = jwt.sign({
+                    id: id,
+                    type: params.type,
+                }, secretKey, {
+                    expiresIn: '12h',
+                    issuer: 'ringu',
+                });
+                ret['token'] = token;
+            }
+
+            res.status(StatusCodes.OK).json(ret);
+        }
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
+
 module.exports = router;

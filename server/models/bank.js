@@ -1,29 +1,19 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('reward_stat', {
+  return sequelize.define('bank', {
     id: {
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.CHAR(3),
       allowNull: false,
       primaryKey: true
     },
-    amount: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-
-    },
-    member_id: {
-      type: DataTypes.INTEGER,
+    bank: {
+      type: DataTypes.STRING(10),
       allowNull: false,
-      references: {
-        model: 'member',
-        key: 'id'
-      }
-    },
-
+      unique: "bank_UNIQUE"
+    }
   }, {
     sequelize,
-    tableName: 'reward_stat',
+    tableName: 'bank',
     timestamps: false,
     indexes: [
       {
@@ -35,10 +25,19 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "reward_stat_member_id_fk",
+        name: "code_UNIQUE",
+        unique: true,
         using: "BTREE",
         fields: [
-          { name: "member_id" },
+          { name: "id" },
+        ]
+      },
+      {
+        name: "bank_UNIQUE",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "bank" },
         ]
       },
     ]

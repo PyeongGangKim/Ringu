@@ -94,6 +94,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             let purchasedBookChargeList = [];
             let rewardValueList = [];
             let rewardAmount = 0;
+
             for(let bookDetailId of bookDetailList ){
                 let purchasedBook = await book_detail.findOne({
                     attributes : [
@@ -111,7 +112,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                             as : "book",
                             attributes: []
                         }
-        
+
                     ],
                     transaction: t,
                 });
@@ -136,7 +137,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                     },
                     transaction : t,
                 });
-        
+
                 if(!created){
                     let update_total_earned_money = Number(author_account.total_earned_money) + Number(earnedMoney);
                     let update_amount_available_withdrawal = Number(author_account.amount_available_withdrawal) + Number(earnedMoney);
@@ -162,6 +163,9 @@ router.post('/', isLoggedIn, async(req, res, next) => {
                     transaction: t,
                 });
             }
+
+
+
 
             let [m_reward_statistics, created] = await reward_stat.findOrCreate({
                 where : {

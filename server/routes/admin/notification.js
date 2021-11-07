@@ -28,7 +28,7 @@ router.post("/", async(req, res, next) => {
     let noti_content = req.body.noti_content;
     const t = await sequelize.transaction();
     try{
-        
+
         const member_ids = await member.findAll({
             attributes : [
                 "id",
@@ -40,7 +40,7 @@ router.post("/", async(req, res, next) => {
                 is_admin: 0,
             }
         });
-        console.log(member_ids);
+
         let insert_noti = [];
         for(let member_id of member_ids){ // noti bulk할 object list 만들기
             insert_noti.push({ // member_id, content, title, type
@@ -50,8 +50,7 @@ router.post("/", async(req, res, next) => {
                 type : noti_type,
             });
         }
-        console.log(member_ids.length);
-        console.log(insert_noti);
+
         try{
             await notification.bulkCreate(insert_noti,{
                 transaction: t,
@@ -84,7 +83,7 @@ router.post("/", async(req, res, next) => {
             await t.rollback();
             console.error(err);
         }
-    }   
+    }
     catch(err){
         console.error(err);
     }

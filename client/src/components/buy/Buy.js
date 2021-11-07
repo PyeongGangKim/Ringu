@@ -91,7 +91,7 @@ class Buy extends Component {
                 var msg
                 if (rsp.success) {
                     msg = "결제가 완료되었습니다."
-                    console.log(rsp)
+
                     let params = rsp;
                     params.purchaseList = state.purchaseList;
                     const res = await API.sendPost(URL.api.payment.create, params)
@@ -102,7 +102,7 @@ class Buy extends Component {
                                 card: params.card_name,
                                 amount: state.amount,
                                 user: state.user,
-                                purchaseList: state.purchaseList
+                                //purchaseList: state.purchaseList
                             }
                         })
                     }
@@ -126,19 +126,21 @@ class Buy extends Component {
                     <h3 className="header">구매하기({state.purchaseList.length} 건)</h3>
                     {
                         state.purchaseList.map(item => {
+
+                            var tokens = item.file.split('.')
+                            var ext = tokens[tokens.length-1]
                             return (
-                                <div key={item.book_detail_id} className="product-box">
+                                <div key={item.type === 2 ? item.book_detail_id : item.id} className="product-box">
                                     <div className="img-box">
                                         <img src={item.img}/>
                                     </div>
                                     <div className="product">
-                                        <strong className="title">(책 제목:{item.book_title})</strong>
+                                        <strong className="title">{item.book_title}</strong>
                                         <span className="subtitle">{item.title}</span>
                                         <div className="detail">
-                                            <p>저자:{item.author_nickname}</p>
-                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"}</p>
-                                            {item.type === 1 ? <p>연재주기:{"목,금(1개월)"}</p> : null}
-                                            <p>파일형식:{"PDF"}</p>
+                                            <p>저자:{item.type === 2 ? item.author_nickname : item.author}</p>
+                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"} {item.type === 1 ? null : <span>연재주기:{"목,금"}</span>}</p>
+                                            <p>파일형식:{ext.toUpperCase()}</p>
                                         </div>
                                     </div>
                                     <span className="price"> {parse.numberWithCommas(item.price)} 원</span>

@@ -1,13 +1,13 @@
 var express = require("express");
 var router = express.Router();
+var moment = require("moment");
 
-const statusCodes = require("../../helper/statusCodes");
-
+const StatusCodes = require("../../helper/statusCodes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 
 
-const {account ,book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
-const {imageLoad} = require("../../middlewares/third_party/aws.js");
+const { getImgURL } = require("../../utils/aws");
+const {account, book_detail, sequelize, member, purchase, book, review, review_statistics, Sequelize : {Op}} = require("../../models");
 const {kakaopay} = require("../../config/pay.js");
 const url = require("../../config/url.js");
 const request = require("request");
@@ -19,7 +19,6 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
     let book_detail_id = req.body.book_detail_id;
     let payment_id = req.body.payment_id;
 
-
     const t = await sequelize.transaction();
     try{
         //book_detail_id로 수수료 가져와서 purchase할 때, withdrawal에 저장.
@@ -28,7 +27,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
         const purchased_book = await book_detail.findOne({
             attributes : [
                 "id",
-                "charge",
+                [sequelize.literal("book.charge"), "charge"],
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("book.author_id"), "author_id"],
             ],
@@ -89,12 +88,12 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
             });
         }
         await t.commit();
-        res.status(statusCodes.OK).send("success purchasing");
+        res.status(StatusCodes.OK).send("success purchasing");
 
     }
     catch(err){
         await t.rollback();
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -164,19 +163,19 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
             }
         });
         if(result){
-            res.status(statusCodes.DUPLICATE).json({
+            res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -188,10 +187,10 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
             purchaseList,
         );
 
-        res.status(statusCodes.OK).send("success purchasing");
+        res.status(StatusCodes.OK).send("success purchasing");
     }
     catch(err){
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -282,38 +281,51 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
         });
 
         if(purchaseList.length == 0){
-            res.status(statusCodes.NO_CONTENT).send("No content");
+            res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
             for(let i = 0 ; i < purchaseList.length ; i++){
                 if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
-                purchaseList[i].dataValues.img = await imageLoad(purchaseList[i].dataValues.img);
+                purchaseList[i].dataValues.img = getImgURL(purchaseList[i].dataValues.img);
             }
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 purchaseList : purchaseList,
             });
         }
     }
     catch(err){
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
-router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
+router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
     var author_id = req.query.author_id;
+    var period = parseInt(req.query.period);
+    var period_cond;
+
+    if(period === 0) {
+        period_cond = moment().subtract('1', 'y').toDate()
+    } else if(period === 1) {
+        period_cond = moment().subtract('6', 'M').toDate()
+    } else if(period === 2) {
+        period_cond = moment().subtract('3', 'M').toDate()
+    } else if(period === 3) {
+        period_cond = moment().subtract('1', 'M').toDate()
+    }
+
     try{
-        const selling_list = await purchase.findAll({
+        const sales = await purchase.findAll({
             attributes: [
-                "id",
-                "created_date_time",
-                "price",
-                [sequelize.literal("book_detail.title"), "title"],
-                [sequelize.literal("member.name"), "buyer_name"],
+                [sequelize.literal("SUM(purchase.price)"), "revenue"],
+                [sequelize.literal("(purchase.created_date_time)"), "date"],
             ],
             where: {
                 status : 1,
+                created_date_time: {
+                    [Op.gte]: period_cond,
+                },
             },
             include : [
                 {
@@ -330,33 +342,114 @@ router.get('/sellingList', isLoggedIn, isAuthor,async (req, res, next) => { //�
                         }
                     ]
                 },
-                {
-                    model : member,
-                    as: "member",
-                    attributes : [],
-                }
+            ],
+            group: [
+                [sequelize.literal("DATE_FORMAT(purchase.created_date_time, '%y%m%d')"), "date"]
+            ],
+            order : [
+                ["created_date_time", "ASC"],
             ],
         });
-        if(selling_list.length == 0){
-            console.log(selling_list);
-            res.status(statusCodes.NO_CONTENT).send("No content");;
+
+        if(sales.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            console.log(selling_list);
-            res.status(statusCodes.OK).json({
-                selling_list : selling_list,
+            res.status(StatusCodes.OK).json({
+                sales : sales,
             });
         }
 
     }
     catch(err){
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
     }
 });
 
+router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) => {
+    var author_id = req.query.author_id;
+    try {
+        const amount = await account.findOne({
+            attributes: [
+                'total_earned_money',
+                'total_withdrawal_amount',
+                'amount_available_withdrawal',
+                'request_withdrawal_amount',
+            ],
+            where: {
+                author_id: author_id,
+            },
+        });
+        if(amount.length === 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                amount : amount,
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+});
+
+router.get('/sales/author', isLoggedIn, isAuthor, async(req, res, next) => {
+    var author_id = req.query.author_id;
+    try {
+        const sales = await purchase.findAll({
+            attributes: [
+                'id',
+                'created_date_time',
+                'price',
+                [sequelize.literal("`book_detail->book`.charge"),"charge"],
+                [sequelize.literal("member.nickname"), "buyer"],
+            ],
+            where: {
+                status: 1,
+            },
+            include: [
+                {
+                    model : book_detail,
+                    as : "book_detail",
+                    attributes : [],
+                    required: true,
+                    include : [
+                        {
+                            model: book,
+                            as : "book",
+                            where : {
+                                author_id: author_id
+                            },
+                            attributes: [],
+                        }
+                    ]
+                },
+                {
+                    model: member,
+                    as : "member",
+                    attributes: [],
+                }
+            ],
+        });
+        if(sales.length === 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                sales : sales,
+            });
+        }
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+});
 
 router.delete('/:purchaseId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
 
@@ -369,12 +462,12 @@ router.delete('/:purchaseId', isLoggedIn, async (req, res, next) => { // 필요�
                 id : id,
             }
         })
-        res.status(statusCodes.OK);
+        res.status(StatusCodes.OK);
 
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 

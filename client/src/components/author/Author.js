@@ -554,7 +554,7 @@ class Author extends Component {
                                     <div className={this.state.active === 'ser' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser')}> 연재중 </div>
                                     <div className={this.state.active === 'ser-ed' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser-ed')}> 연재완료 </div>
                                     <div className={this.state.active === 'pub' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('pub')}> 단행본</div>
-                                    <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 승인 대기 중</div>
+                                    <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 미승인 </div>
                                 </div>
                             </div>
                             <div className="inner-content">
@@ -596,7 +596,7 @@ class Author extends Component {
                             this.state.reviewTitleList.length === 0 ?
                             <div id="review-area" className="inner-box" ref={this.reviewRef}>
                                 <div className="no-content">
-                                    등록된 작품이 없습니다.
+                                    등록된 리뷰가 없습니다.
                                 </div>
                             </div>
                             :

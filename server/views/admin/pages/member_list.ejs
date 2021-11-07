@@ -51,7 +51,11 @@
                             <%=member.tel%>
                         </td>
                         <td class="text-center">
-                            0
+                            <% if(member.reward_stat !== null) { %>
+                                <%=member.reward_stat.amount%>
+                            <% } else { %>
+                                0
+                            <%}%>
                         </td>
 
                         <td class="menu">

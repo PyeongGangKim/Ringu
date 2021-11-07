@@ -7,7 +7,7 @@ const passport = require('passport');
 const { smtpTransport } = require('../../config/email');
 var { generateRandom } = require('../../utils/random_number');
 const { secretKey } = require('../../config/jwt_secret');
-const statusCodes = require("../../helper/statusCodes");
+const StatusCodes = require("../../helper/statusCodes");
 
 const { identification, member } = require("../../models");
 const { isLoggedIn } = require('../../middlewares/auth');
@@ -42,13 +42,13 @@ router.post("/signup", async (req, res, next) => {
             issuer: 'ringu',
         });
 
-        res.status(statusCodes.CREATED).json(
+        res.status(StatusCodes.CREATED).json(
             {
                 "token": token,
             });
     } catch(err) {
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error': 'signup fails'
         })
     }
@@ -78,12 +78,12 @@ router.post("/signup/sns", async (req, res, next) => {
             issuer: 'ringu',
         });
 
-        res.status(statusCodes.CREATED).json({
+        res.status(StatusCodes.CREATED).json({
             token: token
         });
     } catch(err) {
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'signup fails'
         })
     }
@@ -101,19 +101,19 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
         });
 
         if(result !== null){
-            res.status(statusCodes.DUPLICATE).json({
+            res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });;
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
         })
     }
@@ -131,19 +131,19 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
         });
         console.log(result);
         if(result !== null){
-            res.status(statusCodes.DUPLICATE).json({
+            res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else {
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.log(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
         })
     }
@@ -178,30 +178,10 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
                 expiresIn: '12h',
                 issuer: 'ringu',
             });
-            res.header("Access-Control-Allow-Origin","*");
-        if(req.user.message === "local sns") { // 이미 있는거
-            res.cookie('token', token).status(statusCodes.OK).json({
-                message: "already singup",
-            })
-        }
-        else{
-            if(req.user.message === "first"){
-                res.status(statusCodes.OK).json({
-                    email: req.user.email,
-                    message: "first",
-                });
-            }
-            else if(req.user.message === "err"){
-                res.status(statusCodes.UNAUTHORIZED).json({
-                    message: "unauthorized",
-                });
-            }
-            else if(req.user.message === "email"){
-                res.status(statusCodes.OK).json({
-                    message: "accept message"
-                })
-            }
-        }
+        res.status(StatusCodes.CREATED).json(
+            {
+                'token' :  token
+        }).redirect(redirect_url);
     },
 );
 
@@ -216,7 +196,7 @@ router.get('/naver', passport.authenticate('naver', {session: false}),
             issuer: 'ringu',
         });
 
-        res.status(statusCodes.OK).json({
+        res.status(StatusCodes.OK).json({
             token: token
         });
     }
@@ -262,7 +242,7 @@ router.get('/kakao', passport.authenticate('kakao', {session: false}),
             issuer: 'ringu',
         });
 
-        res.status(statusCodes.OK).json({
+        res.status(StatusCodes.OK).json({
             token: token
         });
     }
@@ -322,7 +302,7 @@ router.post("/login", async (req, res, next) => {
                     expiresIn: '12h',
                     issuer: 'ringu',
                 });
-                res.status(statusCodes.OK).json({
+                res.status(StatusCodes.OK).json({
                     token: token
                 });
             });
@@ -330,7 +310,7 @@ router.post("/login", async (req, res, next) => {
     }
     catch(err) {
         console.log(err)
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": err,
         })
     }
@@ -370,7 +350,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
         });
 
         if(result == null){
-            res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 reason: "dismatch identification number",
             });
             return;
@@ -390,17 +370,17 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
                     }
                 }
             );
-            res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 reason: "time over",
             });
             return;
         }
 
-        res.status(statusCodes.OK).send();
+        res.status(StatusCodes.OK).send();
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'error'
         });
     }
@@ -427,7 +407,7 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({error: err});
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: err});
     }
     try{
         await identification.create({
@@ -435,13 +415,13 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
             identification_number : number,
             type: 1,
         });
-        res.status(statusCodes.CREATED).json({
+        res.status(StatusCodes.CREATED).json({
             message: "send number to email"
         });
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             msg: "server error",
         });
     }
@@ -470,7 +450,7 @@ router.post('/phone/identification/number', isLoggedIn, async (req, res, next) =
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             msg: "server error",
         });;
     }
@@ -500,7 +480,7 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
             }
         });
         if(result == null){
-            res.status(statusCodes.NOT_ACCEPTABLE).json({
+            res.status(StatusCodes.NOT_ACCEPTABLE).json({
                 reason: "dismatch identification number",
             });
             return;
@@ -517,12 +497,12 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
             }
         );
         if(time - timeToCmp > 300){
-            res.status(statusCodes.REQUEST_TIMEOUT).json({
+            res.status(StatusCodes.REQUEST_TIMEOUT).json({
                 reason: "time over",
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message": "OK",
             });
         }
@@ -530,7 +510,7 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             msg: "server error",
         });;
     }

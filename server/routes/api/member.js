@@ -12,15 +12,13 @@ const bcrypt = require('bcrypt');
 let {makeNewPassowrd} = require("../../helper/makeNewPassword");
 
 
-const statusCodes = require("../../helper/statusCodes");
+const StatusCodes = require("../../helper/statusCodes");
 
 let { member } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
-const { uploadFile, imageLoad } = require("../../middlewares/third_party/aws");
-
-
+const { uploadFile } = require("../../middlewares/third_party/aws");
 const { salt,salt_num } = require("../../config/salt");
-const {getImgURL} = require("../../utils/aws");
+const { getImgURL } = require("../../utils/aws");
 const { smtpTransport } = require("../../config/email");
 
 router.get('/', isLoggedIn, async(req, res, next) => {
@@ -43,17 +41,17 @@ router.get('/', isLoggedIn, async(req, res, next) => {
         });
 
         if(user){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 user: user,
             })
         }
         else {
-            res.status(statusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -77,18 +75,18 @@ router.get('/:memberId', async(req, res, next) => {
         });
 
         if(user){
-            user.profile = imageLoad(user.profile)
-            res.status(statusCodes.OK).json({
+            user.profile = getImgURL(user.profile)
+            res.status(StatusCodes.OK).json({
                 user: user,
             })
         }
         else {
-            res.status(statusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT);
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 })
 
@@ -104,7 +102,7 @@ router.get('/profile/:memberId', async(req, res, next) => {
 
         const url = getImgURL(result.profile);
         console.log(url);
-        res.status(statusCodes.OK).json({
+        res.status(StatusCodes.OK).json({
             "url" : url,
         });
     }
@@ -120,19 +118,19 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         const result = await bcrypt.compare(password, req.user.password);
 
         if(result){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 check: true,
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 check: false,
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -153,13 +151,13 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
             },
         });
 
-        res.status(statusCodes.OK).json({
+        res.status(StatusCodes.OK).json({
             member: result
         })
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -177,12 +175,12 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
         });
 
         if(result !== null){
-            res.status(statusCodes.DUPLICATE).json({
+            res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
 
@@ -190,7 +188,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -267,13 +265,13 @@ router.put('/', isLoggedIn, async (req, res, next) => {
                 ret['token'] = token;
             }
 
-            res.status(statusCodes.OK).json(ret);
+            res.status(StatusCodes.OK).json(ret);
         }
 
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -281,7 +279,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
 
 router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => {
     let id = req.user.id;
-    
+
     let profile = req.files.img[0].key;
 
     try{
@@ -294,12 +292,12 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             }
         });
         if(result){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
         else{
-            res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 "error": "name update error",
             });
         }
@@ -323,13 +321,13 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
             }
         });
         if(result){
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
@@ -353,13 +351,13 @@ router.put('/:email/newPassword', async(req,res,next) =>{
             }
         });
         if(!chagneMember){
-            res.status(statusCodes.NO_CONTENT).json({
+            res.status(StatusCodes.NO_CONTENT).json({
                 "message" : "등록된 email이 없습니다."
             })
         }
         else{
             if(chagneMember.kakao_id !== null || chagneMember.naver_id !== null || chagneMember.google_id !== null || chagneMember.facebook_id !== null){
-                res.status(statusCodes.OK).json({
+                res.status(StatusCodes.OK).json({
                     "message": "sns"
                 });
             }
@@ -374,26 +372,26 @@ router.put('/:email/newPassword', async(req,res,next) =>{
                 });
                 await smtpTransport.sendMail(mailOptions, (error, response) => {
                     if(error){
-                        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+                        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                             "message" : "email auth fail"
                         });
                     }
                     smtpTransport.close();
                 });
-                res.status(statusCodes.OK).json({
+                res.status(StatusCodes.OK).json({
                     "message": "OK"
                 });
             }
-            
+
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
     }
-    
+
 })
 
 

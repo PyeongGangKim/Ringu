@@ -246,8 +246,8 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 }
             }
 
-            book_detail_info.dataValues.author_profile = AWS_IMG_BUCKET_URL + book_detail_info.dataValues.author_profile;
-            book_detail_info.dataValues.img = AWS_IMG_BUCKET_URL + book_detail_info.img;
+            book_detail_info.dataValues.author_profile = getImgURL(book_detail_info.dataValues.author_profile);
+            book_detail_info.dataValues.img = getImgURL(book_detail_info.img);
             res.status(statusCodes.OK).json({
 
                 "book": book_detail_info,
@@ -319,7 +319,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
 
         for(var i = 0; i < detailList.length; i++){
             if(detailList[i].dataValues.img === null || detailList[i].dataValues.img[0] === 'h') continue;
-            detailList[i].dataValues.img = AWS_IMG_BUCKET_URL + detailList[i].dataValues.img;
+            detailList[i].dataValues.img = getImgURL(detailList[i].dataValues.img);
         }
 
         if(detailList.length == 0){
@@ -361,7 +361,7 @@ router.post('/singlePublished' , isLoggedIn, isAuthor, uploadFile, async(req, re
     //book detail table에 넣는 attribute
     let page_number = req.body.page_number;
     let file = (req.files.file == null ) ? null : req.files.file[0].key;
-    
+
     const t = await sequelize.transaction();
 
     try{
@@ -424,7 +424,7 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
     let files = [];
     console.log(req.files.file);
     for(let file of req.files.file){
-        files.push(file.key);    
+        files.push(file.key);
     }
 
 
@@ -531,17 +531,25 @@ router.delete('/round/:bookDetailId', isLoggedIn, async(req, res, next) => {
 
 router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) => {
     try {
-        let book_id = req.body.book_id;
-        let book_detail_id = req.body.book_detail_id;
+        var book_id = req.body.book_id;
+        var book_detail_id = null;
+        if ("book_detail_id" in req.body) {
+            book_detail_id = req.body.book_detail_id;
+        }
 
         var params = {
             "title": req.body.title,
             "price": req.body.price,
             "description": req.body.book_description,
-            "content": req.body.content,
         }
 
+        if (typeof req.body.content !== 'undefined') {
+            params['content'] = req.body.content;
+        }
 
+        if (typeof req.body.day !== 'undefined') {
+            params['serialization_day'] = req.body.day;
+        }
 
         if (typeof req.files.img !== 'undefined') {
             params['img'] = req.files.img[0].key;
@@ -552,8 +560,9 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
         }
 
 
-        const t = await sequelize.transaction();
 
+        const t = await sequelize.transaction();
+        console.log(params)
         const updateBook = await book.update(
             params,
         {
@@ -563,22 +572,24 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
             transaction: t
         })
 
-        params = {
-            "page_number": req.body.page_count,
-        }
+        if(book_detail_id !== null) {
+            params = {
+                "page_number": req.body.page_count,
+            }
 
-        if (typeof req.files.file !== 'undefined') {
-            params['file'] = req.files.file[0].key;
-        }
+            if (typeof req.files.file !== 'undefined') {
+                params['file'] = req.files.file[0].key;
+            }
 
-        const updateBookDetail = await book_detail.update(
-            params,
-        {
-            where: {
-                id: book_detail_id
-            },
-            transaction: t
-        })
+            const updateBookDetail = await book_detail.update(
+                params,
+            {
+                where: {
+                    id: book_detail_id
+                },
+                transaction: t
+            })
+        }
 
         await t.commit();
         res.status(statusCodes.OK).json({

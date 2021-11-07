@@ -31,7 +31,7 @@ class BookType1 extends Component {
             tabChange: false,
             dock: false,
             selected: {},
-            author: false,
+            isAuthor: false,
             isFavorite: false,
         }
     }
@@ -67,18 +67,19 @@ class BookType1 extends Component {
                 }
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
                 if(duplicate.status === 200) {
-                    const res = await API.sendPost(URL.api.favorite.book.create, params)
-                    if(res.status === 201) {
-                        state.isFavorite = true;
-                        this.setState(state);
+                    if(duplicate.data.message === 'OK') {
+                        const res = await API.sendPost(URL.api.favorite.book.create, params)
+                        if(res.status === 201) {
+                            state.isFavorite = true;
+                            this.setState(state);
+                        }
+                    } else if(duplicate.data.message === 'duplicate') {
+                        alert("이미 찜한 작품입니다.")
                     }
                 }
             } catch(e) {
                 var error = e.response;
-                if(error.status === 409) {
-                    alert("이미 찜한 작품입니다.")
-                }
-                else if(error.status === 403) {
+                if(error.status === 403) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
@@ -98,22 +99,24 @@ class BookType1 extends Component {
             try {
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
                 if(duplicate.status === 200) {
-                    state.isFavorite = false;
-                    this.setState(state)
+                    if(duplicate.data.message === 'OK') {
+                        state.isFavorite = false;
+                        this.setState(state)
+                    }
+                    if(duplicate.data.message === 'duplicate') {
+                        state.isFavorite = true;
+                        this.setState(state)
+                    }
                 }
             }
             catch(e) {
-                var error = e.response
-                if(error.status === 409) {
-                    state.isFavorite = true;
-                    this.setState(state)
-                }
+                var error = e.response                
             }
         }
 
         try {
             if (userInfo.id === state.book.author_id) {
-                state.author = true;
+                state.isAuthor = true;
             }
             const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
 
@@ -168,7 +171,7 @@ class BookType1 extends Component {
         this.props.history.push({
             pathname: URL.service.buy.buy,
             state: {
-                purchaseList: purchaseList
+                purchaseList: purchaseList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
             }
         })
     }
@@ -310,11 +313,11 @@ class BookType1 extends Component {
                                                 state.detailList.map((item, i) => {
                                                     return (
                                                         <tr key={i}>
-                                                            <td>{(item.purchases.length === 0 && state.author === false) &&
+                                                            <td>{(item.purchases.length === 0 && state.isAuthor === false && item.round !== 1) &&
                                                                 <input type="checkbox" checked={(!!state.selected[item.id]) ? true : false} onChange={this.handleSelect} value={i} />}</td>
                                                             <td>{i+1}회차.</td>
                                                             {
-                                                                i === 0 ?
+                                                                item.round === 1 ?
                                                                 <td>
                                                                     {item.title}
                                                                     <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
@@ -325,10 +328,10 @@ class BookType1 extends Component {
                                                                 </td>
                                                             }
                                                             {
-                                                                !state.author &&
+                                                                !state.isAuthor &&
                                                                 <td>
                                                                     {
-                                                                        item.purchases.length || i === 0 ?
+                                                                        !!item.purchases.length || item.round === 1 ?
                                                                         <em className="download" onClick={() => this.downloadAction(item.id)} />
                                                                         :
                                                                         <em className="lock"/>
@@ -343,7 +346,7 @@ class BookType1 extends Component {
                                     </table>
 
                                     {
-                                        !state.author &&
+                                        !state.isAuthor &&
                                         <div className="buttons">
                                             <button className="btn btn-outline" onClick={() => this.handlePurchase(0)}> 선택 구매 </button>
                                             <button className="btn btn-color-2" onClick={() => this.handlePurchase(1)}> 전체 구매 </button>

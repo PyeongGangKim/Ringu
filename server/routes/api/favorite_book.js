@@ -1,8 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
-const statusCodes = require("../../helper/statusCodes");
-const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
+const StatusCodes = require("../../helper/statusCodes");
+const { getImgURL } = require("../../utils/aws");
 const {favorite_book, favorite_book_statistics, member ,book, book_detail, review_statistics, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
@@ -44,11 +44,11 @@ router.post('/', isLoggedIn,async (req, res, next) => {
                 transaction : t,
         });
         await t.commit();
-        res.status(statusCodes.CREATED).send("success like");
+        res.status(StatusCodes.CREATED).send("success like");
     }
     catch(err){
         await t.rollback();
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
         console.error(err);
@@ -67,19 +67,19 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
             }
         })
         if(result){
-            res.status(statusCodes.DUPLICATE).json({
+            res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
             });
         }
         else{
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "message" : "OK",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -98,19 +98,19 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
         })
 
         if(fav) {
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 "favoriteBook": fav,
             })
         }
         else{
-            res.status(statusCodes.NO_CONTENT).json({
+            res.status(StatusCodes.NO_CONTENT).json({
                 "message" : "NO_CONTENT",
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -163,24 +163,23 @@ router.get('/', isLoggedIn,async (req, res, next) => {
             ],
             group: "book.id"
         });
-
         if(favoriteBookList.length === 0){
-            res.status(statusCodes.NO_CONTENT).send("no content");
+            res.status(StatusCodes.NO_CONTENT).send("no content");
         }
         else{
             for(let i = 0 ; i < favoriteBookList.length ; i++){
                 if(favoriteBookList[i].dataValues.img == null || favoriteBookList[i].dataValues.img[0] == 'h') continue;
-                favoriteBookList[i].dataValues.img = await imageLoad(favoriteBookList[i].dataValues.img);
+                favoriteBookList[i].dataValues.img = getImgURL(favoriteBookList[i].dataValues.img);
             }
 
-            res.status(statusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 favoriteBookList: favoriteBookList
             });
         }
     }
     catch(err){
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
@@ -218,7 +217,7 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
             },
             transaction : t,
         });
-        res.status(statusCodes.OK).json({
+        res.status(StatusCodes.OK).json({
             "message" : "OK",
         });
         await t.commit();
@@ -226,7 +225,7 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
     catch(err){
         await t.rollback();
         console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).send("error");
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
     }
 });
 

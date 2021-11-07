@@ -1,6 +1,11 @@
 #modal-root {
-    .modal-wrapper {
+    .absolute {
         position: absolute;
+    }
+    .fixed {
+        position: fixed;
+    }
+    .modal-wrapper {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);

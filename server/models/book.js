@@ -83,14 +83,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    is_recommending_phrase:{
+    is_recommending_phrase: {
       type: DataTypes.TINYINT,
       allowNull: true,
-      defaultValue: 0,
+      defaultValue: 0
     },
-    recommending_phrase:{
+    recommending_phrase: {
       type: DataTypes.STRING(100),
       allowNull: true,
+
     },
     charge: {
       type: DataTypes.INTEGER,

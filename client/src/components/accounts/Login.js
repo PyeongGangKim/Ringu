@@ -87,23 +87,29 @@ class Login extends Component {
 
     }
 
+    inPreparation = () => {
+        alert("준비 중입니다.")
+    }
+
     render() {
 
         return (
             <div className="page3">
                 <div id="login-area">
                     <div className="login-wrap">
-                        <div id="email-form" className="form-group">
-                            <input type="email" name="email" autoComplete="off" className="input" ref="email" placeholder="이메일을 입력해주세요."/>
-                        </div>
+                        <form onSubmit={this.handleLogin}>
+                            <div id="email-form" className="form-group">
+                                <input type="email" name="email" autoComplete="off" className="input" ref="email" placeholder="이메일을 입력해주세요."/>
+                            </div>
 
-                        <div id="password-form" className="form-group">
-                            <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>
-                        </div>
+                            <div id="password-form" className="form-group">
+                                <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>
+                            </div>
 
-                        <button className="btn btn-block btn-login" onClick={this.handleLogin}>
-                            로그인
-                        </button>
+                            <button className="btn btn-block btn-login">
+                                로그인
+                            </button>
+                        </form>
 
                         <div className="login-settings">
                             <div className="checkbox-wrap">
@@ -128,7 +134,7 @@ class Login extends Component {
                                 <div id="kakao-login" className="btn-sns" onClick={this.handleKaKaoLogin}>
                                     <em/>
                                 </div>
-                                <FacebookLogin
+                                {/*<FacebookLogin
                                     appId={FACEBOOK.APP_ID}
                                     autoLoad={false}
                                     fields="email"
@@ -139,9 +145,13 @@ class Login extends Component {
                                             <em/>
                                         </div>
                                     )}
-                                />
+                                />*/}
 
-                                <div id="google-login" className="btn-sns">
+                                <div id="facebook-login" className="btn-sns" onClick={this.inPreparation}>
+                                    <em/>
+                                </div>
+
+                                <div id="google-login" className="btn-sns"  onClick={this.inPreparation}>
                                     <em/>
                                 </div>
                             </div>

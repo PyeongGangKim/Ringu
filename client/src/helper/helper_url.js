@@ -1,5 +1,6 @@
 module.exports = {
     api : {
+
         auth: {
             login:              "/auth/login",
             signup:             "/auth/signup",
@@ -26,6 +27,18 @@ module.exports = {
             nickname_duplicate: "/auth/nickname/duplicate",
 
         },
+        author: {
+            get:                "/author",
+            update:             "/author",
+            create:             "/author",
+        },
+        withdrawal: {
+            create:             "/withdrawal",
+            get:                "/withdrawal",
+        },
+        bank: {
+            get:                "/bank",
+        },
         member: {
             get:                "/member",
             getById:            "/member/",
@@ -45,9 +58,15 @@ module.exports = {
             delete:             "/cart/",
             clear:              "/cart/clear",
         },
+        payment: {
+            create              :"/payment",
+        },
         purchase: {
             list:               "/purchase",
             duplicate:          "/purchase/duplicate",
+            sales:              "/purchase/sales",
+            sales_author:       "/purchase/sales/author",
+            sales_amount_author:"/purchase/sales/amount/author",
         },
         book: {
             get:                "/book/",
@@ -65,10 +84,6 @@ module.exports = {
         },
         category: {
             list:               "/category",
-        },
-        author: {
-            get:                "/author/",
-            create:             "/author",
         },
         favorite: {
             author: {
@@ -107,9 +122,6 @@ module.exports = {
             getNewNotiCount: "/notification/newNotiCnt",
             deleteNotification: "/notification/delete",
         },
-        payment: {
-            create              :"/payment",
-        },
     },
     service : {
         accounts: {
@@ -126,7 +138,8 @@ module.exports = {
         author                  : "/author/",
         book: {
             book                : "/book/",
-            modify              : "/modify/book/",
+            modify              : "/modify/pub/",
+            modify_series       : "/modify/series/",
         },
         buy : {
             buy                 : "/buy",
