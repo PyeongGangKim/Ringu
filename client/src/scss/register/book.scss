@@ -66,29 +66,52 @@
             font-weight: 500;
             margin-right: 5px;
         }
-        .upload {
-            height: 27px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-bottom: 10px;
+        .upload{
+            position:relative;
+            margin-bottom: 20px;
 
-            .upload-input {
-                margin-right: 5px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                width: 200px;
-            }
-
-            .upload-btn {
-                padding: 4px 15px;
-                margin-right: 10px;
-            }
-
-            .upload-text{
-
+            .round {
                 font-weight: 500;
-                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .row {
+                height: 27px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-bottom: 10px;
+
+                .upload-input {
+                    margin-right: 5px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    width: 200px;
+                }
+
+                .upload-btn {
+                    padding: 4px 15px;
+                    margin-right: 10px;
+                }
+
+                .upload-text{
+                    font-weight: 500;
+                    font-size: 12px;
+                }
+            }
+
+            .add-btn {
+                margin: 0 auto;
+            }
+
+            .del-btn {
+                font-size: 24px;
+                color: red;
+                font-weight: 500;
+                position: absolute;
+                right: 20px;
+                top: 0;
+                bottom: 0;
             }
         }
     }
