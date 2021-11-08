@@ -1,5 +1,6 @@
 module.exports = {
     api : {
+
         auth: {
             login:              "/auth/login",
             signup:             "/auth/signup",
@@ -32,6 +33,7 @@ module.exports = {
         },
         withdrawal: {
             create:             "/withdrawal",
+            get:                "/withdrawal",
         },
         bank: {
             get:                "/bank",
@@ -55,10 +57,14 @@ module.exports = {
             delete:             "/cart/",
             clear:              "/cart/clear",
         },
+        payment: {
+            create              :"/payment",
+        },
         purchase: {
             list:               "/purchase",
             duplicate:          "/purchase/duplicate",
             sales:              "/purchase/sales",
+            sales_author:       "/purchase/sales/author",
             sales_amount_author:"/purchase/sales/amount/author",
         },
         book: {
@@ -104,7 +110,8 @@ module.exports = {
             stats:              "/review/stats",
         },
         register: {
-            book:               "/book",
+            book_single:        "/book/single",
+            book_series:        "/book/series",
             bookDetail:         "/book_detail"
         },
         notification: {
@@ -114,9 +121,6 @@ module.exports = {
             putReadNotification:    "/notification/",
             getNewNotiCount: "/notification/newNotiCnt",
             deleteNotification: "/notification/delete",
-        },
-        payment: {
-            create              :"/payment",
         },
     },
     service : {

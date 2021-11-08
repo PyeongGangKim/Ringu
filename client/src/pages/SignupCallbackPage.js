@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-
 import NaverCallback from '../components/callback/NaverCallback';
 import KakaoCallback from '../components/callback/KakaoCallback';
 
@@ -11,11 +10,9 @@ const SignupCallbackPage = ({... props}) => {
 
     switch (sns) {
         case 'naver':
-            console.log('naver')
             return <NaverCallback location={location} history={history}/>
             break;
-        case 'kakao':
-            console.log('kakao')
+        case 'kakao':            
             return <KakaoCallback location={location} history={history}/>
             break;
         case 'google':

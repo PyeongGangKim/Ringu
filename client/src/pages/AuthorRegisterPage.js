@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 
 import RegisterAuthor from '../components/register/RegisterAuthor';
 import Header from '../components/common/Header';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class AuthorRegisterPage extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +14,7 @@ class AuthorRegisterPage extends Component {
     render() {
         return (
             <Fragment>
+                <Helmet title={string.register + string.postfix}/>
                 <Header searchVisible={false}></Header>
                 <div id="wrap">
                     <RegisterAuthor/>

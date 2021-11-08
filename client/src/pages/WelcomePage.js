@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import SignupHeader from '../components/common/SignupHeader';
 import URL from '../helper/helper_url';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 
 class WelcomePage extends Component {
     constructor(props) {
@@ -12,6 +13,7 @@ class WelcomePage extends Component {
     render() {
         return (
             <Fragment>
+                <Helmet title={string.signup + string.postfix}/>
                 <SignupHeader></SignupHeader>
                 <div id="wrap">
                     <div id="signup">

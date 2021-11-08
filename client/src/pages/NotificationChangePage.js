@@ -4,7 +4,8 @@ import SideMemberInfo from '../components/common/SideMemberInfo';
 import SideNav from '../components/mypage/SideNav';
 import NotificationChange from '../components/mypage/NotificationChange';
 import Header from '../components/common/Header';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class NotificationChangePage extends Component {
     constructor(props) {
         super(props);
@@ -15,6 +16,7 @@ class NotificationChangePage extends Component {
 
         return (
             <Fragment>
+                <Helmet title={string.notification + string.postfix}/>
                 <Header history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">

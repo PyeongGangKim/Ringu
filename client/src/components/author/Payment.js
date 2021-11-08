@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { Link } from 'react-router-dom';
 import Select from 'react-select'
 import { LineChart, AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import moment from 'moment';
 
 import User from '../../utils/user';
@@ -31,6 +32,7 @@ class Payment extends Component {
 
         this.user = User.getInfo();
         this.state = {
+            modal: false,
             type: 0,
             bank: null,
             account: null,
@@ -41,9 +43,16 @@ class Payment extends Component {
             ticks: [],
             remitted: 0,
             balance: 0,
+            balance2: 0,
+            withdrawal: 0,
             is_waiting: false,
+            tabIndex: 0,
+            sales: [],
+            withdrawals: [],
         }
     }
+
+    onTabSelect = (idx) => {var state = this.state; state.tabIndex = idx; this.setState(state) }
 
     async componentDidMount() {
         var state = this.state;
@@ -55,7 +64,6 @@ class Payment extends Component {
                 state.account = author.account;
                 state.name = author.name;
                 state.profile = author.profile;
-                state.is_waiting = author.is_waiting;
 
                 this.setState(state)
             }
@@ -64,17 +72,39 @@ class Payment extends Component {
             console.error(e)
         }
         try {
+            const salesRes = await API.sendGet(URL.api.purchase.sales_author, {author_id: this.user.id})
+
+            if(salesRes.status === 200) {
+                state.sales = salesRes.data.sales;
+
+                this.setState(state)
+            }
+        }
+        catch(e) {
+            console.error(e)
+        }
+
+        try {
             const amountRes = await API.sendGet(URL.api.purchase.sales_amount_author, {author_id: this.user.id})
 
             if(amountRes.status === 200) {
                 var amount = amountRes.data.amount;
-                var a = []
-                a.push(amount.filter(item => item.remit_status === 0)[0])
-                a.push(amount.filter(item => item.remit_status === 1)[0])
-                a.push(amount.filter(item => item.remit_status === 2)[0])
+                state.balance = amount.amount_available_withdrawal;
+                state.balance2 = amount.amount_available_withdrawal;
+                state.remitted = amount.total_withdrawal_amount;
+                state.is_waiting = amount.request_withdrawal_amount !== 0;
 
-                state.balance = (!!a[0] ? parseInt(a[0].amount) : 0) + (!!a[1] ? parseInt(a[1].amount) : 0);
-                state.remitted = (!!a[2] ? parseInt(a[2].amount) : 0)
+                this.setState(state)
+            }
+        }
+        catch(e) {
+            console.error(e)
+        }
+
+        try {
+            const withdrawalsRes = await API.sendGet(URL.api.withdrawal.get, {author_id: this.user.id})
+            if(withdrawalsRes.status === 200) {
+                state.withdrawals = withdrawalsRes.data.withdrawals;
 
                 this.setState(state)
             }
@@ -144,16 +174,36 @@ class Payment extends Component {
         this.setState(state);
     }
 
-    handleWithdraw = async(status) => {
+    handleWithdrawalChange = (e) => {
         var state = this.state;
-        if(state.balance === 0) {
-            alert('출금 가능한 잔액이 없습니다.')
+        var value  = e.target.value;
+        state.balance2 = state.balance;
+
+        if(value > state.balance2) {
+            state.withdrawal = state.balance2;
+            state.balance2 = 0;
+        } else {
+            state.balance2 -= value;
+            state.withdrawal = value
+        }
+
+        this.setState(state)
+    }
+
+    handleWithdraw = async() => {
+        var state = this.state;
+        if(state.withdrawal === 0) {
+            alert('출금할 금액을 입력해주세요.')
             return 0;
         }
         try {
-            const res = await API.sendPost(URL.api.withdrawal.create, {amount: state.balance})
+            const res = await API.sendPost(URL.api.withdrawal.create, {amount: state.withdrawal})
             if(res.status === 201) {
                 alert("출금 신청이 완료되었습니다.")
+                state.modal = false;
+                state.balance -= state.withdrawal;
+                state.is_waiting = true;
+                this.setState(state);
             }
         }
         catch(e) {
@@ -162,6 +212,8 @@ class Payment extends Component {
         }
     }
 
+    showModal = () => { var state = this.state; state.modal = true; this.setState(state); }
+
     dateFormatAxis = (tick) => {
         var state = this.state;
         if (state.period.value === 0) {
@@ -169,8 +221,10 @@ class Payment extends Component {
         } else {
             return moment(tick).format('MM.D');
         }
-
     }
+
+    handleCloseClick = () => { var state = this.state; state.modal = false; this.setState(state) }
+
     render() {
         var state = this.state;
 
@@ -193,6 +247,40 @@ class Payment extends Component {
 
         return (
             <div className="payment">
+                {
+                    state.modal > 0 &&
+                    <Modal
+                        onClose={this.handleCloseClick}
+                        overlay={true}
+                        fixed={true}
+                    >
+                        <div className="withdraw-modal">
+                            <div className="header"> 출금 신청 </div>
+                            <em className="close" onClick={this.handleCloseClick}> &times; </em>
+                            <div className="box">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>출금 가능 금액</td>
+                                            <td><input type="text"autoComplete="off" disabled={true} className="input" value={parse.numberWithCommas(state.balance2)}/></td>
+                                            <td>원</td>
+                                        </tr>
+                                        <tr>
+                                            <td>출금 신청 금액</td>
+                                            <td>
+                                                <input type="number"autoComplete="off" className="input" value={state.withdrawal} onChange={this.handleWithdrawalChange}/>
+                                            </td>
+                                            <td>원</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button className="btn btn-color-2" onClick={this.handleWithdraw}>
+                                    출금 신청
+                                </button>
+                            </div>
+                        </div>
+                    </Modal>
+                }
                 <div className="information">
                     <div className="author">
                         <div className="profile">
@@ -232,7 +320,7 @@ class Payment extends Component {
                                 state.is_waiting ?
                                 <button className="btn btn-color-2" disabled>출금 중</button>
                                 :
-                                <button className="btn btn-color-2" onClick={this.handleWithdraw}>출금 신청</button>
+                                <button className="btn btn-color-2" onClick={this.showModal}>출금 신청</button>
                             }
 
                         </div>
@@ -304,6 +392,72 @@ class Payment extends Component {
                 </div>
 
                 <div className="history">
+                    <Tabs defaultIndex={0} onSelect={idx => this.onTabSelect(idx)}>
+                        <TabList>
+                            <Tab>수익금 내역</Tab>
+                            <Tab>출금 내역</Tab>
+                        </TabList>
+
+                        <TabPanel>
+                            {
+                                state.sales.length === 0 ?
+                                <div className="no-content">
+                                    수익금 내역이 없습니다.
+                                </div>
+                                :
+                                <div className="table-box">
+                                    <table>
+                                        {
+                                            state.sales.map(item => {
+                                                return (
+                                                    <tr key={item.id}>
+                                                        <td>완료</td>
+                                                        <td>
+                                                            <div className="price">{parse.numberWithCommas(Math.ceil(item.price * (1 - item.charge / 100)))}원</div>
+                                                            <div className="order">
+                                                                <span>주문번호 : {item.id}</span>
+                                                                <span>주문 접수일 : {date.fullFormat(item.created_date_time)}</span>
+                                                                <span>주문자 : {item.buyer}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </table>
+                                </div>
+                            }
+                        </TabPanel>
+                        <TabPanel>
+                            {
+                                state.withdrawals.length === 0 ?
+                                <div className="no-content">
+                                    출금 내역이 없습니다
+                                </div>
+                                :
+                                <div className="table-box">
+                                    <table>
+                                        {
+                                            state.withdrawals.map(item => {
+                                                return (
+                                                    <tr key={item.id}>
+                                                        <td>{item.is_remittance === 1 ? "완료" : "출금 준비 중"}</td>
+                                                        <td>
+                                                            <div className="price">{parse.numberWithCommas(item.amount)}원</div>
+                                                            <div className="order">
+                                                                <span>출금번호 : {item.id}</span>
+                                                                <span>출금일 : {date.fullFormat(item.remitted_date_time)}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </table>
+                                </div>
+                            }
+                        </TabPanel>
+                    </Tabs>
                 </div>
             </div>
         )

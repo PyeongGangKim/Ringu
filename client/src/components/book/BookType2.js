@@ -214,7 +214,7 @@ class BookType2 extends Component {
                 }
             }
             catch(e) {
-                var error = e.response                
+                var error = e.response
             }
         }
 

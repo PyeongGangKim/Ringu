@@ -9,7 +9,8 @@ import parse from '../helper/parse';
 import URL from '../helper/helper_url';
 import API from '../utils/apiutils';
 import User from '../utils/user';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class BookPage extends Component {
     constructor(props) {
         super(props);
@@ -43,6 +44,7 @@ class BookPage extends Component {
         return (
             this.state.isSuccess ?
             <Fragment>
+                <Helmet title={`${state.book.title} ` + string.postfix}/>
                 <Header home={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display: "flex"}}>
                     {

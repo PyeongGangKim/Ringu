@@ -20,6 +20,9 @@ import API from '../../utils/apiutils';
 
 import Modal from '../../components/modal/Modal';
 
+import Helmet from 'react-helmet';
+import string from '../../config/str';
+
 const tabHeight = 60;
 
 class Author extends Component {
@@ -417,6 +420,7 @@ class Author extends Component {
 
         return (
             <div id="author-page" className="page2">
+                <Helmet title={`${state.user.nickname} `+ string.author + string.postfix}/>
                 {
                     (this.props.isHost === true && state.display === true) &&
                     <Modal

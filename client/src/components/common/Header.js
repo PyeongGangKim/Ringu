@@ -25,12 +25,11 @@ class Header extends Component {
             window.location.href = URL.service.home
         }
 
-        var search = props.search ? parse.searchToDict(props.search) : {}
-        var searchParams = new URLSearchParams(props.search)
+        var searchParams = props.search
 
         var params = {
             display: false,
-            keyword: (searchParams.has('keyword')) ? searchParams.get('keyword') : "",
+            keyword: (!!searchParams && searchParams.has('keyword')) ? searchParams.get('keyword') : "",
         }
 
         if (!!userInfo) {
@@ -105,7 +104,7 @@ class Header extends Component {
                         {
                             this.props.searchVisible !== false &&
                             <div className="search">
-                                <input type="text" maxLength="15" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
+                                <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
                             </div>
                         }
@@ -124,7 +123,7 @@ class Header extends Component {
                                     state.type === 1 ?
                                     <Link to={URL.service.author + this.state.id} id="author-page">
                                         {
-                                            this.props.author === true ?
+                                            this.props.isHost === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>

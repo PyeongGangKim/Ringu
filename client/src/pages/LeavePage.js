@@ -4,7 +4,8 @@ import SideMemberInfo from '../components/common/SideMemberInfo';
 import SideNav from '../components/mypage/SideNav';
 import Leave from '../components/mypage/Leave';
 import Header from '../components/common/Header';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class LeavePage extends Component {
     constructor(props) {
         super(props);
@@ -15,6 +16,7 @@ class LeavePage extends Component {
 
         return (
             <Fragment>
+                <Helmet title={string.leave + string.postfix}/>
                 <Header></Header>
                 <div id="wrap" style={{display:"flex"}}>
                   <div className="side">
