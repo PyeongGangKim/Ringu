@@ -26,7 +26,7 @@ class Header extends Component {
         }
 
         var searchParams = props.search
-        
+
         var params = {
             display: false,
             keyword: (!!searchParams && searchParams.has('keyword')) ? searchParams.get('keyword') : "",
@@ -123,7 +123,7 @@ class Header extends Component {
                                     state.type === 1 ?
                                     <Link to={URL.service.author + this.state.id} id="author-page">
                                         {
-                                            this.props.author === true ?
+                                            this.props.isHost === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>
