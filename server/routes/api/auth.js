@@ -1,5 +1,5 @@
 var express = require("express");
-var router = express.Router();
+
 let jwt = require('jsonwebtoken');
 let bcrypt = require('bcrypt');
 const salt_num = require('../../config/salt');
@@ -13,7 +13,13 @@ const { identification, member } = require("../../models");
 const { isLoggedIn } = require('../../middlewares/auth');
 const { redirect_url } = require('../../config/url');
 const { ncp } = require("../../config/naver_sms");
-
+/**
+ * @swagger
+ *  tags:
+ *      name: Auths
+ *      description: Auth management
+ */
+let router = express.Router();
 router.post("/signup", async (req, res, next) => {
     var payload = req.body;
     payload.password = payload.password.toString();
@@ -154,6 +160,7 @@ router.get('/google', passport.authenticate('google', {
       scope: ['profile', 'email'],
     }),
     function(req, res) {
+        console.log(req);
         const token = jwt.sign({
             id: req.user.id,
             type: req.user.type,
@@ -161,8 +168,8 @@ router.get('/google', passport.authenticate('google', {
             expiresIn: '12h',
             issuer: 'ringu',
         });
-
-        res.status(statusCodes.OK).json({
+        console.log(token);
+        res.status(StatusCodes.OK).json({
             token: token
         });
     }

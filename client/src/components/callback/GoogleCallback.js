@@ -50,7 +50,7 @@ const GoogleCallback = ({location, history, ...props}) => {
                             search:     `?sns=google&email=${email}&id=${id}`,
                         });
                     }
-                    else{
+                    else if(res.data.message === "duplicate"){
                         const res = await API.sendGet(URL.api.auth.sns.google, params = {id:id, email:email, sns: 'google'})
                         if(res.status === 200) {
                             var token = res.data.token;

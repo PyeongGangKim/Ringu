@@ -90,7 +90,7 @@ async function SNSVerify(req, done) {
         // email이 등록이 안 되어 있는 경우
         else {
             console.log("error");
-            return done(null, user);
+            return done("error", user);
         }
     }
     catch(err){
