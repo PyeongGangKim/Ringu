@@ -75,7 +75,10 @@ router.get('/:memberId', async(req, res, next) => {
         });
 
         if(user){
-            user.profile = getImgURL(user.profile)
+            if(user.profile)
+            {
+                user.profile = getImgURL(user.profile)
+            }
             res.status(StatusCodes.OK).json({
                 user: user,
             })

@@ -111,7 +111,8 @@ module.exports = {
             stats:              "/review/stats",
         },
         register: {
-            book:               "/book",
+            book_single:        "/book/single",
+            book_series:        "/book/series",
             bookDetail:         "/book_detail"
         },
         notification: {

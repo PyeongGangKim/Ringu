@@ -5,7 +5,6 @@ export { default as Purchases } from './Purchases';
 export { default as Carts } from './Carts';
 export { default as FavBookPage } from './FavBookPage';
 export { default as FavAuthorPage } from './FavAuthorPage';
-export { default as AuthPage } from './AuthPage';
 export { default as LeavePage } from './LeavePage';
 export { default as AuthorRegisterPage } from './AuthorRegisterPage';
 export { default as AuthorRegisterDetailPage } from './AuthorRegisterDetailPage';

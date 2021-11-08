@@ -25,12 +25,11 @@ class Header extends Component {
             window.location.href = URL.service.home
         }
 
-        var search = props.search ? parse.searchToDict(props.search) : {}
-        var searchParams = new URLSearchParams(props.search)
+        var searchParams = props.search
 
         var params = {
             display: false,
-            keyword: (searchParams.has('keyword')) ? searchParams.get('keyword') : "",
+            keyword: (!!searchParams && searchParams.has('keyword')) ? searchParams.get('keyword') : "",
         }
 
         if (!!userInfo) {
@@ -124,7 +123,7 @@ class Header extends Component {
                                     state.type === 1 ?
                                     <Link to={URL.service.author + this.state.id} id="author-page">
                                         {
-                                            this.props.author === true ?
+                                            this.props.isHost === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>

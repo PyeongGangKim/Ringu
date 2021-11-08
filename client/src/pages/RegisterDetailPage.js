@@ -5,6 +5,8 @@ import RegisterBook from '../components/register/RegisterBook';
 
 
 import Header from '../components/common/Header';
+import Helmet from 'react-helmet';
+import string from '../config/str';
 
 class RegisterDetailPage extends Component {
     constructor(props) {
@@ -16,6 +18,7 @@ class RegisterDetailPage extends Component {
 
         return (
             <Fragment>
+                <Helmet title={string.register + string.postfix}/>
                 <Header history={this.props.history}></Header>
                 <div id="wrap">
                     {

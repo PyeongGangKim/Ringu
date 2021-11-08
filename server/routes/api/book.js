@@ -358,28 +358,31 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
         });
     }
 });
-router.post('/singlePublished' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
+router.post('/single' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) => { // book 등록 단행본은 detail까지, 등록되고 연재본은 cover만 등록
     //book table 에 넣는 attribute
     /*
         단행본만 넣기
     */
     let price = req.body.price;
-    let content = req.body.content;
     let book_description = req.body.book_description;
-    let author_id = req.user.id;
-    let category_id = req.body.category_id;
-
     let title = req.body.title;
+    let category_id = req.body.category_id;
     let type = req.body.type;
+
+    let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
+
+    let content = req.body.content;
+    let preview = (typeof req.files.preview !== 'undefined') ? req.files.preview[0].key : null;
+    let file = (req.files.file == null ) ? null : req.files.file[0].key;
+    let page_number = req.body.page_number;
+
+    let author_id = req.user.id;
+
     let is_finished_serialization = 1;
     //let serialization_day = req.body.serialization_day;
-    let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
-    let preview = (typeof req.files.preview !== 'undefined') ? req.files.preview[0].key : null;
 
 
     //book detail table에 넣는 attribute
-    let page_number = req.body.page_number;
-    let file = (req.files.file == null ) ? null : req.files.file[0].key;
 
     const t = await sequelize.transaction();
 
@@ -419,19 +422,14 @@ router.post('/singlePublished' , isLoggedIn, isAuthor, uploadFile, async(req, re
         });
     }
 });
-router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
-    console.log(req.body)
+router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
     let price = req.body.price;
     let content = req.body.content;
     let book_description = req.body.book_description;
     let author_id = req.user.id;
     let category_id = req.body.category_id;
-
-    let title = req.body.title;
     let book_detail_titles = [];
-    for(let book_detail_title of req.body.book_detail_titles){
-        book_detail_titles.push(book_detail_title);
-    }
+    let title = req.body.title;
     let type = req.body.type;
     let is_finished_serialization = 1;
     let serialization_day = req.body.serialization_day;
@@ -441,11 +439,10 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
 
     //book detail table에 넣는 attribute
     let files = [];
-    console.log(req.files.file);
     for(let file of req.files.file){
+        book_detail_titles.push(file.key)
         files.push(file.key);
     }
-
 
     const t = await sequelize.transaction();
 
@@ -470,6 +467,7 @@ router.post('/serialization', isLoggedIn, isAuthor, uploadFile, async(req, res, 
                 title: book_detail_titles[i],
                 book_id : new_book.id,
                 file : files[i],
+                round: i+1,
             },{
                 transaction: t,
             });

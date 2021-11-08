@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 
 import Notification from '../components/notification/Notification';
 import Header from '../components/common/Header';
-
+import Helmet from 'react-helmet';
+import string from '../config/str';
 class NotificationPage extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +14,7 @@ class NotificationPage extends Component {
 
         return (
             <Fragment>
+                <Helmet title={string.notification + string.postfix}/>
                 <Header></Header>
                 <Notification></Notification>
             </Fragment>
