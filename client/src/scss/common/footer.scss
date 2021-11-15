@@ -1,0 +1,88 @@
+#footer{
+    background-color: #f5f5f5;
+    width: 100vw !important;
+    left:0;
+    position: absolute;
+    .vertical-div{
+        width: 100% !important;
+        display: flex;
+        background-color: #f5f5f5;
+        margin-left: 4.5%;
+        .logo-img{
+            background-image: url("/assets/img/logo.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 70px;
+            height: 30px;
+        }
+        .left{
+            margin-bottom: 25px;
+            margin-top: 35px;
+            width: 50%;
+            .info-tag{
+                padding-top: 5px;
+                font-weight:500;
+                font-size: 19px;
+            }
+            .copyright{
+                font-weight: 400;
+                font-size: 15px;
+            }
+        }
+        .right{
+            margin-top: 25px;
+            width: 50%;
+            .header-tag{
+                display: flex;
+                .contact{
+                    font-weight: 600;
+                    font-size:18px;
+                    width:245px;
+                }
+                .visit{
+                    font-weight: 600;
+                    font-size:18px;
+                    
+                }
+            }
+            .body-tag{
+                margin-top: 10px;
+                display: flex;
+                .contact{
+                    font-weight: 400;
+                    font-size:17px;
+                    width:245px;
+                }
+                .visit{
+                    font-weight: normal;
+                    font-size:17px;
+                    .visit-button{
+                        padding: 0px;
+                        .button-content{
+                            display: flex;
+                            .instagram-img{
+                                background-image: url("/assets/img/instagram.png");
+                                background-size: contain;
+                                background-repeat: no-repeat;
+                                width: 15px;
+                                height: 15px;
+                            }
+                            .youtube-img{
+                                background-image: url("/assets/img/youtube.png");
+                                background-size: contain;
+                                background-repeat: no-repeat;
+                                width: 15px;
+                                height: 15px;
+                            }
+                            .content{
+                                padding-left: 5px;
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
+    
+}
