@@ -9,7 +9,6 @@ let session = require('express-session');
 let secretKey = require('./config/jwt_secret');
 const passport = require('passport');
 const passportConfig = require('./middlewares/passport');
-const { swaggerUi, specs } = require('./utils/swagger');
 
 
 
@@ -118,7 +117,7 @@ app.use('/api/payment',api_paymentRouter);
 //app.use('/api/upload', api_uploadRouter);
 
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {explorer: true}));
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

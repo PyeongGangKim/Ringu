@@ -79,7 +79,6 @@ async function JWTVerify({id}, done) {
 async function SNSVerify(req, done) {
     try{
         var {id, email, sns} = req.query;
-        console.log(id, email, sns);
         const user = await member.findOne({ where : {email: email, status: 1} });
 
         if(user && user[`${sns}_id`] === id){
@@ -90,7 +89,7 @@ async function SNSVerify(req, done) {
         // email이 등록이 안 되어 있는 경우
         else {
             console.log("error");
-            return done("error", user);
+            return done(null, false, {message : "local login"});
         }
     }
     catch(err){
