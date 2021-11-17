@@ -12,26 +12,9 @@ const { sequelize, category, favorite_book, book, book_detail, member, review, r
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 const {getImgURL} = require("../../utils/aws");
 const {AWS_IMG_BUCKET_URL} = require("../../config/aws");
-/**
- * @swagger
- *  tags:
- *      name: Books
- *      description: Book management
- */
+
 let router = express.Router();
-/**
- * @swagger
- * path:
- *  /api/book:
- *  get:
- *      summary select book
- *      tags: [Books]
- *      responses:
- *          "200":
- *          description: A book schema
- *          content:
- *              application/json
- */
+
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
         let author_id = req.query.author_id;
