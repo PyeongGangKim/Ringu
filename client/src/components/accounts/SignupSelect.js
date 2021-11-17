@@ -70,16 +70,20 @@ class SignupSelect extends Component {
     }*/
 
     handleGoogleLogin = async () => {
-        let gauth = window.gapi.auth2.getAuthInstance();
-        console.log(window.gapi);
-        console.log(gauth);
-        // console.log(gauth.currentUser.get());
-        gauth.signIn({
-            scope: "profile",
-            ux_mode : "redirect",
-            redirect_uri: GOOGLE.CALLBACK_URL,
-        });
+        await window.gapi.load('auth2', async () => {
+            await window.gapi.auth2.init({
+                client_id: GOOGLE.CLIENT_ID,
+                scope: 'email'
+            });
+            let gauth = window.gapi.auth2.getAuthInstance();
         
+        // console.log(gauth.currentUser.get());
+            gauth.signIn({
+                scope: "profile",
+                ux_mode : "redirect",
+                redirect_uri: GOOGLE.CALLBACK_URL,
+            });
+        });        
     }
     
     
