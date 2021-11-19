@@ -58,15 +58,11 @@ const GoogleCallback = ({location, history, ...props}) => {
                         else if(res.data.message === "duplicate"){
                             const res = await API.sendGet(URL.api.auth.sns.google, params = {id:id, email:email, sns: 'google'})
                             if(res.status === 200) {
-                                if(res.data.message === "local sns"){
-                                    alert("local sns로 가입되어 있습니다.");
-                                    window.location.href = URL.service.accounts.login
-                                }
-                                else{
-                                    var token = res.data.token;
-                                    if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
-                                    history.push(URL.service.home);
-                                }
+                               
+                                var token = res.data.token;
+                                if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
+                                history.push(URL.service.home);
+                                
                                 
                             }
                         }     
@@ -78,18 +74,16 @@ const GoogleCallback = ({location, history, ...props}) => {
                         alert("인증이 실패하였습니다")
                         window.location.href = URL.service.accounts.login
                     }
+                    else if(resp.status === 400){
+                        alert("local sns로 가입되어 있습니다.");
+                        window.location.href = URL.service.accounts.login
+                    }
                     else {
                         console.log(resp.status)
                         console.error(resp.data.message)
                     }
                 }
             });
-
-            
-            
-
-            
-            
         } 
         catch(err){
             console.log(err);
