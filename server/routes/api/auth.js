@@ -163,8 +163,7 @@ router.get('/google', function(req, res, next){
         }
         else{
             if(info){
-                console.log(StatusCodes.DUPLICATE);
-                res.status(StatusCodes.DUPLICATE).json({
+                res.status(StatusCodes.BAD_REQUEST).json({
                     message: "local sns"
                 });
             }
