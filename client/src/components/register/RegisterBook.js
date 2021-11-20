@@ -47,9 +47,9 @@ class RegisterBook extends Component {
             page_count: {val: "", class: "textbox"},
             title: {val: "", class: "textbox"},
             bookDescription: {val: "", class: ""},
-            contents: {val: "", class: ""},
-            preview: {name:"", file:null},
-            books: [{name:"", file:null}],
+            content: {val: "", class: ""},
+            preview: {filename:"", file:null},
+            books: [{title:"", filename:"", file:null}],
             tmp: null,
             day: {val: "", class: ""},
             modal: false,
@@ -87,7 +87,7 @@ class RegisterBook extends Component {
         this.setState(state);
     }
 
-    handleTitleChange = evt => {
+    handleBookTitleChange = evt => {
         var state = this.state;
         state.title.val = evt.target.value;
         state.title.class = "textbox";
@@ -103,10 +103,10 @@ class RegisterBook extends Component {
         this.setState(state);
     }
 
-    handleContentsChange = evt => {
+    handleContentChange = evt => {
         var state = this.state;
-        state.contents.val = evt.target.value;
-        state.contents.class = "";
+        state.content.val = evt.target.value;
+        state.content.class = "";
 
         this.setState(state);
     }
@@ -143,7 +143,7 @@ class RegisterBook extends Component {
         var file = evt.target.files[0];
 
         if(!file) {
-            state.preview.name = ""
+            state.preview.filename = ""
             state.preview.file = null
             this.setState(state)
             return;
@@ -156,17 +156,23 @@ class RegisterBook extends Component {
             return;
         }
 
-        state.preview.name = file.name
+        state.preview.filename = file.name
         state.preview.file = file
 
         this.setState(state)
+    }
+
+    handleTitleChange = (evt, idx) => {
+        var state = this.state;
+        state.books[idx].title = evt.target.value;
+        this.setState(state);
     }
 
     handleBookFileChange = (evt, idx) => {
         var state = this.state
         var file = evt.target.files[0]
         if(!file) {
-            state.books[idx].name = ""
+            state.books[idx].filename = ""
             state.books[idx].file = null
             this.setState(state)
             return;
@@ -179,10 +185,7 @@ class RegisterBook extends Component {
             return;
         }
 
-        //var blob = file.slice(0, file.size, file.type)
-        //var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
-
-        state.books[idx].name = file.name
+        state.books[idx].filename = file.name
         state.books[idx].file = file
 
         this.setState(state)
@@ -190,11 +193,7 @@ class RegisterBook extends Component {
 
     handleDayChange = (value) => {
         var state = this.state
-
-        state.day.val = Object.entries(value)
-            .sort(([, a], [, b]) => a.value - b.value)
-            .map(item => {return item[1].label})
-            .join('')
+        state.day.val = value
 
         this.setState(state)
     }
@@ -230,11 +229,22 @@ class RegisterBook extends Component {
                 this.setState(state)
                 return;
             }
+
+            for(var i=0; i < state.books.length; i++) {
+                if(!state.books[i].title) {
+                    alert(`${i+1}회차 제목을 입력해주세요`)
+                    this.setState(state)
+                    return;
+                }
+                if(!state.books[i].file) {
+                    alert(`${i+1}회차 파일을 업로드 해주세요`)
+                    this.setState(state)
+                    return;
+                }
+            }
         } else {
             if(!state.page_count.val) {
                 alert('페이지 수를 입력해주세요')
-                state.page_count.class = "textbox error";
-                this.setState(state)
                 return;
             }
 
@@ -261,9 +271,9 @@ class RegisterBook extends Component {
         }
 
         if(this.type === 2) {
-            if(!state.contents.val) {
+            if(!state.content.val) {
                 alert('목차를 입력해주세요')
-                state.contents.class = "error";
+                state.content.class = "error";
                 this.setState(state)
                 return;
             }
@@ -279,13 +289,11 @@ class RegisterBook extends Component {
         if(this.type === 2) {
             if(!state.preview.file) {
                 alert('미리보기 파일을 업로드해주세요.')
-                this.setState(state)
                 return;
             }
 
             if(!state.books[0].file) {
                 alert('등록할 파일을 업로드해주세요.')
-                this.setState(state)
                 return;
             }
         }
@@ -305,21 +313,20 @@ class RegisterBook extends Component {
             var newFile = new File([blob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: file.type})
         }
 
-        var preview = state.preview.file
-        var blob2 = preview.slice(0, preview.size, preview.type)
-        var newPreview = new File([blob2], state.title.val.slice(0, 10) + "_preview.pdf", {type: preview.type})
-
         data.append("img", newFile)
-        data.append("preview", newPreview)
 
         if(this.type === 2) {
+            var preview = state.preview.file
+            var blob2 = preview.slice(0, preview.size, preview.type)
+            var newPreview = new File([blob2], state.title.val.slice(0, 10) + "_preview.pdf", {type: preview.type})
+
             var book = state.books[0].file
             var blob1 = book.slice(0, book.size, book.type)
             var newBook = new File([blob1], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
 
-
-            data.append("content", state.contents.val)
+            data.append("preview", newPreview)
             data.append("file", newBook)
+            data.append("content", state.content.val)
             data.append("page_number", state.page_count.val)
 
             try {
@@ -337,9 +344,11 @@ class RegisterBook extends Component {
                 var book = state.books[i].file
                 var blob1 = book.slice(0, book.size, book.type)
                 var newBook = new File([blob1], state.title.val.slice(0, 10) + `_${i+1}.pdf`, {type: book.type})
-
                 data.append("file", newBook)
             }
+
+            data.append("book_detail_titles", state.books.map(({title})=>title))
+            data.append("serialization_day", state.day.val[0]['label'])
 
             try {
                 const res = await API.sendData(URL.api.register.book_series, data)
@@ -478,7 +487,7 @@ class RegisterBook extends Component {
                     <div className="input-box">
                         <h3 className="header"> 제목 </h3>
                         <div className="input-wrap">
-                            <input type="text" name="title" autoComplete="off" className={state.title.class} onChange={this.handleTitleChange} value={state.title.val}/>
+                            <input type="text" name="title" autoComplete="off" className={state.title.class} onChange={this.handleBookTitleChange} value={state.title.val}/>
                         </div>
                     </div>
 
@@ -488,7 +497,7 @@ class RegisterBook extends Component {
                         <div className="input-box">
                             <h3 className="header"> 목차 </h3>
                             <div>
-                                <textarea rows={5} cols={5} className={state.contents.class} onChange={this.handleContentsChange} value={state.contents.val} wrap="hard"/>
+                                <textarea rows={5} cols={5} className={state.content.class} onChange={this.handleContentChange} value={state.content.val} wrap="hard"/>
                             </div>
                         </div>
                     }
@@ -511,46 +520,58 @@ class RegisterBook extends Component {
                                                 {book_idx+1}회차
                                             </div>
                                         }
-                                        <div className="row">
-                                            <div className="btn btn-outline header">미리보기 </div>
-                                            <div className="filename">
-                                                {state.preview.name}
+                                        {
+                                            this.type === 1 &&
+                                            <div className="row">
+                                                <div className="header">제목 </div>
+                                                <input className="title box" value={book.title} onChange={(e) => this.handleTitleChange(e, book_idx)} placeholder={"제목을 입력해주세요"}/>
                                             </div>
-                                            <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
-                                            <label htmlFor="preview">
-                                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                                            </label>
-                                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
-                                        </div>
-                                        <div className="row">
-                                            <div className="btn btn-outline header">작품등록 </div>
-                                            <div className="filename">
-                                                {book.name}
+                                        }
+                                        {
+                                            this.type === 2 &&
+                                            <div className="row">
+                                                <div className="header">미리보기 </div>
+                                                <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
+                                                <label htmlFor="preview">
+                                                    <div className="box">
+                                                        {!!state.preview.filename ? state.preview.filename : "파일을 업로드해주세요."}
+                                                    </div>
+                                                    <div className="btn btn-color-2 upload-btn">업로드</div>
+                                                </label>
+                                                <span className="upload-text"> 파일형식: PDF</span>
                                             </div>
+                                        }
+
+                                        <div className="row">
+                                            <div className="header">작품등록 </div>
                                             <input type="file" id={"book" + book_idx} onChange={(evt) => this.handleBookFileChange(evt, book_idx)} accept=".pdf"/>
                                             <label htmlFor={"book" + book_idx}>
-                                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
+                                                <div className="box">
+                                                    {!!book.filename ? book.filename : "파일을 업로드해주세요."}
+                                                </div>
+                                                <div className="btn btn-color-2 upload-btn">업로드</div>
                                             </label>
-                                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
+                                            <span className="upload-text"> 파일형식: PDF</span>
                                         </div>
-
-                                        {
-                                            this.type === 1 && state.books.length < 3 && (state.books.length - 1) === book_idx &&
-                                            <div>
-                                                <button className="btn btn-block btn-transparent add-btn" onClick={this.handleAddBook}> + 더보기 </button>
-                                            </div>
-                                        }
-
                                         {
                                             this.type === 1 && state.books.length > 1 && (state.books.length - 1) === book_idx &&
-                                            <div>
-                                                <button className="btn btn-transparent del-btn" onClick={this.handleDeleteBook}> X </button>
+                                            <div className="delete">
+                                                <button className="btn btn-transparent del-btn" onClick={this.handleDeleteBook}> </button>
                                             </div>
                                         }
 
+                                        {
+                                            (state.books.length-1 !== book_idx) && <hr/>
+                                        }
                                     </div>
                                 )
                             })
+                        }
+                        {
+                            this.type === 1 && state.books.length < 3 &&
+                            <div className="add">
+                                <button className="btn btn-block btn-transparent add-btn" onClick={this.handleAddBook}> + 추가하기 </button>
+                            </div>
                         }
                     </div>
 

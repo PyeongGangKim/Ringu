@@ -13,6 +13,9 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+import Helmet from 'react-helmet';
+import string from '../../config/str';
+
 class ModifyBook extends Component {
     constructor(props) {
         super(props)
@@ -131,6 +134,14 @@ class ModifyBook extends Component {
     handlePreviewFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
+
+        if(!file) {
+            state.preview.name = ""
+            state.preview.file = null
+            this.setState(state)
+            return;
+        }
+
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -139,11 +150,8 @@ class ModifyBook extends Component {
             return;
         }
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
-
-        state.preview.name = newFile.name
-        state.preview.file = newFile
+        state.preview.name = file.name
+        state.preview.file = file
 
         this.setState(state)
     }
@@ -151,6 +159,13 @@ class ModifyBook extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
+        if(!file) {
+            state.book.name = ""
+            state.book.file = null
+            this.setState(state)
+            return;
+        }
+
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -159,11 +174,11 @@ class ModifyBook extends Component {
             return;
         }
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
+        //var blob = file.slice(0, file.size, file.type)
+        //var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
 
-        state.book.name = newFile.name
-        state.book.file = newFile
+        state.book.name = file.name
+        state.book.file = file
 
         this.setState(state)
     }
@@ -228,9 +243,9 @@ class ModifyBook extends Component {
             return;
         }
 
-        if(!state.contents.val) {
+        if(!state.content.val) {
             alert('목차를 입력해주세요')
-            state.contents.class = "error";
+            state.content.class = "error";
             this.setState(state)
             return;
         }
@@ -303,8 +318,9 @@ class ModifyBook extends Component {
 
         return (
             <div id="register-book" className="page3">
+                <Helmet title={state.title.val + " " + string.modify + string.postfix}/>
                 <div className="title-wrap">
-                    <h2 className="title">수정하기</h2>
+                    <h2 className="title">단행본 수정하기</h2>
                 </div>
 
                 <hr/>
@@ -371,26 +387,30 @@ class ModifyBook extends Component {
 
                     <div className="upload-wrap">
                         <div className="upload">
-                            <div className="btn btn-outline header">미리보기 </div>
-                            <div className="file-wrap">
-                                <input className="filename" value={state.preview.name}/>
+                            <div className="row">
+                                <div className="btn btn-outline header">미리보기 </div>
+                                <div className="filename">
+                                    {state.preview.name}
+                                </div>
+                                <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
+                                <label htmlFor="preview">
+                                    <div className="btn btn-color-2 upload-btn">파일 수정</div>
+                                </label>
+                                <span className="upload-text"> 파일형식: PDF</span>
                             </div>
-                            <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
-                            <label htmlFor="preview">
-                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                            </label>
-                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
                         </div>
                         <div className="upload">
-                            <div className="btn btn-outline header">작품등록 </div>
-                            <div className="file-wrap">
-                                <input className="filename" value={state.book.name}/>
+                            <div className="row">
+                                <div className="btn btn-outline header">작품등록 </div>
+                                <div className="filename">
+                                    {state.book.name}
+                                </div>
+                                <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
+                                <label htmlFor="book">
+                                    <div className="btn btn-color-2 upload-btn">파일 수정</div>
+                                </label>
+                                <span className="upload-text"> 파일형식: PDF</span>
                             </div>
-                            <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
-                            <label htmlFor="book">
-                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                            </label>
-                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
                         </div>
                     </div>
 
