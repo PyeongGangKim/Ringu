@@ -82,12 +82,14 @@ async function SNSVerify(req, done) {
         const user = await member.findOne({ where : {email: email, status: 1} });
 
         if(user && user[`${sns}_id`] === id){
+            console.log(user[`${sns}_id`], id);
             return done(null, user);
         }
 
         // email이 등록이 안 되어 있는 경우
         else {
-            return done(null, user);
+            console.log("error");
+            return done(null, false, {message : "local login"});
         }
     }
     catch(err){
@@ -102,7 +104,7 @@ facebookOptions.profileFields = ['id','name','email'];
 module.exports = () => {
     passport.use("local", new LocalStrategy(localStrategyOption, localVerify));
     passport.use("jwt", new JWTStrategy(JWTStrategyOption, JWTVerify));
-    passport.use("google", new GoogleStrategy(getOption(GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_CALLBACK_URL), verify));
+    passport.use("google", new CustomStrategy(SNSVerify));
     //passport.use("naver", new NaverStrategy(getOption(NAVER_CLIENT_ID,NAVER_CLIENT_SECRET,NAVER_CALLBACK_URL), verify));
     passport.use("naver", new CustomStrategy(SNSVerify));
     passport.use("kakao", new CustomStrategy(SNSVerify));

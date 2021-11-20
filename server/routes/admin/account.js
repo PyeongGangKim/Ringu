@@ -9,7 +9,7 @@ const { checkLogin } = require("../../helper/activity");
 
 
 
-const { member, author ,withdrawal, account, Sequelize : { Op }, sequelize } = require("../../models/index");
+const { member, author ,withdrawal, bank,account, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 
 router.get("/", async (req, res, next) => {
@@ -51,6 +51,12 @@ router.get("/", async (req, res, next) => {
                             model : author,
                             as : "author",
                             attributes: ['name','bank','account'],
+                            include: [
+                                {
+                                    model: bank,
+                                    as: "bank_bank",
+                                }
+                            ]
                         },
                     ]
                 }

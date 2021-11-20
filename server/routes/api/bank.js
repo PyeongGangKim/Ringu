@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const {StatusCodes} = require("http-status-codes");
+const StatusCodes = require("../../helper/statusCodes");
 
 
 const { isLoggedIn } = require("../../middlewares/auth");

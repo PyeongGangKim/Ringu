@@ -30,7 +30,8 @@
                     <th style="width: 60px;">작가 이름</th>
                     <th style="width: 60px;">카테고리</th>
                     <th style="width: 120px;">책 이름</th>
-                    <th style="width: 120px;">가격</th>
+                    <th style="width: 90px;">가격</th>
+                    <th style="width: 90px;">charge</th>
                     <th style="width: 120px;">더 보기</th>
                     <th style="width: 120px;">연재본</th>
                 </tr>
@@ -57,6 +58,9 @@
                         </td>
                         <td class="text-center">
                             <%=cover.price%>
+                        </td>
+                        <td class="text-center">
+                            <%=cover.charge%>
                         </td>
                         <td class="menu">
                             <a href="/admin/book/serialization/<%=cover.id%>">

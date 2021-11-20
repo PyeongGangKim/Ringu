@@ -19,7 +19,7 @@ module.exports = {
         var day  = date.getDate();
         day = (day < 10 ? "0" : "") + day;
 
-        return year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+        return year + month + day + hour + min + sec;
     },
     getDateFromDate: (date) => {
 

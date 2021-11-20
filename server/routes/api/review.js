@@ -137,6 +137,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
                     [sequelize.literal("member.nickname"),"nickname"],
                     [sequelize.literal("book_detail.id"),"detail_id"],
                     [sequelize.literal("book_detail.title"),"subtitle"],
+                    [sequelize.literal("book_detail.round"),"round"],
                     [sequelize.literal("`book_detail->book`.id"),"book_id"],
                     [sequelize.literal("`book_detail->book`.type"),"book_type"],
                     [sequelize.literal("`book_detail->book`.title"),"book_title"],

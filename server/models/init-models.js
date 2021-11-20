@@ -21,6 +21,8 @@ var _review_statistics = require("./review_statistics");
 var _reward = require("./reward");
 var _reward_stat = require("./reward_stat");
 var _withdrawal = require("./withdrawal");
+let _book_recommending_phrase = require("./book_recommending_phrase");
+
 
 function initModels(sequelize) {
   var account = _account(sequelize, DataTypes);
@@ -45,6 +47,8 @@ function initModels(sequelize) {
   var reward = _reward(sequelize, DataTypes);
   var reward_stat = _reward_stat(sequelize, DataTypes);
   var withdrawal = _withdrawal(sequelize, DataTypes);
+  let book_recommending_phrase = _book_recommending_phrase(sequelize,DataTypes);
+
 
   author.belongsTo(bank, { as: "bank_bank", foreignKey: "bank"});
   bank.hasMany(author, { as: "authors", foreignKey: "bank"});
@@ -98,14 +102,18 @@ function initModels(sequelize) {
   member.hasMany(review, { as: "reviews", foreignKey: "member_id"});
   review_statistics.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(review_statistics, { as: "review_statistics", foreignKey: "author_id"});
-  reward.belongsTo(member, { as: "member", foreignKey: "member_id"});
-  member.hasMany(reward, { as: "rewards", foreignKey: "member_id"});
-  reward_stat.belongsTo(member, { as: "member", foreignKey: "member_id"});
-  member.hasMany(reward_stat, { as: "reward_stats", foreignKey: "member_id"});
   withdrawal.belongsTo(member, { as: "author", foreignKey: "author_id"});
   member.hasMany(withdrawal, { as: "withdrawals", foreignKey: "author_id"});
   purchase.belongsTo(payment, { as: "payment", foreignKey: "payment_id"});
   payment.hasMany(purchase, { as: "purchases", foreignKey: "payment_id"});
+  book_recommending_phrase.belongsTo(book, {as : "book", foreignKey: "book_id"});
+  book.hasOne(book_recommending_phrase, {as : "book_recommending_phrase", foreignKey: "book_id"});
+  reward.belongsTo(member, {as: "member", foreignKey: "member_id"});
+  member.hasMany(reward, {as: "rewards", foreignKey: "member_id"});
+  reward_stat.belongsTo(member, {as : "member", foreignKey: "member_id"});
+  member.hasOne(reward_stat, {as: "reward_stat", foreignKey: "member_id"});
+
+
 
   return {
     account,
@@ -130,7 +138,10 @@ function initModels(sequelize) {
     reward,
     reward_stat,
     withdrawal,
-  };
+    book_recommending_phrase,
+    reward,
+    reward_stat,
+};
 }
 module.exports = initModels;
 module.exports.initModels = initModels;

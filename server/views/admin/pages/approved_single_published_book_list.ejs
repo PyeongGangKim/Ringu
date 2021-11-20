@@ -30,8 +30,9 @@
                     <th style="width: 60px;">작가 이름</th>
                     <th style="width: 60px;">카테고리</th>
                     <th style="width: 120px;">책 이름</th>
-                    <th style="width: 120px;">가격</th>
-                    <th style="width: 120px;"></th>
+                    <th style="width: 90px;">가격</th>
+                    <th style="width: 90px;">charge</th>
+                    <th style="width: 120px;">더 보기</th>
                     <th style="width: 120px;">파일 다운로드</th>
                     <th style="width: 120px;">미리보기 다운로드</th>
                 </tr>
@@ -58,6 +59,9 @@
                         </td>
                         <td class="text-center">
                             <%=singlePublishedBook.price%>
+                        </td>
+                        <td class="text-center">
+                            <%=singlePublishedBook.charge%>
                         </td>
                         <td class="menu">
                             <a href="/admin/book/singlePublished/<%=singlePublishedBook.id%>">

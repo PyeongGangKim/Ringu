@@ -13,6 +13,7 @@ const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/thir
 const { book, notiCount, favorite_author ,notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
+const helper_url = require("../../../client/src/helper/helper_url");
 
 router.get("/", async (req, res, next) => {
     //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
@@ -500,10 +501,11 @@ router.get("/singlePublished/:singlePublished", async (req, res, next) => {
                 "title",
                 "content",
                 "description",
+                "is_approved",
+                "charge",
                 [sequelize.literal("author.nickname"), "author"],
                 [sequelize.literal("category.name"), "category"],
                 [sequelize.literal("book_details.page_number"), "page_number"],
-                [sequelize.literal("book_details.is_approved"), "is_approved"],
                 [sequelize.literal("book_details.id"), "book_details_id"],
             ],
             raw: true,
@@ -676,7 +678,7 @@ router.post("/unapproved/:bookId", async(req, res, next) => {
     const reason = req.body.reason;
     const t = await sequelize.transaction();
     try{
-        await book_detail.update({
+        await book.update({
             is_approved : -1
         },
         {
@@ -834,7 +836,59 @@ router.get("/approved/:bookId", async (req,res,next) => {
         console.log(err);
     }
 });
+router.get('/:bookId/update-charge/page', async(req,res,next) => {
+    checkLogin(req, res, "/admin/book/:bookDetailId/update-charge/page");
 
+    const book_id = req.params.bookId;
+    try{
+        const updatedBook = await book.findOne({
+            where: {
+                id : book_id,
+            }
+        });
+        res.render("admin/pages/book_charge_update", {
+            "book": updatedBook,
+            "helper_date": helper_date,
+        });
+    }
+    catch(err){
+        console.error(err);
+    }
+});
+router.post('/:bookId/update-charge', async(req, res, next) => {
+    checkLogin(req, res, "/admin/book/:bookId/update-charge/page");
+
+    const book_id = req.params.bookId;
+    const charge = req.body.charge;
+
+    try{
+        const isUpdate = await book.update({
+            charge : charge,
+        },
+        {
+            where: {
+                id : book_id,
+            }
+        });
+        if(isUpdate){
+            const updatedBook = await book.findOne({
+                where: {
+                    id: book_id,
+                }
+            });
+            if(book.type == 1){
+                res.redirect("/admin/book/serialization/" + book_id);
+            }
+            else{
+                res.redirect("/admin/book/singlePublished/" + book_id);
+            }
+        }
+        
+    }
+    catch(err){
+        console.error(err);
+    }
+});
 router.get('/:bookDetailId/update/page', async(req, res, next) => {
     checkLogin(req, res, "/admin/book/:bookDetailId/upadte/page");
 
@@ -861,13 +915,11 @@ router.post('/:bookDetailId/update', async(req, res, next) => {
     const book_detail_id = req.params.bookDetailId;
     const title = req.body.title;
     const page_number = req.body.page_number;
-    const charge = req.body.charge;
 
     try{
         const isUpdate = await book_detail.update({
             title: title,
             page_number: page_number,
-            charge : charge,
         },
         {
             where: {

@@ -3,6 +3,7 @@ const multerS3 = require("multer-s3");
 const AWS = require("aws-sdk");
 const {ACCESS_KEY_ID, SECRET_ACCESS_KEY, REGION, MAIN_BUCKET, IMG_BUCKET, DIRNAME} = require("../../config/aws");
 const { book } = require("../../models");
+const { getDateTime } = require("../../helper/date");
 
 const s3 = new AWS.S3({
     accessKeyId: ACCESS_KEY_ID,
@@ -12,16 +13,16 @@ const s3 = new AWS.S3({
 
 const storage = multerS3({
     s3: s3,
-    
+
     bucket: function(req,file, cb){
         let fieldName = file.fieldname;
         if(fieldName === "img"){
             cb(null, IMG_BUCKET);
         }
         else cb(null, MAIN_BUCKET+ "/" + file.fieldname);
-        
+
     },
-    
+
     contentType: function(req, file, cb){
         let fieldName = file.fieldname;
         if(fieldName === "img"){
@@ -35,11 +36,11 @@ const storage = multerS3({
         const fileNameSplit = file.originalname.split('.');
         let fileName = ""
         if(fieldName === "img"){
-            fileName = req.user.nickname + "_" + Date.now().toString() + "." + fileNameSplit[fileNameSplit.length - 1];
+            fileName = req.user.email + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
         }
-        else fileName = fileNameSplit[0] + "_" + Date.now().toString() + "." + fileNameSplit[fileNameSplit.length - 1];
+        else fileName = fileNameSplit[0] + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
         cb(null, fileName);
-       
+
     }, // 파일 이름
     acl: 'public-read',
 });
@@ -56,7 +57,7 @@ const uploadFile = upload.fields([
 
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;
-    console.log(id);
+
     try{
         const findedBook = await book.findOne({
             where : {
@@ -77,14 +78,13 @@ const deleteFile = async (req, res, next) =>{
                         Key: DIRNAME + "/" + delFileName,
                     },
                     {
-                        Key: DIRNAME+ "/" + delImgNmae, 
+                        Key: DIRNAME+ "/" + delImgNmae,
                     }
                 ]
             }
         }
         s3.deleteObjects(params, (err, data) => {
             if (err) {
-                console.log('aws file delete error')
                 console.log(err);
               } else {
                 console.log('aws file delete success' + data)

@@ -11,6 +11,7 @@ const statusCodes = {
     CONFILCT: StatusCodes.CONFLICT,
     INTERNAL_SERVER_ERROR: StatusCodes.INTERNAL_SERVER_ERROR,
     NO_CONTENT: StatusCodes.NO_CONTENT,
+    UNAUTHORIZED: StatusCodes.UNAUTHORIZED,
 }
 
 module.exports = statusCodes;

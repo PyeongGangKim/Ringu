@@ -36,9 +36,44 @@ router.post('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
     }
 });
 
+router.put('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
+    var id = req.body.id;
+    var file = "file" in req.files && typeof req.files.file !== 'undefined' ? req.files.file[0].key : null;
+    var title = "title" in req.body && typeof req.body.title !== 'undefined' ? req.body.title : null;
+
+    var params = {}
+    if (file !== null) {
+        params['file'] = file
+    }
+
+    if (title !== null) {
+        params['title'] = title
+    }
+
+    try{
+        const result = await book_detail.update(
+            params,
+            {
+                where: {
+                    id : id,
+                }
+            }
+        );
+        res.status(statusCodes.OK).json({
+            result: result
+        })
+    }
+    catch(err){
+        console.error(err);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+
+})
+
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_detail_id = req.params.bookId;
-
     try{
         const book_detail_info = await book_detail.findOne({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
             where : {
