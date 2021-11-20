@@ -87,7 +87,7 @@ router.get("/:withdrawalId/remittance", async (req, res, next) => {
         // 해당 금액 만큼 account
         await withdrawal.update({
             is_remittance: 1,
-            //remitted_date_time : Date.now(),
+            remitted_date_time : Date.now(),
         },
         {
             where: {

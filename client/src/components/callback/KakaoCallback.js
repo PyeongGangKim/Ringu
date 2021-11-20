@@ -11,7 +11,6 @@ const {Kakao} = window;
 const KakaoCallback = ({location, history, ...props}) => {
     useEffect(()=>{
         var code = location.search.substring(6, location.search.length);
-
         getUserProfile(code);
     }, []);
 

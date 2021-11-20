@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var sequelize = require("sequelize");
+
 
 var config_url = require("../../config/url");
 
@@ -10,12 +10,8 @@ var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
 var helper_activity = require("../../helper/activity");
 
-var member = require("../../models").member;
-var purchase = require("../../models").purchase;
-var book = require("../../models").book;
-var review = require("../../models").review;
-var favorite_author = require("../../models").favorite_author;
-var favorite_book = require("../../models").favorite_book;
+
+const { book, purchase, favorite_author ,review, favorite_book, member, reward_stat, Sequelize : { Op }, sequelize } = require("../../models/index");
 
 router.get("/", async(req, res, next) => {
     helper_activity.checkLogin(req, res, "/admin/member/");
@@ -36,12 +32,21 @@ router.get("/", async(req, res, next) => {
             where: fields,
             limit: limit,
             offset: offset,
+            include: [
+                {
+                    model: reward_stat,
+                    as: "reward_stat",
+                    required: false,
+                },                
+            ],
             order: [
                 [order_by, order_direction]
             ],
         });
+        
 
         let member_list = result.rows;
+        console.log(member_list);
         let count = result.count;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/member/", page, limit, count, fields);
 

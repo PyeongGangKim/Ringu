@@ -11,23 +11,24 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    member_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'member',
-        key: 'id'
-      }
-    },
     type: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     created_date_time: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
-    }
+    },
+    member_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'member_id',
+        key: 'id'
+      }
+    },
+
   }, {
     sequelize,
     tableName: 'reward',

@@ -1,5 +1,5 @@
 var express = require("express");
-var router = express.Router();
+
 let jwt = require('jsonwebtoken');
 let bcrypt = require('bcrypt');
 const salt_num = require('../../config/salt');
@@ -14,6 +14,7 @@ const { isLoggedIn } = require('../../middlewares/auth');
 const { redirect_url } = require('../../config/url');
 const { ncp } = require("../../config/naver_sms");
 
+let router = express.Router();
 router.post("/signup", async (req, res, next) => {
     var payload = req.body;
     payload.password = payload.password.toString();
@@ -121,7 +122,7 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
 
 router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하는 api
     var email = req.query.email;
-
+    console.log(email);
     try{
         const result = await member.findOne({
             where : {
@@ -129,7 +130,7 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
                 status: 1,
             }
         });
-
+        console.log(result);
         if(result !== null){
             res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
@@ -149,14 +150,44 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
     }
 })
 //google login
-router.get('/google', passport.authenticate('google', {
-      session: false,
-      scope: ['profile', 'email'],
-    }),
-);
+router.get('/google', function(req, res, next){
+    passport.authenticate('google', {
+        session: false,
+        scope: ['profile', 'email'],
+      },function(err, user, info) {
+        if(err){
+            console.error(err);
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                message: "unauthorized"
+            });
+        }
+        else{
+            if(info){
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "local sns"
+                });
+            }
+            else{
+                const token = jwt.sign({
+                    id: user.id,
+                    type: user.type,
+                }, secretKey, {
+                    expiresIn: '12h',
+                    issuer: 'ringu',
+                });
+                console.log(token);
+                res.status(StatusCodes.OK).json({
+                    token: token
+                });
+            }
+        }
+        
+    })(req,res,next)
+});
 
 router.get( '/google/callback',passport.authenticate('google', { failureRedirect: '/auth/login', session: false }),
     function (req, res) {
+        console.log(req.user.message);
         const token = jwt.sign({
              id: req.user.id,
              type: req.user.type,
@@ -272,13 +303,14 @@ router.post("/login", async (req, res, next) => {
     try {
         passport.authenticate("local", { session: false },(passportError, user, info) => {
             if(passportError || !user){
+                console.log(passportError);
                 console.log(info);
-                res.status(400).json({message: info.message});
+                res.status(StatusCodes.BAD_REQUEST).json({message: info.message});
                 return;
             }
             req.login(user, { session: false }, (loginError) => {
                 if (loginError) {
-                    res.status(StatusCode.INTERNAL_SERVER_ERROR).json(loginError);
+                    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(loginError);
                     return;
                 }
                 const token = jwt.sign({
@@ -336,7 +368,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
         });
 
         if(result == null){
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            res.status(StatusCodes.BAD_REQUEST).json({
                 reason: "dismatch identification number",
             });
             return;

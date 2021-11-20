@@ -8,8 +8,9 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     amount: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+        type: DataTypes.INTEGER,
+        allowNull: false,
+
     },
     member_id: {
       type: DataTypes.INTEGER,
@@ -18,7 +19,8 @@ module.exports = function(sequelize, DataTypes) {
         model: 'member',
         key: 'id'
       }
-    }
+    },
+
   }, {
     sequelize,
     tableName: 'reward_stat',
