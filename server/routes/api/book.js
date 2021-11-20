@@ -244,9 +244,13 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                     book_detail_info.dataValues.is_favorite = true
                 }
             }
+            if(!!book_detail_info.dataValues.author_profile) {
+                book_detail_info.dataValues.author_profile = getImgURL(book_detail_info.dataValues.author_profile);
+            }
+            if(!!book_detail_info.img) {
+                book_detail_info.dataValues.img = getImgURL(book_detail_info.img);
+            }
 
-            book_detail_info.dataValues.author_profile = getImgURL(book_detail_info.dataValues.author_profile);
-            book_detail_info.dataValues.img = getImgURL(book_detail_info.img);
             res.status(statusCodes.OK).json({
 
                 "book": book_detail_info,
@@ -403,25 +407,29 @@ router.post('/single' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) 
     }
 });
 router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
-    let price = req.body.price;
-    let content = req.body.content;
-    let book_description = req.body.book_description;
-    let author_id = req.user.id;
-    let category_id = req.body.category_id;
-    let book_detail_titles = [];
-    let title = req.body.title;
-    let type = req.body.type;
-    let is_finished_serialization = 1;
-    let serialization_day = req.body.serialization_day;
-    let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
-    let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
-
+    var price = req.body.price;
+    var content = req.body.content;
+    var book_description = req.body.book_description;
+    var author_id = req.user.id;
+    var category_id = req.body.category_id;
+    var book_detail_titles = req.body.book_detail_titles;
+    var title = req.body.title;
+    var type = req.body.type;
+    var is_finished_serialization = 1;
+    var serialization_day = req.body.serialization_day;
+    var img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
+    var preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
 
     //book detail table에 넣는 attribute
-    let files = [];
-    for(let file of req.files.file){
-        book_detail_titles.push(file.key)
+    var files = [];
+    for(var file of req.files.file){
         files.push(file.key);
+    }
+
+    try{
+        book_detail_titles = book_detail_titles.split(',')
+    } catch(e) {
+        console.error(e)
     }
 
     const t = await sequelize.transaction();
@@ -442,7 +450,7 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
         },{
             transaction: t,
         });
-        for(let i = 0 ; i < book_detail_titles.length; i++){
+        for(var i = 0 ; i < book_detail_titles.length; i++){            
             await book_detail.create({
                 title: book_detail_titles[i],
                 book_id : new_book.id,
@@ -556,10 +564,7 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
             params['preview'] = req.files.preview[0].key;
         }
 
-
-
         const t = await sequelize.transaction();
-        console.log(params)
         const updateBook = await book.update(
             params,
         {
