@@ -1,6 +1,5 @@
 module.exports = {
     api : {
-
         auth: {
             login:              "/auth/login",
             signup:             "/auth/signup",
@@ -24,48 +23,14 @@ module.exports = {
                 kakao:          "/auth/kakao",
             },
             nickname_duplicate: "/auth/nickname/duplicate",
-
         },
         author: {
             get:                "/author",
             update:             "/author",
             create:             "/author",
         },
-        withdrawal: {
-            create:             "/withdrawal",
-            get:                "/withdrawal",
-        },
         bank: {
             get:                "/bank",
-        },
-        member: {
-            get:                "/member",
-            getById:            "/member/",
-            nickname_duplicate: "/member/nickname/duplicate",
-            password:           "/member/password",
-            passwordCheck:      "/member/password/check",
-            upload_profile:     "/member/upload_profile",
-            profile:            "/member/profile/",
-            certification:      "/member/certification",
-            update:             "/member/",
-            delete:             "/member",
-        },
-        cart: {
-            create:             "/cart",
-            duplicate:          "/cart/duplicate",
-            list:               "/cart",
-            delete:             "/cart/",
-            clear:              "/cart/clear",
-        },
-        payment: {
-            create              :"/payment",
-        },
-        purchase: {
-            list:               "/purchase",
-            duplicate:          "/purchase/duplicate",
-            sales:              "/purchase/sales",
-            sales_author:       "/purchase/sales/author",
-            sales_amount_author:"/purchase/sales/amount/author",
         },
         book: {
             get:                "/book/",
@@ -80,6 +45,14 @@ module.exports = {
         book_detail: {
             get:                "/book_detail/",
             delete:             "/book_detail/",
+            modify:             "/book_detail/",
+        },
+        cart: {
+            create:             "/cart",
+            duplicate:          "/cart/duplicate",
+            list:               "/cart",
+            delete:             "/cart/",
+            clear:              "/cart/clear",
         },
         category: {
             list:               "/category",
@@ -100,6 +73,41 @@ module.exports = {
                 duplicate:      "/favorite_book/duplicate",
             },
         },
+        member: {
+            get:                "/member",
+            getById:            "/member/",
+            nickname_duplicate: "/member/nickname/duplicate",
+            password:           "/member/password",
+            passwordCheck:      "/member/password/check",
+            upload_profile:     "/member/upload_profile",
+            profile:            "/member/profile/",
+            certification:      "/member/certification",
+            update:             "/member/",
+            delete:             "/member",
+        },
+        notification: {
+            getNotification:    "/notification/",
+            getAllNotiCount:    "/notification/allCount",
+            getAllNewNoticount:    "/notification/allNewNotiCount",
+            putReadNotification:    "/notification/",
+            getNewNotiCount: "/notification/newNotiCnt",
+            deleteNotification: "/notification/delete",
+        },
+        payment: {
+            create              :"/payment",
+        },
+        purchase: {
+            list:               "/purchase",
+            duplicate:          "/purchase/duplicate",
+            sales:              "/purchase/sales",
+            sales_author:       "/purchase/sales/author",
+            sales_amount_author:"/purchase/sales/amount/author",
+        },
+        register: {
+            book_single:        "/book/single",
+            book_series:        "/book/series",
+            bookDetail:         "/book_detail"
+        },
         review: {
             getReivewList:      "/review",
             getByMember:        "/review/member/",
@@ -109,18 +117,9 @@ module.exports = {
             duplicate:          "/review/duplicate",
             stats:              "/review/stats",
         },
-        register: {
-            book_single:        "/book/single",
-            book_series:        "/book/series",
-            bookDetail:         "/book_detail"
-        },
-        notification: {
-            getNotification:    "/notification/",
-            getAllNotiCount:    "/notification/allCount",
-            getAllNewNoticount:    "/notification/allNewNotiCount",
-            putReadNotification:    "/notification/",
-            getNewNotiCount: "/notification/newNotiCnt",
-            deleteNotification: "/notification/delete",
+        withdrawal: {
+            create:             "/withdrawal",
+            get:                "/withdrawal",
         },
     },
     service : {
@@ -141,12 +140,12 @@ module.exports = {
             modify              : "/modify/pub/",
             modify_series       : "/modify/series/",
         },
-        buy : {
+        buy: {
             buy                 : "/buy",
             complete            : "/complete",
         },
         home                    : "/",
-        mypage  : {
+        mypage: {
             info                : "/mypage",
             password_change     : "/mypage/password/update",
             notification_change : "/mypage/notification/update",
@@ -159,7 +158,8 @@ module.exports = {
         },
         notification    : "/notification/",
         search          : "/search",
-        register : {
+        payment         : "/payment",
+        register: {
             author              : "/register/author",
             author_detail       : "/register/author/detail",
             book                : "/register/book/",
