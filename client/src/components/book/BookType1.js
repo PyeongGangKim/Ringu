@@ -110,7 +110,7 @@ class BookType1 extends Component {
                 }
             }
             catch(e) {
-                var error = e.response                
+                var error = e.response
             }
         }
 
@@ -407,11 +407,14 @@ class BookType1 extends Component {
                                                             <div className="info">
                                                                 <span> {item.nickname} </span>
                                                                 <span className="sep"> | </span>
+                                                                <span> {item.round}회차 </span>
+                                                                <span className="sep"> | </span>
                                                                 <em className={item.score >= 1 ? "on" : "off"}/>
                                                                 <em className={item.score >= 2 ? "on" : "off"}/>
                                                                 <em className={item.score >= 3 ? "on" : "off"}/>
                                                                 <em className={item.score >= 4 ? "on" : "off"}/>
                                                                 <em className={item.score >= 5 ? "on" : "off"}/>
+
                                                             </div>
                                                             <span className="review">
                                                                 {item.description}
