@@ -120,14 +120,22 @@ class SideMemberInfo extends Component {
         const data = new FormData()
         data.append('img', newFile)
 
-        const res = await API.sendData(URL.api.member.upload_profile, data)
-        if (res.status === 200) {
-            const profileRes = await API.sendGet(URL.api.member.profile + state.host.id)
-            state.host.profile = profileRes.data.url;
+        try {
+            const res = await API.sendData(URL.api.member.upload_profile, data)
+            if (res.status === 200) {
+                const profileRes = await API.sendGet(URL.api.member.profile + state.host.id)
+                state.host.profile = profileRes.data.url;
 
-            this.setState(state)
-            alert("프로필 사진이 변경되었습니다.")
+                this.setState(state)
+                alert("프로필 사진이 변경되었습니다.")
+            } else {
+                alert("프로필 사진을 변경하지 못했습니다.")
+            }
         }
+        catch(e) {
+            alert("프로필 사진을 변경하지 못했습니다.")
+        }
+
     }
 
     handleFavoriteClick = async() => {
@@ -310,6 +318,12 @@ class SideMemberInfo extends Component {
                             {
                                 this.props.isHost &&
                                 <div className="btn-wrap-vert">
+                                    <Link to={URL.service.payment}>
+                                        <button className="btn btn-color-1 btn-block">
+                                            수익 관리(임시)
+                                        </button>
+                                    </Link>
+
                                     <Link to={URL.service.register.book}>
                                         <button className="btn btn-color-2 btn-block">
                                             새 작품 등록하기
