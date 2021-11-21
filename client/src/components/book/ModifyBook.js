@@ -270,7 +270,6 @@ class ModifyBook extends Component {
             return;
         }
 
-
         try {
             const data = new FormData()
             data.append("book_id", this.props.bookId)
@@ -310,7 +309,6 @@ class ModifyBook extends Component {
         catch(err) {
             console.log(err)
         }
-
     }
 
     render() {
