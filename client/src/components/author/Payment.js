@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom'
 import { Link } from 'react-router-dom';
 import Select from 'react-select'
-import { LineChart, AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart, LineChart, AreaChart, PieChart, Area, Cell, Bar, Pie, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import moment from 'moment';
 
@@ -23,14 +23,8 @@ class Payment extends Component {
     constructor(props) {
         super(props)
 
-        this.periodOptions = [
-            {value: 0, label: "1년"},
-            {value: 1, label: "6개월"},
-            {value: 2, label: "3개월"},
-            {value: 3, label: "1개월"},
-        ]
-
         this.user = User.getInfo();
+        this.currentYear = new Date().getFullYear();
         this.state = {
             modal: false,
             type: 0,
@@ -39,8 +33,7 @@ class Payment extends Component {
             profile: null,
             name: null,
             data: [],
-            period: {value: 0, label: "1년"},
-            ticks: [],
+            year: {value: this.currentYear, label: `${this.currentYear}`},
             remitted: 0,
             balance: 0,
             balance2: 0,
@@ -48,7 +41,11 @@ class Payment extends Component {
             is_waiting: false,
             tabIndex: 0,
             sales: [],
+            total: [],
+            state: [],
             withdrawals: [],
+            yearOptions: [{value: 0, label: '-'}],
+            books: [],
         }
     }
 
@@ -112,28 +109,54 @@ class Payment extends Component {
         catch(e) {
             console.error(e)
         }
-        this.makeTicks();
+        this.filter0(this.currentYear, true);
     }
 
-    handlePeriodChange = (value) => {
+    handleYearChange = (value) => {
         var state = this.state;
-        state.period = value;
-        this.makeTicks();
+        state.year = value;
+        this.filter0(state.year.value);
         this.setState(state)
     }
 
-    makeTicks = async() => {
+    filter0 = async(year, init=false) => {
         var state = this.state;
+        var params = {
+            author_id: this.user.id,
+            year: year
+        }
 
         try {
-            const salesRes = await API.sendGet(URL.api.purchase.sales, {author_id: this.user.id, period: state.period.value})
+            const salesRes = await API.sendGet(URL.api.purchase.sales, params)
             if(salesRes.status === 200) {
                 var sales = salesRes.data.sales;
-                sales.forEach(sale => {
-                    var date = new Date(sale.date)
-                    sale.date = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-                });
-                state.data = sales;
+                var data = []
+
+                for(var i = 0; i < 12; i++) {
+                    data.push({
+                        y: year,
+                        m: i+1,
+                        revenue: 0,
+                        count: 0})
+                }
+
+                for(var i = 0; i < sales.length; i++) {
+                    var m = sales[i].m;
+                    data[m-1] = sales[i];
+                }
+
+                if(init) {
+                    var years = salesRes.data.years;
+                    var year = []
+                    for(var i = 0; i < years.length; i++) {
+                        year.push({value: years[i].y, label: `${years[i].y}년`})
+                    }
+
+                    state.yearOptions = year;
+                    state.year = year[0];
+                }
+
+                state.data = data;
                 this.setState(state)
             }
         }
@@ -141,20 +164,73 @@ class Payment extends Component {
             console.error(e)
         }
 
-        var now = new Date()
-        var base = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-        state.ticks = [base.getTime()]
+        this.setState(state);
+    }
 
-        for(var i = 0; i < 11; i++) {
-            if(state.period.value === 0) {
-                state.ticks.push(date.subtract(base, 'm', 1*(i+1)).getTime())
-            } else if(state.period.value === 1) {
-                state.ticks.push(date.subtract(base, 'd', 15*(i+1)).getTime())
-            } else if(state.period.value === 2) {
-                state.ticks.push(date.subtract(base, 'd', 7*(i+1)).getTime())
-            } else if(state.period.value === 3) {
-                state.ticks.push(date.subtract(base, 'd', 3*(i+1)).getTime())
+    filter1 = async(year, init=false) => {
+        var state = this.state;
+        var params = {
+            author_id: this.user.id,
+            year: year
+        }
+
+        try {
+            const salesRes = await API.sendGet(URL.api.purchase.sales_book, params)
+            if(salesRes.status === 200) {
+                var sales = salesRes.data.sales;
+                var stats = salesRes.data.stats;
+                var books = salesRes.data.books;
+
+                var data = []
+                var map = {}
+                for(var i = 0; i < 12; i++) {
+                    var d = {y: year, m:i+1}
+                    for(var j=0; j < books.length; j++){
+                        d[books[j].book_title] = 0
+                    }
+                    d['etc.'] = 0
+                    data.push(d)
+                }
+
+                for(var i = 0; i < sales.length; i++) {
+                    var m = sales[i].m;
+                    data[m-1][sales[i].book_title] = sales[i].revenue;
+                }
+
+                state.books = books;
+                state.stats = stats;
+                state.data = data;
+
+                this.setState(state)
             }
+        }
+        catch(e) {
+            console.error(e)
+        }
+
+        this.setState(state);
+    }
+
+    filter2 = async() => {
+        var state = this.state;
+        var params = {
+            author_id: this.user.id,
+        }
+
+        try {
+            const salesRes = await API.sendGet(URL.api.purchase.sales_ratio, params)
+            if(salesRes.status === 200) {
+                var sales = salesRes.data.sales;
+                state.data = sales
+                state.total = salesRes.data.total[0];
+                for(var i = 0; i < sales.length; i++) {
+                    sales[i].value = parseInt(sales[i].value)
+                }
+                this.setState(state)
+            }
+        }
+        catch(e) {
+            console.error(e)
         }
 
         this.setState(state);
@@ -166,11 +242,15 @@ class Payment extends Component {
             return;
         }
         state.type = type;
-        state.period = {value:0, label:"1년"}
 
         if(type === 0) {
-            this.makeTicks();
+            this.filter0(this.currentYear);
+        } else if(type === 1) {
+            this.filter1(this.currentYear);
+        } else {
+            this.filter2();
         }
+
         this.setState(state);
     }
 
@@ -214,15 +294,6 @@ class Payment extends Component {
 
     showModal = () => { var state = this.state; state.modal = true; this.setState(state); }
 
-    dateFormatAxis = (tick) => {
-        var state = this.state;
-        if (state.period.value === 0) {
-            return moment(tick).format('MMM YY');
-        } else {
-            return moment(tick).format('MM.D');
-        }
-    }
-
     handleCloseClick = () => { var state = this.state; state.modal = false; this.setState(state) }
 
     render() {
@@ -244,6 +315,8 @@ class Payment extends Component {
                 height: '36px',
             }),
         }
+
+        const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
         return (
             <div className="payment">
@@ -344,49 +417,107 @@ class Payment extends Component {
                                 </li>
                             </ul>
                             <Select
-                                value={state.period}
-                                options={this.periodOptions}
-                                onChange={value => this.handlePeriodChange(value)}
+                                value={state.year}
+                                options={state.yearOptions}
+                                onChange={value => this.handleYearChange(value)}
                                 styles={selectStyles}
                                 isSearchable={false}
                                 placeholder={""}/>
                         </div>
                         <div className="canvas">
-                            <ResponsiveContainer
-                                width="100%"
-                                height="100%"
-                            >
-                                {
-                                    state.type === 0 ?
-                                    <AreaChart data={state.data}
+                            {
+                                state.type === 0 ?
+                                <ResponsiveContainer
+                                    width="100%"
+                                    height="100%"
+                                >
+                                    <BarChart data={state.data}
                                     margin={{
                                         top: 5,
                                         right: 30,
                                         left: 20,
                                         bottom: 5
                                     }}>
-                                        <XAxis type="number" dataKey="date" ticks={state.ticks} domain={[state.ticks[11], state.ticks[0]]} tickCount={12} tickFormatter={this.dateFormatAxis} interval={0}/>
+                                        <XAxis dataKey="m"/>
                                         <YAxis dataKey="revenue" />
-                                        <Tooltip labelFormatter={t => moment(t).format('YYYY.M.D')}/>
-                                        <Area type="monotone" dataKey="revenue" stroke="#8884d8" fill="#8884d8" />
-                                    </AreaChart>
-                                    :
-                                    state.type === 1 ?
-                                    <LineChart data={state.data}>
-                                        <XAxis dataKey="name" />
-                                        <YAxis orientation="right"/>
-                                        <Tooltip />
-                                        <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
-                                    </LineChart>
-                                    :
-                                    <AreaChart data={state.data}>
-                                        <XAxis dataKey="name" />
-                                        <YAxis orientation="right"/>
                                         <Tooltip/>
-                                        <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#8884d8" />
-                                    </AreaChart>
-                                }
-                            </ResponsiveContainer>
+                                        <Bar dataKey='revenue' fill='#5c4ce5'/>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                                :
+                                state.type === 1 ?
+                                <ResponsiveContainer
+                                    width="100%"
+                                    height="100%"
+                                >
+                                    <BarChart data={state.data}
+                                    margin={{
+                                        top: 5,
+                                        right: 30,
+                                        left: 20,
+                                        bottom: 5
+                                    }}>
+                                        <XAxis dataKey="m"/>
+                                        <YAxis />
+                                        <Tooltip/>
+                                        {
+                                            state.books.map((item, idx) => {
+                                                return (
+                                                    <Bar dataKey={item.book_title} stackId="a" fill={COLORS[idx % COLORS.length]}/>
+                                                )
+                                            })
+                                        }
+
+                                    </BarChart>
+                                </ResponsiveContainer>
+                                :
+                                <div className="container">
+                                    <div className="content">
+                                        <div className="header">
+                                            <div className="total">{parse.numberWithCommas(state.total.value)} 원</div>
+                                            <div className="sub">총 판매량</div>
+                                        </div>
+                                        <table>
+                                            <tbody>
+                                                {
+                                                    state.data.map((data, idx)=>{
+                                                        return (
+                                                            <tr className="row">
+                                                                <td>{parse.numberWithCommas(data.value) + " 원"}</td>
+                                                                <td ><div className="circle" style={{"backgroundColor" : COLORS[idx]}}/></td>
+                                                                <td>{data.book_title}</td>
+                                                                <td>{Math.round(data.value / state.total.value * 100, 0)}%</td>
+                                                            </tr>
+                                                        )
+                                                    })
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <ResponsiveContainer
+                                        width="100%"
+                                        height="100%"
+                                    >
+                                        <PieChart width={400} height={400}>
+                                            <Pie
+                                                data={state.data}
+                                                dataKey="value"
+                                                nameKey="book_title"
+                                                cx="800"
+                                                cy="50%"
+                                                outerRadius={100}
+                                                fill='#5c4ce5'
+                                                label
+                                            >
+                                                {state.data.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -407,23 +538,25 @@ class Payment extends Component {
                                 :
                                 <div className="table-box">
                                     <table>
-                                        {
-                                            state.sales.map(item => {
-                                                return (
-                                                    <tr key={item.id}>
-                                                        <td>완료</td>
-                                                        <td>
-                                                            <div className="price">{parse.numberWithCommas(Math.ceil(item.price * (1 - item.charge / 100)))}원</div>
-                                                            <div className="order">
-                                                                <span>주문번호 : {item.id}</span>
-                                                                <span>주문 접수일 : {date.fullFormat(item.created_date_time)}</span>
-                                                                <span>주문자 : {item.buyer}</span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
+                                        <tbody>
+                                            {
+                                                state.sales.map(item => {
+                                                    return (
+                                                        <tr key={item.id}>
+                                                            <td>완료</td>
+                                                            <td>
+                                                                <div className="price">{parse.numberWithCommas(Math.ceil(item.price * (1 - item.charge / 100)))}원</div>
+                                                                <div className="order">
+                                                                    <span>주문번호 : {item.id}</span>
+                                                                    <span>주문 접수일 : {date.fullFormat(item.created_date_time)}</span>
+                                                                    <span>주문자 : {item.buyer}</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
                                     </table>
                                 </div>
                             }
