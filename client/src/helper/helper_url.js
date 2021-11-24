@@ -101,7 +101,9 @@ module.exports = {
             list:               "/purchase",
             duplicate:          "/purchase/duplicate",
             sales:              "/purchase/sales",
+            sales_ratio:        "/purchase/sales/ratio",
             sales_author:       "/purchase/sales/author",
+            sales_book:         "/purchase/sales/book",
             sales_amount_author:"/purchase/sales/amount/author",
         },
         register: {
