@@ -4,14 +4,13 @@
     <div class="panel-header">
         <h1>단행본(조회: <%=total_count%>)</h1>
 
-        <form method="GET" action="/admin/book/singlePublished/" class="panel-options input-inline">
+        <form method="GET" action="/admin/book/singlePublished/?is_approved=<%=fields.is_approved%>" class="panel-options input-inline">
             <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
             <input type="text" class="input" name="title" value="<%=fields.name%>" placeholder="책 이름"/>
             <input type="text" class="input" name="price" value="<%=fields.email%>" placeholder="가격 이하"/>
-            <input type="number" class="input" name="is_approved" value="<%=fields.tel%>" placeholder="발간 여부" style="width: 100px;"/>
             <input type="number" class="input text-center" name="limit" value="<%=fields.limit%>" placeholder="개수" style="width: 60px;"/>
             <button type="submit" class="btn btn-success" style="height: 23px;">검색</button>
-            <a href="/admin/book/">
+            <a href="/admin/book/singlePublished/?is_approved=<%=fields.is_approved%>">
                 <div class="btn" id="filter-clear">초기화</div>
             </a>
         </form>
@@ -35,6 +34,8 @@
                     <th style="width: 120px;">더 보기</th>
                     <th style="width: 120px;">파일 다운로드</th>
                     <th style="width: 120px;">미리보기 다운로드</th>
+                    <th> editor's pick하기</th>
+                    <th> recommending</th> 
                 </tr>
             </thead>
             <tbody>
@@ -83,6 +84,22 @@
                             <a href="/admin/book/download/<%=singlePublishedBook.book_details[0].id%>?type=preview">
                                 <div class="menu-item">
                                     미리보기 다운로드
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/<%=singlePublishedBook.id%>/pickedForm">
+                                <div class="menu-item">
+                                    pick하기
+                                </div>
+                                <!--/.menu-item-->
+                            </a>
+                        </td>
+                        <td class="menu">
+                            <a href="/admin/book/<%=singlePublishedBook.id%>/bookRecommendingPhraseForm">
+                                <div class="menu-item">
+                                    recommending
                                 </div>
                                 <!--/.menu-item-->
                             </a>
