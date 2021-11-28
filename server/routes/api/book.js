@@ -39,7 +39,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             orderParams.push(['created_date_time', 'DESC'])
         }
         /* 소개도 키워드를 찾을 수 있게 하기.*/
-        var where = {
+        let where = {
             status: 1,
             author_id : {
                 [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
@@ -414,7 +414,7 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
     let book_detail_titles = [];
     let title = req.body.title;
     let type = req.body.type;
-    let is_finished_serialization = 1;
+    let is_finished_serialization = 0;
     let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
     let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
