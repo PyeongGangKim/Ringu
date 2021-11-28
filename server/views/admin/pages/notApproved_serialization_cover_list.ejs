@@ -2,7 +2,7 @@
 
 <div class="panel">
     <div class="panel-header">
-        <h1>출간안 된 책(조회: <%=total_count%>)</h1>
+        <h1>미승인된 책(조회: <%=total_count%>)</h1>
 
         <form method="GET" action="/admin/book/serialization/cover/is_approved=<%=fields.is_approved%>" class="panel-options input-inline">
             <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
@@ -33,7 +33,6 @@
                     <th style="width: 120px;">더 보기</th>
                     <th style="width: 120px;">연재본</th>
                     <th style="width: 80px;">발간 버튼</th>
-                    <th style="width: 80px;">발간 거부 버튼</th>
                 </tr>
             </thead>
             <tbody>
@@ -78,11 +77,6 @@
                         <td class="menu">
                             <a href="/admin/book/approved/<%=book.id%>">
                                 <div class="btn btn-sm btn-success">발간 하기</div>
-                            </a>
-                        </td>
-                        <td class="menu">
-                            <a href="/admin/book/unapproved/reason/?book_id=<%=book.id%>">
-                                <div class="btn btn-sm btn-fail">발간 거부하기</div>
                             </a>
                         </td>
                     </tr>
