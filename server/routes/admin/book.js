@@ -161,7 +161,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
             ]
         });
         var total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_serialization_cover_list" : "admin/pages/unapproved_serialization_cover_list" ; 
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_serialization_cover_list" : (dontKnowTypeStringOrNumber(fields.is_approved,0)) ? "admin/pages/unapproved_serialization_cover_list" : "admin/pages/notApproved_serialization_cover_list"  ; 
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
@@ -408,18 +408,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
 
     try{
         const {count, rows} = await book.findAndCountAll({
-            /*raw: true,
-            attributes: [
-                "id",
-                "price",
-                "title",
-                "content",
-                "description",
-                [sequelize.literal("author.nickname"), "author"],
-                [sequelize.literal("category.name"), "category"],
-                [sequelize.literal("book_details.is_approved"), "is_approved"],
-                [sequelize.literal("book_details.id"), "book_details_id"],
-            ],*/
+    
             where: {
                 [Op.and] : {
                     type: 2,
@@ -466,7 +455,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
             ]
         });
         var total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_single_published_book_list" : "admin/pages/unapproved_single_published_book_list" ; 
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_single_published_book_list" : (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/unapproved_single_published_book_list" : "admin/pages/notApproved_single_published_book_list" ; 
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/singlePublished", page, limit, total_count, fields);
         res.render(renderingPage, {
             "fields"      : fields,
@@ -814,6 +803,32 @@ router.get("/:bookId/approved/", async (req,res,next) => {
                     transaction: t,
                 });
             }
+            let written_author_noti_title = followed_author_name + "작가님의 " + book_title + " 책이 출간 승인되었습니다.";
+            await notification.create({
+                member_id: followed_author_id,
+                title: written_author_noti_title,
+                content: noti_content,
+                type: 1, // 책 출간에 관한 건 type 1
+            },{transaction: t});
+            const [notiC, created] = await notiCount.findOrCreate({
+                where: {
+                    member_id : followed_author_id,
+                },
+                defaults: {
+                    member_id: followed_author_id,
+                    count: 0,
+                },
+                transaction : t,
+            });
+            await notiCount.update({
+                count : notiC.count + 1,
+            },
+            {
+                where:{
+                    id : notiC.id,
+                },
+                transaction: t
+            });
             await t.commit();
             res.redirect("/admin/member/");
         }
