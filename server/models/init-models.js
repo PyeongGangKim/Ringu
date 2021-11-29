@@ -22,6 +22,7 @@ var _reward = require("./reward");
 var _reward_stat = require("./reward_stat");
 var _withdrawal = require("./withdrawal");
 let _book_recommending_phrase = require("./book_recommending_phrase");
+let _terms = require("./terms");
 
 
 function initModels(sequelize) {
@@ -48,7 +49,7 @@ function initModels(sequelize) {
   var reward_stat = _reward_stat(sequelize, DataTypes);
   var withdrawal = _withdrawal(sequelize, DataTypes);
   let book_recommending_phrase = _book_recommending_phrase(sequelize,DataTypes);
-
+  let terms = _terms(sequelize, DataTypes);
 
   author.belongsTo(bank, { as: "bank_bank", foreignKey: "bank"});
   bank.hasMany(author, { as: "authors", foreignKey: "bank"});
@@ -141,6 +142,7 @@ function initModels(sequelize) {
     book_recommending_phrase,
     reward,
     reward_stat,
+    terms,
 };
 }
 module.exports = initModels;
