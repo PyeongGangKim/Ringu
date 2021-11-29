@@ -86,13 +86,15 @@ module.exports = {
         return ret;
     },
 
-    sendPut(url, params = {}) {
+    sendPut(url, params = {}, content=null) {
         url = apiHost + url
         var token = Cookies.get('RINGU_JWT')
+        if (!!content) {
+            headers['Content-Type'] = content
+        }
         if (!!token) {
             headers['Authorization'] = 'Bearer ' + token;
         }
-
         var ret = axios.put(url, params, { headers: headers }).then(res => {
             var status = res.status;
             var data = res.data;

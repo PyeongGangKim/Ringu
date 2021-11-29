@@ -4,11 +4,12 @@
     <div class="panel-header">
         <h1>책 추천 문구(조회: <%=total_count%>)</h1>
 
-        <form method="GET" action="/admin/book/?is_recommending_phrase=1" class="panel-options input-inline">
+        <form method="GET" action="/admin/book/" class="panel-options input-inline">
             <input type="text" class="input" name="category_name" value="" placeholder="카테고리 이름"/>         
             <input type="text" class="input" name="title" value="<%=fields.name%>" placeholder="책 이름"/>
             <input type="text" class="input" name="price" value="<%=fields.email%>" placeholder="가격 이하"/>
             <input type="number" class="input text-center" name="limit" value="<%=fields.limit%>" placeholder="개수" style="width: 60px;"/>
+            <input type="number" class="input text-center" name="is_recommending_phrase" value="<%=fields.is_recommending_phrase%>" style="width: 60px;" readonly/>
             <button type="submit" class="btn btn-success" style="height: 23px;">검색</button>
             <a href="/admin/book/?is_recommending_phrase=1">
                 <div class="btn" id="filter-clear">초기화</div>

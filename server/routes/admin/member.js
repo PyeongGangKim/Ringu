@@ -46,7 +46,6 @@ router.get("/", async(req, res, next) => {
         
 
         let member_list = result.rows;
-        console.log(member_list);
         let count = result.count;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/member/", page, limit, count, fields);
 

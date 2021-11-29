@@ -18,7 +18,6 @@ const helper_url = require("../../../client/src/helper/helper_url");
 router.get("/", async (req, res, next) => {
     
     checkLogin(req, res, "/admin/member/");
-
     
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
     let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "DESC";

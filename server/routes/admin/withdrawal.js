@@ -13,10 +13,9 @@ const { member, author ,withdrawal,notification, notiCount, account, Sequelize :
 const { StatusCodes } = require("http-status-codes");
 
 router.get("/", async (req, res, next) => {
-    
+
     checkLogin(req, res, "/admin/account");
 
-    
     let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "ASC";
     let limit           = ("limit" in req.query && req.query.limit) ? parseInt(req.query.limit) : 10;
     let page            = ("page" in req.query) ? req.query.page : 1;
@@ -56,12 +55,12 @@ router.get("/", async (req, res, next) => {
                         },
                     ]
                 }
-                
+
             ]
         });
         let total_count = count;
 
-        let renderingPage = (fields.is_remittance == 1) ? "admin/pages/remittance_withdrawal_list" : "admin/pages/unremittance_withdrawal_list"; 
+        let renderingPage = (fields.is_remittance == 1) ? "admin/pages/remittance_withdrawal_list" : "admin/pages/unremittance_withdrawal_list";
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/withdrawal/", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
@@ -78,8 +77,9 @@ router.get("/", async (req, res, next) => {
 
 
 router.get("/:withdrawalId/remittance", async (req, res, next) => {
-    
+
     checkLogin(req, res, "/admin/withdrawal/?is_remitted=0");
+
     let withdrawal_id = req.params.withdrawalId;
     const t = await sequelize.transaction();
     try{
@@ -103,7 +103,6 @@ router.get("/:withdrawalId/remittance", async (req, res, next) => {
         })
         let cur_author_id = cur_withdrawal.author_id;
 
-        console.log(cur_withdrawal);  
         const curAccount = await account.findOne({
             where: {
                 author_id: cur_author_id,
@@ -112,11 +111,11 @@ router.get("/:withdrawalId/remittance", async (req, res, next) => {
         });
         let cur_account_id = curAccount.id;
         let update_request_withdrawal_amount = curAccount.request_withdrawal_amount * 1 - cur_withdrawal.amount;
-        let update_total_withdrawal_amount = cur_withdrawal.amount*1 + curAccount.total_withdrawal_amount*1 ; 
+        let update_total_withdrawal_amount = cur_withdrawal.amount*1 + curAccount.total_withdrawal_amount*1 ;
         await account.update({
             request_withdrawal_amount : update_request_withdrawal_amount,
             total_withdrawal_amount : update_total_withdrawal_amount,
-            
+
         },
         {
             where: {

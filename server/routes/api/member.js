@@ -104,7 +104,6 @@ router.get('/profile/:memberId', async(req, res, next) => {
         });
 
         const url = getImgURL(result.profile);
-        console.log(url);
         res.status(StatusCodes.OK).json({
             "url" : url,
         });

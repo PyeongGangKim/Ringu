@@ -49,7 +49,6 @@ class Main extends Component {
         } catch(e) {
             console.error(e)
         }
-
     }
 
     handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
@@ -63,7 +62,6 @@ class Main extends Component {
     }
 
     render() {
-
         return (
             <div id="wrap">
                 <div id="home-header">
