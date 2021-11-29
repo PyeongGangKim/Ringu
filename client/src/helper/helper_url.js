@@ -123,6 +123,9 @@ module.exports = {
             getNewNotiCount: "/notification/newNotiCnt",
             deleteNotification: "/notification/delete",
         },
+        terms: {
+            getTerms: "/terms/",
+        }
     },
     service : {
         accounts: {
@@ -159,6 +162,7 @@ module.exports = {
             register            : "/register/author/",
         },
         notification    : "/notification/",
+        terms           : "/terms/",
         search          : "/search",
         register : {
             author              : "/register/author",

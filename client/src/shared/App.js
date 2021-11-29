@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route ,Redirect } from 'react-router-dom';
 
 
 import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegisterPage, AuthorRegisterDetailPage, AuthorPage, BookPage, RegisterPage, RegisterDetailPage, BuyPage, BuyCompletePage, SearchPage,NotificationPage} from '../pages';
-import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage, ModifyBookSeriesPage } from '../pages';
+import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage, ModifyBookSeriesPage, TermsPage } from '../pages';
 
 import { ReviewPage, PaymentPage } from '../pages';
 
@@ -44,6 +44,7 @@ class App extends Component {
                 <Route path="/welcome" component={WelcomePage} />{}
                 <Route path="/review/:book_detail" component={ReviewPage} />{}
                 <Route path="/notification" component={NotificationPage} />{}
+                <Route path="/terms/:type" component={TermsPage} />{}
                 <Route component={NotFound} />
             </Switch>
         );
