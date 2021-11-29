@@ -1,0 +1,18 @@
+.top-button{
+    //border: 1px solid gray !important;
+    text-align: center;
+    align-items: center;
+    margin: 0px;
+    
+    .top-button-img{
+        margin-left : 4px;
+        background-image: url("/assets/img/arrow-up.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 10px;
+        height: 10px;
+    }
+    .top-button-word{
+    }
+}    
+            
