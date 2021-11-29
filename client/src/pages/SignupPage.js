@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import string from '../config/str';
 import SignupSelect from '../components/accounts/SignupSelect';
 import SignupHeader from '../components/common/SignupHeader';
+import Footer from '../components/common/Footer';
 
 class SignupPage extends Component {
     constructor(props) {
@@ -21,6 +22,7 @@ class SignupPage extends Component {
                         </div>
                     </div>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }
