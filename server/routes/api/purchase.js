@@ -300,7 +300,271 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
         });
     }
 });
+
 router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
+    var author_id = req.query.author_id;
+    var year = parseInt(req.query.year);
+
+    try{
+        const sales = await sequelize.query(
+            `
+                SELECT
+                    YEAR(p.created_date_time) as y,
+                    MONTH(p.created_date_time) as m,
+                    SUM(p.price) as revenue
+                FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
+                WHERE b.author_id = ${author_id}
+                    AND p.status = 1
+                GROUP BY y, m
+                HAVING y = ${year}
+            `,
+             {type: sequelize.QueryTypes.SELECT}
+        )
+
+        const years = await purchase.findAll({
+            attributes: [
+                [sequelize.literal("YEAR(purchase.created_date_time)"), "y"],
+            ],
+            where: {
+                status : 1,
+            },
+            include : [
+                {
+                    model : book_detail,
+                    as : "book_detail",
+                    attributes : [],
+                    required: true,
+                    include : [
+                        {
+                            model: book,
+                            as : "book",
+                            where : {
+                                author_id: author_id
+                            },
+                            attributes: [],
+                        }
+                    ]
+                },
+            ],
+            group: [
+                ["y"]
+            ],
+        });
+
+        if(sales.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                sales : sales,
+                years : years,
+            });
+        }
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
+router.get('/sales/ratio', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
+    var author_id = req.query.author_id;
+
+    try{
+        const sales = await purchase.findAll({
+            attributes: [
+                [sequelize.literal("SUM(purchase.price)"), "value"],
+                [sequelize.literal("COUNT(*)"), "count"],
+                [sequelize.literal("`book_detail->book`.title"), "book_title"]
+            ],
+            where: {
+                status : 1,
+            },
+            include : [
+                {
+                    model : book_detail,
+                    as : "book_detail",
+                    attributes : [],
+                    required: true,
+                    include : [
+                        {
+                            model: book,
+                            as : "book",
+                            where : {
+                                author_id: author_id
+                            },
+                            attributes: [],
+                        }
+                    ]
+                },
+            ],
+            group: [
+                [sequelize.literal("`book_detail->book`.title")]
+            ],
+            limit: 5
+        });
+
+        const total = await purchase.findAll({
+            attributes: [
+                [sequelize.literal("SUM(purchase.price)"), "value"],
+                [sequelize.literal("COUNT(*)"), "count"],
+            ],
+            where: {
+                status : 1,
+            },
+            include : [
+                {
+                    model : book_detail,
+                    as : "book_detail",
+                    attributes : [],
+                    required: true,
+                    include : [
+                        {
+                            model: book,
+                            as : "book",
+                            where : {
+                                author_id: author_id
+                            },
+                            attributes: [],
+                        }
+                    ]
+                },
+            ],
+        });
+
+        if(sales.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                sales : sales,
+                total : total,
+            });
+        }
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
+router.get('/sales/book', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
+    var author_id = req.query.author_id;
+    var year = parseInt(req.query.year);
+
+    try{
+        const books = await sequelize.query(
+            `
+                SELECT title as book_title, id
+                FROM (
+                SELECT
+                    YEAR(p.created_date_time) as y,
+                    b.title,
+                    b.id,
+                    SUM(p.price) as revenue
+                FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
+                WHERE b.author_id = ${author_id}
+                    AND p.status = 1
+                GROUP BY y, b.id
+                HAVING y = ${year}
+                ) A
+                ORDER BY revenue DESC
+                LIMIT 5
+            `,
+             {type: sequelize.QueryTypes.SELECT}
+        )
+
+        var top5 = books.map(book => book.id)
+        const sales = await sequelize.query(
+            `
+                SELECT
+                    YEAR(p.created_date_time) as y,
+                    MONTH(p.created_date_time) as m,
+                    b.title as book_title,
+                    b.id,
+                    SUM(p.price) as revenue
+                FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
+                WHERE b.author_id = ${author_id}
+                    AND p.status = 1
+                    AND b.id IN (${top5})
+                GROUP BY book_title, y, m
+                HAVING y = ${year}
+
+                UNION
+
+                SELECT
+                    YEAR(p.created_date_time) as y,
+                    MONTH(p.created_date_time) as m,
+                    'etc.',
+                    b.id,
+                    SUM(p.price) as revenue
+                FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
+                WHERE b.author_id = ${author_id}
+                    AND p.status = 1
+                    AND b.id NOT IN (${top5})
+                GROUP BY y, m
+                HAVING y = ${year}
+            `,
+             {type: sequelize.QueryTypes.SELECT}
+        )
+
+        const stats = await purchase.findAll({
+            attributes: [
+                [sequelize.literal("YEAR(purchase.created_date_time)"), "y"],
+            ],
+            where: {
+                status : 1,
+            },
+            include : [
+                {
+                    model : book_detail,
+                    as : "book_detail",
+                    attributes : [],
+                    required: true,
+                    include : [
+                        {
+                            model: book,
+                            as : "book",
+                            where : {
+                                author_id: author_id
+                            },
+                            attributes: [],
+                        }
+                    ]
+                },
+            ],
+            group: [
+                ["y"]
+            ],
+        });
+
+        if(sales.length == 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                stats : stats,
+                sales : sales,
+                books : books,
+            });
+        }
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
+/*router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
     var author_id = req.query.author_id;
     var period = parseInt(req.query.period);
     var period_cond;
@@ -367,7 +631,7 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
             "error": "server error"
         });
     }
-});
+});*/
 
 router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) => {
     var author_id = req.query.author_id;
