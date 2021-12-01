@@ -25,6 +25,7 @@ class Search extends Component {
             searchList: [],
             count: 0,
             categoryList: [],
+            category: "카테고리",
             selected: new Set([]),
             newSelected: new Set([]),
             filter: 1,
@@ -63,6 +64,9 @@ class Search extends Component {
                 var selectedCategories = this.search.get('category').split('|').map((x) => parseInt(x))
                 state.selected = new Set(selectedCategories);
                 state.newSelected = new Set(selectedCategories);
+                if(selectedCategories.length !== 0) {
+                    state.category = "선택됨"
+                }
             }
 
             const categoryRes = await API.sendGet(URL.api.category.list)
@@ -101,7 +105,7 @@ class Search extends Component {
         else {
             newSelected.add(id)
         }
-
+        console.log(newSelected)
         state.newSelected = newSelected;
 
         this.setState(state)
@@ -126,7 +130,7 @@ class Search extends Component {
     }
 
     handleSearch = async(mounted) => {
-        var state = this.state;        
+        var state = this.state;
         var params = {
             member_id: (User.getInfo() !== null ? User.getInfo().id : null),
             is_approved: 1,
@@ -248,7 +252,7 @@ class Search extends Component {
 
                     <div className="filter-area">
                         <div className="filter" onClick={() => this.handleDisplayClick(1)}>
-                            <span> 카테고리</span>
+                            <span> {state.category}</span>
                             <em/>
                         </div>
                         {

@@ -7,6 +7,7 @@ import RegisterBook from '../components/register/RegisterBook';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 
 class RegisterDetailPage extends Component {
     constructor(props) {
@@ -25,6 +26,7 @@ class RegisterDetailPage extends Component {
                         <RegisterBook location={this.props.location}/>
                     }
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

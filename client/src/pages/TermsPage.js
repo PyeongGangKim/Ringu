@@ -1,14 +1,15 @@
 import React, { Component, Fragment } from 'react';
 
-import Notification from '../components/notification/Notification';
+import Terms from '../components/terms/Terms';
 import Header from '../components/common/Header';
+import Footer from '../components/common/Footer';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
-class NotificationPage extends Component {
+class TermsPage extends Component {
     constructor(props) {
         super(props);
     }
+    
 
     render() {
         //const display = this.props.location.pathname == "/favorite/book" ? true : false;
@@ -17,11 +18,11 @@ class NotificationPage extends Component {
             <Fragment>
                 <Helmet title={string.notification + string.postfix}/>
                 <Header></Header>
-                <Notification></Notification>
+                <Terms title = {this.props.match.params.type}></Terms>
                 <Footer></Footer>
             </Fragment>
         )
     }
 }
 
-export default NotificationPage;
+export default TermsPage;

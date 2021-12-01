@@ -6,6 +6,7 @@ import FavAuthor from '../components/mypage/FavAuthor';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class FavAuthorPage extends Component {
     constructor(props) {
         super(props);
@@ -25,6 +26,7 @@ class FavAuthorPage extends Component {
                     </div>
                     <FavAuthor/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

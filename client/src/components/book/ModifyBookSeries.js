@@ -13,6 +13,9 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+import Helmet from 'react-helmet';
+import string from '../../config/str';
+
 class ModifyBookSeries extends Component {
     constructor(props) {
         super(props)
@@ -28,13 +31,57 @@ class ModifyBookSeries extends Component {
         ]
 
         this.state = {
+            thumbnail: {file:null, clear:false},
             price: {val: "", msg: "", clear: false, class: "input"},
+            day: {val: "", msg: "", clear: false, class: "input"},
             title: {val: "", msg: "", clear: false, class: "input"},
             bookDescription: {val: "", msg: "", clear: false, class: "input"},
-            day: {val: "", msg: "", clear: false, class: "input"},
-            thumbnail: {file:null, clear:false},
+            books: [],
+            is_approved: 1,
             tmp: null,
         }
+    }
+
+    handleModifying = (value, idx) => {
+        var state = this.state;
+        state.books[idx].isModifying = value
+        this.setState(state);
+    }
+
+    handleModifyDetail = async (idx, type) => {
+        var state = this.state
+        const data = new FormData()
+
+        // file
+        if(type === 1) {
+
+        }
+        // title
+        else {
+            if(state.books[idx].name === "") {
+                alert("제목을 입력해주세요")
+                return;
+            }
+            var book = state.books[idx]
+            data.append("id", book.id)
+            data.append("title", book.name)
+        }
+
+        try {
+            const res = await API.sendPut(URL.api.book_detail.modify, data, 'application/json')
+            if(res.status === 200) {
+                alert("제목을 수정하였습니다!")
+                this.handleModifying(false, idx)
+            }
+        } catch(e) {
+            alert("수정 실패하였습니다.")
+        }
+    }
+
+    handleTitleChange = (evt, idx) => {
+        var state = this.state;
+        state.books[idx].name = evt.target.value;
+        this.setState(state);
     }
 
     async componentDidMount() {
@@ -48,13 +95,33 @@ class ModifyBookSeries extends Component {
                 state.title.val = book.book_title;
                 state.bookDescription.val = book.book_description;
                 state.thumbnail.file = book.img;
-                var day = []
+                state.is_approved = book.is_approved;
+
+                var day = [];
                 book.serialization_day.split('').forEach(d =>
                     day.push(this.dayOptions.filter(item => item.label === d)[0])
                 )
                 state.day.val = day
 
                 this.setState(state)
+
+                const detailRes = await API.sendGet(URL.api.book.getDetailList + this.props.bookId)
+                if(detailRes.status === 200) {
+                    var books = []
+                    var details = detailRes.data.detailList;
+                    for(var n = 0; n < details.length; n++) {
+                        books.push({
+                            id:details[n].id,
+                            title: details[n].title,
+                            filename: details[n].file,
+                            file: null,
+                            isModifying: false
+                        })
+                    }
+
+                    state.books = books
+                    this.setState(state)
+                }
             }
         }
         catch(e) {
@@ -69,7 +136,7 @@ class ModifyBookSeries extends Component {
         this.setState(state);
     }
 
-    handleTitleChange = evt => {
+    handleBookTitleChange = evt => {
         var state = this.state;
         state.title.val = evt.target.value;
 
@@ -109,6 +176,44 @@ class ModifyBookSeries extends Component {
             state.thumbnail.file = newFile
 
             this.setState(state)
+        }
+    }
+
+    handleBookFileChange = async(evt, idx) => {
+        var state = this.state
+        var file = evt.target.files[0]
+
+        if(!file) {
+            state.books[idx].filename = ""
+            state.books[idx].file = null
+            this.setState(state)
+            return;
+        }
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        const data = new FormData()
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
+        data.append("file", newFile)
+        data.append("id", state.books[idx].id)
+
+        try {
+            const res = await API.sendPut(URL.api.book_detail.modify, data, 'multipart/form-data')
+            if(res.status === 200) {
+                state.books[idx].filename = file.name
+                state.books[idx].file = file
+                this.setState(state)
+
+                alert("파일을 수정하였습니다!")
+            }
+        } catch(e) {
+            console.error(e)
         }
     }
 
@@ -157,6 +262,13 @@ class ModifyBookSeries extends Component {
         if(/^[0-9]*$/.test(state.price.val) === false) {
             alert('가격은 숫자만 입력해주세요.')
             state.price.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
+        if(state.day.val.length === 0) {
+            alert('연재 주기를 입력해주세요.')
+            state.day.class = "textbox error";
             this.setState(state)
             return;
         }
@@ -229,8 +341,9 @@ class ModifyBookSeries extends Component {
 
         return (
             <div id="register-book" className="page3">
+                <Helmet title={state.title.val + " " + string.modify + string.postfix}/>
                 <div className="title-wrap">
-                    <h2 className="title">수정하기</h2>
+                    <h2 className="title">연재본 수정하기</h2>
                 </div>
 
                 <hr/>
@@ -284,7 +397,7 @@ class ModifyBookSeries extends Component {
                     <div className="input-box">
                         <h3 className="header"> 제목 </h3>
                         <div className="input-wrap">
-                            <input type="text" name="title" autoComplete="off" className="textbox" onChange={this.handleTitleChange} value={state.title.val}/>
+                            <input type="text" name="title" autoComplete="off" className="textbox" onChange={this.handleBookTitleChange} value={state.title.val}/>
                         </div>
                     </div>
 
@@ -294,6 +407,56 @@ class ModifyBookSeries extends Component {
                             <textarea rows={7} onChange={this.handleBookDescriptionChange} value={state.bookDescription.val}/>
                         </div>
                     </div>
+
+                    {
+                        !state.is_approved &&
+                        <div className="upload-wrap">
+                            {
+                                state.books.map((book, book_idx) => {
+                                    return (
+                                        <div className="upload" key={book_idx}>
+                                            <div className="round">
+                                                {book_idx+1}회차
+                                            </div>
+
+                                            <div className="row">
+                                                <div className="header">제목 </div>
+                                                <input disabled={!book.isModifying} className="title box" value={book.title} onChange={(e) => this.handleTitleChange(e, book_idx)} placeholder={"제목을 입력해주세요"}/>
+                                                <div style={{"display":"flex"}}>
+                                                    {
+                                                        !book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifying(true, book_idx)}>수정</button>
+                                                    }
+                                                    {
+                                                        book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifyDetail(book_idx)}>완료</button>
+                                                    }
+                                                    {
+                                                        book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifying(false, book_idx)}>취소</button>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <div className="row">
+                                                <div className="header">작품 </div>
+                                                <input type="file" id={"book" + book_idx} onChange={(evt) => this.handleBookFileChange(evt, book_idx)} accept=".pdf"/>
+                                                <label htmlFor={"book" + book_idx}>
+                                                    <div className="box">
+                                                        {!!book.filename ? book.filename : "파일을 업로드해주세요."}
+                                                    </div>
+                                                    <div className="btn btn-color-2 upload-btn">파일수정</div>
+                                                </label>
+                                                <span className="upload-text"> 파일형식: PDF</span>
+                                            </div>
+
+                                            {
+                                                (state.books.length-1 !== book_idx) && <hr/>
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+
+                    }
 
                     <div className="btn-wrap">
                         <button className="btn btn-color-2" onClick={() => this.handleModify()}>

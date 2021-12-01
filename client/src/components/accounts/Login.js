@@ -15,6 +15,7 @@ import API from '../../utils/apiutils';
 import NAVER from '../../config/naver_auth';
 import KAKAO from '../../config/kakao_auth';
 import FACEBOOK from '../../config/facebook_auth';
+import GOOGLE from '../../config/google_auth';
 
 const {Kakao} = window;
 
@@ -54,6 +55,22 @@ class Login extends Component {
         Kakao.Auth.authorize({
             redirectUri: KAKAO.CALLBACK_URL,
         })
+    }
+    handleGoogleLogin = async () => {
+        await window.gapi.load('auth2', async () => {
+            await window.gapi.auth2.init({
+                client_id: GOOGLE.CLIENT_ID,
+                scope: 'email'
+            });
+            let gauth = window.gapi.auth2.getAuthInstance();
+        
+        // console.log(gauth.currentUser.get());
+            gauth.signIn({
+                scope: "profile",
+                ux_mode : "redirect",
+                redirect_uri: GOOGLE.CALLBACK_URL,
+            });
+        });        
     }
 
     handleLogin = (event) => {
@@ -151,7 +168,7 @@ class Login extends Component {
                                     <em/>
                                 </div>
 
-                                <div id="google-login" className="btn-sns"  onClick={this.inPreparation}>
+                                <div id="google-login" className="btn-sns"  onClick={this.handleGoogleLogin}>
                                     <em/>
                                 </div>
                             </div>

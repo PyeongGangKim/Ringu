@@ -13,19 +13,22 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
+import Helmet from 'react-helmet';
+import string from '../../config/str';
+
 class ModifyBook extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            thumbnail: {file:null, clear:false},
+            thumbnail: {file:null, clear:false, modified: false},
             price: {val: "", msg: "", clear: false, class: "input"},
             page_count: {val: 0, msg: "", clear: false, class: "input"},
             title: {val: "", msg: "", clear: false, class: "input"},
             bookDescription: {val: "", msg: "", clear: false, class: "input"},
             content: {val: "", msg: "", clear: false, class: "input"},
-            preview: {name:"", file:null, clear: false},
-            book: {name:"", file:null, clear:false},
+            preview: {name:"", file:null, clear: false, modified: false},
+            book: {name:"", file:null, clear:false, modified: false},
             bookDetail: {},
             tmp: null,
         }
@@ -123,6 +126,7 @@ class ModifyBook extends Component {
         if (newFile) {
             reader.readAsDataURL(newFile);
             state.thumbnail.file = newFile
+            state.thumbnail.modified = true;
 
             this.setState(state)
         }
@@ -131,6 +135,14 @@ class ModifyBook extends Component {
     handlePreviewFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
+
+        if(!file) {
+            state.preview.name = ""
+            state.preview.file = null
+            this.setState(state)
+            return;
+        }
+
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -139,11 +151,9 @@ class ModifyBook extends Component {
             return;
         }
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "_preview." + fieldName, {type: file.type})
-
-        state.preview.name = newFile.name
-        state.preview.file = newFile
+        state.preview.name = file.name
+        state.preview.file = file
+        state.preview.modified = true;
 
         this.setState(state)
     }
@@ -151,6 +161,13 @@ class ModifyBook extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
+        if(!file) {
+            state.book.name = ""
+            state.book.file = null
+            this.setState(state)
+            return;
+        }
+
         var token = file.name.split('.')
         var fieldName = token[token.length - 1]
 
@@ -159,11 +176,12 @@ class ModifyBook extends Component {
             return;
         }
 
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
+        //var blob = file.slice(0, file.size, file.type)
+        //var newFile = new File([blob], state.title.val + "." + fieldName, {type: file.type})
 
-        state.book.name = newFile.name
-        state.book.file = newFile
+        state.book.name = file.name
+        state.book.file = file
+        state.book.modified = true;
 
         this.setState(state)
     }
@@ -228,9 +246,9 @@ class ModifyBook extends Component {
             return;
         }
 
-        if(!state.contents.val) {
+        if(!state.content.val) {
             alert('목차를 입력해주세요')
-            state.contents.class = "error";
+            state.content.class = "error";
             this.setState(state)
             return;
         }
@@ -243,41 +261,46 @@ class ModifyBook extends Component {
             return;
         }
 
-        if(!state.preview.file) {
+        if(state.preview.modified && !state.preview.file) {
             alert('미리보기 파일을 업로드해주세요.')
             this.setState(state)
             return;
         }
 
-        if(!state.book.file) {
+        if(state.book.modified && !state.book.file) {
             alert('등록할 파일을 업로드해주세요.')
             this.setState(state)
             return;
         }
-
 
         try {
             const data = new FormData()
             data.append("book_id", this.props.bookId)
             data.append("book_detail_id", book_detail_id)
 
-            var book = state.book.file
-            var bookblob = book.slice(0, book.size, book.type)
-            var newBook = new File([bookblob], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
-            data.append("file", newBook)
+            if(state.book.modified) {
+                var book = state.book.file
+                var bookblob = book.slice(0, book.size, book.type)
+                var newBook = new File([bookblob], state.title.val.slice(0, 10) + ".pdf", {type: book.type})
+                data.append("file", newBook)
+            }
 
-            var preview = state.preview.file
-            var previewblob = book.slice(0, preview.size, preview.type)
-            var newBook = new File([previewblob], state.title.val.slice(0, 10) + ".pdf", {type: preview.type})
-            data.append("preview", state.preview.file)
+            if(state.preview.modified) {
+                var preview = state.preview.file
+                var previewblob = book.slice(0, preview.size, preview.type)
+                var newPreview = new File([previewblob], state.title.val.slice(0, 10) + ".pdf", {type: preview.type})
+                data.append("preview", newPreview)
+            }
 
-            var img = state.thumbnail.file;
-            if(typeof img !== 'string') {
-                var imgblob = img.slice(0, img.size, img.type);
-                var token = img.name.split('.')
-                var fieldName = token[token.length - 1]
-                var newImg = new File([imgblob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: img.type})
-                data.append("img", newImg)
+            if(state.thumbnail.modified) {
+                var img = state.thumbnail.file;
+                if(typeof img !== 'string') {
+                    var imgblob = img.slice(0, img.size, img.type);
+                    var token = img.name.split('.')
+                    var fieldName = token[token.length - 1]
+                    var newImg = new File([imgblob], state.title.val.slice(0, 10) + "_thumbnail." + fieldName, {type: img.type})
+                    data.append("img", newImg)
+                }
             }
 
             data.append("price", state.price.val)
@@ -295,7 +318,6 @@ class ModifyBook extends Component {
         catch(err) {
             console.log(err)
         }
-
     }
 
     render() {
@@ -303,8 +325,9 @@ class ModifyBook extends Component {
 
         return (
             <div id="register-book" className="page3">
+                <Helmet title={state.title.val + " " + string.modify + string.postfix}/>
                 <div className="title-wrap">
-                    <h2 className="title">수정하기</h2>
+                    <h2 className="title">단행본 수정하기</h2>
                 </div>
 
                 <hr/>
@@ -371,26 +394,30 @@ class ModifyBook extends Component {
 
                     <div className="upload-wrap">
                         <div className="upload">
-                            <div className="btn btn-outline header">미리보기 </div>
-                            <div className="file-wrap">
-                                <input className="filename" value={state.preview.name}/>
+                            <div className="row">
+                                <div className="header">미리보기 </div>
+                                <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
+                                <label htmlFor="preview">
+                                    <div className="box">
+                                        {!!state.preview.name ? state.preview.name : "파일을 업로드해주세요."}
+                                    </div>
+                                    <div className="btn btn-color-2 upload-btn">파일수정</div>
+                                </label>
+                                <span className="upload-text"> 파일형식: PDF</span>
                             </div>
-                            <input type="file" id="preview" onChange={this.handlePreviewFileChange} accept=".pdf"/>
-                            <label htmlFor="preview">
-                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                            </label>
-                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
                         </div>
                         <div className="upload">
-                            <div className="btn btn-outline header">작품등록 </div>
-                            <div className="file-wrap">
-                                <input className="filename" value={state.book.name}/>
+                            <div className="row">
+                                <div className="header">작품등록 </div>
+                                <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
+                                <label htmlFor="book">
+                                    <div className="box">
+                                        {!!state.book.name ? state.book.name : "파일을 업로드해주세요."}
+                                    </div>
+                                    <div className="btn btn-color-2 upload-btn">파일수정</div>
+                                </label>
+                                <span className="upload-text"> 파일형식: PDF</span>
                             </div>
-                            <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
-                            <label htmlFor="book">
-                                <div className="btn btn-color-2 upload-btn">파일 업로드</div>
-                            </label>
-                            <span className="upload-text"> 파일형식: PDF, 파일이름:(제목/작가)</span>
                         </div>
                     </div>
 

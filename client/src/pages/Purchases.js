@@ -6,6 +6,7 @@ import Purchase from '../components/mypage/Purchase';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class Purchases extends Component {
     constructor(props) {
         super(props);
@@ -23,6 +24,7 @@ class Purchases extends Component {
                     </div>
                     <Purchase/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

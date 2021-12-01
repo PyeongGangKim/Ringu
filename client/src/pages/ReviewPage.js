@@ -4,6 +4,7 @@ import Review from '../components/register/Review';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 
 class ReviewPage extends Component {
     constructor(props) {
@@ -21,6 +22,7 @@ class ReviewPage extends Component {
                 <div id="wrap">
                     <Review book_detail={this.state.book_detail}/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

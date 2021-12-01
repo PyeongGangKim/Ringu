@@ -16,12 +16,8 @@ const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 const helper_url = require("../../../client/src/helper/helper_url");
 
 router.get("/", async (req, res, next) => {
-    //is_approved을 query string으로 받아서, 발간된 거 찾는 것인지, 발간되지 않은 거 찾는 것인지 구분.
-    //book_detail에서, where문으로 is_approved 확인하기.
-    //book join해주고, book안에 category, author 조인 해준다.
-    //근데 nested할 때, where문을 어떻게 쓰느냐가 중요함.
+    
     checkLogin(req, res, "/admin/member/");
-
     
     let sort_by         = ("sort_by" in req.query) ? req.query.sort_by : "id";
     let sort_direction  = ("sort_direction" in req.query) ? req.query.sort_direction : "DESC";
@@ -93,7 +89,6 @@ router.get("/", async (req, res, next) => {
                 },
             ]
         });
-        console.log(count);
         let total_count = count;
         let renderingPage = "";
         renderingPage = (dontKnowTypeStringOrNumber(fields.is_recommending_phrase, 1)) ? "admin/pages/bookRecommendingPhraseList" : renderingPage;
@@ -108,7 +103,7 @@ router.get("/", async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 
@@ -164,9 +159,8 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
                 },
             ]
         });
-        console.log(rows);
         var total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_serialization_cover_list" : "admin/pages/unapproved_serialization_cover_list" ; 
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_serialization_cover_list" : (dontKnowTypeStringOrNumber(fields.is_approved,0)) ? "admin/pages/unapproved_serialization_cover_list" : "admin/pages/notApproved_serialization_cover_list"  ; 
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
@@ -177,7 +171,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 
@@ -210,7 +204,7 @@ router.get("/serialization/:serializationId", async(req, res, next) => {//cover 
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 
 });
@@ -223,7 +217,6 @@ router.get("/serialization/content/list", async(req, res, next) => {//content �
     let page            = ("page" in req.query) ? req.query.page : 1;
     let offset          = parseInt(limit) * (parseInt(page)-1);
     try{
-        console.log(serialization_book_id);
         const {count, rows} = await book_detail.findAndCountAll({
             where : {
                 book_id : serialization_book_id,
@@ -253,7 +246,6 @@ router.get("/serialization/content/list", async(req, res, next) => {//content �
                 },
             ]
         });
-        console.log(rows, cover);
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization/content/list", page, limit, count, serialization_book_id);
         res.render("admin/pages/serialization_content_list", {
             "total_count"       : count,
@@ -286,7 +278,7 @@ router.get("/serialization/content/:bookId", async (req, res, next) => {//conten
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 
 });
@@ -348,7 +340,7 @@ router.post("/serialization/cover", uploadFile, async (req, res, next) => {//생
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 
@@ -390,7 +382,7 @@ router.post("/serialization/content", uploadFile, async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 
@@ -415,18 +407,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
 
     try{
         const {count, rows} = await book.findAndCountAll({
-            /*raw: true,
-            attributes: [
-                "id",
-                "price",
-                "title",
-                "content",
-                "description",
-                [sequelize.literal("author.nickname"), "author"],
-                [sequelize.literal("category.name"), "category"],
-                [sequelize.literal("book_details.is_approved"), "is_approved"],
-                [sequelize.literal("book_details.id"), "book_details_id"],
-            ],*/
+    
             where: {
                 [Op.and] : {
                     type: 2,
@@ -473,7 +454,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
             ]
         });
         var total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_single_published_book_list" : "admin/pages/unapproved_single_published_book_list" ; 
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_single_published_book_list" : (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/unapproved_single_published_book_list" : "admin/pages/notApproved_single_published_book_list" ; 
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/singlePublished", page, limit, total_count, fields);
         res.render(renderingPage, {
             "fields"      : fields,
@@ -484,7 +465,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 router.get("/singlePublished/:singlePublished", async (req, res, next) => {
@@ -529,14 +510,13 @@ router.get("/singlePublished/:singlePublished", async (req, res, next) => {
                 }
             ]
         });
-        console.log(findedBook);
         res.render("admin/pages/single_published_book_view", {
                 "book"                  : findedBook,
                 "helper_date"           : helper_date,
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 router.get("/singlePublished/info/create/", (req, res, next) => {
@@ -606,7 +586,7 @@ router.post("/singlePublished", uploadFile, async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 
@@ -628,7 +608,7 @@ router.get("/delete/:bookId", async (req, res, next) => {
         res.redirect("/admin/book/");
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 router.get("/finishedSerializing/:serializationId", async (req, res, next) => {
@@ -741,13 +721,12 @@ router.post("/unapproved/:bookId", async(req, res, next) => {
     }
 });
 
-router.get("/approved/:bookId", async (req,res,next) => {
+router.get("/:bookId/approved/", async (req,res,next) => {
     // approved로 book의 author를 얻어 내서 해당 author를 팔로우 한 친구들한테만 Notify하기
     checkLogin(req, res, "/admin/member/");
 
 
     let id = req.params.bookId;
-    console.log(id);
     try{
         await book.update({
             is_approved : 1
@@ -758,7 +737,7 @@ router.get("/approved/:bookId", async (req,res,next) => {
         });
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
     try{
         let approved_book = await book.findOne({
@@ -823,6 +802,32 @@ router.get("/approved/:bookId", async (req,res,next) => {
                     transaction: t,
                 });
             }
+            let written_author_noti_title = followed_author_name + "작가님의 " + book_title + " 책이 출간 승인되었습니다.";
+            await notification.create({
+                member_id: followed_author_id,
+                title: written_author_noti_title,
+                content: noti_content,
+                type: 1, // 책 출간에 관한 건 type 1
+            },{transaction: t});
+            const [notiC, created] = await notiCount.findOrCreate({
+                where: {
+                    member_id : followed_author_id,
+                },
+                defaults: {
+                    member_id: followed_author_id,
+                    count: 0,
+                },
+                transaction : t,
+            });
+            await notiCount.update({
+                count : notiC.count + 1,
+            },
+            {
+                where:{
+                    id : notiC.id,
+                },
+                transaction: t
+            });
             await t.commit();
             res.redirect("/admin/member/");
         }
@@ -833,7 +838,7 @@ router.get("/approved/:bookId", async (req,res,next) => {
         
     }
     catch(err){
-        console.log(err);
+        console.error(err);
     }
 });
 router.get('/:bookId/update-charge/page', async(req,res,next) => {

@@ -22,7 +22,6 @@ const Timer = ({ mm, ss, timeout, reset = false, active = false, setTimeout}) =>
     useEffect(() => {
         if (active) {
             interval = setInterval(() => {
-                console.log(1)
                 if (sec === 0) {
                     if (min === 0) {
                         clearInterval(interval)

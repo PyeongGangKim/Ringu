@@ -4,6 +4,7 @@ import string from '../config/str';
 import SignupDetail from '../components/accounts/SignupDetail';
 import SignupDetailSNS from '../components/accounts/SignupDetailSNS';
 import SignupHeader from '../components/common/SignupHeader';
+import Footer from '../components/common/Footer';
 
 class SignupDetailPage extends Component {
     constructor(props) {
@@ -28,6 +29,7 @@ class SignupDetailPage extends Component {
                         </div>
                     </div>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

@@ -23,6 +23,7 @@ export { default as SignupPage } from './SignupPage';
 export { default as SignupDetailPage } from './SignupDetailPage';
 export { default as SignupCallbackPage } from './SignupCallbackPage';
 export { default as WelcomePage } from './WelcomePage';
+export { default as TermsPage } from './TermsPage';
 
 export { default as ReviewPage } from './ReviewPage';
 export { default as PasswordChangePage } from './PasswordChangePage';

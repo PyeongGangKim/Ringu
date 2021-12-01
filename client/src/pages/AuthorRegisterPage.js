@@ -4,6 +4,7 @@ import RegisterAuthor from '../components/register/RegisterAuthor';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class AuthorRegisterPage extends Component {
     constructor(props) {
         super(props);
@@ -19,6 +20,7 @@ class AuthorRegisterPage extends Component {
                 <div id="wrap">
                     <RegisterAuthor/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

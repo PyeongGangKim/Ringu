@@ -62,13 +62,22 @@
 
     .upload-wrap {
         .header {
+            width: 70px;
             padding: 2px 8px;
             font-weight: 500;
             margin-right: 5px;
         }
+
         .upload{
             position:relative;
             margin-bottom: 20px;
+
+            hr {
+                margin: 30px;
+                color: #ddd;
+                border-color: #ddd;
+                background-color: #ddd;
+            }
 
             .round {
                 font-weight: 500;
@@ -76,11 +85,19 @@
             }
 
             .row {
-                height: 27px;
+                height: 30px;
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
                 margin-bottom: 10px;
+
+                label {
+                    display: flex;
+
+                    .box {
+                        cursor: pointer;
+                    }
+                }
 
                 .upload-input {
                     margin-right: 5px;
@@ -90,6 +107,7 @@
                 }
 
                 .upload-btn {
+                    font-weight: 500;
                     padding: 4px 15px;
                     margin-right: 10px;
                 }
@@ -100,18 +118,29 @@
                 }
             }
 
+            .delete {
+                position: absolute;
+                right: 10px;
+                top: 0;
+                .del-btn {
+                    font-size: 24px;
+                    color: red;
+                    font-weight: 500;
+
+                    background-image: url("/assets/img/x.png");
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: contain;
+                }
+            }
+        }
+
+        .add {
+            display: block;
+            margin: 0 auto;
+
             .add-btn {
                 margin: 0 auto;
-            }
-
-            .del-btn {
-                font-size: 24px;
-                color: red;
-                font-weight: 500;
-                position: absolute;
-                right: 20px;
-                top: 0;
-                bottom: 0;
             }
         }
     }
@@ -124,8 +153,20 @@
         padding: 10px;
     }
 
-    .filename {
-        width:200px;
+    .box  {
+        width: 450px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        padding: 4px 8px;
+        overflow: hidden;
+        line-height: 18px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 10px;
+    }
+
+    /*.filename {
+        width: 450px;
         height: 100%;
         border: 2px solid #ddd;
         border-radius: 4px;
@@ -134,7 +175,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-right: 5px;
-    }
+    }*/
 
     .btn-wrap {
         button {

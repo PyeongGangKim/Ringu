@@ -6,6 +6,7 @@ import MyInfo from '../components/mypage/MyInfo';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class MyPage extends Component {
     constructor(props) {
         super(props);
@@ -33,6 +34,7 @@ class MyPage extends Component {
                     </div>
                     <MyInfo handleNicknameChange={this.handleNicknameChange}/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }
