@@ -1,0 +1,111 @@
+#terms {
+    display: flex;
+    .tab-nav{
+        margin-right: 100px;
+        .list{
+            margin-top: 100px;
+            .element{
+                margin-bottom: 30px;
+                .tab-btn{
+                    text-align: left;
+                    width: 200px;
+                    color: #000000;
+                    font-weight: 400;
+                    font-size: 18px;
+                    &.active{
+                        color: #5C4CE5;
+                        font-weight: 600;
+                        font-size: 18px;
+                    }    
+                }
+            }
+        }
+    }
+    .termsBody{
+        margin-right: 28%;
+        .title{
+            margin: 15px 0;
+            color: #000000;
+            font-weight: 600;
+            font-size: 24px !important;
+        }
+        .top{
+            margin-left:0;
+            width:53%;
+            color: #818181;
+            height: 2px;
+        }
+        .bottom{
+            margin-left:0;
+            width:53%;
+            color: #818181;
+            height: 2px;
+        }
+        .vertical-part{
+            border-bottom: 2px solid #818181;
+            border-top: 2px solid #818181;
+            padding: 10px 0px;
+            .horizontal-part{
+                margin:0;
+                width: 100%;
+                display: flex;
+                .set-list{
+                    width: 33%;
+                    .list{
+                        width:100%;
+                        .tab-btn{
+                            margin-bottom:5px;
+                            color: #000000;
+                            font-weight: 400;
+                            font-size: 14px;
+                            &.active{
+                                font-weight: 600;
+                                font-size: 14px;
+                                text-decoration: underline;
+                            }    
+                        }
+                    }
+                    
+                }
+                
+            }
+        }
+        
+        
+        .body{
+            margin-top: 7%;
+            width : 100%;
+            .general-rules{
+                font-weight: 600;
+                font-size: 22px;
+                margin-bottom: 5%;
+            }
+            .content-title{
+                font-weight: 600;
+                font-size: 18px;
+                margin-bottom: 2.5%;
+            }
+            .content{
+                padding: 20px;
+                border: 1px solid  #818181!important;
+                border-radius: 5px;
+                font-weight: 400;
+                font-size: 14px;
+                margin-bottom:40px;
+                color: #818181;
+                
+            }
+        }
+        .top-button{
+            position:fixed;
+            right: 17%;
+            bottom: 5%;
+            z-index: 10;
+
+        }
+    }
+    
+    
+
+
+}

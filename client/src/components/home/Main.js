@@ -22,23 +22,30 @@ class Main extends Component {
             showModal: false,
             keyword: "",
             bookList: [],
+            latestBookList: [],
         };
     }
 
     async componentDidMount() {
-        var state = this.state;
-        var params = {
+        let state = this.state;
+        let params = {
             member_id: User.getInfo() ? User.getInfo().id : null,
             is_picked: 1,
         }
+        let latestBookParams = {
+            is_approved: 1,
+        }
+        
 
         try {
-            const res = await API.sendGet(URL.api.book.list, params)
-            if(res.status === 200) {
-                state.bookList = res.data.bookList
-                console.log(state.bookList)
-                this.setState(state)
-            }
+            const res = await API.sendGet(URL.api.book.list, params);
+            const latestRes = await API.sendGet(URL.api.book.list, latestBookParams);
+            console.log(latestRes);
+            console.log(res.status);
+            if(res.status === 200) state.bookList = res.data.bookList;
+            if(latestRes.status === 200)state.latestBookList = latestRes.data.bookList;
+            if(res.status === 200 || latestRes.status === 200) this.setState(state);
+            
         } catch(e) {
             console.error(e)
         }
@@ -91,6 +98,33 @@ class Main extends Component {
                             </div>
                         </div>
                     </div>*/}
+                    <div className="title-wrap">
+                        <h2> Latest </h2>
+                        {/*<span> 더보기 </span>*/}
+                    </div>
+
+                    <div className="booklist-area">
+                        <ul>
+                            {
+                                this.state.latestBookList.slice(0,5).map(item => {
+                                    var status = '';
+                                    if(item.type === 2) {
+                                        status  = 'pub'
+                                    } else {
+                                        status  = 'ser'
+                                    }
+                                    return (
+                                        <Book
+                                            key={item.id}
+                                            book={item}
+                                            status={status}
+                                            favorite
+                                        />
+                                    )
+                                })
+                            }
+                        </ul>
+                    </div>
 
                     <div className="title-wrap">
                         <h2> Editor{`'`}s pick </h2>

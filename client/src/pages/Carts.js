@@ -6,6 +6,7 @@ import Cart from '../components/mypage/Cart';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class Carts extends Component {
     constructor(props) {
         super(props);
@@ -23,6 +24,7 @@ class Carts extends Component {
                     </div>
                     <Cart history={this.props.history}/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

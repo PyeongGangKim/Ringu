@@ -11,6 +11,7 @@ import API from '../utils/apiutils';
 import User from '../utils/user';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class BookPage extends Component {
     constructor(props) {
         super(props);
@@ -55,6 +56,7 @@ class BookPage extends Component {
                     }
 
                 </div>
+                <Footer></Footer>
             </Fragment>
             : null
         )

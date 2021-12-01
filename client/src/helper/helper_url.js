@@ -124,6 +124,9 @@ module.exports = {
             create:             "/withdrawal",
             get:                "/withdrawal",
         },
+        terms: {
+            getTerms: "/terms/",
+        }
     },
     service : {
         accounts: {
@@ -160,6 +163,7 @@ module.exports = {
             register            : "/register/author/",
         },
         notification    : "/notification/",
+        terms           : "/terms/",
         search          : "/search",
         payment         : "/payment",
         register: {

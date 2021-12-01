@@ -6,6 +6,7 @@ import RegisterBook from '../components/register/RegisterBook';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 
 class RegisterPage extends Component {
     constructor(props) {
@@ -24,6 +25,7 @@ class RegisterPage extends Component {
                         <RegisterBookSelect history={this.props.history}/>
                     }
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

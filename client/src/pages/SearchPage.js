@@ -6,6 +6,7 @@ import string from '../config/str';
 
 import URL from '../helper/helper_url';
 import parse from '../helper/parse';
+import Footer from '../components/common/Footer';
 
 class SearchPage extends Component {
     constructor(props) {
@@ -24,6 +25,7 @@ class SearchPage extends Component {
                 <Helmet title={`"${this.search.get('keyword')}"` + string.search + string.postfix}/>
                 <Header search={this.search}></Header>
                 <Search search={this.search}></Search>
+                <Footer></Footer>
             </Fragment>
         )
     }

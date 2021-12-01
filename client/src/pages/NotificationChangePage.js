@@ -6,6 +6,7 @@ import NotificationChange from '../components/mypage/NotificationChange';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
+import Footer from '../components/common/Footer';
 class NotificationChangePage extends Component {
     constructor(props) {
         super(props);
@@ -25,6 +26,7 @@ class NotificationChangePage extends Component {
                     </div>
                     <NotificationChange/>
                 </div>
+                <Footer></Footer>
             </Fragment>
         )
     }

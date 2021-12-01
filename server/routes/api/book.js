@@ -39,7 +39,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             orderParams.push(['created_date_time', 'DESC'])
         }
         /* 소개도 키워드를 찾을 수 있게 하기.*/
-        var where = {
+        let where = {
             status: 1,
             author_id : {
                 [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
@@ -410,18 +410,20 @@ router.post('/single' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) 
     }
 });
 router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
-    var price = req.body.price;
-    var content = req.body.content;
-    var book_description = req.body.book_description;
-    var author_id = req.user.id;
-    var category_id = req.body.category_id;
-    var book_detail_titles = req.body.book_detail_titles;
-    var title = req.body.title;
-    var type = req.body.type;
-    var is_finished_serialization = 1;
-    var serialization_day = req.body.serialization_day;
-    var img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
-    var preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
+
+    let price = req.body.price;
+    let content = req.body.content;
+    let book_description = req.body.book_description;
+    let author_id = req.user.id;
+    let category_id = req.body.category_id;
+    let book_detail_titles = [];
+    let title = req.body.title;
+    let type = req.body.type;
+    let is_finished_serialization = 1;
+    let serialization_day = req.body.serialization_day;
+    let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
+    let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
+
 
     //book detail table에 넣는 attribute
     var files = [];
