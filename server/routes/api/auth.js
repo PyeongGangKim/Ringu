@@ -345,7 +345,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
     const curDay = new Date();
 
     let time = curDay.getHours() * 3600 + curDay.getMinutes() * 60 + curDay.getSeconds();
-    console.log(req.query)
+
     try{
         const result = await identification.findOne({
             raw: true,
@@ -362,8 +362,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
                 type: 1,
             }
         });
-        console.log(typeof result)
-        console.log(result === null)
+
         if(result === null){
             res.status(StatusCodes.BAD_REQUEST).json({
                 reason: "dismatch identification number",
