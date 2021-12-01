@@ -42,28 +42,28 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         var where = {
             status: 1,
             author_id : {
-                [Op.like] : (author_id == null || author_id == "") ? "%%" : author_id,
+                [Op.like] : (author_id === null || author_id === "") ? "%%" : author_id,
             },
             category_id : {
                 [Op.or]: categories,
-                //[Op.like] : (category_id == null || category_id == "") ? "%%" : category_id,
+                //[Op.like] : (category_id === null || category_id === "") ? "%%" : category_id,
             },
             [Op.or]:{
-                //    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                //    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
                 '$book.title$' : {
-                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
                 },
                 '$author.nickname$' : {
-                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
                 },
                 '$author.nickname$' : {
-                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
                 },
                 '$book.description$' : {
-                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
                 },
                 '$book.recommending_phrase$': {
-                    [Op.like] :  (keyword == null || keyword == "") ? "%%"  :  keyword,
+                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  keyword,
                 }
             },
         }
@@ -132,7 +132,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                     attributes: [],
                     required: false,
                     where: {
-                        member_id : (member_id == null || member_id == "") ? null: member_id,
+                        member_id : (member_id === null || member_id === "") ? null: member_id,
                     }
                 }
             ],
@@ -141,10 +141,11 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         });
 
         for(let i = 0 ; i < bookList.length ; i++){
-            if(bookList[i].img == null || bookList[i].img[0] == 'h') continue;
+            if(bookList[i].img === null || bookList[i].img[0] === 'h') continue;            
             bookList[i].img = getImgURL(bookList[i].img);
+
         }
-        if(bookList.length == 0){
+        if(bookList.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
@@ -231,7 +232,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             group: 'book_id',
         });
 
-        if(book_detail_info.length == 0){
+        if(book_detail_info.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
@@ -329,7 +330,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             detailList[i].dataValues.img = getImgURL(detailList[i].dataValues.img);
         }
 
-        if(detailList.length == 0){
+        if(detailList.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
@@ -361,7 +362,7 @@ router.post('/single' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) 
 
     let content = req.body.content;
     let preview = (typeof req.files.preview !== 'undefined') ? req.files.preview[0].key : null;
-    let file = (req.files.file == null ) ? null : req.files.file[0].key;
+    let file = (req.files.file === null ) ? null : req.files.file[0].key;
     let page_number = req.body.page_number;
 
     let author_id = req.user.id;
