@@ -457,6 +457,7 @@ router.get('/sales/ratio', isLoggedIn, isAuthor,async (req, res, next) => { //�
 router.get('/sales/book', isLoggedIn, isAuthor,async (req, res, next) => { //작가 입장에서 판 책들 가져오기
     var author_id = req.query.author_id;
     var year = parseInt(req.query.year);
+    var result = {}
 
     try{
         const books = await sequelize.query(
@@ -480,39 +481,45 @@ router.get('/sales/book', isLoggedIn, isAuthor,async (req, res, next) => { //작
              {type: sequelize.QueryTypes.SELECT}
         )
 
-        var top5 = books.map(book => book.id)
-        const sales = await sequelize.query(
-            `
-                SELECT
-                    YEAR(p.created_date_time) as y,
-                    MONTH(p.created_date_time) as m,
-                    b.title as book_title,
-                    b.id,
-                    SUM(p.price) as revenue
-                FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
-                WHERE b.author_id = ${author_id}
-                    AND p.status = 1
-                    AND b.id IN (${top5})
-                GROUP BY book_title, y, m
-                HAVING y = ${year}
+        result['books'] = books
 
-                UNION
+        if(books.length !== 0) {
+            var top5 = books.map(book => book.id)
+            const sales = await sequelize.query(
+                `
+                    SELECT
+                        YEAR(p.created_date_time) as y,
+                        MONTH(p.created_date_time) as m,
+                        b.title as book_title,
+                        b.id,
+                        SUM(p.price) as revenue
+                    FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
+                    WHERE b.author_id = ${author_id}
+                        AND p.status = 1
+                        AND b.id IN (${top5})
+                    GROUP BY book_title, y, m
+                    HAVING y = ${year}
 
-                SELECT
-                    YEAR(p.created_date_time) as y,
-                    MONTH(p.created_date_time) as m,
-                    'etc.',
-                    b.id,
-                    SUM(p.price) as revenue
-                FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
-                WHERE b.author_id = ${author_id}
-                    AND p.status = 1
-                    AND b.id NOT IN (${top5})
-                GROUP BY y, m
-                HAVING y = ${year}
-            `,
-             {type: sequelize.QueryTypes.SELECT}
-        )
+                    UNION
+
+                    SELECT
+                        YEAR(p.created_date_time) as y,
+                        MONTH(p.created_date_time) as m,
+                        'etc.',
+                        b.id,
+                        SUM(p.price) as revenue
+                    FROM purchase p JOIN book_detail d ON p.book_detail_id = d.id JOIN book b ON d.book_id = b.id
+                    WHERE b.author_id = ${author_id}
+                        AND p.status = 1
+                        AND b.id NOT IN (${top5})
+                    GROUP BY y, m
+                    HAVING y = ${year}
+                `,
+                 {type: sequelize.QueryTypes.SELECT}
+            )
+
+            result['sales'] = sales
+        }
 
         const stats = await purchase.findAll({
             attributes: [
@@ -544,15 +551,13 @@ router.get('/sales/book', isLoggedIn, isAuthor,async (req, res, next) => { //작
             ],
         });
 
-        if(sales.length == 0){
+        result['stats'] = stats
+
+        if(books.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            res.status(StatusCodes.OK).json({
-                stats : stats,
-                sales : sales,
-                books : books,
-            });
+            res.status(StatusCodes.OK).json(result);
         }
 
     }
@@ -647,7 +652,8 @@ router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) =
                 author_id: author_id,
             },
         });
-        if(amount.length === 0){
+
+        if(!amount){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
         }
         else{
