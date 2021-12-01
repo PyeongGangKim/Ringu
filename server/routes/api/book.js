@@ -184,6 +184,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 "content",
                 "preview",
                 "recommending_phrase",
+                "is_approved",
                 //[sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("author.id"), "author_id"],
                 [sequelize.literal("author.nickname"), "author_nickname"],
@@ -453,7 +454,7 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
         },{
             transaction: t,
         });
-        for(var i = 0 ; i < book_detail_titles.length; i++){            
+        for(var i = 0 ; i < book_detail_titles.length; i++){
             await book_detail.create({
                 title: book_detail_titles[i],
                 book_id : new_book.id,
