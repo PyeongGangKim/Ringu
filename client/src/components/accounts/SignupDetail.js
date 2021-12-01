@@ -235,40 +235,15 @@ class SignupDetail extends Component {
         this.setState(state);
     }
 
-    handleAgeCheck = evt => {
-        var state = this.state;
-        state.ageCheck = evt.target.checked;
+    handleAgeCheck = evt => {var state = this.state;state.ageCheck = evt.target.checked;this.setState(state);}
 
-        this.setState(state);
-    }
+    handleServiceAgree = evt => {var state = this.state;state.serviceAgree = evt.target.checked;this.setState(state);}
 
-    handleServiceAgree = evt => {
-        var state = this.state;
-        state.serviceAgree = evt.target.checked;
+    handleInfoAgree = evt => {var state = this.state;state.infoAgree = evt.target.checked;this.setState(state);}
 
-        this.setState(state);
-    }
+    handleEventAgree = evt => {var state = this.state;state.eventAgree = evt.target.checked;this.setState(state);}
 
-    handleInfoAgree = evt => {
-        var state = this.state;
-        state.infoAgree = evt.target.checked;
-
-        this.setState(state);
-    }
-
-    handleEventAgree = evt => {
-        var state = this.state;
-        state.eventAgree = evt.target.checked;
-
-        this.setState(state);
-    }
-
-    handleActiveAgree = evt => {
-        var state = this.state;
-        state.activeAgree = evt.target.checked;
-
-        this.setState(state);
-    }
+    handleActiveAgree = evt => {var state = this.state;state.activeAgree = evt.target.checked;this.setState(state);}
 
     verifyEmailCode = async(evt) => {
         var state = this.state;
@@ -277,23 +252,24 @@ class SignupDetail extends Component {
             email: state.email.val,
         }
 
-        const res = await API.sendGet(URL.api.auth.email.identification, params)
+        try {
+            const res = await API.sendGet(URL.api.auth.email.identification, params)
+            if(res.status === 200) {
+                state.emailCode.success = true;
+                state.email.success = true;
+                state.emailCode.clear = true;
+                state.email.clear = true;
+                state.emailCode.btn = false;
+                state.timer.active = false;
+            }
 
-        if(res.status === 200) {
-            state.emailCode.success = true;
-            state.email.success = true;
-            state.emailCode.clear = true;
-            state.email.clear = true;
-            state.emailCode.btn = false;
-            state.timer.active = false;
-            this.setState(state);
-        } else {
+        } catch(e) {
             state.emailCode.class = "input error";
             state.emailCode.clear = false;
             state.emailCode.msg = "인증에 실패하였습니다.";
-
-            this.setState(state);
         }
+
+        this.setState(state);
     }
 
     verifyNickname = async(evt) => {
