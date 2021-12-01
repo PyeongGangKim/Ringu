@@ -122,7 +122,7 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
 
 router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하는 api
     var email = req.query.email;
-    console.log(email);
+
     try{
         const result = await member.findOne({
             where : {
@@ -130,7 +130,6 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
                 status: 1,
             }
         });
-        console.log(result);
         if(result !== null){
             res.status(StatusCodes.DUPLICATE).json({
                 "message" : "duplicate",
@@ -175,19 +174,17 @@ router.get('/google', function(req, res, next){
                     expiresIn: '12h',
                     issuer: 'ringu',
                 });
-                console.log(token);
                 res.status(StatusCodes.OK).json({
                     token: token
                 });
             }
         }
-        
+
     })(req,res,next)
 });
 
 router.get( '/google/callback',passport.authenticate('google', { failureRedirect: '/auth/login', session: false }),
     function (req, res) {
-        console.log(req.user.message);
         const token = jwt.sign({
              id: req.user.id,
              type: req.user.type,
@@ -304,7 +301,6 @@ router.post("/login", async (req, res, next) => {
         passport.authenticate("local", { session: false },(passportError, user, info) => {
             if(passportError || !user){
                 console.log(passportError);
-                console.log(info);
                 res.status(StatusCodes.BAD_REQUEST).json({message: info.message});
                 return;
             }
@@ -349,7 +345,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
     const curDay = new Date();
 
     let time = curDay.getHours() * 3600 + curDay.getMinutes() * 60 + curDay.getSeconds();
-
+    console.log(req.query)
     try{
         const result = await identification.findOne({
             raw: true,
@@ -366,8 +362,9 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
                 type: 1,
             }
         });
-
-        if(result == null){
+        console.log(typeof result)
+        console.log(result === null)
+        if(result === null){
             res.status(StatusCodes.BAD_REQUEST).json({
                 reason: "dismatch identification number",
             });
