@@ -44,7 +44,7 @@ class Payment extends Component {
             total: [],
             state: [],
             withdrawals: [],
-            yearOptions: [{value: 0, label: '-'}],
+            yearOptions: [{value: this.currentYear, label: `${this.currentYear}`}],
             books: [],
         }
     }
@@ -89,7 +89,7 @@ class Payment extends Component {
                 state.balance = amount.amount_available_withdrawal;
                 state.balance2 = amount.amount_available_withdrawal;
                 state.remitted = amount.total_withdrawal_amount;
-                state.is_waiting = amount.request_withdrawal_amount !== 0;
+                //state.is_waiting = amount.request_withdrawal_amount !== 0;
 
                 this.setState(state)
             }
@@ -128,6 +128,7 @@ class Payment extends Component {
 
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales, params)
+            console.log(salesRes)
             if(salesRes.status === 200) {
                 var sales = salesRes.data.sales;
                 var data = []
@@ -147,16 +148,23 @@ class Payment extends Component {
 
                 if(init) {
                     var years = salesRes.data.years;
-                    var year = []
-                    for(var i = 0; i < years.length; i++) {
-                        year.push({value: years[i].y, label: `${years[i].y}년`})
-                    }
+                    if(years.length ===0) {
 
-                    state.yearOptions = year;
-                    state.year = year[0];
+                    } else {
+                        var year = []
+                        for(var i = 0; i < years.length; i++) {
+                            year.push({value: years[i].y, label: `${years[i].y}년`})
+                        }
+
+                        state.yearOptions = year;
+                        state.year = year[0];
+                    }
                 }
 
                 state.data = data;
+                this.setState(state)
+            } else if(salesRes.status === 204) {
+                state.data = [];
                 this.setState(state)
             }
         }
@@ -173,7 +181,7 @@ class Payment extends Component {
             author_id: this.user.id,
             year: year
         }
-
+        console.log()
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales_book, params)
             if(salesRes.status === 200) {
@@ -202,6 +210,10 @@ class Payment extends Component {
                 state.data = data;
 
                 this.setState(state)
+            } else if(salesRes.status === 204){
+                state.data = [];
+
+                this.setState(state)
             }
         }
         catch(e) {
@@ -227,6 +239,8 @@ class Payment extends Component {
                     sales[i].value = parseInt(sales[i].value)
                 }
                 this.setState(state)
+            } else if(salesRes.status === 204) {
+                state.data = []
             }
         }
         catch(e) {
@@ -316,7 +330,7 @@ class Payment extends Component {
             }),
         }
 
-        const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+        const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7C51F0', '#F9ED0F'];
 
         return (
             <div className="payment">
@@ -370,7 +384,7 @@ class Payment extends Component {
                     <div className="stats">
                         <div className="box">
                             <h4 className="header">총 판매량</h4>
-                            <div className="value">150</div>
+                            <div className="value">0</div>
                         </div>
                         {/*<div className="box">
                             <h4 className="header">오늘의 방문자</h4>
@@ -378,7 +392,7 @@ class Payment extends Component {
                         </div>*/}
                         <div className="box">
                             <h4 className="header">오늘의 주문수</h4>
-                            <div className="value">15</div>
+                            <div className="value">0</div>
                         </div>
 
                     </div>
@@ -427,6 +441,11 @@ class Payment extends Component {
                         <div className="canvas">
                             {
                                 state.type === 0 ?
+                                state.data.length === 0 ?
+                                <div className="no-content">
+                                    판매 내역이 없습니다.
+                                </div>
+                                :
                                 <ResponsiveContainer
                                     width="100%"
                                     height="100%"
@@ -446,6 +465,11 @@ class Payment extends Component {
                                 </ResponsiveContainer>
                                 :
                                 state.type === 1 ?
+                                state.data.length === 0 ?
+                                <div className="no-content">
+                                    판매 내역이 없습니다.
+                                </div>
+                                :
                                 <ResponsiveContainer
                                     width="100%"
                                     height="100%"
@@ -470,6 +494,11 @@ class Payment extends Component {
 
                                     </BarChart>
                                 </ResponsiveContainer>
+                                :
+                                state.data.length === 0 ?
+                                <div className="no-content">
+                                    판매 내역이 없습니다.
+                                </div>
                                 :
                                 <div className="container">
                                     <div className="content">
