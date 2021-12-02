@@ -37,6 +37,7 @@ class ModifyBookSeries extends Component {
             title: {val: "", msg: "", clear: false, class: "input"},
             bookDescription: {val: "", msg: "", clear: false, class: "input"},
             books: [],
+            is_approved: 1,
             tmp: null,
         }
     }
@@ -94,6 +95,8 @@ class ModifyBookSeries extends Component {
                 state.title.val = book.book_title;
                 state.bookDescription.val = book.book_description;
                 state.thumbnail.file = book.img;
+                state.is_approved = book.is_approved;
+
                 var day = [];
                 book.serialization_day.split('').forEach(d =>
                     day.push(this.dayOptions.filter(item => item.label === d)[0])
@@ -263,6 +266,13 @@ class ModifyBookSeries extends Component {
             return;
         }
 
+        if(state.day.val.length === 0) {
+            alert('연재 주기를 입력해주세요.')
+            state.day.class = "textbox error";
+            this.setState(state)
+            return;
+        }
+
         if(!state.title.val) {
             alert('제목을 입력해주세요')
             state.title.class = "textbox error";
@@ -398,51 +408,55 @@ class ModifyBookSeries extends Component {
                         </div>
                     </div>
 
-                    <div className="upload-wrap">
-                        {
-                            state.books.map((book, book_idx) => {
-                                return (
-                                    <div className="upload" key={book_idx}>
-                                        <div className="round">
-                                            {book_idx+1}회차
-                                        </div>
-
-                                        <div className="row">
-                                            <div className="header">제목 </div>
-                                            <input disabled={!book.isModifying} className="title box" value={book.title} onChange={(e) => this.handleTitleChange(e, book_idx)} placeholder={"제목을 입력해주세요"}/>
-                                            <div style={{"display":"flex"}}>
-                                                {
-                                                    !book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifying(true, book_idx)}>수정</button>
-                                                }
-                                                {
-                                                    book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifyDetail(book_idx)}>완료</button>
-                                                }
-                                                {
-                                                    book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifying(false, book_idx)}>취소</button>
-                                                }
+                    {
+                        !state.is_approved &&
+                        <div className="upload-wrap">
+                            {
+                                state.books.map((book, book_idx) => {
+                                    return (
+                                        <div className="upload" key={book_idx}>
+                                            <div className="round">
+                                                {book_idx+1}회차
                                             </div>
-                                        </div>
 
-                                        <div className="row">
-                                            <div className="header">작품 </div>
-                                            <input type="file" id={"book" + book_idx} onChange={(evt) => this.handleBookFileChange(evt, book_idx)} accept=".pdf"/>
-                                            <label htmlFor={"book" + book_idx}>
-                                                <div className="box">
-                                                    {!!book.filename ? book.filename : "파일을 업로드해주세요."}
+                                            <div className="row">
+                                                <div className="header">제목 </div>
+                                                <input disabled={!book.isModifying} className="title box" value={book.title} onChange={(e) => this.handleTitleChange(e, book_idx)} placeholder={"제목을 입력해주세요"}/>
+                                                <div style={{"display":"flex"}}>
+                                                    {
+                                                        !book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifying(true, book_idx)}>수정</button>
+                                                    }
+                                                    {
+                                                        book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifyDetail(book_idx)}>완료</button>
+                                                    }
+                                                    {
+                                                        book.isModifying && <button className="btn btn-color-4 upload-btn" onClick={() => this.handleModifying(false, book_idx)}>취소</button>
+                                                    }
                                                 </div>
-                                                <div className="btn btn-color-2 upload-btn">파일수정</div>
-                                            </label>
-                                            <span className="upload-text"> 파일형식: PDF</span>
-                                        </div>
+                                            </div>
 
-                                        {
-                                            (state.books.length-1 !== book_idx) && <hr/>
-                                        }
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
+                                            <div className="row">
+                                                <div className="header">작품 </div>
+                                                <input type="file" id={"book" + book_idx} onChange={(evt) => this.handleBookFileChange(evt, book_idx)} accept=".pdf"/>
+                                                <label htmlFor={"book" + book_idx}>
+                                                    <div className="box">
+                                                        {!!book.filename ? book.filename : "파일을 업로드해주세요."}
+                                                    </div>
+                                                    <div className="btn btn-color-2 upload-btn">파일수정</div>
+                                                </label>
+                                                <span className="upload-text"> 파일형식: PDF</span>
+                                            </div>
+
+                                            {
+                                                (state.books.length-1 !== book_idx) && <hr/>
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+
+                    }
 
                     <div className="btn-wrap">
                         <button className="btn btn-color-2" onClick={() => this.handleModify()}>

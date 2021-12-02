@@ -129,14 +129,18 @@ class Buy extends Component {
 
                             var tokens = item.file.split('.')
                             var ext = tokens[tokens.length-1]
+
                             return (
                                 <div key={item.type === 2 ? item.book_detail_id : item.id} className="product-box">
                                     <div className="img-box">
-                                        <img src={item.img}/>
+                                        <img src={!!item.img ? item.img : "ringu_thumbnail.png"}/>
                                     </div>
                                     <div className="product">
                                         <strong className="title">{item.book_title}</strong>
-                                        <span className="subtitle">{item.title}</span>
+                                        {
+                                            item.type === 1 &&
+                                            <span className="subtitle">{item.title}</span>
+                                        }
                                         <div className="detail">
                                             <p>저자:{item.type === 2 ? item.author_nickname : item.author}</p>
                                             <p>출간방식:{item.type === 2 ? "단행본" : "연재본"} {item.type === 1 ? null : <span>연재주기:{"목,금"}</span>}</p>

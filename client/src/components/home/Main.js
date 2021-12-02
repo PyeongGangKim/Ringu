@@ -33,6 +33,7 @@ class Main extends Component {
             is_picked: 1,
         }
         let latestBookParams = {
+            member_id: User.getInfo() ? User.getInfo().id : null,
             is_approved: 1,
         }
         
