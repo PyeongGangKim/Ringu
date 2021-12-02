@@ -141,7 +141,6 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             group: 'id',
             order: orderParams,
         });
-        console.log(bookList);
 
         for(let i = 0 ; i < bookList.length ; i++){
             if(bookList[i].img === null || bookList[i].img[0] === 'h') continue;
@@ -424,7 +423,7 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
     let book_detail_titles = [];
     let title = req.body.title;
     let type = req.body.type;
-    let is_finished_serialization = 1;
+    let is_finished_serialization = 0;
     let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
     let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
