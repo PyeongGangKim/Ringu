@@ -21,6 +21,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
 
         let keyword = req.query.keyword;
         let member_id = req.query.member_id;
+        console.log(req.query);
         let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : null;
 
         let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
@@ -133,13 +134,14 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                     attributes: [],
                     required: false,
                     where: {
-                        member_id : (member_id === null || member_id === "") ? null: member_id,
+                        member_id : (checkNullAndUndefined(member_id)) ? null: member_id,
                     }
                 }
             ],
             group: 'id',
             order: orderParams,
         });
+        console.log(bookList);
 
         for(let i = 0 ; i < bookList.length ; i++){
             if(bookList[i].img === null || bookList[i].img[0] === 'h') continue;
