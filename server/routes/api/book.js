@@ -18,8 +18,8 @@ let router = express.Router();
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
         let author_id = req.query.author_id;
-        let keyword = req.query.keyword;
-        let member_id = req.query.member_id;
+        let keyword = ("keyword" in req.query && typeof req.query.keyword !== undefined) ? req.query.keyword : null;
+        let member_id = ("member_id" in req.query && typeof req.query.member_id !== undefined) ? req.query.member_id : null;
         let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : [];
 
         let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
@@ -141,7 +141,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         });
 
         for(let i = 0 ; i < bookList.length ; i++){
-            if(bookList[i].img === null || bookList[i].img[0] === 'h') continue;            
+            if(bookList[i].img === null || bookList[i].img[0] === 'h') continue;
             bookList[i].img = getImgURL(bookList[i].img);
 
         }
