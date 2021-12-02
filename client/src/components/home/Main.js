@@ -35,17 +35,16 @@ class Main extends Component {
         let latestBookParams = {
             is_approved: 1,
         }
-        
+
 
         try {
             const res = await API.sendGet(URL.api.book.list, params);
             const latestRes = await API.sendGet(URL.api.book.list, latestBookParams);
-            console.log(latestRes);
-            console.log(res.status);
+
             if(res.status === 200) state.bookList = res.data.bookList;
             if(latestRes.status === 200)state.latestBookList = latestRes.data.bookList;
             if(res.status === 200 || latestRes.status === 200) this.setState(state);
-            
+
         } catch(e) {
             console.error(e)
         }
