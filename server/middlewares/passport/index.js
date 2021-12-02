@@ -82,7 +82,6 @@ async function SNSVerify(req, done) {
         const user = await member.findOne({ where : {email: email, status: 1} });
 
         if(user && user[`${sns}_id`] === id){
-            console.log(user[`${sns}_id`], id);
             return done(null, user);
         }
 

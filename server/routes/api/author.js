@@ -103,7 +103,9 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         });
 
         if(result){
-            result.dataValues.profile = getImgURL(result.dataValues.profile)
+            if(result.dataValues.profile) {
+                result.dataValues.profile = getImgURL(result.dataValues.profile)
+            }            
             res.status(StatusCodes.OK).json({
                 author: result,
             });
