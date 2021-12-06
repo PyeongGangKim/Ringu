@@ -33,6 +33,7 @@ class Main extends Component {
             is_picked: 1,
         }
         let latestBookParams = {
+            member_id: User.getInfo() ? User.getInfo().id : null,
             is_approved: 1,
         }
 
@@ -98,7 +99,7 @@ class Main extends Component {
                         </div>
                     </div>*/}
                     <div className="title-wrap">
-                        <h2> Latest </h2>
+                        <h2> NEW </h2>
                         {/*<span> 더보기 </span>*/}
                     </div>
 
@@ -126,7 +127,7 @@ class Main extends Component {
                     </div>
 
                     <div className="title-wrap">
-                        <h2> Editor{`'`}s pick </h2>
+                        <h2> MD{`'`}s Pick </h2>
                         {/*<span> 더보기 </span>*/}
                     </div>
 

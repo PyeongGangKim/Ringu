@@ -7,7 +7,7 @@ const statusCodes = require("../../helper/statusCodes");
 
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
-
+const {checkNullAndUndefined} = require("../../helper/checkNullAndUndefined")
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 const {getImgURL} = require("../../utils/aws");
@@ -18,9 +18,11 @@ let router = express.Router();
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
         let author_id = req.query.author_id;
-        let keyword = ("keyword" in req.query && typeof req.query.keyword !== undefined) ? req.query.keyword : null;
-        let member_id = ("member_id" in req.query && typeof req.query.member_id !== undefined) ? req.query.member_id : null;
-        let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : [];
+
+        let keyword = req.query.keyword;
+        let member_id = req.query.member_id;
+        console.log(req.query);
+        let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : null;
 
         let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
         let orderBy = ("orderBy" in req.query && typeof req.query.orderBy !== undefined) ? req.query.orderBy : 'DESC';
@@ -39,43 +41,43 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
             orderParams.push(['created_date_time', 'DESC'])
         }
         /* 소개도 키워드를 찾을 수 있게 하기.*/
-        let where = {
+        let where={
             status: 1,
-            author_id : {
-                [Op.like] : (author_id === null || author_id === "") ? "%%" : author_id,
-            },
-            category_id : {
-                [Op.or]: categories,
-                //[Op.like] : (category_id === null || category_id === "") ? "%%" : category_id,
-            },
-            [Op.or]:{
-                //    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
+        }
+        if(!checkNullAndUndefined(author_id)) {
+            where['author_id'] = author_id
+        }
+        if(!checkNullAndUndefined(categories)){
+            where['category_id'] = categories
+        }
+        if(!checkNullAndUndefined(keyword)){
+            let orClause = {
                 '$book.title$' : {
-                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  "%"+keyword+"%",
                 },
                 '$author.nickname$' : {
-                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  "%"+keyword+"%",
                 },
                 '$author.nickname$' : {
-                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  "%"+keyword+"%",
                 },
                 '$book.description$' : {
-                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  "%"+keyword+"%",
+                    [Op.like] :  "%"+keyword+"%",
                 },
                 '$book.recommending_phrase$': {
-                    [Op.like] :  (keyword === null || keyword === "") ? "%%"  :  keyword,
+                    [Op.like] :  keyword,
                 }
-            },
+            }
+            where[Op.or] = orClause;
         }
-
-        if(is_approved !== null) {
+        if(!checkNullAndUndefined(is_approved)){
             where['is_approved'] = is_approved;
         }
 
-        if(is_picked !== null) {
+        if(!checkNullAndUndefined(is_picked)) {
             where['is_picked'] = is_picked;
         }
-        if(is_recommending_phrase !== null){
+        if(!checkNullAndUndefined(is_recommending_phrase)){
             where['is_recommending_phrase'] = is_recommending_phrase;
         }
 
@@ -132,7 +134,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                     attributes: [],
                     required: false,
                     where: {
-                        member_id : (member_id === null || member_id === "") ? null: member_id,
+                        member_id : (checkNullAndUndefined(member_id)) ? null: member_id,
                     }
                 }
             ],
@@ -421,7 +423,7 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
     let book_detail_titles = [];
     let title = req.body.title;
     let type = req.body.type;
-    let is_finished_serialization = 1;
+    let is_finished_serialization = 0;
     let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
     let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;

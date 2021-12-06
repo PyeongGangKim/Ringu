@@ -112,3 +112,4 @@ server/package-lock.json
 package-lock.json
 
 client/build
+client/src/utils/apiutils.js
