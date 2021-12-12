@@ -18,10 +18,8 @@ let router = express.Router();
 router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색할 때 도 사용 가능. picked로 md's pick list 가져오기
     try{
         let author_id = req.query.author_id;
-
         let keyword = req.query.keyword;
         let member_id = req.query.member_id;
-        console.log(req.query);
         let categories = ("categories" in req.query && typeof req.query.categories !== undefined) ? req.query.categories.map(x => {return parseInt(x)}) : null;
 
         let order = ("order" in req.query && typeof req.query.order !== undefined) ? req.query.order : 'created_date_time';
@@ -420,14 +418,13 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
     let book_description = req.body.book_description;
     let author_id = req.user.id;
     let category_id = req.body.category_id;
-    let book_detail_titles = [];
+    let book_detail_titles = req.body.book_detail_titles;
     let title = req.body.title;
     let type = req.body.type;
     let is_finished_serialization = 0;
     let serialization_day = req.body.serialization_day;
     let img = (typeof req.files.img !== 'undefined') ? req.files.img[0].key : null;
     let preview = (typeof req.files.file !== 'undefined') ? req.files.file[0].key : null;
-
 
     //book detail table에 넣는 attribute
     var files = [];
