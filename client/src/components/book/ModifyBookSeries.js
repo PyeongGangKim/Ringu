@@ -42,48 +42,6 @@ class ModifyBookSeries extends Component {
         }
     }
 
-    handleModifying = (value, idx) => {
-        var state = this.state;
-        state.books[idx].isModifying = value
-        this.setState(state);
-    }
-
-    handleModifyDetail = async (idx, type) => {
-        var state = this.state
-        const data = new FormData()
-
-        // file
-        if(type === 1) {
-
-        }
-        // title
-        else {
-            if(state.books[idx].name === "") {
-                alert("제목을 입력해주세요")
-                return;
-            }
-            var book = state.books[idx]
-            data.append("id", book.id)
-            data.append("title", book.name)
-        }
-
-        try {
-            const res = await API.sendPut(URL.api.book_detail.modify, data, 'application/json')
-            if(res.status === 200) {
-                alert("제목을 수정하였습니다!")
-                this.handleModifying(false, idx)
-            }
-        } catch(e) {
-            alert("수정 실패하였습니다.")
-        }
-    }
-
-    handleTitleChange = (evt, idx) => {
-        var state = this.state;
-        state.books[idx].name = evt.target.value;
-        this.setState(state);
-    }
-
     async componentDidMount() {
         var state = this.state;
 
@@ -127,6 +85,48 @@ class ModifyBookSeries extends Component {
         catch(e) {
             console.error(e)
         }
+    }
+
+    handleModifying = (value, idx) => {
+        var state = this.state;
+        state.books[idx].isModifying = value
+        this.setState(state);
+    }
+
+    handleModifyDetail = async (idx, type) => {
+        var state = this.state
+        const data = new FormData()
+
+        // file
+        if(type === 1) {
+
+        }
+        // title
+        else {
+            if(state.books[idx].name === "") {
+                alert("제목을 입력해주세요")
+                return;
+            }
+            var book = state.books[idx]
+            data.append("id", book.id)
+            data.append("title", book.name)
+        }
+
+        try {
+            const res = await API.sendPut(URL.api.book_detail.modify, data, 'application/json')
+            if(res.status === 200) {
+                alert("제목을 수정하였습니다!")
+                this.handleModifying(false, idx)
+            }
+        } catch(e) {
+            alert("수정 실패하였습니다.")
+        }
+    }
+
+    handleTitleChange = (evt, idx) => {
+        var state = this.state;
+        state.books[idx].name = evt.target.value;
+        this.setState(state);
     }
 
     handlePriceChange = evt => {
