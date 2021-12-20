@@ -36,12 +36,14 @@ module.exports = {
         book: {
             get:                "/book/",
             list:               "/book",
+            put:                "/book",
             modify:             "/book/modify",
             download:           "/book/download",
             preview:            "/book/preview",
             getDetailList:      "/book/detail/",
             main:               "/book/main",
             delete:             "/book/",
+            recommend:          "/book/recommend",
         },
         book_detail: {
             get:                "/book_detail/",

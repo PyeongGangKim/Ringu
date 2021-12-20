@@ -54,6 +54,7 @@ class Author extends Component {
             //
             display:false,
             modify: false,
+            modifyList: [],
             upload: false,
 
             modalPos:{},
@@ -230,6 +231,7 @@ class Author extends Component {
             var detailList = res.data.detailList
             state.detailList = detailList
             state.detailTotal = res.data.total.count
+            state.modifyList = new Array(detailList.length).fill(false);
             this.setState(state)
         }
 
@@ -271,11 +273,61 @@ class Author extends Component {
         var state = this.state;
 
         state.selectedBook = {};
+        state.book = {title:"", name:"선택 파일 없음", file:null};
         state.detailList = [];
         state.detailTotal = 0;
-        state.selectedBook =
         state.display = false;
         this.setState(state)
+    }
+
+    handleFinishClick = async(book_id) => {
+        var params = {
+            is_finished_serialization: 1,
+            book_id: book_id
+        }
+
+        try {
+            const res = await API.sendPut(URL.api.book.put, params, 'application/json')
+            if(res.status === 200) {
+
+            }
+        } catch(e) {
+            console.error(e)
+            alert("작업을 완료하지 못 했습니다. 잠시 후에 다시 시도해주세요.")
+        }
+
+    }
+
+    handleModifyFileClick = async(evt, idx) => {
+        var state = this.state
+        var file = evt.target.files[0]
+
+        if(!file) {
+            return;
+        }
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        const data = new FormData()
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.selectedBook.title + "." + fieldName, {type: file.type})
+        data.append("file", newFile)
+        data.append("id", state.selectedBook.id)
+
+        try {
+            const res = await API.sendPut(URL.api.book_detail.modify, data, 'multipart/form-data')
+            if(res.status === 200) {
+                alert("파일을 수정하였습니다!")
+            }
+        } catch(e) {
+            console.error(e)
+            alert("파일을 수정하지 못했습니다. 잠시 후에 다시 시도해주세요.")
+        }
     }
 
     handleModifyClick = () => {
@@ -283,6 +335,35 @@ class Author extends Component {
         state.modify = true;
 
         this.setState(state)
+    }
+
+    handleModifyTitleClick = (idx, isModifying) => {
+        var state = this.state;
+        state.modifyList[idx] = isModifying;
+
+        this.setState(state);
+    }
+
+    handleDetailTitleChange = (evt, idx) => {
+        var state = this.state;
+        state.detailList[idx].title = evt.target.value;
+
+        this.setState(state);
+    }
+
+    handleConfirmClick = async(idx, detail_id) => {
+        var state = this.state;
+
+        try {
+            const res = await API.sendPut(URL.api.book_detail.modify, {title: state.detailList[idx].title, id:detail_id}, 'application/json')
+            console.log(res)
+            if(res.status === 200) {
+                state.modifyList[idx] = false;
+                this.setState(state);
+            }
+        } catch(e) {
+            alert("제목을 수정하지 못하였습니다. 잠시 후에 다시 시도하여 주세요.")
+        }
     }
 
     handleCompleteClick = async() => {
@@ -331,8 +412,9 @@ class Author extends Component {
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
+
         if(!file) {
-            state.book.name = ""
+            state.book.name = "선택 파일 없음"
             state.book.file = null
             this.setState(state)
             return;
@@ -350,6 +432,7 @@ class Author extends Component {
 
         state.book.name = file.name
         state.book.file = file
+        state.modifyList.push(false)
 
         this.setState(state)
     }
@@ -433,6 +516,11 @@ class Author extends Component {
                             </div>
 
                             <em className="close" onClick={this.handleCloseClick}> &times; </em>
+                            {
+                                state.selectedBook.is_finished_serialization === 0 &&
+                                <button className="btn end-btn" onClick={() => this.handleFinishClick(state.selectedBook.id)}>연재완료</button>
+                            }
+
                             <div className="table-wrap">
                                 <table className="book-detail-table">
                                     <tbody>
@@ -441,7 +529,34 @@ class Author extends Component {
                                                 return (
                                                     <tr key={idx} className="book-detail">
                                                         <td className="book-detail-idx"> <span> {detail.round}회차. </span> </td>
-                                                        <td className="book-detail-title"> <span> {detail.title} </span></td>
+                                                        {
+                                                            state.modifyList[idx] === true ?
+                                                            <td className="book-detail-title">
+                                                                <input className="box" value={detail.title} onChange={(evt) => this.handleDetailTitleChange(evt, idx)} placeholder={"제목을 입력해주세요"}/>
+                                                            </td>
+                                                            :
+                                                            <td className="book-detail-title"> <span> {detail.title} </span></td>
+                                                        }
+                                                        {
+                                                            parseInt(this.props.authorId) === state.user.id &&
+                                                            <td className="icon">
+                                                                {
+                                                                    state.modifyList[idx] === false ?
+                                                                    <em className="modify" onClick={() => this.handleModifyTitleClick(idx, true)}/>
+                                                                    :
+                                                                    <em className="confirm" onClick={() => this.handleConfirmClick(idx, detail.id)}/>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        {
+                                                            parseInt(this.props.authorId) === state.user.id &&
+                                                            <td className="icon">
+                                                                <input type="file" id={"book" + idx} onChange={(evt) => this.handleModifyFileClick(evt, idx)} accept=".pdf"/>
+                                                                <label htmlFor={"book" + idx}>
+                                                                    <em className="up"/>
+                                                                </label>
+                                                            </td>
+                                                        }
                                                         {
                                                             parseInt(this.props.authorId) === state.user.id ?
                                                             <td className="icon">
@@ -452,12 +567,6 @@ class Author extends Component {
                                                             <td className="icon"> <em className="download"/> </td>
                                                             :
                                                             <td className="icon"> <em className="lock"/> </td>
-                                                        }
-                                                        {
-                                                            parseInt(this.props.authorId) === state.user.id &&
-                                                            <td className="icon">
-                                                                <em className="modify"/>
-                                                            </td>
                                                         }
                                                         {/*
                                                             parseInt(this.props.authorId) === state.user.id &&
@@ -473,7 +582,7 @@ class Author extends Component {
                                 </table>
                             </div>
                             {
-                                state.upload &&
+                                state.selectedBook.is_finished_serialization === 0 && state.upload &&
                                 <div className="upload">
                                     <div className="header">
                                         <h2>업로드</h2>
@@ -496,19 +605,21 @@ class Author extends Component {
                                 </div>
                             }
                             {
-                                state.upload === true ?
-                                <div className="btn-wrap">
-                                    <button className="btn btn-color-2" onClick={this.handleRegister}>
-                                        완료
+                                state.selectedBook.is_finished_serialization === 0 &&
+                                (state.upload === true ?
+                                    <div className="btn-wrap">
+                                        <button className="btn btn-color-2" onClick={this.handleRegister}>
+                                            완료
+                                            </button>
+                                            <button className="btn" onClick={() => this.handleUploadClick(false)}>
+                                            취소
+                                            </button>
+                                    </div>
+                                    :
+                                    <button className="btn btn-block btn-bottom" onClick={() => this.handleUploadClick(true)}>
+                                        + 새로운 회차 등록하기
                                     </button>
-                                    <button className="btn" onClick={() => this.handleUploadClick(false)}>
-                                        취소
-                                    </button>
-                                </div>
-                                :
-                                <button className="btn btn-block btn-bottom" onClick={() => this.handleUploadClick(true)}>
-                                    + 새로운 회차 등록하기
-                                </button>
+                                )
                             }
 
                         </div>
@@ -597,26 +708,24 @@ class Author extends Component {
                             </div>
                         </div>
                         {
-                            this.state.reviewTitleList.length === 0 ?
-                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
-                                <div className="no-content">
-                                    등록된 리뷰가 없습니다.
-                                </div>
-                            </div>
-                            :
                             <div id="review-area" className="inner-box" ref={this.reviewRef}>
                                 <div className="inner-header">
                                     <span> 리뷰 </span>
-                                    <div className="inner-subheader-wrap">
-                                        <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
-                                        {
-                                            this.state.reviewTitleList.map((item, title_idx) => {
-                                                return (
-                                                    <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
+                                    {
+                                        this.state.reviewTitleList.length === 0 ?
+                                        null
+                                        :
+                                        <div className="inner-subheader-wrap">
+                                            <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
+                                            {
+                                                this.state.reviewTitleList.map((item, title_idx) => {
+                                                    return (
+                                                        <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    }
                                 </div>
                                 <div className="inner-content">
                                     {
