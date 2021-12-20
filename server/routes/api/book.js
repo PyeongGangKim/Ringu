@@ -162,6 +162,32 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
     }
 });
 
+router.get('/recommend', async(req, res, next) => {
+    try{
+        const result = await book.findOne({
+            attributes : [
+                "id",
+                "recommending_phrase",
+            ],
+            where : {
+                is_recommending_phrase: 1
+            },
+            order: sequelize.literal('rand()'),
+            limit: 1
+        });
+
+        res.status(statusCodes.OK).json({
+            "recommend" : result,
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+})
+
 router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
     let book_id = req.params.bookId;
     let member_id = req.query.member_id; // 작가로 검색할때 사용 가능(?)
@@ -231,7 +257,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             ],
             group: 'book_id',
         });
-
+        console.log(book_detail_info)
         if(book_detail_info.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
         }
@@ -613,7 +639,32 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
     }
 })
 
-router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
+router.put('/', isLoggedIn, isAuthor, async(req,res,next) => {
+    var book_id = req.body.book_id;
+    var params = req.body
+    delete params['book_id']
+
+    try{
+        await book.update(
+            params,{
+            where : {
+                id : book_id,
+            },
+        });
+
+        res.status(statusCodes.OK).json({
+            "message" : "OK",
+        });
+    }
+    catch(err){
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+        console.error(err);
+    }
+})
+
+router.get('/download/:bookDetailId', isLoggedIn, async(req,res,next) => {
     const bookDetailId = req.params.bookDetailId;
     const type = req.query.type;
 
@@ -641,10 +692,10 @@ router.get('/download/:bookDetailId', isLoggedIn, async (req,res,next) => {
         });
     }
     catch(err){
+        console.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
-        console.error(err);
     }
 });
 
