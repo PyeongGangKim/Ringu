@@ -23,6 +23,8 @@ class Main extends Component {
             keyword: "",
             bookList: [],
             latestBookList: [],
+            recommend: null,
+            searchClear: false,
         };
     }
 
@@ -37,7 +39,6 @@ class Main extends Component {
             is_approved: 1,
         }
 
-
         try {
             const res = await API.sendGet(URL.api.book.list, params);
             const latestRes = await API.sendGet(URL.api.book.list, latestBookParams);
@@ -49,19 +50,44 @@ class Main extends Component {
         } catch(e) {
             console.error(e)
         }
+
+        try {
+            const res = await API.sendGet(URL.api.book.recommend)
+            if(res.status === 200) {
+                state.recommend = res.data.recommend;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
     }
 
     handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
     handleSearchClick = () => {
-        if(!this.state.keyword) {
+        var state = this.state;
+        if(!state.searchClear) {
+            this.props.history.push(URL.service.search + "?keyword=" + state.recommend.recommending_phrase)
+            return;
+        }
+
+        if(!state.keyword) {
             alert("검색어를 입력해주세요.")
             return;
         }
 
-        this.props.history.push(URL.service.search + "?keyword=" + this.state.keyword)
+        this.props.history.push(URL.service.search + "?keyword=" + state.keyword)
+    }
+
+    handleSearchClear = () => {
+        var state = this.state;
+        if(state.searchClear === false) {
+            state.searchClear = true;
+            this.setState(state)
+        }
     }
 
     render() {
+        var state = this.state;        
         return (
             <div id="wrap">
                 <div id="home-header">
@@ -71,7 +97,7 @@ class Main extends Component {
                             <p>당신이 찾는 모든 것들의 공간</p>
                             <form onSubmit={this.handleSearchClick}>
                                 <div className="search">
-                                    <input type="text" autoComplete="off" value={this.state.keyword} onChange={this.handleKeywordChange}/>
+                                    <input type="text" style={state.searchClear === false ? {color:"var(--color-1)"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
                                     <button type="submit">
                                         검색
                                     </button>
