@@ -122,7 +122,15 @@
 
 .book-detail-modal {
     width: 500px;
-
+    .end-btn {
+        position:absolute;
+        padding: 5px 15px;
+        top:30px;
+        right: 60px;
+        font-size: 14px;
+        font-weight: 600;
+        border-width: 2px;
+    }
     .book-detail-header {
         font-size: 18px;
         font-weight: 600;
@@ -190,6 +198,10 @@
                 width: 35px;
                 text-align:center;
 
+                input[type=file] {
+                    display: none;
+                }
+
                 em {
                     cursor: pointer;
                     display:inline-block;
@@ -203,6 +215,14 @@
                         background-image:  url(/assets/img/review.png);
                     }
 
+                    &.up {
+                        background-image:  url(/assets/img/upload.png);
+                    }
+
+                    &.confirm {
+                        background-image:  url(/assets/img/confirm.png);
+                    }
+
                     &.x {
                         width: 15px;
                         height: 15px;
@@ -214,8 +234,6 @@
                     }
 
                     &.download {
-                        width: 18px;
-                        height: 18px;
                         background-image:  url(/assets/img/download.png);
                     }
                 }
