@@ -38,7 +38,7 @@ router.post('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
 
 router.put('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
     var id = req.body.id;
-    var file = "file" in req.files && typeof req.files.file !== 'undefined' ? req.files.file[0].key : null;
+    var file = !!req.files && "file" in req.files && typeof req.files.file !== 'undefined' ? req.files.file[0].key : null;
     var title = "title" in req.body && typeof req.body.title !== 'undefined' ? req.body.title : null;
 
     var params = {}
