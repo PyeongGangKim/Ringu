@@ -4,7 +4,8 @@ var sequelize = require("sequelize");
 
 var config_url = require("../../config/url");
 
-var helper_api = require("../../helper/api");
+const logger = require('../../utils/winston_logger');
+
 var helper_pagination = require("../../helper/pagination");
 var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
@@ -79,7 +80,7 @@ router.get("/", async(req, res, next) => {
             "helper_date"       : helper_date
         });
     } catch(err) {
-        console.log(err)
+        logger.error(err);
     }
 });
 
@@ -129,26 +130,10 @@ router.get('/list/user', async(req, res, next) => {
         })
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
-/*
-router.get("/:puchaseId", async(req, res, next) => {
-    helper_activity.checkLogin(req, res, "/admin/purchase/");
-    let purchaseId = req.params.purchaseId;
-    try{
-        const result = await purchase.findOne({
-            where: {
-                id: purchaseId,
-            }
-        });
-        res.render("admin/pages/")
-    }
-    catch(err){
-        console.error(err);
-    }
-})
-*/
+
 router.post("/save/", async(req, res, next) => {
 
     var member_id  = helper_security.decrypt(req.body["member_id"]);
@@ -160,7 +145,7 @@ router.post("/save/", async(req, res, next) => {
             book_id     : book_id
         })
     } catch(err) {
-        console.log(err)
+        logger.error(err);
     }
 
     res.redirect("/admin/member/view/?id=" + req.body["member_id"]);
@@ -182,7 +167,7 @@ router.get("/delete/", async(req, res, next) => {
         res.redirect("/admin/member/view/?id=" + member_id);
 
     } catch(err){
-        console.log(err)
+        logger.error(err);
     }
 });
 

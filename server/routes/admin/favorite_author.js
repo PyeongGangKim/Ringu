@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var config_url = require("../../config/url");
-
+const logger = require('../../utils/winston_logger');
 var helper_api = require("../../helper/api");
 var helper_pagination = require("../../helper/pagination");
 var helper_security = require("../../helper/security");
@@ -25,7 +25,7 @@ router.post("/save/", async(req, res, next) => {
         res.redirect("/admin/member/view/?id=" + req.body["member_id"]);
 
     } catch(err){
-        console.log(err)
+        logger.error(err);
     }
 
 });
@@ -46,7 +46,7 @@ router.get("/delete/", async(req, res, next) =>  {
         res.redirect("/admin/member/view/?id=" + member_id);
 
     } catch(err){
-        console.log(err)
+        logger.error(err);
     }
 
 });
