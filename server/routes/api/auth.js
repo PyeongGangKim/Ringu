@@ -4,6 +4,7 @@ let jwt = require('jsonwebtoken');
 let bcrypt = require('bcrypt');
 const salt_num = require('../../config/salt');
 const passport = require('passport');
+const logger = require('../../utils/winston_logger');
 const { smtpTransport } = require('../../config/email');
 var { generateRandom } = require('../../utils/random_number');
 const { secretKey } = require('../../config/jwt_secret');
@@ -48,7 +49,7 @@ router.post("/signup", async (req, res, next) => {
                 "token": token,
             });
     } catch(err) {
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error': 'signup fails'
         })
@@ -83,7 +84,7 @@ router.post("/signup/sns", async (req, res, next) => {
             token: token
         });
     } catch(err) {
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'signup fails'
         })
@@ -113,7 +114,7 @@ router.get('/nickname/duplicate', async(req, res, next) => { // 회원 가입시
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
         })
@@ -142,7 +143,7 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
         }
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
         })
@@ -155,7 +156,7 @@ router.get('/google', function(req, res, next){
         scope: ['profile', 'email'],
       },function(err, user, info) {
         if(err){
-            console.error(err);
+            logger.error(err);
             res.status(StatusCodes.UNAUTHORIZED).json({
                 message: "unauthorized"
             });
@@ -240,7 +241,7 @@ router.get('/naver/callback', function(req, res) {
             }
         });
     } catch(err) {
-        console.log(err);
+        logger.error(err);
         res.status(response.statusCode).end();
     }
 
@@ -323,7 +324,7 @@ router.post("/login", async (req, res, next) => {
         })(req,res);
     }
     catch(err) {
-        console.log(err)
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": err,
         })
@@ -393,7 +394,7 @@ router.get('/email/identification', async(req, res, next) => { // email 인증�
         res.status(StatusCodes.OK).send();
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'error'
         });
@@ -420,7 +421,7 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: err});
     }
     try{
@@ -434,7 +435,7 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             msg: "server error",
         });
@@ -463,7 +464,7 @@ router.post('/phone/identification/number', isLoggedIn, async (req, res, next) =
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             msg: "server error",
         });;
@@ -523,7 +524,7 @@ router.get('/phone/identification', isLoggedIn ,async(req, res, next) => { // ph
 
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             msg: "server error",
         });;

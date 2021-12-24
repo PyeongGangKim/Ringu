@@ -4,6 +4,7 @@ var router = express.Router();
 const statusCodes = require("../../helper/statusCodes");
 const { isLoggedIn } = require("../../middlewares/auth");
 
+const logger = require('../../utils/winston_logger');
 
 const {sequelize, notification , member, Sequelize : {Op}} = require("../../models");
 //type : 1.작품 알림, 2.출금알림, 3.공지사항
@@ -13,8 +14,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
     const type = (req.query.type === undefined) ? [1,2,3] : req.query.type;
     const offset = req.query.offset * 1;
     const limit = 10;
-    console.log(req.query);
-    console.log(offset);
+
     try{
         const notifications = await notification.findAll({
             attributes : [
@@ -47,7 +47,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -61,13 +61,13 @@ router.get('/allNewNotiCount', isLoggedIn, async(req, res, next) => {
                 member_id : member_id
             }
         });
-        console.log(newNotiCount.count);
+        
         res.status(statusCodes.OK).json({
             new_notification_count: newNotiCount.count,
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -90,7 +90,7 @@ router.get('/newNotiCnt', isLoggedIn, async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -112,7 +112,7 @@ router.get('/allCount', isLoggedIn, async(req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -120,7 +120,7 @@ router.get('/allCount', isLoggedIn, async(req, res, next) => {
 })
 router.post('/delete', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
     let notification_ids = req.body.notificationIds;
-    console.log(notification_ids)
+    
     try{
         await notification.destroy({
             where : {
@@ -133,7 +133,7 @@ router.post('/delete', isLoggedIn, async (req, res, next) => { // 필요없는 �
     
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -155,7 +155,7 @@ router.put('/:notificationId', isLoggedIn, async(req, res, next) => { // 읽은 
         })
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

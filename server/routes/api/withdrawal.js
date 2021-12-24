@@ -3,6 +3,8 @@ var router = express.Router();
 
 const StatusCodes = require("../../helper/statusCodes");
 
+const logger = require('../../utils/winston_logger');
+
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { sequelize,withdrawal, account, author, purchase, book_detail, book, member, Sequelize: {Op} } = require("../../models");
 
@@ -48,97 +50,14 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
 
-/*router.post('/', isLoggedIn, async(req, res, next) => {
-    let amount = parseInt(req.body.amount);
-    let author_id = req.user.id;
-    const t = await sequelize.transaction();
-
-    try{
-        const newWithdrawal = await withdrawal.create({
-            author_id : author_id,
-            amount: amount,
-            status: 1,
-        },
-        {
-            transaction : t,
-        });
-
-        const purchases = await purchase.findAll({
-            attributes: [
-                "id"
-            ],
-            where: {
-                status: 1,
-                remit_status: 0,
-            },
-            include: [
-                {
-                    model : book_detail,
-                    as : "book_detail",
-                    attributes : [],
-                    required: true,
-                    include : [
-                        {
-                            model: book,
-                            as : "book",
-                            where : {
-                                author_id: author_id
-                            },
-                            attributes: [],
-                        }
-                    ]
-                },
-            ],
-        })
-
-        const purchaseUpdate = await purchase.update(
-            {
-                remit_status: 1,
-                withdrawal_id: newWithdrawal.id,
-            },
-            {
-                where: {
-                    id: {
-                        [Op.in]: purchases.map(p => p.id),
-                    }
-                },
-                transaction: t,
-            }
-        )
-
-        const authorUpdate = await author.update(
-            {
-                is_waiting: 1,
-            },
-            {
-                where:{
-                    member_id: author_id,
-                },
-                transaction: t,
-            }
-        )
-
-        if(authorUpdate && purchaseUpdate && newWithdrawal) {
-            await t.commit();
-            res.status(StatusCodes.CREATED).json({
-                "withdrawal": newWithdrawal,
-            });
-        }
-    }
-    catch(err){
-        await t.rollback();
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
-    }
-});*/
 
 router.get('/', isLoggedIn, isAuthor,async (req, res, next) => {
-    // POST
+    
     let author_id = req.query.author_id;
     try{
         const result = await withdrawal.findAll({
@@ -164,15 +83,19 @@ router.get('/', isLoggedIn, isAuthor,async (req, res, next) => {
             })
         }
         else{
-            res.status(StatusCodes.NO_CONTENT)
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "No content"
+            })
         }
     }
     catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        logger.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
     }
 
-    // DB LOAD
+    
 
 });
 

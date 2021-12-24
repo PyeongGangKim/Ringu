@@ -2,9 +2,9 @@ let express = require("express");
 let router = express.Router();
 
 const StatusCodes = require("../../helper/statusCodes");
-const { getImgURL } = require("../../utils/aws");
+const logger = require('../../utils/winston_logger');
 const {terms, Sequelize: {Op}, sequelize } = require("../../models");
-const { isLoggedIn } = require("../../middlewares/auth");
+
 
 
 
@@ -23,10 +23,11 @@ router.get('/',async (req, res, next) => {
         });
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
+        
     }
 });
 

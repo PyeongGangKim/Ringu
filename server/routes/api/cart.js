@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-
+const logger = require('../../utils/winston_logger');
 const StatusCodes = require("../../helper/statusCodes");
 const { isLoggedIn } = require("../../middlewares/auth");
 const { getImgURL } = require("../../utils/aws");
@@ -19,10 +19,11 @@ router.post('/', isLoggedIn,async (req, res, next) => {
         res.status(StatusCodes.CREATED).send("success cart");
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
+        
     }
 });
 
@@ -50,7 +51,7 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -120,10 +121,11 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
+        
     }
 });
 
@@ -146,6 +148,7 @@ router.put('/clear', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
@@ -167,6 +170,7 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
