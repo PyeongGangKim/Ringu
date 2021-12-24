@@ -9,10 +9,11 @@ let session = require('express-session');
 let secretKey = require('./config/jwt_secret');
 const passport = require('passport');
 const passportConfig = require('./middlewares/passport');
+const logger = require('./utils/winston_logger');
+const morgan = require('morgan') 
+const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
-
-
-//let logger = require('morgan');
+app.use(morgan(morganFormat, {stream : logger.stream}));
 
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
