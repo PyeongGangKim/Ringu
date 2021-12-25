@@ -51,11 +51,11 @@
         }
     }
 
-    .booklist-area {
+    .book-area {
         padding-bottom: 0;
         border-bottom: 1px solid #bbb;
 
-        ul {
+        .container {
             flex-wrap: wrap;
         }
 
@@ -212,7 +212,7 @@
                     background-size: contain;
 
                     &.modify {
-                        background-image:  url(/assets/img/review.png);
+                        background-image:  url(/assets/img/modify.png);
                     }
 
                     &.up {

@@ -1,20 +1,19 @@
-.booklist-area {
+.book-area {
     padding-bottom: 60px;
     margin-bottom: 30px;
 
-
-    ul {
+    .container {
         padding: 0;
         display: flex;
         margin-right: -100px;
 
-        li {
+        .book-box {
             flex: 0 1 auto;
             margin-right: 20px;
             margin-bottom: 40px;
         }
 
-        li:last-child {
+        .book-box:last-child {
             margin-right: 0;
         }
     }

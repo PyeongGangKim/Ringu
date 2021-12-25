@@ -16,7 +16,6 @@ import API from '../../utils/apiutils';
 class Book extends Component {
     constructor(props) {
         super(props)
-
         this.handleDisplayClick = props.handleDisplayClick;
         this.handleUpdate = props.handleUpdate;
 
@@ -134,7 +133,7 @@ class Book extends Component {
         }
 
         return (
-            <li className={"book-box " + status}>
+            <div className={"book-box " + status}>
                 <div className="book-type-wrap">
                     <span> {mark[status]} </span>
                 </div>
@@ -209,7 +208,7 @@ class Book extends Component {
                         </div>
                     }
                 </div>
-            </li>
+            </div>
         )
     }
 }
