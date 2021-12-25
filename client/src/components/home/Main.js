@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import Slider from "react-slick";
 
 import '../../scss/common/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
-import '../../scss/common/button.scss'
+import '../../scss/common/slick.scss'
 
 import Book from '../../components/book/Book'
 
@@ -86,53 +88,105 @@ class Main extends Component {
         }
     }
 
+    next = (slider) => {
+        slider.slickNext();
+    }
+
+    previous = (slider) => {
+        slider.slickPrev();
+    }
+
     render() {
-        var state = this.state;        
+        const StyledSlider = styled(Slider)`
+            .slick-list, .slick-track, .slick-slide div {
+                height: 100%;
+            }
+            .slick-dots {
+                bottom: 20px;
+            }
+        `;
+
+        const StyledBookSlider = styled(Slider)`
+            .slick-list {
+                margin-right: -15px;
+            }
+            .slick-track {
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+        `;
+
+        var state = this.state;
+        const settings = {
+            arrows: false,
+            dots: false,
+            speed: 500,
+            slidesToShow: 5,
+            slidesToScroll: 1
+        };
+
+        const settingsMain = {
+            arrows: false,
+            dots: true,
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            speed: 500,
+            autoplaySpeed: 10000,
+            cssEase: "linear"
+        };
+
         return (
             <div id="wrap">
                 <div id="home-header">
-                    <div id="home-header-content">
-                        <div className="search-area">
-                            <strong>당신이 찾는 모든 것들의 공간</strong>
-                            <p>당신이 찾는 모든 것들의 공간</p>
-                            <form onSubmit={this.handleSearchClick}>
-                                <div className="search">
-                                    <input type="text" style={state.searchClear === false ? {color:"var(--color-1)"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
-                                    <button type="submit">
-                                        검색
-                                    </button>
-                                </div>
-                            </form>
+                    <form onSubmit={this.handleSearchClick}>
+                        <div className="search">
+                            <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
+                            <button type="submit">
+                                검색
+                            </button>
                         </div>
-                    </div>
+                    </form>
+                    <StyledSlider {...settingsMain}>
+                        <div className="home-header-content main2">
+                            <div className="search-area">
+                                <strong>당신이 찾는 모든 것들의 공간</strong>
+                                <p>당신이 찾는 모든 것들의 공간</p>
+                            </div>
+                        </div>
+                        <div className="home-header-content main1">
+                            <div className="search-area">
+                                <strong>당신이 찾는 모든 것들의 공간</strong>
+                                <p>당신이 찾는 모든 것들의 공간</p>
+                            </div>
+                        </div>
+                    </StyledSlider>
                 </div>
 
 
                 <div id="home" className="page1">
-                    {/*<div className="title-wrap">
-                        <h2> 인기있는 주제 </h2>
-                    </div>
-
-                    <div id="categorylist-area" className="list-area">
-
-                        <div className="category-list">
-                            <div className="category-item">
-                                <div className="category-content">
-                                    <img src="/icon-cook.png"/>
-                                    <span className="category-sub">요리</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>*/}
                     <div className="title-wrap">
                         <h2> NEW </h2>
-                        {/*<span> 더보기 </span>*/}
+                        {
+                            state.latestBookList.length > 5 &&
+                            <div className="slick--arrow">
+                                <div className="slick-arrow-wrapper">
+                                    <a className="slick-arrow arrow-left" onClick={() => this.previous(this.newSlider)}>
+                                        <em/>
+                                    </a>
+                                    <a className="slick-arrow arrow-right" onClick={() => this.next(this.newSlider)}>
+                                        <em/>
+                                    </a>
+                                </div>
+                            </div>
+                        }
                     </div>
 
-                    <div className="booklist-area">
-                        <ul>
+                    <div className="book-area slick-slider-wrapper">
+                        <StyledBookSlider ref={c => (this.newSlider = c)} {...settings} infinite={state.latestBookList.length > 5 ? true: false}>
                             {
-                                this.state.latestBookList.slice(0,5).map(item => {
+                                state.latestBookList.map(item => {
                                     var status = '';
                                     if(item.type === 2) {
                                         status  = 'pub'
@@ -149,18 +203,30 @@ class Main extends Component {
                                     )
                                 })
                             }
-                        </ul>
+                        </StyledBookSlider>
                     </div>
 
                     <div className="title-wrap">
                         <h2> MD{`'`}s Pick </h2>
-                        {/*<span> 더보기 </span>*/}
+                        {
+                            state.bookList.length > 5 &&
+                            <div className="slick--arrow">
+                                <div className="slick-arrow-wrapper">
+                                    <a className="slick-arrow arrow-left" onClick={() => this.previous(this.recSlider)}>
+                                        <em/>
+                                    </a>
+                                    <a className="slick-arrow arrow-right" onClick={() => this.next(this.recSlider)}>
+                                        <em/>
+                                    </a>
+                                </div>
+                            </div>
+                        }
                     </div>
 
-                    <div className="booklist-area">
-                        <ul>
+                    <div className="book-area slick-slider-wrapper">
+                        <StyledBookSlider ref={c => (this.recSlider = c)} {...settings} infinite={state.bookList.length > 5 ? true: false}>
                             {
-                                this.state.bookList.slice(0,5).map(item => {
+                                state.bookList.map(item => {
                                     var status = '';
                                     if(item.type === 2) {
                                         status  = 'pub'
@@ -168,16 +234,18 @@ class Main extends Component {
                                         status  = 'ser'
                                     }
                                     return (
-                                        <Book
-                                            key={item.id}
-                                            book={item}
-                                            status={status}
-                                            favorite
-                                        />
+                                        <div>
+                                            <Book
+                                                key={item.id}
+                                                book={item}
+                                                status={status}
+                                                favorite
+                                            />
+                                        </div>
                                     )
                                 })
                             }
-                        </ul>
+                        </StyledBookSlider>
                     </div>
                 </div>
             </div>
