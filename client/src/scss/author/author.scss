@@ -274,26 +274,21 @@
             text-align: right;
             padding-right: 10px;
         }
+    }
 
-        .upload-btn {
-            font-size: 14px;
-            padding: 5px 10px;
-        }
+    .upload-btn {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
 
-        .upload-text{
-            font-weight: 500;
-            font-size: 12px;
-        }
+    .upload-info {
+        width: 100%;
+    }
 
-        .upload-info {
-            width: 100%;
-        }
-
-        label {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-        }
+    label {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
     }
 
     .box  {
@@ -306,7 +301,7 @@
     }
 
     .title {
-        margin: 0 20px 10px 0;
+        margin: 0 0 10px 0;
     }
 
     .file-upload {

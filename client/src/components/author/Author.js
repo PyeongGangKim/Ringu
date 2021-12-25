@@ -9,6 +9,7 @@ import Book from '../../components/book/Book'
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/common/common.scss';
+import '../../scss/common/input.scss';
 import '../../scss/common/tab.scss';
 import '../../scss/author/author.scss';
 import '../../scss/book/book.scss';
@@ -54,8 +55,12 @@ class Author extends Component {
             //
             display:false,
             modify: false,
-            modifyList: [],
+            modifyDetail: -1,
+            modifyDetailId: -1,
             upload: false,
+
+            oldIdx: -1,
+            oldTitle: '',
 
             modalPos:{},
             host: false,
@@ -231,7 +236,10 @@ class Author extends Component {
             var detailList = res.data.detailList
             state.detailList = detailList
             state.detailTotal = res.data.total.count
-            state.modifyList = new Array(detailList.length).fill(false);
+            state.modifyDetail = -1;
+            state.modifyDetailId = -1;
+            state.oldIdx = -1;
+            state.oldTitle = '';
             this.setState(state)
         }
 
@@ -350,33 +358,17 @@ class Author extends Component {
         this.setState(state)
     }
 
-    handleModifyTitleClick = (idx, isModifying) => {
+    handleModifyDetailClick = (idx, detail_id) => {
         var state = this.state;
-        state.modifyList[idx] = isModifying;
-
-        this.setState(state);
-    }
-
-    handleDetailTitleChange = (evt, idx) => {
-        var state = this.state;
-        state.detailList[idx].title = evt.target.value;
-
-        this.setState(state);
-    }
-
-    handleConfirmClick = async(idx, detail_id) => {
-        var state = this.state;
-
-        try {
-            const res = await API.sendPut(URL.api.book_detail.modify, {title: state.detailList[idx].title, id:detail_id}, 'application/json')
-            console.log(res)
-            if(res.status === 200) {
-                state.modifyList[idx] = false;
-                this.setState(state);
-            }
-        } catch(e) {
-            alert("제목을 수정하지 못하였습니다. 잠시 후에 다시 시도하여 주세요.")
+        if(state.oldIdx >= 0) {
+            state.detailList[state.oldIdx].title = state.oldTitle;
         }
+        state.modifyDetail = idx;
+        state.modifyDetailId = detail_id;
+        state.oldIdx = idx;
+        state.oldTitle = state.detailList[idx].title;
+
+        this.setState(state);
     }
 
     handleCompleteClick = async() => {
@@ -422,6 +414,38 @@ class Author extends Component {
         }
     }
 
+    handleModifyFileClick = async(evt, idx) => {
+        var state = this.state
+        var file = evt.target.files[0]
+
+        if(!file) {
+            return;
+        }
+        var token = file.name.split('.')
+        var fieldName = token[token.length - 1]
+
+        if(fieldName.toLowerCase() !== 'pdf') {
+            alert('PDF 파일만 업로드 해주세요.')
+            return;
+        }
+
+        const data = new FormData()
+        var blob = file.slice(0, file.size, file.type)
+        var newFile = new File([blob], state.selectedBook.title + "." + fieldName, {type: file.type})
+        data.append("file", newFile)
+        data.append("id", state.selectedBook.id)
+
+        try {
+            const res = await API.sendPut(URL.api.book_detail.modify, data, 'multipart/form-data')
+            if(res.status === 200) {
+                alert("파일을 수정하였습니다!")
+            }
+        } catch(e) {
+            console.error(e)
+            alert("파일을 수정하지 못했습니다. 잠시 후에 다시 시도해주세요.")
+        }
+    }
+
     handleBookFileChange = evt => {
         var state = this.state
         var file = evt.target.files[0]
@@ -445,7 +469,6 @@ class Author extends Component {
 
         state.book.name = file.name
         state.book.file = file
-        state.modifyList.push(false)
 
         this.setState(state)
     }
@@ -454,53 +477,97 @@ class Author extends Component {
         var state = this.state
         state.upload = value
         if(value === false) {
+            if(state.oldIdx >= 0) {
+                state.detailList[state.oldIdx].title = state.oldTitle;
+            }
+            state.modifyDetail = -1;
+            state.modifyDetailId = -1;
+            state.oldIdx = -1;
+            state.oldTitle = '';
             state.book = {title:"", name:"선택 파일 없음", file:null}
         }
         this.setState(state)
     }
 
-    handleTitleChange = (evt) => {
+    handleTitleChange = (evt, idx) => {
         var state = this.state;
-        state.book.title = evt.target.value;
+        if(idx < 0) {
+            state.book.title = evt.target.value;
+        } else {
+            state.detailList[idx].title = evt.target.value;
+        }
+
         this.setState(state);
     }
 
     handleRegister = async() => {
-        var state = this.state
-        if(state.book.title === "") {
-            alert("제목을 입력해주세요")
-            return;
-        }
-
-        if(state.book.file === null) {
-            alert("등록할 파일을 선택해주세요")
-            return;
-        }
-
-        const data = new FormData()
-
-        var file = state.book.file
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.selectedBook.title + "_" +(state.detailList.length+1) + ".pdf", {type: file.type})
-
-        data.append("page_number", null)
-        data.append("file", newFile)
-        data.append("book_id", state.selectedBook.id)
-        data.append("title", state.book.title)
-        data.append("round", state.detailTotal+1)
-
-        try {
-            const res = await API.sendData(URL.api.register.bookDetail, data)
-            if(res.status === 201) {
-                var detail = res.data.detail
-                state.detailList.push({file:detail.file, round:detail.round, title:detail.title, id: detail.id})
-                state.book = {title:"", name:"선택 파일 없음", file:null}
-                this.setState(state);
-                alert("작품을 등록하였습니다!")
+        var state = this.state;
+        if(state.upload) {
+            if(state.book.title === "") {
+                alert("제목을 입력해주세요")
+                return;
             }
-        } catch(e) {
-            alert("등록 실패하였습니다.")
+
+            if(state.book.file === null) {
+                alert("등록할 파일을 선택해주세요")
+                return;
+            }
+
+            const data = new FormData()
+
+            var file = state.book.file
+            var blob = file.slice(0, file.size, file.type)
+            var newFile = new File([blob], state.selectedBook.title + "_" +(state.detailList.length+1) + ".pdf", {type: file.type})
+
+            data.append("page_number", null)
+            data.append("file", newFile)
+            data.append("book_id", state.selectedBook.id)
+            data.append("title", state.book.title)
+            data.append("round", state.detailTotal+1)
+
+            try {
+                const res = await API.sendData(URL.api.register.bookDetail, data)
+                if(res.status === 201) {
+                    var detail = res.data.detail
+                    state.detailList.push({file:detail.file, round:detail.round, title:detail.title, id: detail.id})
+                    state.book = {title:"", name:"선택 파일 없음", file:null}
+                    this.setState(state);
+                    alert("작품을 등록하였습니다!")
+                }
+            } catch(e) {
+                alert("등록 실패하였습니다.")
+            }
         }
+        else {
+            var idx = state.modifyDetail;
+            var detail_id = state.modifyDetailId;
+
+            if(state.detailList[idx].title === "") {
+                alert("제목을 입력해주세요")
+                return;
+            }
+
+            try {
+                const res = await API.sendPut(URL.api.book_detail.modify, {title: state.detailList[idx].title, id: detail_id}, 'application/json')
+                if(res.status === 200) {
+                    state.modifyDetail = -1;
+                    state.modifyDetailId = -1;
+                    state.oldIdx = -1;
+                    state.oldTitle = '';
+                    this.setState(state);
+                }
+            } catch(e) {
+                alert("제목을 수정하지 못하였습니다. 잠시 후에 다시 시도하여 주세요.")
+            }
+        }
+
+
+    }
+
+    handleConfirmClick = async(idx, detail_id) => {
+        var state = this.state;
+
+
     }
 
     downloadAction = async(book_detail_id) => {
@@ -543,43 +610,41 @@ class Author extends Component {
                                                     <tr key={idx} className="book-detail">
                                                         <td className="book-detail-idx"> <span> {detail.round}회차. </span> </td>
                                                         {
-                                                            state.modifyList[idx] === true ?
-                                                            <td className="book-detail-title">
-                                                                <input className="box" value={detail.title} onChange={(evt) => this.handleDetailTitleChange(evt, idx)} placeholder={"제목을 입력해주세요"}/>
+                                                            state.modifyDetail === idx ?
+                                                            <td colSpan={3}>
+                                                                <div className="upload-info">
+                                                                    <input className="title box" value={detail.title} onChange={(evt) => this.handleTitleChange(evt, idx)} placeholder={"제목을 입력해주세요"}/>
+
+                                                                    <input type="file" id={"book" + idx} onChange={(evt) => this.handleModifyFileClick(evt, idx)} accept=".pdf"/>
+                                                                    <label htmlFor={"book" + idx}>
+                                                                        <div className="file-upload box">
+                                                                            {detail.file}
+                                                                        </div>
+                                                                        <div className="btn btn-color-2 upload-btn">파일 업로드</div>
+                                                                    </label>
+                                                                </div>
                                                             </td>
                                                             :
                                                             <td className="book-detail-title"> <span> {detail.title} </span></td>
                                                         }
                                                         {
-                                                            parseInt(this.props.authorId) === state.user.id &&
+                                                            parseInt(this.props.authorId) === state.user.id && state.modifyDetail !== idx &&
                                                             <td className="icon">
-                                                                {
-                                                                    state.modifyList[idx] === false ?
-                                                                    <em className="modify" onClick={() => this.handleModifyTitleClick(idx, true)}/>
-                                                                    :
-                                                                    <em className="confirm" onClick={() => this.handleConfirmClick(idx, detail.id)}/>
-                                                                }
+                                                                <em className="modify" onClick={() => this.handleModifyDetailClick(idx, detail.id)}/>
                                                             </td>
                                                         }
                                                         {
-                                                            parseInt(this.props.authorId) === state.user.id &&
-                                                            <td className="icon">
-                                                                <input type="file" id={"book" + idx} onChange={(evt) => this.handleModifyFileClick(evt, idx)} accept=".pdf"/>
-                                                                <label htmlFor={"book" + idx}>
-                                                                    <em className="up"/>
-                                                                </label>
-                                                            </td>
-                                                        }
-                                                        {
-                                                            parseInt(this.props.authorId) === state.user.id ?
-                                                            <td className="icon">
-                                                                <em className="download"  onClick={() => this.downloadAction(detail.id)}/>
-                                                            </td>
-                                                            :
-                                                            !!detail.purchases.length ?
-                                                            <td className="icon"> <em className="download"/> </td>
-                                                            :
-                                                            <td className="icon"> <em className="lock"/> </td>
+                                                            state.modifyDetail !== idx && (
+                                                                parseInt(this.props.authorId) === state.user.id ?
+                                                                <td className="icon">
+                                                                    <em className="download"  onClick={() => this.downloadAction(detail.id)}/>
+                                                                </td>
+                                                                :
+                                                                !!detail.purchases.length ?
+                                                                <td className="icon"> <em className="download"/> </td>
+                                                                :
+                                                                <td className="icon"> <em className="lock"/> </td>
+                                                            )
                                                         }
                                                     </tr>
                                                 )
@@ -599,7 +664,7 @@ class Author extends Component {
                                         {state.detailTotal+1}회차.
                                     </span>
                                     <div className="upload-info">
-                                        <input className="title box" value={state.book.title} onChange={this.handleTitleChange} placeholder={"제목을 입력해주세요"}/>
+                                        <input className="title box" value={state.book.title} onChange={(evt) => this.handleTitleChange(evt, -1)} placeholder={"제목을 입력해주세요"}/>
 
                                         <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
                                         <label htmlFor="book">
@@ -613,7 +678,7 @@ class Author extends Component {
                             }
                             {
                                 state.selectedBook.is_finished_serialization === 0 &&
-                                (state.upload === true ?
+                                (state.upload === true || state.modifyDetail >= 0 ?
                                     <div className="btn-wrap">
                                         <button className="btn btn-color-2" onClick={this.handleRegister}>
                                             완료
