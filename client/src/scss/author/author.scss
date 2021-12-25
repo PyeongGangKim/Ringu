@@ -284,7 +284,6 @@
 
         .upload-btn {
             font-size: 14px;
-            width: 100px;
             padding: 5px 10px;
         }
 
@@ -298,8 +297,9 @@
         }
 
         label {
-            display: inline-block;
-            float: right;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
         }
     }
 
@@ -317,7 +317,6 @@
     }
 
     .file-upload {
-        display: inline-block;
         font-size: 14px;
         font-weight: 500;
         overflow: hidden;

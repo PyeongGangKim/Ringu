@@ -277,6 +277,7 @@ class Author extends Component {
         state.detailList = [];
         state.detailTotal = 0;
         state.display = false;
+        state.upload = false;
         this.setState(state)
     }
 
@@ -600,11 +601,11 @@ class Author extends Component {
                                     <div className="upload-info">
                                         <input className="title box" value={state.book.title} onChange={this.handleTitleChange} placeholder={"제목을 입력해주세요"}/>
 
-                                        <div className="file-upload box">
-                                            {state.book.name}
-                                        </div>
                                         <input type="file" id="book" onChange={this.handleBookFileChange} accept=".pdf"/>
                                         <label htmlFor="book">
+                                            <div className="file-upload box">
+                                                {state.book.name}
+                                            </div>
                                             <div className="btn btn-color-2 upload-btn">파일 업로드</div>
                                         </label>
                                     </div>
@@ -695,7 +696,7 @@ class Author extends Component {
                                                             item['status'] = status
 
                                                             return (
-                                                                <Book                                                                    
+                                                                <Book
                                                                     key={item.id}
                                                                     book = {item}
                                                                     status = {status}
