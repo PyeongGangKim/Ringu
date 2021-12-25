@@ -121,7 +121,7 @@ class Header extends Component {
                                 </Link>
                                 {
                                     state.type === 1 ?
-                                    <Link to={URL.service.author + this.state.id} id="author-page">
+                                    <Link to={URL.service.author + this.state.id} onClick={() => {window.location.href=URL.service.author + this.state.id}} id="author-page">
                                         {
                                             this.props.isHost === true ?
                                             <img src="/author_clicked.png"/>
