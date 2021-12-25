@@ -5,6 +5,7 @@ const statusCodes = require("../../helper/statusCodes");
 
 const { isLoggedIn } = require("../../middlewares/auth");
 
+const logger = require('../../utils/winston_logger');
 
 const { book_detail,review_statistics ,sequelize,review , member, book, Sequelize : {Op}} = require("../../models");
 
@@ -55,7 +56,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -85,7 +86,7 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -202,7 +203,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
 
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -243,141 +244,13 @@ router.get('/stats', async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
     }
 })
 
-/*router.get('/author/:author_id', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
-    var author_id = req.params.author_id
-
-    try{
-        const reviewList = await review.findAll({
-            attributes: [
-                "score",
-                "description",
-                "created_date_time",
-                [sequelize.literal("book_detail.id"),"detail_id"],
-                [sequelize.literal("book_detail.title"),"subtitle"],
-                [sequelize.literal("`book_detail->book`.id"),"book_id"],
-                [sequelize.literal("`book_detail->book`.title"),"book_title"],
-                [sequelize.literal("`book_detail->book`.author_id"),"author_id"],
-                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
-
-            ],
-            where: {
-                status : 1,
-                '$author_id$': author_id
-            },
-            include : [
-                {
-                    model : book_detail,
-                    as : 'book_detail',
-                    attributes: [],
-                    include: [
-                        {
-                            model: book,
-                            as : 'book',
-                            attributes : [],
-                            //where: {
-                            //    author_id: author_id,
-                            //},
-                            include : [
-                                {
-                                    model: member,
-                                    as: 'author',
-                                    attributes: [],
-                                }
-                            ]
-                        }
-                    ]
-                },
-
-            ]
-        });
-        if(reviewList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("no review");
-        }
-        else{
-            res.status(StatusCodes.OK).json({
-                reviewList : reviewList,
-            });
-        }
-
-    }
-    catch(err){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "error": "server error"
-        });
-        console.error(err);
-    }
-});
-
-router.get('/book/:book_id', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
-    var book_id = req.params.book_id
-
-    try{
-        const reviewList = await review.findAll({
-            attributes: [
-                "score",
-                "description",
-                "created_date_time",
-                [sequelize.literal("book_detail.id"),"detail_id"],
-                [sequelize.literal("book_detail.title"),"subtitle"],
-                [sequelize.literal("`book_detail->book`.id"),"book_id"],
-                [sequelize.literal("`book_detail->book`.title"),"book_title"],
-                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
-
-
-            ],
-            where: {
-                status : 1,
-            },
-            include : [
-                {
-                    model : book_detail,
-                    as : 'book_detail',
-                    attributes: [],
-                    where: {
-                        book_id: book_id,
-                    },
-                    include: [
-                        {
-                            model: book,
-                            as : 'book',
-                            attributes : [],
-                            include : [
-                                {
-                                    model: member,
-                                    as: 'author',
-                                    attributes: [],
-                                }
-                            ]
-                        }
-                    ]
-                },
-
-            ]
-        });
-        if(reviewList.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("no review");
-        }
-        else{
-            res.status(StatusCodes.OK).json({
-                reviewList : reviewList,
-            });
-        }
-
-    }
-    catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            "error": "server error"
-        });
-    }
-});*/
 
 
 router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없는 기능일 듯
@@ -395,8 +268,10 @@ router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없
 
     }
     catch(err){
-        console.error(err);
-        res.status(statusCodes.INTERNAL_SERVER_ERROR);
+        logger.error(err);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
     }
 });
 

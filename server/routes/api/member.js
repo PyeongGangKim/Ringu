@@ -8,6 +8,7 @@ const { secretKey } = require('../../config/jwt_secret');
 
 const bcrypt = require('bcrypt');
 
+const logger = require('../../utils/winston_logger');
 
 let {makeNewPassowrd} = require("../../helper/makeNewPassword");
 
@@ -50,8 +51,10 @@ router.get('/', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        logger.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error" : "server error"
+        });
     }
 })
 
@@ -84,12 +87,16 @@ router.get('/:memberId', async(req, res, next) => {
             })
         }
         else {
-            res.status(StatusCodes.NO_CONTENT);
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message" : "NO content"
+            });
         }
     }
     catch(err){
-        console.error(err);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+        logger.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error" : "server error"
+        });
     }
 })
 
@@ -111,7 +118,10 @@ router.get('/profile/:memberId', async(req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error" : "server error"
+        });
     }
 })
 
@@ -133,7 +143,7 @@ router.post('/password/check', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -160,7 +170,7 @@ router.put('/password/', isLoggedIn, async (req, res, next) => {
         })
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -191,7 +201,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -232,7 +242,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
             });
         }
     } catch(err) {
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -274,7 +284,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -301,13 +311,16 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
             });
         }
         else{
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                "error": "name update error",
+            res.status(StatusCodes.NO_CONTENT).json({
+                "message": "No content",
             });
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "name update error",
+        });
     }
 
 })
@@ -331,6 +344,7 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -390,7 +404,7 @@ router.put('/:email/newPassword', async(req,res,next) =>{
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

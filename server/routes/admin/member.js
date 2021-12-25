@@ -3,8 +3,8 @@ var router = express.Router();
 
 
 var config_url = require("../../config/url");
+const logger = require('../../utils/winston_logger');
 
-var helper_api = require("../../helper/api");
 var helper_pagination = require("../../helper/pagination");
 var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
@@ -58,7 +58,7 @@ router.get("/", async(req, res, next) => {
             "helper_security"   : helper_security
         });
     } catch(err) {
-        console.log(err)
+        logger.error(err);
     }
 });
 
@@ -150,7 +150,7 @@ router.get("/view/", async(req, res, next) => {
         });
 
     } catch(err) {
-        console.log(err)
+        logger.error(err);
     }
 });
 
@@ -169,7 +169,7 @@ router.get("/delete/", async(req, res, next) => {
         )
         res.redirect("/admin/member/");
     } catch(err){
-        console.log(err)
+        logger.error(err);
     }
 });
 

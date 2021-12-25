@@ -1,10 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
-var config_url = require("../../config/url");
+const logger = require('../../utils/winston_logger');
 
-var helper_pagination = require("../../helper/pagination");
-var helper_date = require("../../helper/date");
 const { checkLogin } = require("../../helper/activity");
 
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
@@ -81,11 +79,11 @@ router.post("/", async(req, res, next) => {
         }
         catch(err){
             await t.rollback();
-            console.error(err);
+            logger.error(err);
         }
     }   
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get("/page", (req,res,next) => {

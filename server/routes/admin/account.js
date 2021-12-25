@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var config_url = require("../../config/url");
-
+const logger = require('../../utils/winston_logger');
 var helper_pagination = require("../../helper/pagination");
 
 const { checkLogin } = require("../../helper/activity");
@@ -27,7 +27,6 @@ router.get("/", async (req, res, next) => {
         "nickname"         : ("nicknmae" in req.query) ? req.query.nickname : "",
         
     }
-    console.log(fields);
     try{
         const {count, rows} = await account.findAndCountAll({
             where: {
@@ -63,7 +62,6 @@ router.get("/", async (req, res, next) => {
                 
             ]
         });
-        console.log(rows);
         let total_count = count;
         let renderingPage = "admin/pages/account_list";
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/account/", page, limit, total_count, fields);
@@ -76,7 +74,7 @@ router.get("/", async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 

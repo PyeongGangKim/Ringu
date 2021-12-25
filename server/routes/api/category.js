@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const statusCodes = require("../../helper/statusCodes");
-
+const logger = require('../../utils/winston_logger');
 const {category, Sequelize: {Op} } = require("../../models");
 
 router.get("/", async (req, res, next) => {//카테고리 정보 얻기.
@@ -13,6 +13,7 @@ router.get("/", async (req, res, next) => {//카테고리 정보 얻기.
         })
     }
     catch(err){
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "fail to get the category info"
         })
@@ -34,12 +35,11 @@ router.get("/:categoryId", async (req, res, next) => {//카테고리 정보 얻�
 
     }
     catch(err){
-        res.json({
-            status: "error",
-            error: err,
-            reason: "fail to get the category info"
+        logger.error(err);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            error: "fail to get the category info"
         })
-        console.log(err);
+        
     }
 })
 

@@ -1,14 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
-var config_url = require("../../config/url");
 
-var helper_api = require("../../helper/api");
-var helper_pagination = require("../../helper/pagination");
 var helper_security = require("../../helper/security");
-var helper_date = require("../../helper/date");
 
-//var favorite_book_m = require("../../model/favorite_book");
+const logger = require('../../utils/winston_logger');
+
 var favorite_book = require("../../models").favorite_book;
 
 
@@ -25,7 +22,7 @@ router.post("/save/", async(req, res, next) =>  {
 
         res.redirect("/admin/member/view/?id=" + req.body["member_id"]);
     } catch(err){
-        console.log(err)
+        logger.error(err);
     }
 
 });
@@ -45,7 +42,7 @@ router.get("/delete/", async(req, res, next) =>  {
 
         res.redirect("/admin/member/view/?id=" + member_id);
     } catch(err){
-        console.log(err)
+        logger.error(err);
     }
 });
 

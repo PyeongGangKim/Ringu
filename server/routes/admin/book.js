@@ -7,7 +7,7 @@ var helper_pagination = require("../../helper/pagination");
 var helper_date = require("../../helper/date");
 const { checkLogin } = require("../../helper/activity");
 const {base_url} = require("../../config/url");
-
+const logger = require('../../utils/winston_logger');
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
 const { book, notiCount, favorite_author ,notification, category, member, book_detail, Sequelize : { Op }, sequelize } = require("../../models/index");
@@ -103,7 +103,7 @@ router.get("/", async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -171,7 +171,7 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -204,7 +204,7 @@ router.get("/serialization/:serializationId", async(req, res, next) => {//cover 
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 
 });
@@ -256,7 +256,7 @@ router.get("/serialization/content/list", async(req, res, next) => {//content �
     });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }    
 });
 router.get("/serialization/content/:bookId", async (req, res, next) => {//content 하나만 가져오기
@@ -278,7 +278,7 @@ router.get("/serialization/content/:bookId", async (req, res, next) => {//conten
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 
 });
@@ -340,7 +340,7 @@ router.post("/serialization/cover", uploadFile, async (req, res, next) => {//생
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -382,7 +382,7 @@ router.post("/serialization/content", uploadFile, async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -465,7 +465,7 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get("/singlePublished/:singlePublished", async (req, res, next) => {
@@ -516,7 +516,7 @@ router.get("/singlePublished/:singlePublished", async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get("/singlePublished/info/create/", (req, res, next) => {
@@ -586,7 +586,7 @@ router.post("/singlePublished", uploadFile, async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -608,7 +608,7 @@ router.get("/delete/:bookId", async (req, res, next) => {
         res.redirect("/admin/book/");
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get("/finishedSerializing/:serializationId", async (req, res, next) => {
@@ -627,7 +627,7 @@ router.get("/finishedSerializing/:serializationId", async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get("/unapproved/reason", async (req, res, next) => {
@@ -645,7 +645,7 @@ router.get("/unapproved/reason", async (req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -713,11 +713,11 @@ router.post("/unapproved/:bookId", async(req, res, next) => {
         }
         catch(err){
             await t.rollback();
-            console.error(err);
+            logger.error(err);
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -737,7 +737,7 @@ router.get("/:bookId/approved/", async (req,res,next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
     try{
         let approved_book = await book.findOne({
@@ -833,12 +833,12 @@ router.get("/:bookId/approved/", async (req,res,next) => {
         }
         catch(err){
             await t.rollback();
-            console.error(err);
+            logger.error(err);
         }
         
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get('/:bookId/update-charge/page', async(req,res,next) => {
@@ -857,7 +857,7 @@ router.get('/:bookId/update-charge/page', async(req,res,next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.post('/:bookId/update-charge', async(req, res, next) => {
@@ -891,7 +891,7 @@ router.post('/:bookId/update-charge', async(req, res, next) => {
         
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get('/:bookDetailId/update/page', async(req, res, next) => {
@@ -911,7 +911,7 @@ router.get('/:bookDetailId/update/page', async(req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.post('/:bookDetailId/update', async(req, res, next) => {
@@ -945,7 +945,7 @@ router.post('/:bookDetailId/update', async(req, res, next) => {
         
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get('/:bookId/pickedForm', async(req, res, next) => {
@@ -961,7 +961,7 @@ router.get('/:bookId/pickedForm', async(req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 router.get('/:bookId/bookRecommendingPhraseForm', async(req, res, next) => {
@@ -977,7 +977,7 @@ router.get('/:bookId/bookRecommendingPhraseForm', async(req, res, next) => {
         });
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
     
 });
@@ -1002,7 +1002,7 @@ router.post('/:bookId/picked', async (req,res,next) => {
         res.redirect(url);
     }  
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -1027,7 +1027,7 @@ router.post('/:bookId/recommendingPhrase', async (req,res,next) => {
         res.redirect(url);
     }  
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -1052,7 +1052,7 @@ router.get('/:bookId/unpicked', async (req,res,next) => {
         res.redirect(url);
     }  
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -1077,7 +1077,7 @@ router.get('/:bookId/unrecommendingPhrase', async (req,res,next) => {
         res.redirect(url);
     }  
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 });
 
@@ -1109,7 +1109,7 @@ router.get('/download/:bookDetailId', async (req,res,next) => {
 
     }
     catch(err){ 
-        console.error(err);
+        logger.error(err);
     }
 });
 

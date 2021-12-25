@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
+const logger = require('../../utils/winston_logger');
 
 const StatusCodes = require("../../helper/statusCodes");
 const { getImgURL } = require("../../utils/aws");
@@ -47,7 +48,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -77,7 +78,7 @@ router.get('/duplicate', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -109,7 +110,7 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -177,10 +178,11 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
+        
     }
 });
 
@@ -223,7 +225,7 @@ router.delete('/:favoriteAuthorId', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });

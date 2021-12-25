@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const member = require("../../models").member;
 const { secretKey } = require('../../config/jwt_secret');
 
+const logger = require('../../utils/winston_logger');
+
 const router = express.Router();
 
 router.get("/", function(req, res, next) {
@@ -43,7 +45,7 @@ router.post("/attempt/", async(req, res, next) => {
             return;
         }
     } catch(err) {
-        console.log(err)
+        logger.error(err);
     }
 });
 
