@@ -10,6 +10,10 @@ input[type="email"], input[type="password"] {
     width: 100%;
 }
 
+input[type=file] {
+    display: none;
+}
+
 input[type="radio"] {
     opacity: 0;
     width: 0;

@@ -198,10 +198,6 @@
                 width: 35px;
                 text-align:center;
 
-                input[type=file] {
-                    display: none;
-                }
-
                 em {
                     cursor: pointer;
                     display:inline-block;
@@ -277,9 +273,6 @@
             min-width: 90px;
             text-align: right;
             padding-right: 10px;
-        }
-        input[type=file] {
-            display: none;
         }
 
         .upload-btn {
