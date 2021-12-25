@@ -216,7 +216,7 @@ class Author extends Component {
         this.setState(state)
     }
 
-    handleDisplayClick = async(e, book) => {
+    handleDisplayClick = async(e, book, idx) => {
         var x = e.pageX - 100;
         var y = e.pageY + 50;
         var state = this.state;
@@ -281,21 +281,33 @@ class Author extends Component {
     }
 
     handleFinishClick = async(book_id) => {
+        var state = this.state;
+        var book = state.selectedBook;
         var params = {
             is_finished_serialization: 1,
             book_id: book_id
         }
 
-        try {
-            const res = await API.sendPut(URL.api.book.put, params, 'application/json')
-            if(res.status === 200) {
+        if(window.confirm('연재를 종료하시겠습니까?')) {
+            try {
+                const res = await API.sendPut(URL.api.book.put, params, 'application/json')
+                if(res.status === 200) {
+                    state.display = false;
+                    if(typeof state.bookList['ser-ed'] === 'undefined') {
+                        state.bookList['ser-ed'] = [book]
+                    } else {
+                        state.bookList['ser-ed'].push(book)
+                    }
 
+                    var newArray = state.bookList['ser'].filter(item => item.id !== book.id)
+                    state.bookList['ser'] = newArray
+                    this.setState(state)
+                }
+            } catch(e) {
+                console.error(e)
+                alert("작업을 완료하지 못 했습니다. 잠시 후에 다시 시도해주세요.")
             }
-        } catch(e) {
-            console.error(e)
-            alert("작업을 완료하지 못 했습니다. 잠시 후에 다시 시도해주세요.")
         }
-
     }
 
     handleModifyFileClick = async(evt, idx) => {
@@ -568,12 +580,6 @@ class Author extends Component {
                                                             :
                                                             <td className="icon"> <em className="lock"/> </td>
                                                         }
-                                                        {/*
-                                                            parseInt(this.props.authorId) === state.user.id &&
-                                                            <td className="icon">
-                                                                <em className="x" onClick={() => this.handleDetailDelete(detail)}/>
-                                                            </td>
-                                                        */}
                                                     </tr>
                                                 )
                                             })
@@ -682,14 +688,14 @@ class Author extends Component {
                                     Object.keys(bookList).map((status, n) => {
                                         return (
                                             (bookList[status].length !== 0 && (state.active === 'a' || state.active === status)) &&
-                                            <div key={n} className="booklist-area">
-                                                <ul>
+                                            <div key={n} className="book-area">
+                                                <div className="container">
                                                     {
                                                         bookList[status].map((item, idx) => {
                                                             item['status'] = status
 
                                                             return (
-                                                                <Book
+                                                                <Book                                                                    
                                                                     key={item.id}
                                                                     book = {item}
                                                                     status = {status}
@@ -700,7 +706,7 @@ class Author extends Component {
                                                             )
                                                         })
                                                     }
-                                                </ul>
+                                                </div>
                                             </div>
                                         )
                                     })
