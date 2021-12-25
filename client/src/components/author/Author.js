@@ -319,38 +319,6 @@ class Author extends Component {
         }
     }
 
-    handleModifyFileClick = async(evt, idx) => {
-        var state = this.state
-        var file = evt.target.files[0]
-
-        if(!file) {
-            return;
-        }
-        var token = file.name.split('.')
-        var fieldName = token[token.length - 1]
-
-        if(fieldName.toLowerCase() !== 'pdf') {
-            alert('PDF 파일만 업로드 해주세요.')
-            return;
-        }
-
-        const data = new FormData()
-        var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.selectedBook.title + "." + fieldName, {type: file.type})
-        data.append("file", newFile)
-        data.append("id", state.selectedBook.id)
-
-        try {
-            const res = await API.sendPut(URL.api.book_detail.modify, data, 'multipart/form-data')
-            if(res.status === 200) {
-                alert("파일을 수정하였습니다!")
-            }
-        } catch(e) {
-            console.error(e)
-            alert("파일을 수정하지 못했습니다. 잠시 후에 다시 시도해주세요.")
-        }
-    }
-
     handleModifyClick = () => {
         var state = this.state;
         state.modify = true;
@@ -431,9 +399,10 @@ class Author extends Component {
 
         const data = new FormData()
         var blob = file.slice(0, file.size, file.type)
-        var newFile = new File([blob], state.selectedBook.title + "." + fieldName, {type: file.type})
+        var newFile = new File([blob], state.selectedBook.title + "_" + (idx+1) + "." + fieldName, {type: file.type})
+        
         data.append("file", newFile)
-        data.append("id", state.selectedBook.id)
+        data.append("id", state.modifyDetailId)
 
         try {
             const res = await API.sendPut(URL.api.book_detail.modify, data, 'multipart/form-data')
