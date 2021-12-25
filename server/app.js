@@ -13,7 +13,7 @@ const logger = require('./utils/winston_logger');
 const morgan = require('morgan') 
 const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
-app.use(morgan(morganFormat, {stream : logger.stream}));
+
 
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
@@ -64,6 +64,8 @@ app.use(session({
         expires: 2400000
     }
 }));
+
+app.use(morgan(morganFormat, {stream : logger.stream}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
