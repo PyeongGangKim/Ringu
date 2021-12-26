@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const StatusCodes = require("../../helper/statusCodes");
-
+const logger = require('../../utils/winston_logger');
 
 const { isLoggedIn } = require("../../middlewares/auth");
 const { sequelize, bank } = require("../../models");
@@ -27,7 +27,7 @@ router.get('/', async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });

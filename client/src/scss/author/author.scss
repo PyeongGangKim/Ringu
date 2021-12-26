@@ -51,11 +51,11 @@
         }
     }
 
-    .booklist-area {
+    .book-area {
         padding-bottom: 0;
         border-bottom: 1px solid #bbb;
 
-        ul {
+        .container {
             flex-wrap: wrap;
         }
 
@@ -122,7 +122,15 @@
 
 .book-detail-modal {
     width: 500px;
-
+    .end-btn {
+        position:absolute;
+        padding: 5px 15px;
+        top:30px;
+        right: 60px;
+        font-size: 14px;
+        font-weight: 600;
+        border-width: 2px;
+    }
     .book-detail-header {
         font-size: 18px;
         font-weight: 600;
@@ -131,9 +139,8 @@
 
     .table-wrap {
         margin-bottom: 30px;
-        max-height: 300px;
         border-top: 2px solid black;
-        overflow-y: scroll;
+        overflow-y: hidden;
 
         &::-webkit-scrollbar {
             display:block;
@@ -200,7 +207,15 @@
                     background-size: contain;
 
                     &.modify {
-                        background-image:  url(/assets/img/review.png);
+                        background-image:  url(/assets/img/modify.png);
+                    }
+
+                    &.up {
+                        background-image:  url(/assets/img/upload.png);
+                    }
+
+                    &.confirm {
+                        background-image:  url(/assets/img/confirm.png);
                     }
 
                     &.x {
@@ -214,8 +229,6 @@
                     }
 
                     &.download {
-                        width: 18px;
-                        height: 18px;
                         background-image:  url(/assets/img/download.png);
                     }
                 }
@@ -260,29 +273,21 @@
             text-align: right;
             padding-right: 10px;
         }
-        input[type=file] {
-            display: none;
-        }
+    }
 
-        .upload-btn {
-            font-size: 14px;
-            width: 100px;
-            padding: 5px 10px;
-        }
+    .upload-btn {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
 
-        .upload-text{
-            font-weight: 500;
-            font-size: 12px;
-        }
+    .upload-info {
+        width: 100%;
+    }
 
-        .upload-info {
-            width: 100%;
-        }
-
-        label {
-            display: inline-block;
-            float: right;
-        }
+    label {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
     }
 
     .box  {
@@ -295,11 +300,10 @@
     }
 
     .title {
-        margin: 0 20px 10px 0;
+        margin: 0 0 10px 0;
     }
 
     .file-upload {
-        display: inline-block;
         font-size: 14px;
         font-weight: 500;
         overflow: hidden;

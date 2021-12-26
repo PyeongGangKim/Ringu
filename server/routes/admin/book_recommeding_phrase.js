@@ -6,8 +6,8 @@ var config_url = require("../../config/url");
 var helper_pagination = require("../../helper/pagination");
 var helper_date = require("../../helper/date");
 const { checkLogin } = require("../../helper/activity");
-const {base_url} = require("../../config/url");
 
+const logger = require('../../utils/winston_logger');
 const { book, book_recommending_phrase, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 
@@ -63,7 +63,6 @@ router.get("/", async (req, res, next) => {
                 }
             ]
         });
-        console.log(count);
         let total_count = count;
         let renderingPage =  "admin/pages/book_recommending_phrase_list" ; 
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/bookRecommedingPhrase", page, limit, total_count, fields);
@@ -76,7 +75,7 @@ router.get("/", async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 
@@ -93,7 +92,7 @@ router.post("/", async(req,res,next) => {
         res.redirect(config_url.base_url+ "admin/bookRecommedingPhrase");
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
     }
 })
 

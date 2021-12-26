@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const StatusCodes = require("../../helper/statusCodes");
-
+const logger = require('../../utils/winston_logger');
 const jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
 
@@ -60,7 +60,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err){
-        console.error(err)
+        logger.error(err)
         await t.rollback();
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
@@ -117,7 +117,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -157,7 +157,7 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -237,7 +237,7 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
         })
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -278,7 +278,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

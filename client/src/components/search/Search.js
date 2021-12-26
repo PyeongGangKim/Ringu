@@ -270,8 +270,8 @@ class Search extends Component {
                             검색 결과가 없습니다.
                         </div>
                         :
-                        <div id="search-list" className="booklist-area">
-                            <ul>
+                        <div id="search-list" className="book-area">
+                            <div className="container">
                                 {
                                     searchList.map(item => {
                                         var status = ""
@@ -294,7 +294,7 @@ class Search extends Component {
                                         )
                                     })
                                 }
-                            </ul>
+                            </div>
                         </div>
                     }
                 </div>

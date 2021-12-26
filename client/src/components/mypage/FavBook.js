@@ -69,8 +69,8 @@ class FavBook extends Component {
                 {
                     favoriteList.length > 0 ?
                     <div className="container">
-                        <div id="favbooklist-area" className="booklist-area">
-                            <ul>
+                        <div id="favbooklist-area" className="book-area">
+                            <div className="container">
                                 {
                                     favoriteList.map(item => {
                                         var status = ""
@@ -95,7 +95,7 @@ class FavBook extends Component {
                                         )
                                     })
                                 }
-                            </ul>
+                            </div>
                         </div>
                     </div>
                     :

@@ -3,6 +3,7 @@ var router = express.Router();
 
 const StatusCodes = require("../../helper/statusCodes");
 const { getImgURL } = require("../../utils/aws");
+const logger = require('../../utils/winston_logger');
 const {favorite_book, favorite_book_statistics, member ,book, book_detail, review_statistics, Sequelize: {Op}, sequelize } = require("../../models");
 const { isLoggedIn } = require("../../middlewares/auth");
 
@@ -48,10 +49,11 @@ router.post('/', isLoggedIn,async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
-        console.error(err);
+        
     }
 });
 router.get('/duplicate', isLoggedIn,async (req, res, next) => {
@@ -78,7 +80,7 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -109,7 +111,7 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -178,7 +180,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
         }
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -224,7 +226,7 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        console.error(err);
+        logger.error(err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
     }
 });

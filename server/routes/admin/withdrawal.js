@@ -4,7 +4,7 @@ var router = express.Router();
 var config_url = require("../../config/url");
 
 var helper_pagination = require("../../helper/pagination");
-
+const logger = require('../../utils/winston_logger');
 const { checkLogin } = require("../../helper/activity");
 
 
@@ -71,7 +71,7 @@ router.get("/", async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 
@@ -158,7 +158,7 @@ router.get("/:withdrawalId/remittance", async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        console.log(err);
+        logger.error(err);
     }
 });
 

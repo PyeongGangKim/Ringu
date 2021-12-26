@@ -465,7 +465,7 @@ class SignupDetail extends Component {
                             <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={state.serviceAgree}/>
                             <label htmlFor="agree-service">
                                 <div className="checkbox-text">
-                                    <a href=""><u>서비스 이용약관</u></a>에 동의합니다.
+                                    <Link to={URL.service.terms + 'using'} target="_blank" rel="noopener noreferrer"><u>서비스 이용약관</u></Link>에 동의합니다.
                                     <span className="red">(필수)</span>
                                 </div>
                             </label>
@@ -475,7 +475,7 @@ class SignupDetail extends Component {
                             <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={state.infoAgree}/>
                             <label htmlFor="agree-info">
                                 <div className="checkbox-text">
-                                    <a href=""><u>개인정보 수집/이용</u></a>에 동의합니다.
+                                    <Link to={URL.service.terms + 'personal'} target="_blank" rel="noopener noreferrer"><u>개인정보 수집/이용</u></Link>에 동의합니다.
                                     <span className="red">(필수)</span>
                                 </div>
                             </label>

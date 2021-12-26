@@ -7,7 +7,7 @@ var helper_pagination = require("../../helper/pagination");
 var helper_date = require("../../helper/date");
 const { checkLogin }= require("../../helper/activity");
 const helper_security = require("../../helper/security");
-
+const logger = require('../../utils/winston_logger');
 const {member, author, Sequelize : { Op } } = require("../../models");
 
 
@@ -58,7 +58,7 @@ router.get("/",async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 router.get("/info/create/", (req, res, next) => {
@@ -86,7 +86,7 @@ router.post("/", async (req, res, next) => {
         })
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 })
 
@@ -112,7 +112,7 @@ router.get("/:authorId", async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 
@@ -133,7 +133,7 @@ router.get("/delete/:authorId", async (req, res, next) => {
         res.redirect("/admin/author/");
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 

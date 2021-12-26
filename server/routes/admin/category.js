@@ -4,6 +4,7 @@ var router = express.Router();
 var config_url = require("../../config/url");
 var helper_pagination = require("../../helper/pagination");
 var helper_activity = require("../../helper/activity");
+const logger = require('../../utils/winston_logger');
 
 const {category, Sequelize :{Op} } = require("../../models");
 
@@ -27,7 +28,7 @@ router.get("/", async (req, res, next) => {
 
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 
@@ -47,7 +48,7 @@ router.post("/", async (req, res, next) => {
         res.redirect("/admin/category/");
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 
 });
@@ -68,7 +69,7 @@ router.get("/info/update/:categoryId", async (req, res, next) => {
         });
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 
@@ -88,7 +89,7 @@ router.post("/update", async (req, res, next) => {
         res.redirect("/admin/category/");
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 
 });
@@ -108,7 +109,7 @@ router.get('/delete/:categoryId', async (req, res, next) => {
         res.redirect("/admin/category/");
     }
     catch(err){
-        console.log(err);
+        logger.error(err);
     }
 });
 

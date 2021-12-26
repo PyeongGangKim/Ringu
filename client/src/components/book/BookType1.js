@@ -115,7 +115,7 @@ class BookType1 extends Component {
         }
 
         try {
-            if (userInfo.id === state.book.author_id) {
+            if (userInfo !== null && typeof userInfo !== "undefined" && userInfo.id === state.book.author_id) {
                 state.isAuthor = true;
             }
             const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
@@ -159,6 +159,13 @@ class BookType1 extends Component {
     }
 
     handlePurchase = (type) => {
+        if(User.getInfo() === null) {
+            if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = URL.service.accounts.login;
+            }
+            return;
+        }
+
         var state = this.state
         var purchaseList = []
         if(type === 0) {

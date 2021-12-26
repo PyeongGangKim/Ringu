@@ -5,7 +5,7 @@ var router = express.Router();
 const statusCodes = require("../../helper/statusCodes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
 const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
-
+const logger = require('../../utils/winston_logger');
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
 
 router.post('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
@@ -29,7 +29,7 @@ router.post('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
         })
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -64,7 +64,7 @@ router.put('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
         })
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -127,7 +127,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
 
     }
     catch(err){
-        console.error(err);
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -153,6 +153,7 @@ router.delete('/:bookDetailId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

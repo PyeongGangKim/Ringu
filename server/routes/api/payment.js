@@ -5,7 +5,7 @@ const statusCodes = require("../../helper/statusCodes");
 
 var iamport = require("../../config/iamport");
 var axios = require('axios');
-
+const logger = require('../../utils/winston_logger');
 const { payment,sequelize, purchase, cart, book_detail, book, account, reward, reward_stat, Sequelize: {Op} } = require("../../models");
 const {kakaopay} = require("../../config/pay.js");
 const url = require("../../config/url.js");
@@ -211,7 +211,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err) {
-        console.log(err)
+        logger.error(err);
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "server error",
@@ -254,7 +254,6 @@ router.post('/kakaopay', /*isLoggedIn,*/ async(req, res, next) => {
         },
         json: true,
     };
-    console.log(options);
     request.post(options, async (err, response, body) => {
         if(err != null){
             console.error(err);
