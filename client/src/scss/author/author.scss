@@ -139,9 +139,8 @@
 
     .table-wrap {
         margin-bottom: 30px;
-        max-height: 300px;
         border-top: 2px solid black;
-        overflow-y: scroll;
+        overflow-y: hidden;
 
         &::-webkit-scrollbar {
             display:block;
