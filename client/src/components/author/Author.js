@@ -6,6 +6,7 @@ import Switch from '@material-ui/core/Switch';
 
 import User from '../../utils/user';
 import Book from '../../components/book/Book'
+import Paging from '../../components/common/Paging'
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/common/common.scss';
@@ -61,6 +62,7 @@ class Author extends Component {
 
             oldIdx: -1,
             oldTitle: '',
+            detailPage: 1,
 
             modalPos:{},
             host: false,
@@ -228,7 +230,9 @@ class Author extends Component {
         var display = true
 
         var params = {
-            member_id : this.props.authorId
+            member_id : this.props.authorId,
+            limit: 5,
+            offset: 0,
         }
 
         const res = await API.sendGet(URL.api.book.getDetailList + book.id, params)
@@ -251,6 +255,7 @@ class Author extends Component {
         state.modalPos = {x: x, y: y}
 
         state.display = true
+        state.detailPage = 1;
         this.setState(state)
     }
 
@@ -400,7 +405,7 @@ class Author extends Component {
         const data = new FormData()
         var blob = file.slice(0, file.size, file.type)
         var newFile = new File([blob], state.selectedBook.title + "_" + (idx+1) + "." + fieldName, {type: file.type})
-        
+
         data.append("file", newFile)
         data.append("id", state.modifyDetailId)
 
@@ -529,20 +534,38 @@ class Author extends Component {
                 alert("제목을 수정하지 못하였습니다. 잠시 후에 다시 시도하여 주세요.")
             }
         }
-
-
-    }
-
-    handleConfirmClick = async(idx, detail_id) => {
-        var state = this.state;
-
-
     }
 
     downloadAction = async(book_detail_id) => {
         const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=" + "file");
         let downloadUrl = res.data.url;
         window.open(downloadUrl);
+    }
+
+    handlePageChange = async(page) => {
+        var state = this.state;
+        var params = {
+            member_id : this.props.authorId,
+            offset: (page - 1) * 5,
+            limit: 5,
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.book.getDetailList + state.selectedBook.id, params)
+            if(res.status === 200) {
+                var detailList = res.data.detailList
+                state.detailList = detailList
+                state.detailTotal = res.data.total.count
+                state.modifyDetail = -1;
+                state.modifyDetailId = -1;
+                state.oldIdx = -1;
+                state.oldTitle = '';
+                state.detailPage = page;
+                this.setState(state)
+            }
+        } catch(e) {
+            alert("오류가 발생했습니다. 잠시 후에 다시 시도해주세요.");
+        }
     }
 
     render() {
@@ -621,6 +644,13 @@ class Author extends Component {
                                         }
                                     </tbody>
                                 </table>
+                                <Paging
+                                    count={state.detailTotal}
+                                    page={state.detailPage}
+                                    perPage={5}
+                                    onChange={this.handlePageChange}
+                                >
+                                </Paging>
                             </div>
                             {
                                 state.selectedBook.is_finished_serialization === 0 && state.upload &&

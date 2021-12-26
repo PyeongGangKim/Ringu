@@ -13,8 +13,6 @@ class Paging extends Component {
         this.state = {
             page: this.props.page,
         }
-
-        console.log(props)
     }
 
     componentWillReceiveProps(props) {
