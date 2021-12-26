@@ -7,9 +7,8 @@ import Helmet from 'react-helmet';
 import string from '../config/str';
 class TermsPage extends Component {
     constructor(props) {
-        super(props);
+        super(props);        
     }
-    
 
     render() {
         //const display = this.props.location.pathname == "/favorite/book" ? true : false;
