@@ -51,7 +51,7 @@ class Terms extends Component {
         if(selectedtab === '이용약관') {
             window.location.href = URL.service.terms + 'using'
         } else if(selectedtab === '판매홍보 대행약관') {
-            window.location.href = URL.service.terms + 'using'
+            window.location.href = URL.service.terms + 'sales'
         } else if(selectedtab === '개인정보 처리방침'){
             window.location.href = URL.service.terms + 'personal'
         }
