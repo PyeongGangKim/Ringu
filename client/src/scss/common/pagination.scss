@@ -1,0 +1,40 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul.pagination li {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ul.pagination li a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+}
+
+ul.pagination li.active a {
+    color: var(--color-1);
+    font-weight: 600;
+}
+
+ul.pagination li.active {
+
+}
+
+ul.pagination li a:hover,
+ul.pagination li a.active {
+    color: var(--color-1);
+    font-weight: 600;
+}
