@@ -1,16 +1,10 @@
 import React, { Component, Fragment } from 'react';
-
-
 import TermsBody from './TermsBody';
 
 import '../../scss/terms/terms.scss';
 
-
-
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-
-
 
 class Terms extends Component {
     constructor(props){
