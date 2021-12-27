@@ -348,6 +348,9 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             offset: offset,
             limit: limit,
             subQuery: false,
+            order: [
+                ['round', 'DESC'],
+            ],
         });
 
         const total = await book_detail.findOne({
