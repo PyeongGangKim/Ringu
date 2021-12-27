@@ -608,10 +608,6 @@ class Author extends Component {
                             </div>
 
                             <em className="close" onClick={this.handleCloseClick}> &times; </em>
-                            {
-                                state.selectedBook.is_finished_serialization === 0 &&
-                                <button className="btn end-btn" onClick={() => this.handleFinishClick(state.selectedBook.id)}>연재완료</button>
-                            }
 
                             <div className="table-wrap">
                                 <table className="book-detail-table">
@@ -708,9 +704,15 @@ class Author extends Component {
                                             </button>
                                     </div>
                                     :
-                                    <button className="btn btn-block btn-bottom" onClick={() => this.handleUploadClick(true)}>
-                                        + 새로운 회차 등록하기
-                                    </button>
+                                    <div className="btn-wrap">
+                                        {
+                                            state.selectedBook.is_finished_serialization === 0 &&
+                                            <button className="btn end-btn" onClick={() => this.handleFinishClick(state.selectedBook.id)}>연재완료</button>
+                                        }
+                                        <button className="btn btn-block btn-bottom" onClick={() => this.handleUploadClick(true)}>
+                                            + 새로운 회차 등록하기
+                                        </button>
+                                    </div>
                                 )
                             }
 

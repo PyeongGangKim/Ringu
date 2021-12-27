@@ -123,13 +123,12 @@
 .book-detail-modal {
     width: 500px;
     .end-btn {
-        position:absolute;
         padding: 5px 15px;
-        top:30px;
-        right: 60px;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         border-width: 2px;
+        background-color: var(--color-1);
+        color: white;
     }
     .book-detail-header {
         font-size: 18px;
@@ -237,7 +236,7 @@
     }
 
     .btn-wrap {
-        width: 60%;
+        width: 100%;
         margin: 0 auto;
 
         button {
@@ -245,6 +244,10 @@
             margin: 0 10px;
             border-width: 2px;
             padding: 4px 20px;
+        }
+
+        .btn {
+            width: 50%;
         }
     }
 
@@ -313,6 +316,6 @@
     }
 
     .add-btn {
-        width: 60%;
+        width: 50%;
     }
 }
