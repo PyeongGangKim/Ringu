@@ -8,7 +8,7 @@
             display:flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #aaa;
+            border: 1px solid #e6e6e6;
 
             em {
                 width: 8px;
@@ -16,8 +16,7 @@
             }
 
             &:hover {
-                background-color: var(--color-1);
-                border: 0;
+                background-color: #e6e6e6;
             }
 
             &:nth-child(1) {
