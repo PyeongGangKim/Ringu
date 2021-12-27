@@ -48,6 +48,31 @@
         }
         &.main2 {
             background-image: url("/assets/img/main2.png");
+            position: relative;
+
+            .search-area {
+                padding-top: 60px;
+
+                p {
+                    margin: 15px 0 0 0;
+                }
+            }
+
+            .btn-wrapper {
+                display: inline-block;
+                position: absolute;
+                right: 200px;
+                bottom: 30px;
+                border: 1px solid var(--color-1);
+                padding: 5px;
+                border-radius: 30px;
+            }
+
+            .register {
+                font-size: 22px;
+                padding: 10px 20px;
+                border-radius: 25px;
+            }
         }
 
         .search-area {

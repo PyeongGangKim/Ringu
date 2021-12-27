@@ -23,15 +23,22 @@ class RegisterAuthorDetail extends Component {
 
         this.bankOptions = []
 
+        if(this.user === null) {
+            alert("로그인이 필요합니다.")
+            window.location.href = URL.service.accounts.login
+            return;
+        }
+
         if(this.user.type === 1) {
             alert("이미 작가로 등록하였습니다.")
             window.location.href = URL.service.home
+            return;
         }
 
 
         this.state = {
-            name: {val: "", msg: "", clear: false, class: "input"},
-            phone: {val: "", msg: "", clear: false, class: "input"},
+            name: {val: "임유빈", msg: "", clear: false, class: "input"},
+            phone: {val: "01020618506", msg: "", clear: false, class: "input"},
             bank: {val: {}, msg: "", clear: false, class: "input"},
             account: {val: "", msg: "", clear: false, class: "input"},
             tax_term: "",
@@ -111,7 +118,7 @@ class RegisterAuthorDetail extends Component {
         this.setState(state)
     }
 
-    onCertificationClick = async(e) => {
+    onCertificationClick = (e) => {
         var state = this.state;
         e.preventDefault();
 
@@ -133,31 +140,27 @@ class RegisterAuthorDetail extends Component {
 
         var state = this.state;
 
-        try {
-            const { IMP } = window;
-            IMP.init(iamport.IMP_CERTIFICATION_CODE)
+        const { IMP } = window;
+        IMP.init(iamport.IMP_CERTIFICATION_CODE)
+        console.log(IMP)
 
-            IMP.certification({
-                merchant_uid: "min_1231231",
-                name: state.name.val,
-                phone: state.phone.val,
-            },
-                async(rsp) => {
-                    if(rsp.success) {
-                        state.certificated = true;
-                        this.setState(state)
+        IMP.certification({
+            name: state.name.val,
+            phone: state.phone.val,
+        },
+            (rsp) => {
+                console.log(rsp)
+                if(rsp.success) {
+                    state.certificated = true;
+                    this.setState(state)
 
-                        alert("인증이 완료되었습니다.")
-                    }
-                    else {
-                        alert("인증이 실패하였습니다.")
-                    }
-            });
-
-        } catch(err) {
-            console.log(err)
-            alert("에러가 발생했습니다. 잠시 후 다시 시도해주세요.")
-        }
+                    alert("인증이 완료되었습니다.")
+                }
+                else {
+                    alert("인증이 실패하였습니다.")
+                }
+        });
+        console.log(3333333)
     }
 
     handleSubmit = async() => {

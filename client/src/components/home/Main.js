@@ -151,9 +151,14 @@ class Main extends Component {
                     <StyledSlider {...settingsMain}>
                         <div className="home-header-content main2">
                             <div className="search-area">
-                                <strong>당신이 찾는 모든 것들의 공간</strong>
-                                <p>당신이 찾는 모든 것들의 공간</p>
+                                <strong>당신의 이야기가 세상에 알려지는 순간!</strong>
+                                <p>전자책만 따라해도 나도 고수!<br/>
+                                지금 바로 당신의 책을 만들어줍니다.</p>
                             </div>
+                            <Link to={URL.service.register.author} className="btn-wrapper">
+                                <button className="btn btn-rounded register btn-color-1"> 작가등록하기
+                                </button>
+                            </Link>
                         </div>
                         <div className="home-header-content main1">
                             <div className="search-area">
