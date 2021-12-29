@@ -145,10 +145,6 @@
         }
     }
 
-    input[type=file] {
-        display: none;
-    }
-
     textarea, input{
         padding: 10px;
     }
@@ -221,6 +217,8 @@
 
 }
 .modal.register {
+    text-align: center;
+    line-height: 1.8;
     .header {
         .em {
             font-weight: 600;
