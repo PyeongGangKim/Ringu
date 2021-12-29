@@ -63,8 +63,6 @@ const NaverCallback = ({location, history, ...props}) => {
                         window.location.href = URL.service.accounts.login
                     }
                     else {
-                        console.log(resp.status)
-                        console.error(resp.data.message)
                         alert("인증이 실패하였습니다")
                         window.location.href = URL.service.accounts.login
                     }
