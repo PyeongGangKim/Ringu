@@ -58,12 +58,12 @@ const NaverCallback = ({location, history, ...props}) => {
                     }
                 } catch(err) {
                     var resp = err.response
-                    if(resp.status === 401) { // 인증 실패
-                        alert("인증이 실패하였습니다")
+                    if(resp.status === 400) { // 중복 이메일 실패
+                        alert("이미 가입된 이메일입니다")
                         window.location.href = URL.service.accounts.login
                     }
                     else {
-                        alert("인증이 실패하였습니다")
+                        alert("로그인이 실패하였습니다")
                         window.location.href = URL.service.accounts.login
                     }
                 }
@@ -71,7 +71,7 @@ const NaverCallback = ({location, history, ...props}) => {
         } catch(err){
             var resp = err.response
             if(resp.status === 401) { // 인증 실패
-                alert("인증이 실패하였습니다")
+                alert("로그인이 실패하였습니다")
                 window.location.href = URL.service.accounts.login
             }
         }
