@@ -23,10 +23,10 @@ class Footer extends Component{
                                     <span>회사소개 | </span>
                                 </div>
                                 <Link to ={URL.service.terms + "using"}>
-                                    <span>이용약관 | </span>
+                                    <span> 이용약관 | </span>
                                 </Link>
                                 <Link to ={URL.service.terms + "personal"}>
-                                    <span>개인정보취급방침 </span>
+                                    <span> 개인정보취급방침 </span>
                                 </Link>
                             </div>                        
                             <div className = "copyright">

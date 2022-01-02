@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import GOOGLE from '../../config/google_auth';
+import GOOGLE from ('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 
 const GoogleCallback = ({location, history, ...props}) => {
@@ -22,7 +22,7 @@ const GoogleCallback = ({location, history, ...props}) => {
             var params = {
                 grant_type:"authorization_code",
             	client_id:GOOGLE.CLIENT_ID,
-            	redirect_uri:GOOGLE.CALLBACK_URL,
+            	redirect_uri: GOOGLE.BASE_URL + GOOGLE.CALLBACK_URL,
             	code:code,
             }
             let BasciProfile ;

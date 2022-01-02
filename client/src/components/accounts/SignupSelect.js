@@ -13,7 +13,7 @@ import API from '../../utils/apiutils';
 import NAVER from '../../config/naver_auth';
 import KAKAO from '../../config/kakao_auth';
 import FACEBOOK from '../../config/facebook_auth';
-import GOOGLE from '../../config/google_auth';
+import GOOGLE from ('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
@@ -63,7 +63,7 @@ class SignupSelect extends Component {
             gauth.signIn({
                 scope: "email",
                 ux_mode : "redirect",
-                redirect_uri: GOOGLE.CALLBACK_URL,
+                redirect_uri: GOOGLE.BASE_URL + GOOGLE.CALLBACK_URL,
             });
         });
     }
