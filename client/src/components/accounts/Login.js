@@ -12,16 +12,21 @@ import '../../scss/accounts/login.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import NAVER from '../../config/naver_auth';
-import KAKAO from '../../config/kakao_auth';
+
 import FACEBOOK from '../../config/facebook_auth';
-import GOOGLE from ('../../config/google_auth')[process.env.REACT_APP_ENV];
+
+
+var url = require('../../config/url')[process.env.REACT_APP_ENV];
+var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];
+var KAKAO = require('../../config/kakao_auth')[process.env.REACT_APP_ENV];
+let GOOGLE = require('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
 class Login extends Component {
     constructor(props) {
         super(props);
+        Kakao.init(KAKAO.JAVASCRIPT_KEY)
 
         this.state = {
             ui: {
@@ -42,18 +47,18 @@ class Login extends Component {
     }
 
     initializeNaverLogin = () => {
-        var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.BASE_URL + NAVER.CALLBACK_URL);
+        var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, url.BASE_URL + NAVER.CALLBACK_URL);
         var state = naver_id_login.getUniqState();
 
         naver_id_login.setButton("green", 1, 65);
-        naver_id_login.setDomain(NAVER.BASE_URL);
+        naver_id_login.setDomain(url.BASE_URL);
         naver_id_login.setState(state);
         naver_id_login.init_naver_id_login();
     }
 
     handleKaKaoLogin = () => {
         Kakao.Auth.authorize({
-            redirectUri: KAKAO.CALLBACK_URL,
+            redirectUri: url.BASE_URL + KAKAO.CALLBACK_URL,
         })
     }
     handleGoogleLogin = async () => {
@@ -63,14 +68,14 @@ class Login extends Component {
                 scope: 'email'
             });
             let gauth = window.gapi.auth2.getAuthInstance();
-        
+
         // console.log(gauth.currentUser.get());
             gauth.signIn({
                 scope: "profile",
                 ux_mode : "redirect",
                 redirect_uri: GOOGLE.BASE_URL + GOOGLE.CALLBACK_URL,
             });
-        });        
+        });
     }
 
     handleLogin = (event) => {

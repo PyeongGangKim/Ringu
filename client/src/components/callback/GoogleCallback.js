@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import GOOGLE from ('../../config/google_auth')[process.env.REACT_APP_ENV];
+let GOOGLE = require('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 
 const GoogleCallback = ({location, history, ...props}) => {

@@ -1,8 +1,9 @@
 var axios = require('axios');
 var Cookies = require('js-cookie');
+var url = require('../config/url')[process.env.REACT_APP_ENV];
 
-var apiHost = 'http://3.35.37.22:8000/api'
-//let apiHost = 'http://localhost:8000/api'
+var apiHost = url.API_URL;
+
 if( process.env.REACT_APP_APIHOST ) apiHost = process.env.REACT_APP_APIHOST;
 var headers = {
     'Content-Type': 'application/json',

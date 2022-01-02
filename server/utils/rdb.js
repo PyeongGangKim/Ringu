@@ -1,8 +1,6 @@
 var mysql = require('mysql2/promise');
-//var mysql = require('mysql2');
-var db = require('../config/database')
+var db = require('../config/database')[process.env.NODE_ENV]
 
-// var db_host = 'ami-lawform.cpw48majncyb.ap-northeast-2.rds.amazonaws.com';
 var db_host = db.host
 var db_user = db.user
 var db_password = db.password

@@ -3,17 +3,17 @@ import Cookies from 'js-cookie';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import NAVER from '../../config/naver_auth';
+var url = require('../../config/url')[process.env.REACT_APP_ENV];
+var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];
 
 const NaverCallback = ({location, history, ...props}) => {
     useEffect(()=>{
         getUserProfile();
     }, []);
 
-
     const getUserProfile = async () => {
         try {
-            var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, NAVER.BASE_URL+NAVER.CALLBACK_URL);
+            var naver_id_login = new window.naver_id_login(NAVER.CLIENT_ID, url.BASE_URL + NAVER.CALLBACK_URL);
 
             var token = naver_id_login.oauthParams.access_token;
             var params = {
@@ -63,8 +63,6 @@ const NaverCallback = ({location, history, ...props}) => {
                         window.location.href = URL.service.accounts.login
                     }
                     else {
-                        console.log(resp.status)
-                        console.error(resp.data.message)
                         alert("인증이 실패하였습니다")
                         window.location.href = URL.service.accounts.login
                     }

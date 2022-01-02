@@ -4,27 +4,28 @@ import axios from 'axios';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import KAKAO from '../../config/kakao_auth';
+var url = require('../../config/url')[process.env.REACT_APP_ENV];
+var KAKAO = require('../../config/kakao_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
 const KakaoCallback = ({location, history, ...props}) => {
     useEffect(()=>{
+        Kakao.init(KAKAO.JAVASCRIPT_KEY)
         var code = location.search.substring(6, location.search.length);
         getUserProfile(code);
     }, []);
-
 
     const getUserProfile = async (code) => {
         try {
             var params = {
                 grant_type:"authorization_code",
             	client_id:KAKAO.REST_API_KEY,
-            	redirect_uri:KAKAO.CALLBACK_URL,
+            	redirect_uri:url.BASE_URL + KAKAO.CALLBACK_URL,
             	code:code,
             }
 
-            const res = await axios.post(`https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO.REST_API_KEY}&redirect_uri=${KAKAO.CALLBACK_URL}&code=${code}`)
+            const res = await axios.post(`https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO.REST_API_KEY}&redirect_uri=${url.BASE_URL + KAKAO.CALLBACK_URL}&code=${code}`)
             Kakao.Auth.setAccessToken(res.data.access_token);
 
             Kakao.API.request({
