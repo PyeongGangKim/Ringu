@@ -23,8 +23,6 @@ class SignupSelect extends Component {
     constructor(props) {
         super(props);
 
-        Kakao.init(KAKAO.JAVASCRIPT_KEY)
-
         this.state = {
             location : props.location,
             history : props.history
