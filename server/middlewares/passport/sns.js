@@ -9,7 +9,7 @@ const getOption = (clientId, clientSecret, callbackURL) =>{
     return options;
 }
 
-const verify = async (accessToken, refreshToken, profile, done) => {
+const verify = async (accessToken, refreshToken, profile, done) => {    
     if(!profile) return done(null, {message: "err"});
     let _profile = profile._json;
     if(!_profile.email) return done(null, {message: "email"});
