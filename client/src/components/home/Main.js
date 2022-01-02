@@ -68,7 +68,6 @@ class Main extends Component {
     handleKeywordChange = (evt) => {
         var state = this.state; 
         state.keyword = evt.target.value;
-        console.log(state)
         
         this.setState(state);
     }
@@ -122,14 +121,14 @@ class Main extends Component {
     }
 
     render() {
-        const StyledSlider = styled(Slider)`
+        /*const StyledSlider = styled(Slider)`
             .slick-list, .slick-track, .slick-slide div {
                 height: 100%;
             }
             .slick-dots {
                 bottom: 20px;
             }
-        `;
+        `;*/
 
         const StyledBookSlider = styled(Slider)`
             .slick-list {
@@ -147,7 +146,8 @@ class Main extends Component {
             dots: false,
             speed: 500,
             slidesToShow: 5,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            swipe: false,
         };
 
         const settingsMain = {
@@ -156,7 +156,8 @@ class Main extends Component {
             infinite: true,
             slidesToShow: 1,
             slidesToScroll: 1,
-            autoplay: true,
+            swipe: false,
+            autoplay: true,            
             speed: 500,
             autoplaySpeed: 10000,
             cssEase: "linear"
@@ -165,7 +166,7 @@ class Main extends Component {
         return (
             <div id="wrap">
                 <div id="home-header">
-                    <StyledSlider {...settingsMain}>
+                    <Slider {...settingsMain}>
                         <div className="home-header-content main2">
                             <div className="search-area">
                                 <strong>당신의 이야기가 세상에 알려지는 순간!</strong>
@@ -199,7 +200,7 @@ class Main extends Component {
                                 </form>
                             </div>
                         </div>
-                    </StyledSlider>
+                    </Slider>
                 </div>
 
 

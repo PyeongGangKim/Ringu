@@ -7,7 +7,14 @@
 
     .slick-slider {
         height: 100%;
-    }    
+    }
+
+    .slick-list, .slick-track, .slick-slide div {
+        height: 100%;
+    }
+    .slick-dots {
+        bottom: 20px;
+    }
 
     .home-header-content {
         width:100%;
