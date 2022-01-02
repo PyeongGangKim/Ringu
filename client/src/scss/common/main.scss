@@ -7,33 +7,7 @@
 
     .slick-slider {
         height: 100%;
-    }
-
-    form {
-        position: absolute;
-        left: 120px;
-        bottom: 140px;
-        z-index: 1;
-    }
-
-    .search {
-        width: 660px;
-        height: 60px;
-        border: 0;
-
-        input[type="text"] {
-            font-size: 30px;
-            background: white;
-            line-height: 60px;
-        }
-
-        button[type='submit']{
-            height: 30px;
-            width: 30px;
-            right: 20px;
-            top: 15px;
-        }
-    }
+    }    
 
     .home-header-content {
         width:100%;
@@ -63,6 +37,7 @@
                 position: absolute;
                 right: 200px;
                 bottom: 30px;
+                height: auto;
                 border: 1px solid var(--color-1);
                 padding: 5px;
                 border-radius: 30px;
@@ -76,8 +51,34 @@
         }
 
         .search-area {
+            position: relative;
             padding-top: 100px;
             display:inline-block;
+
+            form {
+                position: absolute;                
+                bottom: 100px;
+                z-index: 1;
+            }
+        
+            .search {
+                width: 660px;
+                height: 60px;
+                border: 0;
+        
+                input[type="text"] {
+                    font-size: 30px;
+                    background: white;
+                    line-height: 60px;
+                }
+        
+                button[type='submit']{
+                    height: 30px;
+                    width: 30px;
+                    right: 20px;
+                    top: 15px;
+                }
+            }
 
             strong {
                 font-size: 42px;

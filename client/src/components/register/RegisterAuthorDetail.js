@@ -35,7 +35,6 @@ class RegisterAuthorDetail extends Component {
             return;
         }
 
-
         this.state = {
             name: {val: "임유빈", msg: "", clear: false, class: "input"},
             phone: {val: "01020618506", msg: "", clear: false, class: "input"},

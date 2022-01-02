@@ -17,6 +17,7 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
 class Main extends Component {
+    user = User.getInfo();
     constructor(props) {
         super(props);
 
@@ -64,7 +65,14 @@ class Main extends Component {
         }
     }
 
-    handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
+    handleKeywordChange = (evt) => {
+        var state = this.state; 
+        state.keyword = evt.target.value;
+        console.log(state)
+        
+        this.setState(state);
+    }
+
     handleSearchClick = () => {
         var state = this.state;
         if(!state.searchClear) {
@@ -86,6 +94,23 @@ class Main extends Component {
             state.searchClear = true;
             this.setState(state)
         }
+    }
+
+    handleRegisterClick = () => {
+        var state = this.state;
+
+        if(this.user === null) {
+            alert("로그인이 필요합니다.")
+            window.location.href = URL.service.accounts.login
+            return;
+        }
+
+        if(this.user.type === 1) {
+            alert("이미 작가로 등록하였습니다.")            
+            return;
+        }
+
+        window.location.href = URL.service.register.author;
     }
 
     next = (slider) => {
@@ -140,30 +165,38 @@ class Main extends Component {
         return (
             <div id="wrap">
                 <div id="home-header">
-                    <form onSubmit={this.handleSearchClick}>
-                        <div className="search">
-                            <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
-                            <button type="submit">
-                                검색
-                            </button>
-                        </div>
-                    </form>
                     <StyledSlider {...settingsMain}>
                         <div className="home-header-content main2">
                             <div className="search-area">
                                 <strong>당신의 이야기가 세상에 알려지는 순간!</strong>
                                 <p>전자책만 따라해도 나도 고수!<br/>
                                 지금 바로 당신의 책을 만들어줍니다.</p>
+                                <form onSubmit={this.handleSearchClick}>
+                                    <div className="search">
+                                        <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
+                                        <button type="submit">
+                                            검색
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            <Link to={URL.service.register.author} className="btn-wrapper">
+                            <div onClick={this.handleRegisterClick} className="btn-wrapper">
                                 <button className="btn btn-rounded register btn-color-1"> 작가등록하기
                                 </button>
-                            </Link>
+                            </div>
                         </div>
                         <div className="home-header-content main1">
                             <div className="search-area">
                                 <strong>당신이 찾는 모든 것들의 공간</strong>
                                 <p>당신이 찾는 모든 것들의 공간</p>
+                                <form onSubmit={this.handleSearchClick}>
+                                    <div className="search">
+                                        <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
+                                        <button type="submit">
+                                            검색
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </StyledSlider>
