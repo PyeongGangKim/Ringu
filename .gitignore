@@ -111,5 +111,7 @@ client/package-lock.json
 server/package-lock.json
 package-lock.json
 
+ecosystem.config.js
+
 client/build
 client/src/utils/apiutils.js
