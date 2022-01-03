@@ -7,6 +7,12 @@ import * as serviceWorker from './serviceWorker';
 
 import Root from './client/Root';
 
+var KAKAO = require('./config/kakao_auth')[process.env.REACT_APP_ENV];
+
+const {Kakao} = window;
+
+Kakao.init(KAKAO.JAVASCRIPT_KEY)
+
 ReactDOM.render(<Root />, document.getElementById('root'));
 
 serviceWorker.unregister();

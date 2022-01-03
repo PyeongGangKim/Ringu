@@ -11,7 +11,6 @@ const {Kakao} = window;
 
 const KakaoCallback = ({location, history, ...props}) => {
     useEffect(()=>{
-        Kakao.init(KAKAO.JAVASCRIPT_KEY)
         var code = location.search.substring(6, location.search.length);
         getUserProfile(code);
     }, []);
@@ -54,7 +53,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                                     search:     `?sns=kakao&email=${email}&id=${id}`,
                                 });
                             }
-                            else if(res.data.message === 'duplicate') {
+                            else if(res.data.message === 'duplicate') {                                
                                 // 중복 있는 경우
                                 // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
                                 // 2. 이미 등록된 계정이면 에러 메시지
@@ -67,15 +66,14 @@ const KakaoCallback = ({location, history, ...props}) => {
                                 }
                             }
                         }
-                    } catch(err){
-                        var resp = err.response
-                        if(resp.status === 401) { // 인증 실패
-                            alert("인증이 실패하였습니다")
+                    } catch(err){                        
+                        var resp = err.response;
+                        if(resp.status === 400) { // 중복 이메일
+                            alert("이미 가입된 이메일입니다")
                             window.location.href = URL.service.accounts.login
-                        }
-                        else {
-                            console.log(resp.status)
-                            console.error(resp.data.message)
+                        } else {
+                            alert("로그인이 실패하였습니다")
+                            window.location.href = URL.service.accounts.login
                         }
                     }
                 },

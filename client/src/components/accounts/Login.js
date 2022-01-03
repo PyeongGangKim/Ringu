@@ -25,8 +25,7 @@ const {Kakao} = window;
 
 class Login extends Component {
     constructor(props) {
-        super(props);
-        Kakao.init(KAKAO.JAVASCRIPT_KEY)
+        super(props);        
 
         this.state = {
             ui: {

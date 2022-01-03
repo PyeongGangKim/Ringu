@@ -23,7 +23,7 @@ const localStrategyOption = {
     usernameField: "email",
     passwordField: "password",
 };
-async function localVerify(email, password, done) {
+async function localVerify(email, password, done) {    
     try{
         const exMember = await member.findOne({
             where : {
@@ -31,7 +31,7 @@ async function localVerify(email, password, done) {
                 status: 1,
             }
         });
-        if(exMember && exMember.password === null && (exMember.kakao_id !== null || exMember.naver_id !== null || exMember.google_id !== null || exMember.facebook_id !== null)) {
+        if(exMember && exMember.password === null && (exMember.kakao_id !== null || exMember.naver_id !== null || exMember.google_id !== null || exMember.facebook_id !== null)) {            
             done(null, false, {message: "SNS로 가입한 계정입니다."});
         }
         else if(exMember){
@@ -76,23 +76,27 @@ async function JWTVerify({id}, done) {
     }
 }
 
-async function SNSVerify(req, done) {
+async function SNSVerify(req, done) {    
     try{
         var {id, email, sns} = req.query;
         const user = await member.findOne({ where : {email: email, status: 1} });
 
-        if(user && user[`${sns}_id`] === id){
+        // 일치하는 경우
+        if(user && user[`${sns}_id`] === id){            
             return done(null, user);
+        } 
+        // email은 있는데 id가 없는 경우
+        else if (user && !user[`${sns}_id`]) {            
+            return done(null, false, {message : "already registered"});
         }
 
-        // email이 등록이 안 되어 있는 경우
-        else {
-            console.log("error");
-            return done(null, false, {message : "local login"});
+        // 그 외의 경우
+        else {            
+            return done(401, false);
         }
     }
     catch(err){
-        console.log(err);
+        console.error(err);
         done(err);
     }
 }

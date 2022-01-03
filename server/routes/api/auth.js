@@ -201,21 +201,38 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
 );
 
 //naver login
-router.get('/naver', passport.authenticate('naver', {session: false}),
-    function(req, res) {
-        const token = jwt.sign({
-            id: req.user.id,
-            type: req.user.type,
-        }, secretKey, {
-            expiresIn: '12h',
-            issuer: 'ringu',
-        });
+router.get('/naver', function(req, res, next) {
+    passport.authenticate('naver', {
+            session: false
+    }, function(err, user, info) {
+        if(err) {            
+            logger.error(err);
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                message: "unauthorized"
+            });
+        }
 
-        res.status(StatusCodes.OK).json({
-            token: token
-        });
-    }
-)
+        else {
+            if(info) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "already exists"
+                });
+             }
+             else{
+                 const token = jwt.sign({
+                     id: user.id,
+                     type: user.type,
+                 }, secretKey, {
+                     expiresIn: '12h',
+                     issuer: 'ringu',
+                 });
+                 res.status(StatusCodes.OK).json({
+                     token: token
+                 });
+             }
+        }
+    }) (req,res,next)
+});
 
 router.get('/naver/callback', function(req, res) {
     try {
@@ -247,21 +264,38 @@ router.get('/naver/callback', function(req, res) {
 
 })
 //kakao login
-router.get('/kakao', passport.authenticate('kakao', {session: false}),
-    function(req, res) {
-        const token = jwt.sign({
-            id: req.user.id,
-            type: req.user.type,
-        }, secretKey, {
-            expiresIn: '12h',
-            issuer: 'ringu',
-        });
+router.get('/kakao', function(req, res, next) {
+    passport.authenticate('kakao', {
+            session: false
+    }, function(err, user, info) {
+        if(err) {            
+            logger.error(err);
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                message: "unauthorized"
+            });
+        }
 
-        res.status(StatusCodes.OK).json({
-            token: token
-        });
-    }
-);
+        else {
+            if(info) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: "already exists"
+                });
+             }
+             else{
+                 const token = jwt.sign({
+                     id: user.id,
+                     type: user.type,
+                 }, secretKey, {
+                     expiresIn: '12h',
+                     issuer: 'ringu',
+                 });
+                 res.status(StatusCodes.OK).json({
+                     token: token
+                 });
+             }
+        }
+    }) (req,res,next)
+});
 
 router.get( '/kakao/callback',passport.authenticate('kakao', { failureRedirect: '/auth/login', session: false }),
   function (req, res) {
