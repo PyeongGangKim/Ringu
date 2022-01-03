@@ -56,7 +56,7 @@ function Modal({
 
 Modal.defaultProps = {
     overlay: false,
-    maskClosable: true,
+    maskClosable: false,
 }
 
 export default Modal;

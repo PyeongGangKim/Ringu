@@ -1,0 +1,40 @@
+.slick--arrow {
+    .slick-arrow-wrapper {
+        display: flex;
+
+        .slick-arrow {
+            width: 30px;
+            height: 30px;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e6e6e6;
+
+            em {
+                width: 8px;
+                height: 8px;
+            }
+
+            &:hover {
+                background-color: #e6e6e6;
+            }
+
+            &:nth-child(1) {
+                border-right: 0;
+            }
+        }
+
+        .arrow-left {
+            em {
+                background-image:  url(/assets/img/left_arrow_black.png);
+            }
+        }
+
+        .arrow-right {
+            em {
+                background-image:  url(/assets/img/left_arrow_black.png);
+                transform: rotate(180deg);
+            }
+        }
+    }
+}

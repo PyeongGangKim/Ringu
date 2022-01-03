@@ -64,7 +64,9 @@ app.use(session({
         expires: 2400000
     }
 }));
+
 app.use(morgan(morganFormat, {stream : logger.stream}));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

@@ -4,7 +4,8 @@ import axios from 'axios';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import KAKAO from '../../config/kakao_auth';
+var url = require('../../config/url')[process.env.REACT_APP_ENV];
+var KAKAO = require('../../config/kakao_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
@@ -14,17 +15,16 @@ const KakaoCallback = ({location, history, ...props}) => {
         getUserProfile(code);
     }, []);
 
-
     const getUserProfile = async (code) => {
         try {
             var params = {
                 grant_type:"authorization_code",
             	client_id:KAKAO.REST_API_KEY,
-            	redirect_uri:KAKAO.CALLBACK_URL,
+            	redirect_uri:url.BASE_URL + KAKAO.CALLBACK_URL,
             	code:code,
             }
 
-            const res = await axios.post(`https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO.REST_API_KEY}&redirect_uri=${KAKAO.CALLBACK_URL}&code=${code}`)
+            const res = await axios.post(`https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO.REST_API_KEY}&redirect_uri=${url.BASE_URL + KAKAO.CALLBACK_URL}&code=${code}`)
             Kakao.Auth.setAccessToken(res.data.access_token);
 
             Kakao.API.request({
@@ -53,7 +53,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                                     search:     `?sns=kakao&email=${email}&id=${id}`,
                                 });
                             }
-                            else if(res.data.message === 'duplicate') {
+                            else if(res.data.message === 'duplicate') {                                
                                 // 중복 있는 경우
                                 // 1. 해당 sns 계정이면 로그인 절차 -> redirect_url로 이동
                                 // 2. 이미 등록된 계정이면 에러 메시지
@@ -66,15 +66,14 @@ const KakaoCallback = ({location, history, ...props}) => {
                                 }
                             }
                         }
-                    } catch(err){
-                        var resp = err.response
-                        if(resp.status === 401) { // 인증 실패
-                            alert("인증이 실패하였습니다")
+                    } catch(err){                        
+                        var resp = err.response;
+                        if(resp.status === 400) { // 중복 이메일
+                            alert("이미 가입된 이메일입니다")
                             window.location.href = URL.service.accounts.login
-                        }
-                        else {
-                            console.log(resp.status)
-                            console.error(resp.data.message)
+                        } else {
+                            alert("로그인이 실패하였습니다")
+                            window.location.href = URL.service.accounts.login
                         }
                     }
                 },

@@ -256,8 +256,11 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
                 }
             ],
             group: 'book_id',
+
         });
+
         logger.info(book_detail_info)
+
         if(book_detail_info.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
         }
@@ -283,7 +286,6 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             }
 
             res.status(statusCodes.OK).json({
-
                 "book": book_detail_info,
             });
         }
@@ -298,8 +300,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
 });
 
 router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 book의 detail까지 join해서 가져오는 api
-    let book_id = req.params.bookId;
-    let member_id = 'member_id' in req.query && req.query.member_id !== null ? req.query.member_id : null;
+    var book_id = req.params.bookId;
+    var member_id = 'member_id' in req.query && req.query.member_id !== null ? req.query.member_id : null;
+    var offset = 'offset' in req.query && req.query.offset !== null ? parseInt(req.query.offset) : null;
+    var limit = 'limit' in req.query && req.query.limit !== null ? parseInt(req.query.limit) : null;
 
     var where = {
         book_id: book_id,
@@ -340,7 +344,13 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 [sequelize.literal("book.price"), "price"],
                 [sequelize.literal("book.title"), "book_title"],
             ],
-            include : include
+            include: include,
+            offset: offset,
+            limit: limit,
+            subQuery: false,
+            order: [
+                ['round', 'DESC'],
+            ],
         });
 
         const total = await book_detail.findOne({
