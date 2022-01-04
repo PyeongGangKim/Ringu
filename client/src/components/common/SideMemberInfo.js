@@ -205,6 +205,17 @@ class SideMemberInfo extends Component {
         this.setState(state)
     }
 
+    downloadFormat = (type) => {
+        if (type === 0) {            
+            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%EB%A7%81%EA%B5%AC+%EA%B8%80%ED%8F%AC%EB%A7%B7(%EC%9B%8C%EB%93%9C).docx')
+        }
+        else {
+            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%EB%A7%81%EA%B5%AC+%EA%B8%80%ED%8F%AC%EB%A7%B7(%ED%95%9C%EA%B8%80).hwp')
+        }
+        
+        this.handleCloseClick();
+    }
+
     render() {
         var state = this.state
 
@@ -228,7 +239,7 @@ class SideMemberInfo extends Component {
                                         <em/>
                                         <span> 워드 파일 양식 </span>
                                     </div>
-                                    <button className="download">
+                                    <button className="download" onClick={() => this.downloadFormat(0)}>
                                         <em/>
                                     </button>
                                 </div>
@@ -238,7 +249,7 @@ class SideMemberInfo extends Component {
                                         <em/>
                                         <span> 한글 파일 양식 </span>
                                     </div>
-                                    <button className="download">
+                                    <button className="download" onClick={() => this.downloadFormat(1)}>
                                         <em/>
                                     </button>
                                 </div>
@@ -320,7 +331,7 @@ class SideMemberInfo extends Component {
                                 <div className="btn-wrap-vert">
                                     <Link to={URL.service.payment}>
                                         <button className="btn btn-color-1 btn-block">
-                                            수익 관리(임시)
+                                            수익 관리
                                         </button>
                                     </Link>
 
