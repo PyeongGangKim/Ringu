@@ -322,7 +322,7 @@ class BookType1 extends Component {
                                                         <tr key={i}>
                                                             <td>{(item.purchases.length === 0 && state.isAuthor === false && item.round !== 1) &&
                                                                 <input type="checkbox" checked={(!!state.selected[item.id]) ? true : false} onChange={this.handleSelect} value={i} />}</td>
-                                                            <td>{i+1}회차.</td>
+                                                            <td>{item.round}회차.</td>
                                                             {
                                                                 item.round === 1 ?
                                                                 <td>
