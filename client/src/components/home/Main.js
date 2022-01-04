@@ -133,6 +133,7 @@ class Main extends Component {
         const StyledBookSlider = styled(Slider)`
             .slick-list {
                 margin-right: -15px;
+                padding-left: 1px;
             }
             .slick-track {
                 margin-top: 20px;
