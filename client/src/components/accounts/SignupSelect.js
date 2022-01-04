@@ -10,12 +10,11 @@ import '../../scss/accounts/signup.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-//import FACEBOOK from '../../config/facebook_auth';
-import GOOGLE from '../../config/google_auth';
 
 var url = require('../../config/url')[process.env.REACT_APP_ENV];
 var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];
 var KAKAO = require('../../config/kakao_auth')[process.env.REACT_APP_ENV];
+let GOOGLE = require('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
@@ -65,7 +64,7 @@ class SignupSelect extends Component {
             gauth.signIn({
                 scope: "email",
                 ux_mode : "redirect",
-                redirect_uri: GOOGLE.CALLBACK_URL,
+                redirect_uri: GOOGLE.BASE_URL + GOOGLE.CALLBACK_URL,
             });
         });
     }

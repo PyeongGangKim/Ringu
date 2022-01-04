@@ -96,7 +96,7 @@ module.exports = function(sequelize, DataTypes) {
     charge: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 10
+      defaultValue: 0
     }
   }, {
     sequelize,

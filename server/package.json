@@ -1,6 +1,6 @@
 {
-  "name": "node",
-  "version": "0.0.0",
+  "name": "ringu_web",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www"
