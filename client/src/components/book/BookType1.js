@@ -130,7 +130,7 @@ class BookType1 extends Component {
 
             const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.book_id, params)
             if(res2.status === 200) {
-                state.detailList = res2.data.detailList
+                state.detailList = res2.data.detailList                
             }
 
             window.addEventListener('scroll', this.handleScroll)
@@ -170,15 +170,21 @@ class BookType1 extends Component {
         var purchaseList = []
         if(type === 0) {
             purchaseList = Object.values(state.selected)
+            if(purchaseList.length === 0) {
+                alert('회차를 선택해주세요')
+                return;
+            }
         }
         else {
-            purchaseList = state.detailList
+            purchaseList = state.detailList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
         }
-
+        
+        purchaseList.map(detail => detail['type'] = 1)
+        
         this.props.history.push({
             pathname: URL.service.buy.buy,
             state: {
-                purchaseList: purchaseList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
+                purchaseList: purchaseList
             }
         })
     }
