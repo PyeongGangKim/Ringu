@@ -712,4 +712,47 @@ router.get('/download/:bookDetailId', isLoggedIn, async(req,res,next) => {
     }
 });
 
+router.get('/download/free/:bookDetailId', async(req,res,next) => {
+    const bookDetailId = req.params.bookDetailId;
+    const type = req.query.type;
+
+    try{
+        const result = await book_detail.findOne({
+            where : {
+                id : bookDetailId,
+            },
+            attributes : [
+                "file",
+                "round",
+                [sequelize.literal("book.preview"),"preview"],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: [],
+                }
+            ],
+        });
+        
+        if(!(type === 'file' && result.round === 1) && type !== 'preview') {
+            res.status(statusCodes.BAD_REQUEST).json({
+                "message" : "not free",
+            });
+            return;
+        }
+        const url = downloadFile(type, result.dataValues[type]);
+
+        res.status(statusCodes.OK).json({
+            "url" : url,
+        });
+    }
+    catch(err){
+        logger.error(err);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
+
 module.exports = router;
