@@ -16,12 +16,14 @@ ul.pagination li {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;    
 }
 
 ul.pagination li a {
     text-decoration: none;
-    color: black;
+    color: var(--color-1);
     font-size: 14px;
+    cursor: pointer;    
 }
 
 ul.pagination li.active a {
@@ -29,10 +31,7 @@ ul.pagination li.active a {
     font-weight: 600;
 }
 
-ul.pagination li.active {
-
-}
-
+ul.pagination li:hover,
 ul.pagination li a:hover,
 ul.pagination li a.active {
     color: var(--color-1);

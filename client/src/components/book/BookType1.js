@@ -24,7 +24,7 @@ class BookType1 extends Component {
         this.authorRef = React.createRef();
         this.seriesRef = React.createRef();
         this.reviewRef = React.createRef();
-        this.perPage = 5;
+        this.perPage = 10;
 
         this.state = {
             book: props.book,
@@ -114,6 +114,7 @@ class BookType1 extends Component {
             if(res.status === 200) {
                 state.detailList = res.data.detailList
                 state.detailTotal = res.data.total.count;
+                state.detailPage = page;
                 this.setState(state);
             }
         } catch(err) {
@@ -305,7 +306,7 @@ class BookType1 extends Component {
         }
     }
 
-    handlePageChange = async(page, order = 'DESC') => {
+    handlePageChange = async(page, order = 'ASC') => {
         var state = this.state;
         var params = {
             member_id : this.props.authorId,
@@ -313,6 +314,8 @@ class BookType1 extends Component {
             limit: 5,
             order: order
         }
+
+        state.detailPage = page;
 
         this.getDetailList(page, order);
     }
@@ -397,12 +400,15 @@ class BookType1 extends Component {
                                             }
                                         </tbody>
                                     </table>
-                                    <Paging
-                                        count={state.detailTotal}
-                                        page={state.detailPage}
-                                        perPage={this.perPage}
-                                        onChange={this.handlePageChange}
-                                    />
+                                    {
+                                        state.detailTotal > this.perPage &&
+                                        <Paging
+                                            count={state.detailTotal}
+                                            page={state.detailPage}
+                                            perPage={this.perPage}
+                                            onChange={this.handlePageChange}
+                                        />
+                                    }
 
                                     {
                                         !state.isAuthor && state.detailList.length !== 1 &&
