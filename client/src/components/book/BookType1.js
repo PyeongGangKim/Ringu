@@ -273,15 +273,18 @@ class BookType1 extends Component {
         this.setState(state);
     }
 
-    downloadAction = async(book_detail_id) => {
+    downloadAction = async(book_detail_id, free=false) => {
+        var apiUrl = free ? URL.api.book.downloadFree + "/" + book_detail_id + "?type=file" : URL.api.book.download+ "/" + book_detail_id + "?type=file"
 
-        const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=file");
-        if(res.status === 200) {
-            let downloadUrl = res.data.url;
-            window.location.assign(downloadUrl);
-        }
-        else {
-            alert("오류가 발생했습니다.")
+        try { 
+            const res = await API.sendGet(apiUrl);
+            if(res.status === 200) {
+                let downloadUrl = res.data.url;
+                window.location.assign(downloadUrl);
+            }
+        } catch(err) {
+            console.log(err)
+            alert("다운로드 할 수 없습니다")
         }
     }
 
@@ -341,7 +344,7 @@ class BookType1 extends Component {
                                                                 item.round === 1 ?
                                                                 <td>
                                                                     {item.title}
-                                                                    <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
+                                                                    <div className="preview-mark" onClick={() => this.downloadAction(item.id, true)}>무료 미리보기</div>
                                                                 </td>
                                                                 :
                                                                 <td>
@@ -353,7 +356,7 @@ class BookType1 extends Component {
                                                                 <td>
                                                                     {
                                                                         !!item.purchases.length || item.round === 1 ?
-                                                                        <em className="download" onClick={() => this.downloadAction(item.id)} />
+                                                                        <em className="download" onClick={() => this.downloadAction(item.id, item.round === 1 ? true : false)} />
                                                                         :
                                                                         <em className="lock"/>
                                                                     }
@@ -367,7 +370,7 @@ class BookType1 extends Component {
                                     </table>
 
                                     {
-                                        !state.isAuthor &&
+                                        !state.isAuthor && state.detailList.length !== 1 &&
                                         <div className="buttons">
                                             <button className="btn btn-outline" onClick={() => this.handlePurchase(0)}> 선택 구매 </button>
                                             <button className="btn btn-color-2" onClick={() => this.handlePurchase(1)}> 전체 구매 </button>
