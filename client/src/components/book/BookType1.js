@@ -125,7 +125,8 @@ class BookType1 extends Component {
             }
 
             var params = {
-                member_id : userInfo !== null ? userInfo.id : null
+                member_id : userInfo !== null ? userInfo.id : null,
+                order: 'ASC',
             }
 
             const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.book_id, params)
