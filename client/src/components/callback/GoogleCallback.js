@@ -69,11 +69,11 @@ const GoogleCallback = ({location, history, ...props}) => {
                     }catch(err){
                         let resp = err.response
                         if(resp.status === 401) { // 인증 실패
-                            alert("인증이 실패하였습니다")
+                            alert("로그인이 실패하였습니다")
                             window.location.href = URL.service.accounts.login
                         }
                         else if(resp.status === 400){
-                            alert("local sns로 가입되어 있습니다.");
+                            alert("이미 가입된 이메일입니다");
                             window.location.href = URL.service.accounts.login
                         }
                         else {
