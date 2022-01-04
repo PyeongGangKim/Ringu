@@ -175,8 +175,15 @@ class BookType1 extends Component {
                 alert('회차를 선택해주세요')
                 return;
             }
+
+            if(!window.confirm('선택한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
+                return;
+            }
         }
         else {
+            if(!window.confirm('구매 가능한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
+                return;
+            }
             purchaseList = state.detailList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
         }
         
