@@ -140,7 +140,7 @@ class Buy extends Component {
                                         <img src={!!item.img ? item.img : "ringu_thumbnail.png"}/>
                                     </div>
                                     <div className="product">
-                                        <strong className="title">{item.book_title}</strong>
+                                        <strong className="title">{`${item.book_title} - ${item.round}회차`}</strong>
                                         {
                                             item.type === 1 &&
                                             <span className="subtitle">{item.title}</span>
