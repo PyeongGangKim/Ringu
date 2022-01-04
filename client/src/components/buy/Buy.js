@@ -32,13 +32,17 @@ class Buy extends Component {
         if (state.purchaseList)
             this.sum(state.purchaseList);
 
-        const res = await API.sendGet(URL.api.member.get)
+        try {
+            const res = await API.sendGet(URL.api.member.get)
 
-        if (res.status === 200) {
-            state.user = res.data.user
+            if (res.status === 200) {
+                state.user = res.data.user
+            }
+
+            this.setState(state)
+        } catch(err) {
+
         }
-
-        this.setState(state)
     }
 
     sum = (list) => {
@@ -73,7 +77,7 @@ class Buy extends Component {
         }
 
         const { IMP } = window;
-        IMP.init(iamport.IMP_PAYMENT_CODE)
+        IMP.init(iamport.IMP_CODE)
 
         IMP.request_pay({
             pg: 'html5_inicis',
@@ -143,7 +147,7 @@ class Buy extends Component {
                                         }
                                         <div className="detail">
                                             <p>저자:{item.type === 2 ? item.author_nickname : item.author}</p>
-                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"} {item.type === 1 ? null : <span>연재주기:{"목,금"}</span>}</p>
+                                            <p>출간방식:{item.type === 2 ? "단행본" : "연재본"} {item.type === 2 ? null : <span>연재주기:{item.serialization_day.split('').join(',')}</span>}</p>
                                             <p>파일형식:{ext.toUpperCase()}</p>
                                         </div>
                                     </div>
@@ -165,21 +169,21 @@ class Buy extends Component {
                                         <th>사용 가능한 쿠폰 </th>
                                         <td>
                                             <div className="input-discount">
-                                                <input type="text"/>
+                                                <input type="text" disabled/>
                                                 <span className="input-txt">원</span>
                                             </div>
                                         </td>
-                                        <td><button className="btn btn-color-2">쿠폰선택</button></td>
+                                        <td><button className="btn btn-color-2" disabled>쿠폰선택</button></td>
                                     </tr>
                                     <tr>
                                         <th>사용 가능한 적립금</th>
                                         <td>
                                             <div className="input-discount">
-                                                <input type="text"/>
+                                                <input type="text" disabled/>
                                                 <span className="input-txt">원</span>
                                             </div>
                                         </td>
-                                        <td><button className="btn btn-color-2">전액사용</button></td>
+                                        <td><button className="btn btn-color-2" disabled>전액사용</button></td>
                                     </tr>
                                 </tbody>
                             </table>
