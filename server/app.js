@@ -17,7 +17,6 @@ const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
-console.log(process.env.NODE_ENV);
 var testcaseRouter = require('./routes/testcase');
 
 var admin_loginRouter = require('./routes/admin/login');
