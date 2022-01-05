@@ -1,14 +1,17 @@
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const AWS = require("aws-sdk");
-const {ACCESS_KEY_ID, SECRET_ACCESS_KEY, REGION, MAIN_BUCKET, IMG_BUCKET, DIRNAME} = require("../../config/aws");
+const env = process.env.NODE_ENV !== "production" ? "development" : "prodution";
+const aws_config = require("../../config/aws")[env];
+const logger = require('../../utils/winston_logger');
+//const {ACCESS_KEY_ID, SECRET_ACCESS_KEY, REGION, MAIN_BUCKET, IMG_BUCKET, DIRNAME} = require("../../config/aws");
 const { book } = require("../../models");
 const { getDateTime } = require("../../helper/date");
 
 const s3 = new AWS.S3({
-    accessKeyId: ACCESS_KEY_ID,
-    secretAccessKey: SECRET_ACCESS_KEY,
-    region: REGION,
+    accessKeyId: aws_config.ACCESS_KEY_ID,
+    secretAccessKey: aws_config.SECRET_ACCESS_KEY,
+    region: aws_config.REGION,
 });
 
 const storage = multerS3({
@@ -17,9 +20,9 @@ const storage = multerS3({
     bucket: function(req,file, cb){
         let fieldName = file.fieldname;
         if(fieldName === "img"){
-            cb(null, IMG_BUCKET);
+            cb(null, aws_config.IMG_BUCKET);
         }
-        else cb(null, MAIN_BUCKET+ "/" + file.fieldname);
+        else cb(null, aws_config.MAIN_BUCKET+ "/" + file.fieldname);
 
     },
 
@@ -47,13 +50,38 @@ const storage = multerS3({
 
 const upload = multer({
     storage: storage
-})
-
-const uploadFile = upload.fields([
+}).fields([
     {name: 'file', maxCount: 3},
     {name: 'img', maxCount: 1},
     {name: 'preview', maxCount: 1},
 ]);
+
+const uploadFile = (req,res, next) => {
+    
+    upload(req,res,(error) => {
+        if (error instanceof multer.MulterError){
+            logger.warn(error.stack);
+            return res.status(400).json({ 
+                message: 'Upload unsuccessful', 
+                errorMessage: error.message,
+                errorCode: error.code
+            })
+        } 
+            
+        
+        if (error){
+            logger.error(error.stack);
+            return res.status(500).json({
+                message: 'Error occured',
+                errorMessage: error.message
+            });
+        } 
+            
+        console.log('Upload successful.')
+        next()
+    })
+} 
+
 
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;
@@ -71,14 +99,14 @@ const deleteFile = async (req, res, next) =>{
         const delFileName = fileUrl[fileUrlLength - 1];
         const delImgNmae = imgUrl[imgUrlLength - 1];
         const params = {
-            Bucket: MAIN_BUCKET,
+            Bucket: aws_config.MAIN_BUCKET,
             Delete: {
                 Objects: [
                     {
-                        Key: DIRNAME + "/" + delFileName,
+                        Key: aws_config.DIRNAME + "/" + delFileName,
                     },
                     {
-                        Key: DIRNAME+ "/" + delImgNmae,
+                        Key: aws_config.DIRNAME+ "/" + delImgNmae,
                     }
                 ]
             }
@@ -100,26 +128,15 @@ const downloadFile = (fieldName ,fileName) => {
     const signedUrlExpireSeconds = 60 * 1;
     const fileKey = fieldName + "/" + fileName;
     const url = s3.getSignedUrl('getObject', {
-        Bucket: MAIN_BUCKET,
+        Bucket: aws_config.MAIN_BUCKET,
         Key: fileKey,
         Expires: signedUrlExpireSeconds,
     });
     return url
 }
 
-const imageLoad = (imgName) => {
-    const signedUrlExpireSeconds = 3600 * 24;
-    const fileKey = "img/" + imgName;
-    const url = s3.getSignedUrl('getObject', {
-        Bucket: MAIN_BUCKET,
-        Key: fileKey,
-        Expires: signedUrlExpireSeconds
-    });
-    return url;
-}
 module.exports = {
     uploadFile,
     deleteFile,
     downloadFile,
-    imageLoad,
 }
