@@ -17,14 +17,14 @@
                 background-image: url("/assets/img/logo.png");
                 background-size: contain;
                 background-repeat: no-repeat;
-                width: 70px;
-                height: 30px;
+                width: 120px;
+                height: 50px;
             }
             .left{
                 padding-left : 5%;
                 margin-bottom: 45px;
                 margin-top: 45px;
-                width: 50%;
+                width: 40%;
                 .info-tag{
                     padding-top: 5px;
                     font-weight:500;
@@ -38,39 +38,67 @@
                 }
             }
             .right{
+                width: 60%;
                 padding-left: 7%;
-                margin-top: 45px;
-                width: 50%;
-                .header-tag{
-                    display: flex;
-                    .contact{
+                margin-top: 25px;
+                display: flex;
+                .information{
+                    width: 100%;
+                    .header-tag{
                         font-weight: 600;
                         font-size:18px;
-                        width:245px;
                     }
-                    .visit{
-                        font-weight: 600;
-                        font-size:18px;
-                        
-                    }
-                }
-                .body-tag{
-                    margin-top: 10px;
-                    display: flex;
-                    .contact{
+                    .body-tag{
+                        flex-direction: column;
+                        display: flex !important;
+                        margin-top: 15px;
                         font-weight: 400;
                         font-size:17px;
-                        width:245px;
+                        color: #818181;
                     }
-                    .visit{
+                    .each-content{
+                        margin-bottom: 10px;
+                    }
+                }
+                .contact{
+                    width: 100%;
+                    .header-tag{
+                        font-weight: 600;
+                        font-size:18px;
+                    }
+                    .body-tag{
+                        flex-direction: column;
+                        display: flex !important;
+                        margin-top: 15px;
                         font-weight: 400;
+                        font-size:17px;
+                        color: #818181;
+                    }
+                    .each-content{
+                        margin-bottom: 10px;
+                    }
+                }
+                .visit{
+                    display: flex;
+                    flex-direction: column;
+                    .header-tag{
+                        font-weight: 600;
+                        font-size:18px;
+                    }
+                    .body-tag{
+                        margin-top: 15px;
+                        font-weight: 400;
+                        flex-direction: column;
+                        display: flex !important;
+                        
                         .visit-button{
+                            margin-bottom: 10px;
                             padding: 0px;
                             .button-content{
+                                color: #818181;
                                 align-items: center;
                                 display: flex;
                                 .img{
-                                    
                                     background-size: contain;
                                     background-repeat: no-repeat;
                                     width: 17px;
@@ -91,6 +119,7 @@
                         }
                     }
                 }
+                
             }
       
     }

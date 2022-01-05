@@ -34,41 +34,60 @@ class Footer extends Component{
                             </div>
                         </div>
                         <div className = "right">
-                            <div className = "header-tag">
-                                <div className = "contact">
+                            <div className = "information">
+                                <div className = "header-tag">
+                                    Information
+                                </div>
+                                <div className = "body-tag">
+                                    <div className= "each-content">
+                                        상호명: 링구
+                                    </div>
+                                    <div className= "each-content">
+                                        대표자명: 김진호
+                                    </div>
+                                    <div className= "each-content">
+                                        사업자 등록번호: 607-37-04967
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div className = "contact">
+                                <div className = "header-tag">
                                     Contact us
                                 </div>
-                                <div className = "visit">
-                                    Visit us on
+                                <div className = "body-tag">
+                                    <div className= "each-content">
+                                        ringu@gmail.com
+                                    </div>
+                                    <div className= "each-content">
+                                        02-2689-6658
+                                    </div>
+                                    <div className= "each-content">
+                                        서울시 구로구 고척로 52라길 11-11
+                                    </div>
                                 </div>
                             </div>
-                            <div className = "body-tag">
-                                <div className = "contact">
-                                    <div>
-                                        ringu9999@gmail.com
-                                    </div>
+                            <div className = "visit">
+                                <div className = "header-tag">
+                                    Visit us on
                                 </div>
-                                <div className = "visit">
-                                    <div>
-                                        <button type="button"  className="visit-button" onClick={() => window.open('https://www.instagram.com/ringu_content/')}>
-                                            <div className = "button-content">
-                                                <div className= "instagram img"/>
-                                                <div className = "content">
-                                                    ringu_contents
-                                                </div>
+                                <div className = "body-tag">
+                                    <button type="button"  className="visit-button" onClick={() => window.open('https://www.instagram.com/ringu_content/')}>
+                                        <div className = "button-content">
+                                            <div className= "instagram img"/>
+                                            <div className = "content">
+                                                ringu_contents
                                             </div>
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <button type="button" className="visit-button" onClick={() =>window.open('https://www.youtube.com/channel/UC3KKrCe27zoG9JRnSjIMinQ')}>
-                                            <div className = "button-content">
-                                                <div className= "youtube img"/>
-                                                <div className = "content">
-                                                    Ringu Play
-                                                </div>
+                                        </div>
+                                    </button>
+                                    <button type="button" className="visit-button" onClick={() =>window.open('https://www.youtube.com/channel/UC3KKrCe27zoG9JRnSjIMinQ')}>
+                                        <div className = "button-content">
+                                            <div className= "youtube img"/>
+                                            <div className = "content">
+                                                Ringu Play
                                             </div>
-                                        </button>
-                                    </div>                                        
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
