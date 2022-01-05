@@ -56,7 +56,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => {//review 쓰기
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -86,7 +86,7 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -203,7 +203,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -244,7 +244,7 @@ router.get('/stats', async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -268,7 +268,7 @@ router.delete('/:reviewId', isLoggedIn, async (req, res, next) => { // 필요없
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });

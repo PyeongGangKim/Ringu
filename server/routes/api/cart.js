@@ -19,7 +19,7 @@ router.post('/', isLoggedIn,async (req, res, next) => {
         res.status(StatusCodes.CREATED).send("success cart");
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -51,7 +51,7 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -121,7 +121,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -148,7 +148,7 @@ router.put('/clear', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
@@ -170,7 +170,7 @@ router.delete('/', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });

@@ -11,7 +11,7 @@ const {checkNullAndUndefined} = require("../../helper/checkNullAndUndefined")
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, purchase, Sequelize: {Op} } = require("../../models");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 const {getImgURL} = require("../../utils/aws");
-const {AWS_IMG_BUCKET_URL} = require("../../config/aws");
+
 
 let router = express.Router();
 
@@ -143,7 +143,6 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         for(let i = 0 ; i < bookList.length ; i++){
             if(bookList[i].img === null || bookList[i].img[0] === 'h') continue;
             bookList[i].img = getImgURL(bookList[i].img);
-
         }
         if(bookList.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
@@ -155,7 +154,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -181,7 +180,7 @@ router.get('/recommend', async(req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -259,7 +258,6 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
 
         });
 
-        logger.info(book_detail_info)
 
         if(book_detail_info.length === 0){
             res.status(statusCodes.NO_CONTENT).send("No content");;
@@ -292,7 +290,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -377,7 +375,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -440,7 +438,8 @@ router.post('/single' , isLoggedIn, isAuthor, uploadFile, async(req, res, next) 
         res.status(statusCodes.CREATED).send("single_published_book created");
     }
     catch(err){
-        logger.error(err);
+        
+        logger.error(err.stack);
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
@@ -508,7 +507,7 @@ router.post('/series', isLoggedIn, isAuthor, uploadFile, async(req, res, next) =
     }
     catch(err){
         await t.rollback();
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -547,7 +546,7 @@ router.delete('/:bookId', isLoggedIn, async(req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
@@ -569,7 +568,7 @@ router.delete('/round/:bookDetailId', isLoggedIn, async(req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server_error",
         });
@@ -641,7 +640,7 @@ router.post('/modify', isLoggedIn, isAuthor, uploadFile, async (req,res,next) =>
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
@@ -667,7 +666,7 @@ router.put('/', isLoggedIn, isAuthor, async(req,res,next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -703,7 +702,7 @@ router.get('/download/:bookDetailId', isLoggedIn, async(req,res,next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

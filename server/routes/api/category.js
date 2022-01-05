@@ -13,7 +13,7 @@ router.get("/", async (req, res, next) => {//카테고리 정보 얻기.
         })
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "fail to get the category info"
         })
@@ -35,7 +35,7 @@ router.get("/:categoryId", async (req, res, next) => {//카테고리 정보 얻�
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "fail to get the category info"
         })

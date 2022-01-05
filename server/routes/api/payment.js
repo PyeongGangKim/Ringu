@@ -211,7 +211,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err) {
-        logger.error(err);
+        logger.error(err.stack);
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "server error",
@@ -256,7 +256,7 @@ router.post('/kakaopay', /*isLoggedIn,*/ async(req, res, next) => {
     };
     request.post(options, async (err, response, body) => {
         if(err != null){
-            console.error(err);
+            console.error(err.stack);
         }
         else{
             if(response.statusCode == 200){
@@ -283,7 +283,7 @@ router.post('/kakaopay', /*isLoggedIn,*/ async(req, res, next) => {
                     });
                 }
                 catch(err){
-                    console.error(err);
+                    console.error(err.stack);
                     res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
                         "message" : "server error",
                     })

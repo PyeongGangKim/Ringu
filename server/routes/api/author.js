@@ -60,7 +60,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err)
+        logger.error(err.stack)
         await t.rollback();
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
@@ -117,7 +117,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -157,7 +157,7 @@ router.get('/:authorId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -237,7 +237,7 @@ router.get('/:authorId/revenue', isLoggedIn,async (req, res, next) => {
         })
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -278,7 +278,7 @@ router.put('/', isLoggedIn, async (req, res, next) => {
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

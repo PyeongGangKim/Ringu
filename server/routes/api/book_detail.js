@@ -29,7 +29,7 @@ router.post('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
         })
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -64,7 +64,7 @@ router.put('/', isLoggedIn, isAuthor, uploadFile, async(req, res, next) => {
         })
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -127,7 +127,7 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -153,7 +153,7 @@ router.delete('/:bookDetailId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

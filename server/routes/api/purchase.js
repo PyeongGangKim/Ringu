@@ -93,7 +93,7 @@ router.post('/' ,isLoggedIn, async (req, res, next) => { // 구매 생성 api
     }
     catch(err){
         await t.rollback();
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -126,7 +126,7 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -142,7 +142,7 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
         res.status(StatusCodes.OK).send("success purchasing");
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -247,7 +247,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -316,7 +316,7 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -400,7 +400,7 @@ router.get('/sales/ratio', isLoggedIn, isAuthor,async (req, res, next) => { //�
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -515,7 +515,7 @@ router.get('/sales/book', isLoggedIn, isAuthor,async (req, res, next) => { //작
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -616,7 +616,7 @@ router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) =
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
@@ -669,7 +669,7 @@ router.get('/sales/author', isLoggedIn, isAuthor, async(req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
@@ -689,7 +689,7 @@ router.delete('/:purchaseId', isLoggedIn, async (req, res, next) => { // 필요�
 
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });

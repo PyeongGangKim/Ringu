@@ -49,7 +49,7 @@ router.post('/', isLoggedIn,async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -80,7 +80,7 @@ router.get('/duplicate', isLoggedIn,async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -111,7 +111,7 @@ router.get('/:bookId', isLoggedIn, async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -180,7 +180,7 @@ router.get('/', isLoggedIn,async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });
@@ -226,7 +226,7 @@ router.delete('/:favoriteBookId', isLoggedIn, async (req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("error");
     }
 });

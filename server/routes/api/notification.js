@@ -47,7 +47,7 @@ router.get('/' ,isLoggedIn, async (req, res, next) => { //한명의 notification
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -67,7 +67,7 @@ router.get('/allNewNotiCount', isLoggedIn, async(req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -90,7 +90,7 @@ router.get('/newNotiCnt', isLoggedIn, async (req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -112,7 +112,7 @@ router.get('/allCount', isLoggedIn, async(req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -133,7 +133,7 @@ router.post('/delete', isLoggedIn, async (req, res, next) => { // 필요없는 �
     
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
@@ -155,7 +155,7 @@ router.put('/:notificationId', isLoggedIn, async(req, res, next) => { // 읽은 
         })
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });

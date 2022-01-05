@@ -11,7 +11,7 @@ const passport = require('passport');
 const passportConfig = require('./middlewares/passport');
 const logger = require('./utils/winston_logger');
 const morgan = require('morgan') 
-const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
+const morganFormat = process.env.NODE_ENV !== "production" ? "development" : "combined";
 
 
 

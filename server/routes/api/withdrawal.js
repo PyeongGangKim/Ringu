@@ -50,7 +50,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
     }
     catch(err){
         await t.rollback();
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });
@@ -89,7 +89,7 @@ router.get('/', isLoggedIn, isAuthor,async (req, res, next) => {
         }
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
