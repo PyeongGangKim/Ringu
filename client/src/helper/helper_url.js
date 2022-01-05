@@ -39,6 +39,7 @@ module.exports = {
             put:                "/book",
             modify:             "/book/modify",
             download:           "/book/download",
+            downloadFree:       "/book/download/free",
             preview:            "/book/preview",
             getDetailList:      "/book/detail/",
             main:               "/book/main",

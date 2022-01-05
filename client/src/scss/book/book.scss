@@ -68,7 +68,12 @@
                         button {
                             margin-left: 20px;
                         }
+                    }
 
+                    .pagination {
+                        position: absolute;
+                        width: 100%;
+                        bottom: 35px
                     }
                 }
             }
@@ -389,9 +394,6 @@
 
 
     .book-content {
-        a {
-            cursor: default;
-        }
         margin: 0px;
 
         .content-box {

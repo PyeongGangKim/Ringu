@@ -666,8 +666,7 @@ class Author extends Component {
                                     page={state.detailPage}
                                     perPage={5}
                                     onChange={this.handlePageChange}
-                                >
-                                </Paging>
+                                />
                             </div>
                             {
                                 state.selectedBook.is_finished_serialization === 0 && state.upload &&

@@ -168,9 +168,9 @@ class Login extends Component {
                                     )}
                                 />*/}
 
-                                <div id="facebook-login" className="btn-sns" onClick={this.inPreparation}>
+                                {/*<div id="facebook-login" className="btn-sns" onClick={this.inPreparation}>
                                     <em/>
-                                </div>
+                                </div>*/}
 
                                 <div id="google-login" className="btn-sns"  onClick={this.handleGoogleLogin}>
                                     <em/>

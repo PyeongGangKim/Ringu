@@ -5,6 +5,7 @@ import Switch from '@material-ui/core/Switch';
 
 
 import User from '../../utils/user';
+import Paging from '../../components/common/Paging'
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/book/book.scss';
@@ -16,23 +17,108 @@ import API from '../../utils/apiutils';
 
 // 연재본
 class BookType1 extends Component {
+    userInfo = User.getInfo();
     constructor(props) {
         super(props)
         this.introRef = React.createRef();
         this.authorRef = React.createRef();
         this.seriesRef = React.createRef();
         this.reviewRef = React.createRef();
+        this.perPage = 10;
 
         this.state = {
             book: props.book,
             reviewList: [],
             detailList: [],
+            detailTotal: 0,
+            detailPage: 1,
             tab: 'intro',
             tabChange: false,
             dock: false,
             selected: {},
             isAuthor: false,
             isFavorite: false,
+        }
+    }
+
+    async componentDidMount() {
+        var state = this.state;
+
+        if(User.getInfo() !== null) {
+            try {
+                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
+                if(duplicate.status === 200) {
+                    if(duplicate.data.message === 'OK') {
+                        state.isFavorite = false;
+                        this.setState(state)
+                    }
+                    if(duplicate.data.message === 'duplicate') {
+                        state.isFavorite = true;
+                        this.setState(state)
+                    }
+                }
+            }
+            catch(e) {
+                var error = e.response
+            }
+        }
+
+        try {
+            if (this.userInfo !== null && typeof this.userInfo !== "undefined" && this.userInfo.id === state.book.author_id) {
+                state.isAuthor = true;
+            }
+            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
+
+            if(res.status === 200) {
+                state.reviewList = res.data.reviewList
+            }
+
+            this.getDetailList();
+
+            window.addEventListener('scroll', this.handleScroll)
+
+            if (window.scrollY > 650) {
+                state.dock = true;
+            } else {
+                state.dock = false;
+            }
+
+            this.setState(state)
+        }
+        catch(e) {
+            console.error(e)
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
+            window.addEventListener('scroll', this.handleScroll)
+        }
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll)
+    }
+
+    getDetailList = async(page = 1, order = 'ASC') => {
+        var state = this.state;
+        var params = {
+            member_id : this.userInfo !== null ? this.userInfo.id : null,
+            offset: (page - 1) * this.perPage,
+            limit: this.perPage,
+            order: order,
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.book.getDetailList + state.book.book_id, params)
+            if(res.status === 200) {
+                state.detailList = res.data.detailList
+                state.detailTotal = res.data.total.count;
+                state.detailPage = page;
+                this.setState(state);
+            }
+        } catch(err) {
+            alert("회차 목록을 불러오지 못했습니다")
         }
     }
 
@@ -91,73 +177,6 @@ class BookType1 extends Component {
         }
     }
 
-    async componentDidMount() {
-        var state = this.state;
-        var userInfo = User.getInfo();
-
-        if(User.getInfo() !== null) {
-            try {
-                const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, {book_id: state.book.book_id})
-                if(duplicate.status === 200) {
-                    if(duplicate.data.message === 'OK') {
-                        state.isFavorite = false;
-                        this.setState(state)
-                    }
-                    if(duplicate.data.message === 'duplicate') {
-                        state.isFavorite = true;
-                        this.setState(state)
-                    }
-                }
-            }
-            catch(e) {
-                var error = e.response
-            }
-        }
-
-        try {
-            if (userInfo !== null && typeof userInfo !== "undefined" && userInfo.id === state.book.author_id) {
-                state.isAuthor = true;
-            }
-            const res1 = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
-
-            if(res1.status === 200) {
-                state.reviewList = res1.data.reviewList
-            }
-
-            var params = {
-                member_id : userInfo !== null ? userInfo.id : null
-            }
-
-            const res2 = await API.sendGet(URL.api.book.getDetailList + state.book.book_id, params)
-            if(res2.status === 200) {
-                state.detailList = res2.data.detailList
-            }
-
-            window.addEventListener('scroll', this.handleScroll)
-
-            if (window.scrollY > 650) {
-                state.dock = true;
-            } else {
-                state.dock = false;
-            }
-
-            this.setState(state)
-        }
-        catch(e) {
-            console.error(e)
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
-            window.addEventListener('scroll', this.handleScroll)
-        }
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll)
-    }
-
     handlePurchase = (type) => {
         if(User.getInfo() === null) {
             if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
@@ -170,15 +189,28 @@ class BookType1 extends Component {
         var purchaseList = []
         if(type === 0) {
             purchaseList = Object.values(state.selected)
+            if(purchaseList.length === 0) {
+                alert('회차를 선택해주세요')
+                return;
+            }
+
+            if(!window.confirm('선택한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
+                return;
+            }
         }
         else {
-            purchaseList = state.detailList
+            if(!window.confirm('구매 가능한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
+                return;
+            }
+            purchaseList = state.detailList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
         }
-
+        
+        purchaseList.map(detail => detail['type'] = 1)
+        
         this.props.history.push({
             pathname: URL.service.buy.buy,
             state: {
-                purchaseList: purchaseList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
+                purchaseList: purchaseList
             }
         })
     }
@@ -259,16 +291,33 @@ class BookType1 extends Component {
         this.setState(state);
     }
 
-    downloadAction = async(book_detail_id) => {
+    downloadAction = async(book_detail_id, free=false) => {
+        var apiUrl = free ? URL.api.book.downloadFree + "/" + book_detail_id + "?type=file" : URL.api.book.download+ "/" + book_detail_id + "?type=file"
 
-        const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=file");
-        if(res.status === 200) {
-            let downloadUrl = res.data.url;
-            window.location.assign(downloadUrl);
+        try { 
+            const res = await API.sendGet(apiUrl);
+            if(res.status === 200) {
+                let downloadUrl = res.data.url;
+                window.location.assign(downloadUrl);
+            }
+        } catch(err) {
+            console.log(err)
+            alert("다운로드 할 수 없습니다")
         }
-        else {
-            alert("오류가 발생했습니다.")
+    }
+
+    handlePageChange = async(page, order = 'ASC') => {
+        var state = this.state;
+        var params = {
+            member_id : this.props.authorId,
+            offset: (page - 1) * 5,
+            limit: 5,
+            order: order
         }
+
+        state.detailPage = page;
+
+        this.getDetailList(page, order);
     }
 
     render() {
@@ -322,12 +371,12 @@ class BookType1 extends Component {
                                                         <tr key={i}>
                                                             <td>{(item.purchases.length === 0 && state.isAuthor === false && item.round !== 1) &&
                                                                 <input type="checkbox" checked={(!!state.selected[item.id]) ? true : false} onChange={this.handleSelect} value={i} />}</td>
-                                                            <td>{i+1}회차.</td>
+                                                            <td>{item.round}회차.</td>
                                                             {
                                                                 item.round === 1 ?
                                                                 <td>
                                                                     {item.title}
-                                                                    <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
+                                                                    <div className="preview-mark" onClick={() => this.downloadAction(item.id, true)}>무료 미리보기</div>
                                                                 </td>
                                                                 :
                                                                 <td>
@@ -339,7 +388,7 @@ class BookType1 extends Component {
                                                                 <td>
                                                                     {
                                                                         !!item.purchases.length || item.round === 1 ?
-                                                                        <em className="download" onClick={() => this.downloadAction(item.id)} />
+                                                                        <em className="download" onClick={() => this.downloadAction(item.id, item.round === 1 ? true : false)} />
                                                                         :
                                                                         <em className="lock"/>
                                                                     }
@@ -351,9 +400,18 @@ class BookType1 extends Component {
                                             }
                                         </tbody>
                                     </table>
+                                    {
+                                        state.detailTotal > this.perPage &&
+                                        <Paging
+                                            count={state.detailTotal}
+                                            page={state.detailPage}
+                                            perPage={this.perPage}
+                                            onChange={this.handlePageChange}
+                                        />
+                                    }
 
                                     {
-                                        !state.isAuthor &&
+                                        !state.isAuthor && state.detailList.length !== 1 &&
                                         <div className="buttons">
                                             <button className="btn btn-outline" onClick={() => this.handlePurchase(0)}> 선택 구매 </button>
                                             <button className="btn btn-color-2" onClick={() => this.handlePurchase(1)}> 전체 구매 </button>

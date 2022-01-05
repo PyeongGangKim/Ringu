@@ -287,12 +287,14 @@ class SignupDetail extends Component {
                     state.nickname.success = true;
                     state.nickname.btn = false;
                     alert("사용 가능한 닉네임입니다.")
+                    this.setState(state);
                 }
                 else if(duplicate.data.message === 'duplicate') {
                     state.nickname.class = "input error";
                     state.nickname.clear = false;
                     state.nickname.btn = false;
                     state.nickname.msg = "이미 존재하는 닉네임입니다";
+                    this.setState(state);
                 }
             }
         }
@@ -302,9 +304,8 @@ class SignupDetail extends Component {
             state.nickname.clear = false;
             state.nickname.btn = false;
             state.nickname.msg = "중복 확인이 실패하였습니다. 잠시 후 다시 이용해주세요.";
+            this.setState(state);
         }
-
-        this.setState(state);
     }
 
     handleSubmit = async(evt) => {

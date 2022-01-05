@@ -140,8 +140,7 @@ class RegisterAuthorDetail extends Component {
         var state = this.state;
 
         const { IMP } = window;
-        IMP.init(iamport.IMP_CERTIFICATION_CODE)
-        console.log(IMP)
+        IMP.init(iamport.IMP_CODE)        
 
         IMP.certification({
             name: state.name.val,

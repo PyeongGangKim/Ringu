@@ -184,15 +184,19 @@ class BookType2 extends Component {
         }
     }
 
-    downloadAction = async() => {
+    downloadAction = async(free) => {
         var detail = this.state.book.book_details[0]
-        const res = await API.sendGet(URL.api.book.download+ "/" + detail.id + "?type=preview");
-        if(res.status === 200) {
-            let downloadUrl = res.data.url;
-            window.location.assign(downloadUrl);
-        }
-        else {
-            alert("오류가 발생했습니다.")
+        var apiUrl = free ? URL.api.book.downloadFree + "/" + detail.id + "?type=preview" : URL.api.book.download+ "/" + detail.id + "?type=preview"
+        
+        try {
+            const res = await API.sendGet(apiUrl);
+            if(res.status === 200) {
+                let downloadUrl = res.data.url;
+                window.location.assign(downloadUrl);
+            }
+        } catch(err) {
+            console.log(err)
+            alert("다운로드 할 수 없습니다")
         }
     }
 
@@ -364,7 +368,7 @@ class BookType2 extends Component {
                                 <div className="inner-header"> 목차</div>
                                 <div className="inner-content">
                                     <div className="preview">
-                                        <div className="preview-mark" onClick={() => this.downloadAction()}>무료 미리보기</div>
+                                        <div className="preview-mark" onClick={() => this.downloadAction(true)}>무료 미리보기</div>
                                     </div>
                                     {book.content}
                                 </div>

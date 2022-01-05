@@ -10,8 +10,6 @@ import '../../scss/accounts/signup.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import FACEBOOK from '../../config/facebook_auth';
-
 
 var url = require('../../config/url')[process.env.REACT_APP_ENV];
 var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];
@@ -112,14 +110,14 @@ class SignupSelect extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="sns">
+                    {/*<div className="sns">
                         <div className="sns-btn">
                             <div id="sns-facebook" className="sns-content" onClick={this.inPreparation}>
                                 <em/>
                                 <span className="sns-text"> 페이스북 간편 가입하기 </span>
                             </div>
                         </div>
-                    </div>
+                    </div>*/}
                     <div className="sns">
                         <div className="sns-btn">
                             <div id="sns-google" className="sns-content" onClick={this.handleGoogleLogin}>

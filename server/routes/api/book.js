@@ -302,6 +302,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
     var member_id = 'member_id' in req.query && req.query.member_id !== null ? req.query.member_id : null;
     var offset = 'offset' in req.query && req.query.offset !== null ? parseInt(req.query.offset) : null;
     var limit = 'limit' in req.query && req.query.limit !== null ? parseInt(req.query.limit) : null;
+    var order = 'order' in req.query && req.query.order !== null ? req.query.order : 'DESC';
 
     var where = {
         book_id: book_id,
@@ -340,6 +341,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 [sequelize.literal("`book->author`.nickname"), "author"],
                 [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.price"), "price"],
+                [sequelize.literal("book.serialization_day"), "serialization_day"],
                 [sequelize.literal("book.title"), "book_title"],
             ],
             include: include,
@@ -347,7 +349,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
             limit: limit,
             subQuery: false,
             order: [
-                ['round', 'DESC'],
+                ['round', order],
             ],
         });
 
@@ -703,6 +705,49 @@ router.get('/download/:bookDetailId', isLoggedIn, async(req,res,next) => {
     }
     catch(err){
         logger.error(err.stack);
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+});
+
+router.get('/download/free/:bookDetailId', async(req,res,next) => {
+    const bookDetailId = req.params.bookDetailId;
+    const type = req.query.type;
+
+    try{
+        const result = await book_detail.findOne({
+            where : {
+                id : bookDetailId,
+            },
+            attributes : [
+                "file",
+                "round",
+                [sequelize.literal("book.preview"),"preview"],
+            ],
+            include : [
+                {
+                    model : book,
+                    as : "book",
+                    attributes: [],
+                }
+            ],
+        });
+        
+        if(!(type === 'file' && result.round === 1) && type !== 'preview') {
+            res.status(statusCodes.BAD_REQUEST).json({
+                "message" : "not free",
+            });
+            return;
+        }
+        const url = downloadFile(type, result.dataValues[type]);
+
+        res.status(statusCodes.OK).json({
+            "url" : url,
+        });
+    }
+    catch(err){
+        logger.error(err);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
