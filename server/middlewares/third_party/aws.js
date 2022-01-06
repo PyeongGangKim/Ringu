@@ -1,7 +1,7 @@
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const AWS = require("aws-sdk");
-const env = process.env.NODE_ENV !== "production" ? "development" : "prodution";
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
 const aws_config = require("../../config/aws")[env];
 const logger = require('../../utils/winston_logger');
 //const {ACCESS_KEY_ID, SECRET_ACCESS_KEY, REGION, MAIN_BUCKET, IMG_BUCKET, DIRNAME} = require("../../config/aws");
