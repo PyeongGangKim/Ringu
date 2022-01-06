@@ -6,10 +6,11 @@ module.exports = {
     
     script: './server/bin/www',
     
-    instances: 3,
+    instances: 4,
+
     
-    exec_mode : 'cluster',
-    
+//    exec_mode : 'fork',
+    exec_mode: 'cluster',
     merge_logs: true,
     
     autorestart: true,
