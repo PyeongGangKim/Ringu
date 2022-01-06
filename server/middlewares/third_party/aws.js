@@ -39,9 +39,18 @@ const storage = multerS3({
         const fileNameSplit = file.originalname.split('.');
         let fileName = ""
         if(fieldName === "img"){
-            fileName = req.user.email + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
+            if(!file.originalname.includes('thumbnail')) {
+                fileName = req.user.email + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
+            }
+            else {
+                fileName = fileNameSplit[0] + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
+            }
+            
         }
-        else fileName = fileNameSplit[0] + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
+        else {
+            fileName = fileNameSplit[0] + "_" + getDateTime(Date.now()) + "." + fileNameSplit[fileNameSplit.length - 1];
+        }
+        
         cb(null, fileName);
 
     }, // 파일 이름
