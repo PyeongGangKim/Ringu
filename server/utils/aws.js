@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV !== "production" ? "development" : "prodution";
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
 const aws_config = require("../config/aws")[env];
 
 
