@@ -747,7 +747,7 @@ router.get('/download/free/:bookDetailId', async(req,res,next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "message" : "server error",
         });
