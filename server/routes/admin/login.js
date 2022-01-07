@@ -45,6 +45,7 @@ router.post("/attempt/", async(req, res, next) => {
             return;
         }
     } catch(err) {
+	consoel.error(err);
         logger.error(err);
     }
 });

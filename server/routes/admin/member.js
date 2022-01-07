@@ -14,7 +14,7 @@ var helper_activity = require("../../helper/activity");
 const { book, purchase, favorite_author ,review, favorite_book, member, reward_stat, Sequelize : { Op }, sequelize } = require("../../models/index");
 
 router.get("/", async(req, res, next) => {
-    helper_activity.checkLogin(req, res, "/admin/member/");
+//    helper_activity.checkLogin(req, res, "/admin/member/");
 
     var order_by        = ("order_by" in req.query) ? req.query["order_by"] : "id";
     var order_direction = ("order_direction" in req.query) ? req.query["order_direction"] : "desc";
