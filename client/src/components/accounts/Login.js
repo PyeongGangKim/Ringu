@@ -134,8 +134,9 @@ class Login extends Component {
 
                         <div className="login-settings">
                             <div className="checkbox-wrap">
-                                <input type="checkbox" id="remember"/>
-                                <label htmlFor="remember">
+                                <label htmlFor="remember" className="cb-container" >
+                                    <input type="checkbox" id="remember"/>
+                                    <span className="checkmark"/>
                                     <span className="checkbox-text">
                                         로그인 상태 유지
                                     </span>

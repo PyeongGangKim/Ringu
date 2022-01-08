@@ -209,8 +209,15 @@ class Buy extends Component {
                         <hr/>
 
                         <div className="agree-txt">
+                            <div className="checkbox-wrap">
+                            <label htmlFor="agree-payment" className="cb-container" >
                             <input type="checkbox" id="agree-payment" checked={state.agree} onClick={this.handleAgree}/>
-                            <label htmlFor="agree-payment">주문 내용을 확인하였으며 결제에 동의합니다 (필수)</label>
+                                <span className="checkmark"/>
+                                <div className="checkbox-text">
+                                    주문 내용을 확인하였으며 결제에 동의합니다 (필수)
+                                </div>
+                            </label>
+                            </div>
                         </div>
 
                         <button className="payment-btn btn btn-block btn-color-2" onClick={this.onPayment}>결제하기</button>

@@ -185,14 +185,8 @@ textarea {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-}
-/* Hide the browser's default radio button */
-.radio-container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-/* Create a custom radio button */
+
+    /* Create a custom radio button */
 .checkmark {
     position: absolute;
     top: 5px;
@@ -203,6 +197,21 @@ textarea {
     border: 2px solid var(--color-1);
     border-radius: 50%;
 }
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+}
+/* Hide the browser's default radio button */
+.radio-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
 /* On mouse-over, add a grey background color */
 .radio-container:hover input ~ .checkmark {
     background-color: var(--color-3);
@@ -211,12 +220,7 @@ textarea {
 .radio-container input:checked ~ .checkmark {
     background-color: white;
 }
-/* Create the indicator (the dot/circle - hidden when not checked) */
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-}
+
 /* Show the indicator (dot/circle) when checked */
 .radio-container input:checked ~ .checkmark:after {
     display: block;
@@ -232,4 +236,82 @@ textarea {
 }
 .radio-container.selected  input:checked ~ .checkmark {
     background-color: red;
+}
+
+
+.cb-container:hover {    
+    cursor: initial;
+}
+
+.cb-container:hover input ~ .checkmark {
+    cursor: pointer;
+}
+
+.cb-container:hover input:disabled ~ .checkmark {    
+    cursor:not-allowed;    
+}
+
+.cb-container {
+    display: flex;
+    position: relative;
+    cursor: pointer;
+    align-items: center;
+    height: inherit;
+
+    .checkbox-text {
+        padding-left: 5px;
+    }
+
+    input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    input:checked ~ .checkmark {
+        background-color: var(--color-1);
+        border: none;
+    }
+
+    input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    input:disabled ~ .checkmark {
+        border: none;
+        background-color: #aaa;
+    }
+
+    input:disabled ~ .checkmark:after {
+        display: block;
+    }
+
+    .checkmark {
+        height: 15px;
+        width: 15px;
+        border: 1px solid black;
+        border-radius: 2px;
+        background-color: white;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    .checkmark:after {
+        left: 5px;
+        top: 5px;
+        width: 6px;
+        height: 10px;
+        border: none;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);        
+    }
 }

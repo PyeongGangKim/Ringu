@@ -146,29 +146,39 @@
 
                             td {
                                 font-weight: 500;
+                                height: inherit;
                             }
 
                             td:nth-child(1) {
                                 width: 40px;
                                 text-align: center;
+
+                                .cb-container {
+                                    .checkmark {
+                                        margin: 0 auto;
+                                    }
+
+                                    .checkmark:after {
+                                        left: 18px;
+                                        top: 20px;
+                                    }
+                                }
                             }
 
                             td:nth-child(2) {
                                 width: 80px;
-                                padding: 10px 15px ;
+                                padding: 0 15px ;
                                 text-align: right;
                                 font-weight: 600;
                             }
 
                             td:nth-child(3) {
-                                padding: 10px;
+                                padding: 0 10px;
                                 text-align: left;
-
                             }
 
                             td:nth-child(4) {
                                 width: 50px;
-                                padding: 5px;
                                 text-align: center;
 
                                 em {

@@ -374,9 +374,12 @@ class RegisterAuthorDetail extends Component {
                             본인은 위 약관의 내용을 모두 확인하였으며, Ringu 전문가로서 약관에 따라 성실히 활동할 것에 동의합니다.
                         </span>
                         <span className="check">
-                            <input type="checkbox" id="agree-tax" onClick={this.handleAgree} checked={state.agree}/>
-                            <label htmlFor="agree-tax">
-                                동의함
+                            <label htmlFor="agree-tax" className="cb-container" >
+                                <input type="checkbox" id="agree-tax" onClick={this.handleAgree} checked={state.agree}/>
+                                <span className="checkmark"/>
+                                <div className="checkbox-text">
+                                    동의함
+                                </div>
                             </label>
                         </span>
                     </div>
@@ -386,9 +389,12 @@ class RegisterAuthorDetail extends Component {
                             본인은 본 약관에 서명을 등록함으로써 종이 문서의 서명과 동일한 효력을 갖는데 동의합니다.
                         </span>
                         <span className="check">
-                            <input type="checkbox" id="agree-promotion" onClick={this.handleSign} checked={state.sign}/>
-                            <label htmlFor="agree-promotion">
-                                동의함
+                            <label htmlFor="agree-promotion" className="cb-container" >
+                                <input type="checkbox" id="agree-promotion" onClick={this.handleSign} checked={state.sign}/>
+                                <span className="checkmark"/>
+                                <div className="checkbox-text">
+                                    동의함
+                                </div>
                             </label>
                         </span>
                     </div>
