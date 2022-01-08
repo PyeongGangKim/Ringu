@@ -238,13 +238,8 @@ textarea {
     background-color: red;
 }
 
-
-.cb-container:hover {    
-    cursor: initial;
-}
-
-.cb-container:hover input ~ .checkmark {
-    cursor: pointer;
+.cb-container.disabled {
+    cursor: not-allowed;
 }
 
 .cb-container:hover input:disabled ~ .checkmark {    
@@ -265,7 +260,6 @@ textarea {
     input {
         position: absolute;
         opacity: 0;
-        cursor: pointer;
         height: 0;
         width: 0;
     }

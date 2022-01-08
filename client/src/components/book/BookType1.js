@@ -377,7 +377,7 @@ class BookType1 extends Component {
                                                                         <span className="checkmark"/>
                                                                     </label>
                                                                     :
-                                                                    <label className="cb-container" disabled>
+                                                                    <label className="cb-container disabled">
                                                                         <input type="checkbox" checked={true} value={i} disabled />
                                                                         <span className="checkmark"/>
                                                                     </label>
