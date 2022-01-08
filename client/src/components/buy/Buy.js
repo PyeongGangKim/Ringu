@@ -13,9 +13,9 @@ import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
 class Buy extends Component {
+    userInfo = User.getInfo();
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
 
         this.state = {
             purchaseList: props.location.state.purchaseList,
@@ -70,8 +70,8 @@ class Buy extends Component {
             alert("동의해주세요.")
             return;
         }
-        let userInfo = User.getInfo();
-        if(!userInfo) {
+
+        if(!this.userInfo) {
             alert("로그인 후 구매하여 주세요.");
             window.location.href = URL.service.accounts.login;
         }
@@ -140,7 +140,13 @@ class Buy extends Component {
                                         <img src={!!item.img ? item.img : "ringu_thumbnail.png"}/>
                                     </div>
                                     <div className="product">
-                                        <strong className="title">{`${item.book_title} - ${item.round}회차`}</strong>
+                                        <strong className="title">
+                                            {
+                                                item.type === 1 && `[${item.round}회차] `
+                                            }
+                                            {item.book_title} 
+                                        </strong>
+                                        <br/>
                                         {
                                             item.type === 1 &&
                                             <span className="subtitle">{item.title}</span>
@@ -211,7 +217,7 @@ class Buy extends Component {
                         <div className="agree-txt">
                             <div className="checkbox-wrap">
                             <label htmlFor="agree-payment" className="cb-container" >
-                            <input type="checkbox" id="agree-payment" checked={state.agree} onClick={this.handleAgree}/>
+                            <input type="checkbox" id="agree-payment" checked={state.agree} onChange={this.handleAgree}/>
                                 <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     주문 내용을 확인하였으며 결제에 동의합니다 (필수)
