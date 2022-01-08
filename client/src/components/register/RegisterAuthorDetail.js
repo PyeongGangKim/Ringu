@@ -358,14 +358,14 @@ class RegisterAuthorDetail extends Component {
                     <div className="input-box">
                         <h3 className="header"> 서비스 판매시 '세금' 관련 유의사항 </h3>
                         <div>
-                            <textarea rows={7} value={state.tax_term} style={{"overflow":"auto"}}/>
+                            <textarea rows={7} value={state.tax_term} style={{"overflow":"auto"}} disabled/>
                         </div>
                     </div>
 
                     <div className="input-box">
                         <h3 className="header"> Ringu 판매홍보 대행 약관 </h3>
                         <div>
-                            <textarea rows={7} value={state.promotion_term}/>
+                            <textarea rows={7} value={state.promotion_term} disabled/>
                         </div>
                     </div>
 
