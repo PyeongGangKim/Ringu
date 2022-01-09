@@ -83,7 +83,12 @@ class Purchase extends Component {
                                         <div className="purchase-box">
                                             <div className="book-info">
                                                 <div className="title-wrap">
-                                                    <h3 className="title">{item.title}</h3>
+                                                    <h3 className="title">
+                                                        {
+                                                            item.type === 1 && `[${item.round}회차] `
+                                                        }
+                                                        {item.title}
+                                                    </h3>
                                                     <span className="review-point"><em>star</em>{item.review_score ? parseFloat(item.review_score).toFixed(1) : 0}</span>
                                                 </div>
                                                 {
