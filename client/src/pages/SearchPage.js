@@ -15,7 +15,7 @@ class SearchPage extends Component {
         this.search = new URLSearchParams(props.location.search)
         if (!(this.search.has('keyword') && !!this.search.get('keyword'))) {
             alert("검색어를 입력해주세요.")
-            window.location.href = URL.service.home;
+            props.history.goBack();
         }
     }
 
@@ -24,7 +24,7 @@ class SearchPage extends Component {
             <Fragment>
                 <Helmet title={`"${this.search.get('keyword')}"` + string.search + string.postfix}/>
                 <Header search={this.search}></Header>
-                <Search search={this.search}></Search>
+                <Search search={this.search} history={this.props.history}/>
                 <Footer></Footer>
             </Fragment>
         )
