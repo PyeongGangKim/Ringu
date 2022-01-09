@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import { Link, withRouter } from 'react-router-dom';
+
 
 import User from '../../utils/user';
+import Paging from '../../components/common/Paging'
 import '../../scss/mypage/purchase.scss';
 import '../../scss/common/button.scss';
 
@@ -14,9 +15,16 @@ import API from '../../utils/apiutils';
 var axios = require('axios');
 
 class Purchase extends Component {
+    limit = 1;
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
+        var years = [2021]
+
+        for(var i=new Date().getFullYear(); i>2021; i--) {
+            years.unshift(i)
+        }
+
+        var searchParams = new URLSearchParams(props.location.search)
 
         this.state = {
             ui: {
@@ -24,7 +32,10 @@ class Purchase extends Component {
             },
             data: {
                 purchaseList:[],
-
+                years: years,
+                selectedYear: (searchParams.has('year') && !!searchParams.get('year')) ? parseInt(searchParams.get('year')) : 0,
+                total: 0,
+                page: 1,
             },
             msg: {
 
@@ -33,20 +44,36 @@ class Purchase extends Component {
     }
 
     async componentDidMount() {
+        var state
+        this.getPurchaseList(true);
+    }
+
+    getPurchaseList = async(init=false) => {
         var state = this.state;
+        var year = state.data.selectedYear;
+        var params = {
+            year: year,
+            offset: (state.data.page - 1) * this.limit,
+            limit: this.limit,
+        }
 
         try {
-            const res = await API.sendGet(URL.api.purchase.list)
-
+            const res = await API.sendGet(URL.api.purchase.list, params)
             if(res.status === 200) {
                 var purchaseList = res.data.purchaseList
+                var count = res.data.count;
+
                 state.data.purchaseList = purchaseList
+                state.data.total = count
                 this.setState(state)
+
+                if(!init) {
+                    this.props.history.replace(URL.service.mypage.purchases + (year === 0 ? '' : `?year=${year}`))
+                }
             }
         } catch(e) {
             alert("구매 내역을 불러오지 못 했습니다")
         }
-        
     }
     async downloadAction(book_detail_id){
         try {
@@ -55,11 +82,28 @@ class Purchase extends Component {
             window.location.assign(downloadUrl);
         } catch(e) {
             alert("다운로드에 실패하였습니다")
-        }
-        
+        }        
     }
+
+    handlePageChange = async(page) => {
+        var state = this.state;
+        state.data.page = page
+        this.setState(state)
+
+        this.getPurchaseList()
+    }
+
+    handleYearClick = async(y) => {
+        var state = this.state;
+        state.data.selectedYear = y; 
+        this.setState(state); 
+        this.getPurchaseList()
+    }
+
     render() {
-        var purchaseList = this.state.data.purchaseList
+        var state = this.state;
+        console.log(state)
+        
         return (
             <div id="mypage" className="page2">
                 <div className="title-wrap">
@@ -68,8 +112,19 @@ class Purchase extends Component {
 
                 <hr/>
 
+                <div className="years">
+                    <div className={"year " + (state.data.selectedYear === 0 ? "active" : "")} onClick={() => this.handleYearClick(0)}>최근 3개월</div>
+                    {
+                        state.data.years.map((year, idx) => {
+                            return (
+                                <div key={idx} className={"year " + (state.data.selectedYear === year ? "active" : "")} onClick={() => this.handleYearClick(year)}>{year}</div>
+                            )
+                        })
+                    }
+                </div>
+
                 {
-                    purchaseList.length > 0 ?
+                    state.data.purchaseList.length > 0 ?
                     <div className="container">
                         {/*<div className="filter">
                             최신순
@@ -77,7 +132,7 @@ class Purchase extends Component {
                         </div>*/}
 
                         {
-                            purchaseList.map(item => {
+                            state.data.purchaseList.map(item => {
                                 return (
                                     <div id="purchaselist-area" key={item.id}>
                                         <div className="purchase-box">
@@ -114,7 +169,6 @@ class Purchase extends Component {
                                                         <td className="label">구매가격</td>
                                                         <td className="label">구매일</td>
                                                         <td rowSpan="2">
-
                                                             {
                                                                 item.review ?
                                                                 <button disabled className="btn btn-rounded btn-color-2">
@@ -143,11 +197,17 @@ class Purchase extends Component {
                                 )
                             })
                         }
+                        <Paging
+                            count={state.data.total}
+                            page={state.data.page}
+                            perPage={this.limit}
+                            onChange={this.handlePageChange}
+                        />
                     </div>
                     :
                     <div className="container">
                         <div className="no-content">
-                            구매 내역이 없습니다.
+                            {state.data.selectedYear === 0 ? '최근 3개월간 ' : `${state.data.selectedYear}년 `}구매 내역이 없습니다.
                         </div>
                     </div>
                 }
@@ -156,4 +216,4 @@ class Purchase extends Component {
     }
 }
 
-export default Purchase;
+export default withRouter(Purchase);

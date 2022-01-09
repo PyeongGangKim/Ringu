@@ -20,7 +20,7 @@ class Purchases extends Component {
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
                         <SideMemberInfo isAuthor={false}/>
-                        <SideNav path={this.props.location.pathname}/>
+                        <SideNav path={this.props.location.pathname + this.props.location.search}/>
                     </div>
                     <Purchase/>
                 </div>
