@@ -152,87 +152,112 @@ router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
 
 router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 가져오기
     var member_id = req.user.id;
+    var year = 'year' in req.query && typeof req.query.year !== 'undefined' ? parseInt(req.query.year) : 0;
+    var limit = 'limit' in req.query && typeof req.query.limit !== 'undefined' ? parseInt(req.query.limit) : 10;
+    var offset = 'offset' in req.query && typeof req.query.offset !== 'undefined' ? parseInt(req.query.offset) : 0;
+    var yearWhere = year === 0 ? sequelize.literal(`purchase.created_date_time > NOW() - INTERVAL 3 MONTH`) : sequelize.where(sequelize.fn('YEAR', sequelize.col('purchase.created_date_time')), year)
+    console.log(req.query)
+    var listAttributes = [
+        "id",
+        "created_date_time",
+        [sequelize.literal("book_detail.id"), "book_detail_id"],
+        [sequelize.literal("book_detail.title"), "subtitle"],
+        [sequelize.literal("book_detail.file"), "file"],
+        [sequelize.literal("book_detail.round"), "round"],
 
-    try{
-        const purchaseList = await purchase.findAll({
+        [sequelize.literal("`book_detail->book`.title"), "title"],
+        [sequelize.literal("`book_detail->book`.price"), "price"],
+        [sequelize.literal("`book_detail->book`.type"), "type"],
+
+        [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
+
+        [sequelize.literal("`book_detail->reviews`.id"), "review"],
+        [sequelize.literal("`book_detail->book`.img"), "img"],
+        [sequelize.literal("`book_detail->review_statistics`.score_amount / `book_detail->review_statistics`.person_number"),"review_score"],
+    ]
+
+    var INCLUDE = [
+        {
+            model : book_detail,
+            as : 'book_detail',
             attributes: [
+                /*
                 "id",
-                "created_date_time",
-                [sequelize.literal("book_detail.id"), "book_detail_id"],
-                [sequelize.literal("book_detail.title"), "subtitle"],
-                [sequelize.literal("book_detail.file"), "file"],
-                [sequelize.literal("book_detail.round"), "round"],
-
-                [sequelize.literal("`book_detail->book`.title"), "title"],
-                [sequelize.literal("`book_detail->book`.price"), "price"],
-                [sequelize.literal("`book_detail->book`.type"), "type"],
-
-                [sequelize.literal("`book_detail->book->author`.nickname"),"author"],
-
-                [sequelize.literal("`book_detail->reviews`.id"), "review"],
-                [sequelize.literal("`book_detail->book`.img"), "img"],
-                [sequelize.literal("`book_detail->review_statistics`.score_amount / `book_detail->review_statistics`.person_number"),"review_score"],
+                "title",
+                "file",*/
             ],
-            where: {
-                member_id : member_id,
-                status : 1,
-            },
-            include : [
+            include: [
                 {
-                    model : book_detail,
-                    as : 'book_detail',
-                    attributes: [
+                    model: book,
+                    as : 'book',
+                    attributes : [
                         /*
-                        "id",
                         "title",
-                        "file",*/
+                        "price",
+                        "type",*/
                     ],
-                    include: [
+                    include : [
                         {
-                            model: book,
-                            as : 'book',
-                            attributes : [
-                                /*
-                                "title",
-                                "price",
-                                "type",*/
-                            ],
-                            include : [
-                                {
-                                    model: member,
-                                    as: 'author',
-                                    attributes: [
-                                        /*
-                                        "nickname",*/
-                                    ],
-                                }
-                            ]
-                        },
-                        {   //review가 필요한가?
-                            model: review,
-                            as : "reviews",
+                            model: member,
+                            as: 'author',
                             attributes: [
                                 /*
-                                "id",*/
-                            ],
-                            required: false,
-                            where: {
-                                member_id: member_id,
-                            },
-                        },
-                        {
-                            model: review_statistics,
-                            as : "review_statistics",
-                            attributes : [
-                                /*
-                                "score_amount",
-                                "person_number",*/
+                                "nickname",*/
                             ],
                         }
                     ]
                 },
+                {   //review가 필요한가?
+                    model: review,
+                    as : "reviews",
+                    attributes: [
+                        /*
+                        "id",*/
+                    ],
+                    required: false,
+                    where: {
+                        member_id: member_id,
+                    },
+                },
+                {
+                    model: review_statistics,
+                    as : "review_statistics",
+                    attributes : [
+                        /*
+                        "score_amount",
+                        "person_number",*/
+                    ],
+                }
             ]
+        },
+    ]
+
+    var WHERE = {
+        member_id : member_id,
+        status : 1,
+        yearWhere,
+    }
+
+    try{
+        const purchaseList = await purchase.findAll({
+            attributes: listAttributes,
+            where: WHERE,
+            include : INCLUDE,
+            limit: limit,
+            offset: offset,
+            order: [
+                ['created_date_time', 'DESC']
+            ],
+            subQuery: false
         });
+
+        const count = await purchase.findOne({
+            attributes: [
+                [sequelize.fn('Count','id'), 'count']
+            ],
+            where: WHERE,
+            include : INCLUDE,
+        })
 
         if(purchaseList.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");
@@ -242,12 +267,15 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                 if(purchaseList[i].dataValues.img== null || purchaseList[i].dataValues.img[0] == 'h') continue;
                 purchaseList[i].dataValues.img = getImgURL(purchaseList[i].dataValues.img);
             }
+            
             res.status(StatusCodes.OK).json({
                 purchaseList : purchaseList,
+                count: count.dataValues.count
             });
         }
     }
     catch(err){
+        console.log(err)
         logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
