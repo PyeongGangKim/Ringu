@@ -56,7 +56,7 @@ class SideNav extends Component {
                     </li>
 
                     <li>
-                        <Link to={URL.service.mypage.purchases}  className={"lnb-item" + (path === "/purchases" ? " on" : "")}>
+                        <Link to={URL.service.mypage.purchases}  className={"lnb-item" + (path.includes("purchases") ? " on" : "")}>
                             <div id="purchase-icon" className="lnb-icon"/>
                                 구매내역
                         </Link>
