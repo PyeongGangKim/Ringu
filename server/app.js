@@ -3,20 +3,23 @@ let express = require('express');
 let path = require('path');
 let cors = require('cors');
 let bodyParser = require('body-parser');
-//let cookieParser = require('cookie-parser');
-let fileUpload = require('express-fileupload');
 let session = require('express-session');
 let secretKey = require('./config/jwt_secret');
 const passport = require('passport');
 const passportConfig = require('./middlewares/passport');
 const logger = require('./utils/winston_logger');
 const morgan = require('morgan') 
-const morganFormat = process.env.NODE_ENV !== "production" ? "development" : "combined";
+const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
+const session_secretKey = require('./config/session_secret').secretKey;
+const fileStore = require('session-file-store')(session);
+
+
 
 
 
 require('dotenv').config();
 process.env.NODE_ENV = ( process.env.NODE_ENV && ( process.env.NODE_ENV ).trim().toLowerCase() == 'production' ) ? 'production' : 'development';
+
 var testcaseRouter = require('./routes/testcase');
 
 var admin_loginRouter = require('./routes/admin/login');
@@ -52,17 +55,20 @@ let api_paymentRouter = require('./routes/api/payment');
 let api_termsRouter = require("./routes/api/terms");
 
 let app = express();
-
-// initialize express-session to allow us track the logged-in user across sessions.
 app.use(session({
-    key: 'user_id',
-    secret: 'somerandonstuffs',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        expires: 2400000
-    }
+	
+  secret: session_secretKey,	//암호화하는 데 쓰일 키
+  resave: false,	//세션을 언제나 저장할지 설정함
+  saveUninitialized: false,	//세션이 저장되기 전 uninitialized 상태로 미리 만들어 저장
+  cookie: {	//세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
+    expires: 2400000
+  },
+  store: new fileStore()
 }));
+
+
+
+
 
 app.use(morgan(morganFormat, {stream : logger.stream}));
 
