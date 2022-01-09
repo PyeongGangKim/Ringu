@@ -4,7 +4,8 @@ var router = express.Router();
 
 const statusCodes = require("../../helper/statusCodes");
 const { isLoggedIn, isAuthor } = require("../../middlewares/auth");
-const { uploadFile, deleteFile, downloadFile, imageLoad } = require("../../middlewares/third_party/aws");
+const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
+const { getImgURL } = require("../../utils/aws");
 const logger = require('../../utils/winston_logger');
 const { sequelize, category, favorite_book, book, book_detail, member, review, review_statistics, Sequelize: {Op} } = require("../../models");
 
@@ -119,7 +120,10 @@ router.get('/:bookId', async(req, res, next) => { //book_id로 원하는 book의
             res.status(statusCodes.NO_CONTENT).send("No content");;
         }
         else{
-            book_detail_info.dataValues.img = imageLoad(book_detail_info.dataValues.img)
+            if (book_detail_info.dataValues.img !== null) {
+                book_detail_info.dataValues.img = getImgURL(book_detail_info.dataValues.img);
+            }
+            
             res.status(statusCodes.OK).json({
                 "book": book_detail_info,
             });
