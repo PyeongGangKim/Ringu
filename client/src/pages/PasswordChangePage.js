@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 import SideMemberInfo from '../components/common/SideMemberInfo';
-import SideNav from '../components/mypage/SideNav';
+import SideNav from '../components/common/SideNav';
 import PasswordChange from '../components/mypage/PasswordChange';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
