@@ -42,25 +42,6 @@ class Purchase extends Component {
             state.data.purchaseList = purchaseList
             this.setState(state)
         }
-
-
-        /*for(var i=0; i<purchaseList.length; i++) {
-            purchaseList[i].book = {}
-
-            var book;
-
-            if(purchaseList[i].type === 1) {
-                book = await API.sendGet(URL.api.book.serialization + purchaseList[i].serialization_book_id)
-                purchaseList[i].book = book.data.serializationBook;
-            } else {
-                book = await API.sendGet(URL.api.book.singlePublished + purchaseList[i].single_published_book_id)
-                purchaseList[i].book = book.data.singlePublishedBook;
-            }
-
-            const author = await API.sendGet(URL.api.author.get + purchaseList[i].book.author_id)
-            purchaseList[i].author = author.data.result;
-
-        }*/
     }
     async downloadAction(book_detail_id){
         const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=" + "file");
