@@ -35,18 +35,28 @@ class Purchase extends Component {
     async componentDidMount() {
         var state = this.state;
 
-        const res = await API.sendGet(URL.api.purchase.list)
+        try {
+            const res = await API.sendGet(URL.api.purchase.list)
 
-        if(res.status === 200) {
-            var purchaseList = res.data.purchaseList
-            state.data.purchaseList = purchaseList
-            this.setState(state)
+            if(res.status === 200) {
+                var purchaseList = res.data.purchaseList
+                state.data.purchaseList = purchaseList
+                this.setState(state)
+            }
+        } catch(e) {
+            alert("구매 내역을 불러오지 못 했습니다")
         }
+        
     }
     async downloadAction(book_detail_id){
-        const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=" + "file");
-        let downloadUrl = res.data.url;
-        window.location.assign(downloadUrl);
+        try {
+            const res = await API.sendGet(URL.api.book.download+ "/" + book_detail_id + "?type=" + "file");
+            let downloadUrl = res.data.url;
+            window.location.assign(downloadUrl);
+        } catch(e) {
+            alert("다운로드에 실패하였습니다")
+        }
+        
     }
     render() {
         var purchaseList = this.state.data.purchaseList
