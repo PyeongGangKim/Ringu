@@ -161,6 +161,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                 [sequelize.literal("book_detail.id"), "book_detail_id"],
                 [sequelize.literal("book_detail.title"), "subtitle"],
                 [sequelize.literal("book_detail.file"), "file"],
+                [sequelize.literal("book_detail.round"), "round"],
 
                 [sequelize.literal("`book_detail->book`.title"), "title"],
                 [sequelize.literal("`book_detail->book`.price"), "price"],
