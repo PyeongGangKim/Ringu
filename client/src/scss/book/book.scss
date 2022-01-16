@@ -119,13 +119,10 @@
                 .inner-content {
                     .preview {
                         margin-bottom: 30px;
-
-                        .preview-mark {
-                            cursor: pointer;
-                        }
                     }
 
                     .preview-mark {
+                        cursor: pointer;
                         margin: 0 8px;
                         display:inline;
                         background-color: #fbb03b;
