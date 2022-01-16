@@ -15,7 +15,7 @@ import API from '../../utils/apiutils';
 var axios = require('axios');
 
 class Purchase extends Component {
-    limit = 1;
+    limit = 5;
     constructor(props) {
         super(props)
         var years = [2021]
@@ -33,7 +33,7 @@ class Purchase extends Component {
             data: {
                 purchaseList:[],
                 years: years,
-                selectedYear: (searchParams.has('year') && !!searchParams.get('year')) ? parseInt(searchParams.get('year')) : 0,
+                selectedYear: (searchParams.has('year') && !!searchParams.get('year')) ? parseInt(searchParams.get('year')) : 1,
                 total: 0,
                 page: 1,
             },
@@ -102,7 +102,6 @@ class Purchase extends Component {
 
     render() {
         var state = this.state;
-        console.log(state)
         
         return (
             <div id="mypage" className="page2">
@@ -113,7 +112,9 @@ class Purchase extends Component {
                 <hr/>
 
                 <div className="years">
-                    <div className={"year " + (state.data.selectedYear === 0 ? "active" : "")} onClick={() => this.handleYearClick(0)}>최근 3개월</div>
+                    <div className={"year " + (state.data.selectedYear === 1 ? "active" : "")} onClick={() => this.handleYearClick(1)}>1개월</div>
+                    <div className={"year " + (state.data.selectedYear === 3 ? "active" : "")} onClick={() => this.handleYearClick(3)}>3개월</div>
+                    <div className={"year " + (state.data.selectedYear === 6 ? "active" : "")} onClick={() => this.handleYearClick(6)}>6개월</div>
                     {
                         state.data.years.map((year, idx) => {
                             return (
@@ -207,7 +208,7 @@ class Purchase extends Component {
                     :
                     <div className="container">
                         <div className="no-content">
-                            {state.data.selectedYear === 0 ? '최근 3개월간 ' : `${state.data.selectedYear}년 `}구매 내역이 없습니다.
+                            {state.data.selectedYear < 10 ? `최근 ${state.data.selectedYear}개월 동안 ` : `${state.data.selectedYear}년 `}구매 내역이 없습니다.
                         </div>
                     </div>
                 }
