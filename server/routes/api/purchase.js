@@ -155,8 +155,8 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
     var year = 'year' in req.query && typeof req.query.year !== 'undefined' ? parseInt(req.query.year) : 0;
     var limit = 'limit' in req.query && typeof req.query.limit !== 'undefined' ? parseInt(req.query.limit) : 10;
     var offset = 'offset' in req.query && typeof req.query.offset !== 'undefined' ? parseInt(req.query.offset) : 0;
-    var yearWhere = year === 0 ? sequelize.literal(`purchase.created_date_time > NOW() - INTERVAL 3 MONTH`) : sequelize.where(sequelize.fn('YEAR', sequelize.col('purchase.created_date_time')), year)
-    console.log(req.query)
+    var yearWhere = year < 10 ? sequelize.literal(`purchase.created_date_time > NOW() - INTERVAL ${year} MONTH`) : sequelize.where(sequelize.fn('YEAR', sequelize.col('purchase.created_date_time')), year)
+    
     var listAttributes = [
         "id",
         "created_date_time",
