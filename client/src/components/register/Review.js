@@ -156,7 +156,7 @@ class Review extends Component {
                 <div>
                     <div className="review-box">
                         <div className="thumbnail-box">
-                            <img src={state.book.img}/>
+                            <img src={!!state.book.img ? state.book.img : "/ringu_thumbnail.png"}/>
                         </div>
                         <div className="book-info">
                             <div>

@@ -147,7 +147,6 @@ class Author extends Component {
             }
 
             window.addEventListener('scroll', this.handleScroll)
-
             if (window.scrollY > 100) {
                 state.dock = true;
             } else {
@@ -164,6 +163,13 @@ class Author extends Component {
     componentDidUpdate(prevProps, prevState) {
         if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
             window.addEventListener('scroll', this.handleScroll)
+            if (window.scrollY > 100) {
+                this.state.dock = true;
+            } else {
+                this.state.dock = false;
+            }
+
+            this.setState(this.state)
         }
     }
 
@@ -614,7 +620,6 @@ class Author extends Component {
                                     <tbody>
                                         {
                                             state.detailList.map((detail, idx) => {
-                                                console.log(state.book.file)
                                                 return (
                                                     <tr key={idx} className="book-detail">
                                                         <td className="book-detail-idx"> <span> {detail.round}회차. </span> </td>

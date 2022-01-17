@@ -25,6 +25,11 @@
             width: 100%;
             height: 190px;
             padding: 20px 0 30px 0;
+            border-bottom: 1px solid #ccc;
+
+            &:nth-last-child(1) {
+                border: 0;
+            }
 
             .img-box {
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -42,8 +47,11 @@
             }
 
             .product {
-                width: 250px;
+                width: 60%;
                 position: relative;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
 
                 .detail {
                     font-weight: 500;
@@ -57,7 +65,6 @@
                 }
 
                 .title {
-                    display: block;
                     font-size: 18px;
                     font-weight: 600;
                     margin-bottom: 5px;
