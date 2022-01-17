@@ -9,13 +9,13 @@ module.exports = {
     instances: 4,
 
     
-//    exec_mode : 'fork',
+   // exec_mode : 'fork',
     exec_mode: 'cluster',
     merge_logs: true,
     
     autorestart: true,
     
-    watch: true,
+    watch: false,
   
     env:{
     

@@ -28,11 +28,13 @@ router.post("/attempt/", async(req, res, next) => {
         let result = await member.findOne({
             where: {email: email}
         })
-
         if (result) {
+
             const pwd_result = await bcrypt.compare(password, result.password);
             if(pwd_result && result.is_admin){
+
                 req.session.sess_is_login = 1;
+
                 if (rurl != "") {                    
                     res.redirect(rurl);
                 } else {
@@ -40,12 +42,10 @@ router.post("/attempt/", async(req, res, next) => {
                 }
                 return;
             }
-
             res.redirect("/admin/login/?attempt=0");
             return;
         }
     } catch(err) {
-	consoel.error(err);
         logger.error(err);
     }
 });
