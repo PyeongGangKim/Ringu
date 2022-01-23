@@ -122,6 +122,8 @@ body {
 }
 
 .page1, .page2, .page3 {
+    min-height: 100%;
+    
     .title-wrap {
         width:100%;
         display: flex;
