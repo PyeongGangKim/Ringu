@@ -2,9 +2,6 @@
 
 <style>.head { display: none !important; }</style>
 
-<div class="row text-center">
-    <img src="/logo.png" style="height: 30px; margin-top: 18px;"/>
-</div>
 
 <br /><br />
 
@@ -14,7 +11,7 @@
     </div>
     <!--/.panel-header-->
 
-    <form method="POST" action="/admin/login/attempt/" onsubmit=" return checkForm(); ">
+    <form method="POST" action="/admin/login/attempt/">
         <input type="hidden" name="rurl" value="<%=rurl%>" />
         <div class="panel-body padTopNone">
             <% if (attempt) { %>
