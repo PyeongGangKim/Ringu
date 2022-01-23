@@ -143,9 +143,9 @@ class Login extends Component {
                                 </label>
                             </div>
 
-                            <a>
+                            <Link to={URL.service.accounts.find_email}>
                                 아이디/비밀번호 찾기
-                            </a>
+                            </Link>
                         </div>
                         {/* login-settings */}
 

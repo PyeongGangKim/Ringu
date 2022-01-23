@@ -274,7 +274,7 @@ class RegisterAuthorDetail extends Component {
                                 <input type="text" className={state.name.class} disabled={state.certificated} onChange={this.handleNameChange}/>
                                 {
                                     !!state.name.msg &&
-                                    <div className="error-wrap">
+                                    <div className="info info-error">
                                         <span>{state.name.msg}</span>
                                     </div>
                                 }
@@ -287,7 +287,7 @@ class RegisterAuthorDetail extends Component {
                                 <input type="number" className={state.phone.class} placeholder={"예) 01012345678"} disabled={state.certificated} onChange={this.handlePhoneChange}/>
                                 {
                                     !!state.phone.msg &&
-                                    <div className="error-wrap">
+                                    <div className="info info-error">
                                         <span>{state.phone.msg}</span>
                                     </div>
                                 }
@@ -325,7 +325,7 @@ class RegisterAuthorDetail extends Component {
                                     maxMenuHeight="150px"/>
                                 {
                                     state.bank.msg &&
-                                    <div className="error-wrap">
+                                    <div className="info info-error">
                                         <span>{state.bank.msg}</span>
                                     </div>
                                 }
@@ -338,7 +338,7 @@ class RegisterAuthorDetail extends Component {
                                 <input type="number" placeholder={"-빼고 입력해주세요"} className={state.account.class} onChange={this.handleAccountChange} value={state.account.val}/>
                                 {
                                     state.account.msg &&
-                                    <div className="error-wrap">
+                                    <div className="info info-error">
                                         <span>{state.account.msg}</span>
                                     </div>
                                 }

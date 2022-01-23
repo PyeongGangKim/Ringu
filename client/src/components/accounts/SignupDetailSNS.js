@@ -205,7 +205,7 @@ class SignupDetailSNS extends Component {
                         </button>
                         {
                             this.state.nickname.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.nickname.msg}</span>
                             </div>
                         }

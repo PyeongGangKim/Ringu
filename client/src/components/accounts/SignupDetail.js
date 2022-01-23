@@ -359,7 +359,7 @@ class SignupDetail extends Component {
                         </button>
                         {
                             state.email.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.email.msg}</span>
                             </div>
                         }
@@ -389,7 +389,7 @@ class SignupDetail extends Component {
 
                             {
                                 state.emailCode.msg &&
-                                <div className="error-wrap">
+                                <div className="info info-error">
                                     <span>{state.emailCode.msg}</span>
                                 </div>
                             }
@@ -409,7 +409,7 @@ class SignupDetail extends Component {
                         </button>
                         {
                             state.nickname.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.nickname.msg}</span>
                             </div>
                         }
@@ -422,7 +422,7 @@ class SignupDetail extends Component {
                         <input type="password" name="password" autoComplete="off" className="input" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
                         {
                             state.password.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.password.msg}</span>
                             </div>
                         }
@@ -431,7 +431,7 @@ class SignupDetail extends Component {
                         <input type="password" name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
                         {
                             state.passwordCheck.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.passwordCheck.msg}</span>
                             </div>
                         }

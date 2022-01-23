@@ -145,12 +145,18 @@ textarea {
         padding: 0;
     }
 
-    .error-wrap {
-        position:relative;
+    .info {
+        position:absolute;
         margin-top: 6px;
+        font-size: 14px;
+        left: 5px;
+        color: #767676;
+        font-weight: 500;
+    }
+
+    .info-error {
         color: red;
         font-size: 12px;
-        font-weight: 500;
     }
 }
 
