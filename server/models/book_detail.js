@@ -40,10 +40,7 @@ module.exports = function(sequelize, DataTypes) {
     round: {
       type: DataTypes.INTEGER,
       allowNull: true
-
-    },
-
-
+    }
   }, {
     sequelize,
     tableName: 'book_detail',

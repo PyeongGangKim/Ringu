@@ -1,15 +1,11 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('reward', {
+  return sequelize.define('auth', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
-    },
-    amount: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     },
     member_id: {
       type: DataTypes.INTEGER,
@@ -19,9 +15,13 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    type: {
+    token: {
+      type: DataTypes.STRING(24),
+      allowNull: false
+    },
+    ttl: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     created_date_time: {
       type: DataTypes.DATE,
@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'reward',
+    tableName: 'auth',
     timestamps: false,
     indexes: [
       {
@@ -42,7 +42,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "reward_member_id_fk",
+        name: "auth_member_id_fk_idx",
         using: "BTREE",
         fields: [
           { name: "member_id" },

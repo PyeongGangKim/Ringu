@@ -17,14 +17,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     content: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: false
     },
-    general_rules:{
-        type: DataTypes.STRING(100),
-        allowNull: true,
+    general_rules: {
+      type: DataTypes.STRING(100),
+      allowNull: true
     }
-    
-
   }, {
     sequelize,
     tableName: 'terms',

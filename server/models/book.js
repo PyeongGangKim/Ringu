@@ -90,13 +90,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     recommending_phrase: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-
+      allowNull: true
     },
     charge: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 10
     }
   }, {
     sequelize,
