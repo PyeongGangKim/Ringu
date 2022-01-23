@@ -2,7 +2,7 @@ var express = require("express");
 
 let jwt = require('jsonwebtoken');
 let bcrypt = require('bcrypt');
-const salt_num = require('../../config/salt');
+const { salt,salt_num } = require("../../config/salt");
 const passport = require('passport');
 const logger = require('../../utils/winston_logger');
 const { smtpTransport } = require('../../config/email');
@@ -10,7 +10,7 @@ var { generateRandom } = require('../../utils/random_number');
 const { secretKey } = require('../../config/jwt_secret');
 const StatusCodes = require("../../helper/statusCodes");
 
-const { identification, member } = require("../../models");
+const { sequelize, identification, member, auth, Sequelize: {Op} } = require("../../models");
 const { isLoggedIn } = require('../../middlewares/auth');
 const { redirect_url } = require('../../config/url');
 const { ncp } = require("../../config/naver_sms");
@@ -133,7 +133,7 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
         });
         if(result !== null){
             res.status(StatusCodes.DUPLICATE).json({
-                "message" : "duplicate",
+                "message" : "duplicate"
             });
         }
         else {
@@ -474,6 +474,176 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
             msg: "server error",
         });
     }
+});
+
+router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변경 주소 메일 전송    
+    const email = req.body.email;
+    
+    try{
+        const user = await member.findOne({
+            where : {
+                email: email,
+                status: 1,
+            }
+        })
+
+        if(!user) {
+            res.status(StatusCodes.OK).json({
+                message: "not found"
+            });
+            return;
+        }
+    
+        if(!!user.naver_id) {
+            res.status(StatusCodes.OK).json({
+                message: "naver"
+            });
+            return;
+        }
+    
+        if(!!user.kakao_id) {
+            res.status(StatusCodes.OK).json({
+                message: "kakao"
+            });
+            return;
+        }
+    
+        if(!!user.google_id) {
+            res.status(StatusCodes.OK).json({
+                message: "google"
+            });
+            return;
+        }   
+    
+        const token = require('crypto').randomBytes(24).toString('hex');
+        const data = {
+            token,
+            member_id: user.id,
+            ttl: 1000,
+        }
+        
+        const Auth = await auth.findOne({
+            where : {
+                member_id: user.id
+            }
+        })
+        if(!Auth) {
+            await auth.create(data)
+        }
+        else {
+            data['created_date_time'] = new Date()            
+            await auth.update(data, {
+                where:{id:Auth.id}
+            });
+        }
+    
+        const mailOptions = {
+            from: "trop100@naver.com",
+            to: email,
+            subject: "[RINGU] 비밀번호 변경 이메일입니다",
+            text: 
+                "아래의 URL을 클릭하시면 비밀번호 변경 페이지로 연결됩니다.\n\n" +
+                `http://localhost:3000/change_pwd?token=${token}`
+            
+        };
+
+        await smtpTransport.sendMail(mailOptions, (error, response) => {
+            if(error){
+                res.json({status: 'error', reason: 'email auth fail'});
+                return;
+            }
+            smtpTransport.close();
+        });
+        
+        res.status(StatusCodes.CREATED).send()
+    }
+    catch(err){
+        logger.error(err.stack);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: err});
+    }    
+});
+
+router.post('/validate_token', async (req, res, next) => {//비밀번호 변경 토큰 유효성 검사
+    const token = req.body.token;
+    
+    try{
+        const Auth = await auth.findOne({
+            where : {
+                token: token,
+                created_date_time: {
+                    [Op.gt]: sequelize.literal("NOW() - ttl")
+                }
+            }
+        })
+
+        if(!Auth) {
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                message: "invalid"
+            });
+            return;
+        }
+        
+        res.status(StatusCodes.OK).json({
+            message: "valid"
+        });
+        return
+    }
+    catch(err){
+        logger.error(err.stack);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: err});
+    }    
+});
+
+router.put('/reset_password/', async (req, res, next) => {
+    console.log(req.body)    
+    try{
+        const result = await auth.findOne({
+            where: {
+                token: req.body.token
+            }
+        })
+
+        if(!!result) {
+            const user = await member.findOne({
+                where: {
+                    id: result.member_id
+                }
+            })
+
+            if(!!user) {
+                var _salt = await bcrypt.genSalt(salt);
+                var password = await bcrypt.hash(req.body.password, _salt);
+
+                await member.update({
+                    password: password
+                },{
+                    where: {
+                        id: user.id
+                    }
+                })
+
+                res.status(StatusCodes.OK).json({
+                    message: "ok"
+                })
+                return;
+            }
+        }
+
+        res.status(StatusCodes.OK).json({
+            message: "x"
+        })
+        return;
+    }
+    catch(err){
+        console.log(err)
+        logger.error(err.stack);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "message" : "server error",
+        });
+    }
+
+    // DB LOAD
+
 });
 
 router.post('/phone/identification/number', isLoggedIn, async (req, res, next) => {
