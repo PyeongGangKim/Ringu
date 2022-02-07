@@ -66,7 +66,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                                 }
                             }
                         }
-                    } catch(err){                        
+                    } catch(err){
                         var resp = err.response;
                         if(resp.status === 400) { // 중복 이메일
                             alert("이미 가입된 이메일입니다")
