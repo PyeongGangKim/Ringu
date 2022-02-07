@@ -321,6 +321,7 @@ class Author extends Component {
 
                     var newArray = state.bookList['ser'].filter(item => item.id !== book.id)
                     state.bookList['ser'] = newArray
+                    state.display = false
                     this.setState(state)
                 }
             } catch(e) {
