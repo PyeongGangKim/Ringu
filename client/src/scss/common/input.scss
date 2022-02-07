@@ -120,7 +120,13 @@ textarea {
             &:focus {
                 border: 2px solid red !important;
             }
-        }
+        }        
+    }
+
+    i {
+        position: absolute;
+        right: 10px;
+        top: 20px;        
     }
 
     .timer {

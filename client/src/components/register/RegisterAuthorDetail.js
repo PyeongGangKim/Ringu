@@ -158,7 +158,6 @@ class RegisterAuthorDetail extends Component {
                     alert("인증이 실패하였습니다.")
                 }
         });
-        console.log(3333333)
     }
 
     handleSubmit = async() => {

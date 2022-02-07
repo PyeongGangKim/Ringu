@@ -29,7 +29,7 @@ class Login extends Component {
 
         this.state = {
             ui: {
-
+                
             },
             data: {
                 id:"",
@@ -113,6 +113,7 @@ class Login extends Component {
     }
 
     render() {
+        var state = this.state;
 
         return (
             <div className="page3">
@@ -124,7 +125,7 @@ class Login extends Component {
                             </div>
 
                             <div id="password-form" className="form-group">
-                                <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>
+                                <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>                                
                             </div>
 
                             <button className="btn btn-block btn-login">

@@ -48,7 +48,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                         // 회원가입 페이지로 넘어가기
                         if(res.status === 200) {
                             if(res.data.message === 'OK') {
-                                history.push({
+                                history.replace({
                                     pathname:   URL.service.accounts.signup_step,
                                     search:     `?sns=kakao&email=${email}&id=${id}`,
                                 });
@@ -62,7 +62,7 @@ const KakaoCallback = ({location, history, ...props}) => {
                                 if(res.status === 200) {
                                     var token = res.data.token;
                                     if( token ) Cookies.set('RINGU_JWT', token, {expires: 7, path: '/'});
-                                    history.push(URL.service.home);
+                                    history.replace(URL.service.home);
                                 }
                             }
                         }
@@ -70,10 +70,10 @@ const KakaoCallback = ({location, history, ...props}) => {
                         var resp = err.response;
                         if(resp.status === 400) { // 중복 이메일
                             alert("이미 가입된 이메일입니다")
-                            window.location.href = URL.service.accounts.login
+                            history.replace(URL.service.accounts.login)
                         } else {
                             alert("로그인이 실패하였습니다")
-                            window.location.href = URL.service.accounts.login
+                            history.replace(URL.service.accounts.login)
                         }
                     }
                 },

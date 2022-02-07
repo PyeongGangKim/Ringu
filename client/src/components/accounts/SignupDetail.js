@@ -31,6 +31,14 @@ class SignupDetail extends Component {
             timer: {min: 0, sec:0, active: false, clear: false},
             timeout: false,
             naver: null,
+            passwordType1: {
+                type: 'password',
+                visible: false
+            },
+            passwordType2: {
+                type: 'password',
+                visible: false
+            }
         };
     }
 
@@ -343,6 +351,34 @@ class SignupDetail extends Component {
         }
     }
 
+    handlePasswordType1 = () => {
+        var state = this.state;        
+
+        if(!state.passwordType1.visible) {
+            state.passwordType1.type = 'text'
+            state.passwordType1.visible = true
+        } else {
+            state.passwordType1.type = 'password'
+            state.passwordType1.visible = false
+        }
+
+        this.setState(state)
+    }
+
+    handlePasswordType2 = () => {
+        var state = this.state;        
+
+        if(!state.passwordType2.visible) {
+            state.passwordType2.type = 'text'
+            state.passwordType2.visible = true
+        } else {
+            state.passwordType2.type = 'password'
+            state.passwordType2.visible = false
+        }
+
+        this.setState(state)
+    }
+
     render() {
         var state = this.state;
 
@@ -426,6 +462,9 @@ class SignupDetail extends Component {
                                 <span>{state.password.msg}</span>
                             </div>
                         }
+                        <i class="eye" onClick={this.handlePasswordType1}>
+                            { state.passwordType1.visible ? <span>숨기기</span> : <span>보이기</span>}
+                        </i>
                     </div>
                     <div id="password-confirm" className="form-group">
                         <input type="password" name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
@@ -435,6 +474,9 @@ class SignupDetail extends Component {
                                 <span>{state.passwordCheck.msg}</span>
                             </div>
                         }
+                        <i class="eye" onClick={this.handlePasswordType2}>
+                            { state.passwordType2.visible ? <span>숨기기</span> : <span>보이기</span>}
+                        </i>
                     </div>
                 </div>
 
