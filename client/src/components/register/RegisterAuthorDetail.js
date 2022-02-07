@@ -36,8 +36,8 @@ class RegisterAuthorDetail extends Component {
         }
 
         this.state = {
-            name: {val: "임유빈", msg: "", clear: false, class: "input"},
-            phone: {val: "01020618506", msg: "", clear: false, class: "input"},
+            name: {val: "", msg: "", clear: false, class: "input"},
+            phone: {val: "", msg: "", clear: false, class: "input"},
             bank: {val: {}, msg: "", clear: false, class: "input"},
             account: {val: "", msg: "", clear: false, class: "input"},
             tax_term: "",
@@ -121,26 +121,12 @@ class RegisterAuthorDetail extends Component {
         var state = this.state;
         e.preventDefault();
 
-        if(state.name.val === '' || /^[가-힣]*$/.test(state.name.val) === false) {
-            state.name.class = "input error";
-            state.name.msg = "이름을 올바르게 입력해주세요."
-            this.setState(state)
-            alert("이름을 올바르게 입력해주세요")
-            return;
-        }
 
-        if(state.phone.msg !== "" || state.phone.val === "") {
-            state.phone.class = "input error";
-            state.phone.msg = "휴대폰 번호를 입력해주세요."
-            this.setState(state)
-            alert("휴대폰 번호를 올바르게 입력해주세요")
-            return;
-        }
 
         var state = this.state;
 
         const { IMP } = window;
-        IMP.init(iamport.IMP_CODE)        
+        IMP.init(iamport.IMP_CODE)
 
         IMP.certification({
             name: state.name.val,
@@ -155,7 +141,11 @@ class RegisterAuthorDetail extends Component {
                     alert("인증이 완료되었습니다.")
                 }
                 else {
-                    alert("인증이 실패하였습니다.")
+                    if(rsp.error_code === '9014') {
+                        alert(`인증이 실패하였습니다. [${rsp.error_code}]`)
+                    } else {
+                        alert("인증이 실패하였습니다.")
+                    }
                 }
         });
     }
@@ -270,7 +260,7 @@ class RegisterAuthorDetail extends Component {
                         <div className="input-box">
                             <h3 className="header"> 이름 </h3>
                             <div className="form-group">
-                                <input type="text" className={state.name.class} disabled={state.certificated} onChange={this.handleNameChange}/>
+                                <input type="text" className={state.name.class} disabled={state.certificated} onChange={this.handleNameChange} value={state.name.val}/>
                                 {
                                     !!state.name.msg &&
                                     <div className="info info-error">
@@ -283,7 +273,7 @@ class RegisterAuthorDetail extends Component {
                         <div className="input-box">
                             <h3 className="header"> 휴대폰 번호 </h3>
                             <div className="form-group">
-                                <input type="number" className={state.phone.class} placeholder={"예) 01012345678"} disabled={state.certificated} onChange={this.handlePhoneChange}/>
+                                <input type="number" className={state.phone.class} placeholder={"예) 01012345678"} disabled={state.certificated} onChange={this.handlePhoneChange} value={state.phone.val}/>
                                 {
                                     !!state.phone.msg &&
                                     <div className="info info-error">
