@@ -455,7 +455,7 @@ class SignupDetail extends Component {
                 <div className="header"> 비밀번호 </div>
                 <div className="password-wrap">
                     <div id="password" className="form-group">
-                        <input type="password" name="password" autoComplete="off" className="input" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
+                        <input type={state.passwordType1.type} name="password" autoComplete="off" className="input" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
                         {
                             state.password.msg &&
                             <div className="info info-error">
@@ -467,7 +467,7 @@ class SignupDetail extends Component {
                         </i>
                     </div>
                     <div id="password-confirm" className="form-group">
-                        <input type="password" name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
+                        <input type={state.passwordType2.type} name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
                         {
                             state.passwordCheck.msg &&
                             <div className="info info-error">

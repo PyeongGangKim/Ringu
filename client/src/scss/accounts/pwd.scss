@@ -1,6 +1,6 @@
 .id-pwd-wrap {
     width: 350px;
-    margin: 50px auto;
+    margin: 100px auto 0 auto;
 
     .complete {
         text-align: center;
@@ -12,6 +12,8 @@
         font-size: 20px;
         font-weight: 500;
         margin-bottom: 20px;
+        position: absolute;
+        top: -40px;
     }
     .form-group {        
         padding-bottom: 40px;
