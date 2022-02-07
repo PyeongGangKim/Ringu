@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var axios = require('axios');
-var iamport = require("../../config/iamport");
+var IAMPORT = require("../../config/iamport");
 
 let jwt = require('jsonwebtoken');
 const { secretKey } = require('../../config/jwt_secret');
@@ -208,9 +208,8 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
     }
 });
 
-/*router.post('/certification', async(req, res, next) => {
-    const { imp_uid } = req.body;
-    console.log(imp_uid)
+router.post('/certifications', async(req, res, next) => {
+    const { imp_uid } = req.body;    
 
     try {
         // 인증 토큰 발급 받기
@@ -219,8 +218,8 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
             method: "post", // POST method
             headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
             data: {
-                imp_key: iamport.apikey,
-                imp_secret: iamport.secret
+                imp_key: IAMPORT.apikey,
+                imp_secret: IAMPORT.secret
             }
         })
 
@@ -247,7 +246,7 @@ router.get('/nickname/duplicate', isLoggedIn, async(req, res, next) => {
             "message" : "server error",
         });
     }
-})*/
+})
 
 router.put('/', isLoggedIn, async (req, res, next) => {
     let id = req.user.id;

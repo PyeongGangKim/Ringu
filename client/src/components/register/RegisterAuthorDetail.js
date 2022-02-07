@@ -121,12 +121,25 @@ class RegisterAuthorDetail extends Component {
         var state = this.state;
         e.preventDefault();
 
+        if(state.name.val === '' || /^[가-힣]*$/.test(state.name.val) === false) {
+            state.name.class = "input error";
+            state.name.msg = "이름을 올바르게 입력해주세요."
+            this.setState(state)
+            alert("이름을 올바르게 입력해주세요")
+            return;
+        }
 
+        if(state.phone.msg !== "" || state.phone.val === "") {
+            state.phone.class = "input error";
+            state.phone.msg = "휴대폰 번호를 입력해주세요."
+            this.setState(state)
+            alert("휴대폰 번호를 올바르게 입력해주세요")
+            return;
+        }
 
         var state = this.state;
 
         const { IMP } = window;
-        IMP.init(iamport.IMP_CODE)
 
         IMP.certification({
             name: state.name.val,
