@@ -7,7 +7,6 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 import User from '../../utils/user';
-import iamport from '../../config/iamport';
 
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
@@ -77,7 +76,6 @@ class Buy extends Component {
         }
 
         const { IMP } = window;
-        IMP.init(iamport.IMP_CODE)
 
         IMP.request_pay({
             pg: 'html5_inicis',

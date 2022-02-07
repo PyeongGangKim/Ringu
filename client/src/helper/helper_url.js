@@ -27,7 +27,7 @@ module.exports = {
             nickname_duplicate: "/auth/nickname/duplicate",
             validate_token:     "/auth/validate_token",
             reset_password:     "/auth/reset_password",
-        },
+        },        
         author: {
             get:                "/author",
             update:             "/author",
@@ -88,7 +88,7 @@ module.exports = {
             passwordCheck:      "/member/password/check",
             upload_profile:     "/member/upload_profile",
             profile:            "/member/profile/",
-            certification:      "/member/certification",
+            certifications:     "/member/certifications",
             update:             "/member/",
             delete:             "/member",
         },
