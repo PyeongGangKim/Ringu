@@ -20,12 +20,48 @@ class ChangePassword extends Component {
         this.state = {
             password1: false,
             password2: false,
+            passwordType1: {
+                type: 'password',
+                visible: false
+            },
+            passwordType2: {
+                type: 'password',
+                visible: false
+            }
             
         };
     }
 
     componentDidMount() {
 
+    }
+
+    handlePasswordType1 = () => {
+        var state = this.state;        
+
+        if(!state.passwordType1.visible) {
+            state.passwordType1.type = 'text'
+            state.passwordType1.visible = true
+        } else {
+            state.passwordType1.type = 'password'
+            state.passwordType1.visible = false
+        }
+
+        this.setState(state)
+    }
+
+    handlePasswordType2 = () => {
+        var state = this.state;        
+
+        if(!state.passwordType2.visible) {
+            state.passwordType2.type = 'text'
+            state.passwordType2.visible = true
+        } else {
+            state.passwordType2.type = 'password'
+            state.passwordType2.visible = false
+        }
+
+        this.setState(state)
     }
 
     handlePasswordChange = (evt) => {
@@ -115,6 +151,9 @@ class ChangePassword extends Component {
                                     className={state.password ? "input error" : "input"} 
                                     ref={this.ref} 
                                     onChange={this.handlePasswordChange}/>
+                                <i class="eye" onClick={this.handlePasswordType1}>
+                                    { state.passwordType1.visible ? <span>숨기기</span> : <span>보이기</span>}
+                                </i>
                                 {
                                     state.password &&
                                     <div className="info info-error">
@@ -131,6 +170,9 @@ class ChangePassword extends Component {
                                     className={state.password2 ? "input error" : "input"} 
                                     ref={this.ref2} 
                                     onChange={this.handlePassword2Change}/> 
+                                <i class="eye" onClick={this.handlePasswordType2}>
+                                    { state.passwordType2.visible ? <span>숨기기</span> : <span>보이기</span>}
+                                </i>
                                 {
                                     state.password2 &&
                                     <div className="info info-error">
