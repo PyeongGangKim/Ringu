@@ -122,7 +122,6 @@ class ChangePassword extends Component {
 
             const res = await API.sendPut(URL.api.auth.reset_password, params)
             if(res.status == 200) {
-                alert(33333333333)
                 window.location.href = URL.service.accounts.change_pwd_complete;
             }
         } catch(e) {
@@ -145,7 +144,7 @@ class ChangePassword extends Component {
                         <form onSubmit={this.changePassword}>
                             <div id="password-form" className="form-group">
                                 <div className="header">새로운 비밀번호</div>
-                                <input type="password" 
+                                <input type={state.passwordType1.type} 
                                     name="password" 
                                     autoComplete="off" 
                                     className={state.password ? "input error" : "input"} 
@@ -164,7 +163,7 @@ class ChangePassword extends Component {
 
                             <div id="password2-form" className="form-group">
                                 <div className="header">새로운 비밀번호 확인</div>
-                                <input type="password" 
+                                <input type={state.passwordType2.type}
                                     name="password2" 
                                     autoComplete="off" 
                                     className={state.password2 ? "input error" : "input"} 
