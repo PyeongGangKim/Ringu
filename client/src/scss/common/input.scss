@@ -123,10 +123,22 @@ textarea {
         }        
     }
 
-    i {
+    em {
         position: absolute;
-        right: 10px;
-        top: 20px;        
+        right: 15px;
+        top: 20px;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        padding: 10px;
+    }
+
+    em.eye {
+        background-image:  url(/assets/img/eye.png);
+    }
+
+    em.eye-off {
+        background-image:  url(/assets/img/eye-off.png);
     }
 
     .timer {
