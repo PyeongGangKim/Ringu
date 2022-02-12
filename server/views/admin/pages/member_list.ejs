@@ -27,7 +27,7 @@
                     <th>이메일</th>
                     <th style="width: 120px;">전화번호</th>
                     <th style="width: 120px;">적립금</th>
-                    <th style="width: 120px;"></th>
+                    
                     <th style="width: 120px;"></th>
                     <th style="width: 120px;"></th>
                 </tr>
@@ -58,14 +58,7 @@
                             <%}%>
                         </td>
 
-                        <td class="menu">
-                            <a href="/admin/member/view/?id=<%=helper_security.encrypt(member.id)%>">
-                                <div class="menu-item">
-                                    보기
-                                </div>
-                                <!--/.menu-item-->
-                            </a>
-                        </td>
+                        
                         <td class="menu">
                             <a href="/admin/purchase/list/user/?member_id=<%=member.id%>">
                                 <div class="menu-item">

@@ -58,7 +58,7 @@ router.get("/", async(req, res, next) => {
             "helper_security"   : helper_security
         });
     } catch(err) {
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 
@@ -150,7 +150,7 @@ router.get("/view/", async(req, res, next) => {
         });
 
     } catch(err) {
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 
@@ -169,7 +169,7 @@ router.get("/delete/", async(req, res, next) => {
         )
         res.redirect("/admin/member/");
     } catch(err){
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 
