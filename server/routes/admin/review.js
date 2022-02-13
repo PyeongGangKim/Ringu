@@ -2,6 +2,9 @@ var express = require("express");
 var router = express.Router();
 var sequelize = require("sequelize");
 
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
 var config_url = require("../../config/url");
 const logger = require('../../utils/winston_logger');
 var helper_api = require("../../helper/api");
@@ -12,6 +15,9 @@ var helper_activity = require("../../helper/activity");
 
 const { review, book_detail, book, member, review_statistic} = require("../../models");
 
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
+
+const review_dir = adminPageDirPath + "review/";
 
 router.get("/", async(req, res, next) => {
 
@@ -61,7 +67,7 @@ router.get("/", async(req, res, next) => {
         var total_count = (count) ? count : 0;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/review/", page, limit, total_count, {member_id:member_id, book_id:book_id});
 
-        res.render("admin/pages/review_list", {
+        res.render(review_dir + "list", {
             "member_id"         : member_id,
             "book_id"           : book_id,
             "limit"             : limit,
@@ -75,64 +81,6 @@ router.get("/", async(req, res, next) => {
     }
 });
 
-router.get('/list/user', async(req, res, next) => {
-    helper_activity.checkLogin(req, res, "/admin/review/view/?id=" + req.query["id"]);
-    
-    
-    let limit           = ("limit" in req.query && req.query.limit) ? parseInt(req.query.limit) : 10;
-    let page            = ("page" in req.query) ? req.query.page : 1;
-    let offset          = parseInt(limit) * (parseInt(page)-1);
-
-    let member_id = req.query.member_id;
-
-    try{
-        const result = await review.findAndCountAll({
-            attributes : [
-                'id', 'created_date_time', 'score', 'description',
-                [sequelize.col('member.nickname'), 'reviewer'],
-                [sequelize.col('book_detail.title'), 'book'],
-            ],
-            where: {
-                member_id : member_id,
-                status : 1,
-            },
-            offset : offset,
-            include : [ 
-                {
-                    model : member,
-                    as : "member",
-                    attributes : ['nickname'],
-                },
-                {
-                    model : book_detail,
-                    as : "book_detail",
-                    attributes : ['title'],
-                }
-            ]
-        });
-        const user = await member.findOne({
-            where: {
-                id : member_id,
-            }
-        });
-        const review_list = result.rows;
-        const total_count = result.count;
-        console.log(review_list);
-        
-        var pagination_html = helper_pagination.html(config_url.base_url + "admin/review/list/user", page, limit, total_count, {member_id: member_id});
-        res.render("admin/pages/member_review_list", {
-            "review_list" : review_list,
-            "total_count" : total_count,
-            "pagination_html"   : pagination_html,
-            "helper_security"   : helper_security,
-            "helper_date"       : helper_date,
-            "member"    : user,
-        });
-    }
-    catch(err){
-        logger.error(err);
-    }
-});
 
 router.get("/view/:reviewId", async(req, res, next) => {
     helper_activity.checkLogin(req, res, "/admin/review/view/" + req.params.reviewId);

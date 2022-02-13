@@ -6,13 +6,19 @@ var config_url = require("../../config/url");
 
 const logger = require('../../utils/winston_logger');
 
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
 var helper_pagination = require("../../helper/pagination");
 var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
 var helper_activity = require("../../helper/activity");
 
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
 
 const {purchase, book, member, book_detail} = require("../../models");
+
+const purchase_dir = adminPageDirPath + "purchase/";
 
 router.get("/", async(req, res, next) => {
 
@@ -70,7 +76,7 @@ router.get("/", async(req, res, next) => {
         var total_count = (count) ? count : 0;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/purchase/", page, limit, total_count, {member_id:member_id});
 
-        res.render("admin/pages/purchase_list", {
+        res.render(purchase_dir + "list", {
             "member_id"         : member_id,
             "limit"             : limit,
             "purchase_list"     : purchase_list,
@@ -84,55 +90,6 @@ router.get("/", async(req, res, next) => {
     }
 });
 
-router.get('/list/user', async(req, res, next) => {
-    helper_activity.checkLogin(req, res, "/admin/purchase/list/user/?member_id=" + req.query["member_id"]);
-    
-    var limit           = ("limit" in req.query) ? parseInt(req.query["limit"]) : 10;
-    var page            = ("page" in req.query) ? req.query["page"] : 1;
-    var offset          = parseInt(limit) * (parseInt(page)-1);
-    let member_id = req.query.member_id;
-
-    try{
-        const result = await purchase.findAndCountAll({
-            where: {
-                member_id : member_id,
-                status : 1,
-            },
-            offset: offset,
-            include : [ 
-                {
-                    model : member,
-                    as : "member",
-                    attributes : ['nickname'],
-                },
-                {
-                    model : book_detail, 
-                    as : "book_detail",
-                    attributes : ['title'],
-                }
-            ]
-        });
-        const user = await member.findOne({
-            where: {
-                id : member_id,
-            }
-        });
-        const purchase_list = result.rows;
-        const total_count = result.count;
-        var pagination_html = helper_pagination.html(config_url.base_url + "admin/purchase/list/user", page, limit, total_count, {member_id:member_id});
-        res.render("admin/pages/member_purchase_list", {
-            "purchase_list" : purchase_list,
-            "total_count" : total_count,
-            "pagination_html"   : pagination_html,
-            "helper_security"   : helper_security,
-            "helper_date"       : helper_date,
-            "member"    : user
-        })
-    }
-    catch(err){
-        logger.error(err);
-    }
-});
 
 router.post("/save/", async(req, res, next) => {
 

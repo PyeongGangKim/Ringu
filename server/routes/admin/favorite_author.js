@@ -8,8 +8,11 @@ var helper_pagination = require("../../helper/pagination");
 var helper_security = require("../../helper/security");
 var helper_date = require("../../helper/date");
 
-//var favorite_author_m = require("../../model/favorite_author");
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
 var favorite_author = require("../../models").favorite_author;
+
 
 router.post("/save/", async(req, res, next) => {
 

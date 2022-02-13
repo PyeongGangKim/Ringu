@@ -5,11 +5,17 @@ const logger = require('../../utils/winston_logger');
 
 const { checkLogin } = require("../../helper/activity");
 
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
+
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
 const { member,notiCount, notification, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 
+const notification_dir = adminPageDirPath + "notification/";
 
 router.post("/", async(req, res, next) => {
 
@@ -86,9 +92,10 @@ router.post("/", async(req, res, next) => {
         logger.error(err);
     }
 });
-router.get("/page", (req,res,next) => {
+
+router.get("/", (req,res,next) => {
     checkLogin(req, res, "/admin/notification/");
-    res.render("admin/pages/notify");
+    res.render(notification_dir + "create");
 })
 
 module.exports = router;

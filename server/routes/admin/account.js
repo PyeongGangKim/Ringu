@@ -1,13 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
-var config_url = require("../../config/url");
 const logger = require('../../utils/winston_logger');
 var helper_pagination = require("../../helper/pagination");
 
 const env = process.env.NODE_ENV !== "production" ? "development" : "production";
 const url = require("../../config/url")[env];
-
 
 const { checkLogin } = require("../../helper/activity");
 
@@ -16,7 +14,7 @@ const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
 const { member, author ,withdrawal, bank,account, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
 
-const accountDirPath = "account/";
+const accountDirPath = adminPageDirPath + "account/";
 
 router.get("/", async (req, res, next) => {
     
@@ -70,7 +68,7 @@ router.get("/", async (req, res, next) => {
         });
         
         let total_count = count;
-        let renderingPage = adminPageDirPath +  accountDirPath + "list";
+        let renderingPage = accountDirPath + "list";
         let pagination_html = helper_pagination.html(url.base_url + "admin/book/account/", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
@@ -117,7 +115,7 @@ router.get("/:accountId/transfer", async(req, res, next) => {
             ]
         });
 
-        res.render(adminPageDirPath + accountDirPath + "transfer", {
+        res.render(accountDirPath + "transfer", {
             "account" : findedAccount
         });
     }
@@ -127,15 +125,10 @@ router.get("/:accountId/transfer", async(req, res, next) => {
     
 });
 
-
+/*
 router.post("/:accountId/transfer", async(req, res, next) => {
     
-    //parameter 체크
-    /**
-     * account에는 total_earned_mony와 amount_available_withdrwal, request_withdrawal_amount
-     * 들어온 request_withdrawal, 어드민이 보낸 earned-money크기와 비교
-     * earned_money가 integer값인지 확인
-     */
+    
     console.log(req.body);
     let sent_money = req.body.sent_money;
     let id = req.params.accountId;
@@ -171,13 +164,12 @@ router.post("/:accountId/transfer", async(req, res, next) => {
         });
 
 
-        res.redirect(url.base_url + "admin/" + accountDirPath);
+        res.redirect(url.base_url + "admin/account");
     }
     catch(err){
         logger.error(err.stack)
     }
     
 });
-
-
+*/
 module.exports = router;

@@ -6,7 +6,10 @@ var config_url = require("../../config/url");
 var helper_pagination = require("../../helper/pagination");
 var helper_date = require("../../helper/date");
 const { checkLogin } = require("../../helper/activity");
-const {base_url} = require("../../config/url");
+
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
 const logger = require('../../utils/winston_logger');
 const { uploadFile, deleteFile, downloadFile } = require("../../middlewares/third_party/aws");
 
@@ -14,6 +17,10 @@ const { book, notiCount, favorite_author ,notification, category, member, book_d
 const { StatusCodes } = require("http-status-codes");
 const { dontKnowTypeStringOrNumber } = require("../../helper/typeCompare");
 const helper_url = require("../../../client/src/helper/helper_url");
+
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
+
+const book_dir = adminPageDirPath + "book/";
 
 router.get("/", async (req, res, next) => {
     
@@ -91,9 +98,9 @@ router.get("/", async (req, res, next) => {
         });
         let total_count = count;
         let renderingPage = "";
-        renderingPage = (dontKnowTypeStringOrNumber(fields.is_recommending_phrase, 1)) ? "admin/pages/bookRecommendingPhraseList" : renderingPage;
-        renderingPage = (dontKnowTypeStringOrNumber(fields.is_picked, 1)) ? "admin/pages/pickedBookList" : renderingPage;
-        let pagination_html = helper_pagination.html(config_url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
+        renderingPage = (dontKnowTypeStringOrNumber(fields.is_recommending_phrase, 1)) ? adminPageDirPath + "recommending_phrase/" + "list" : renderingPage;
+        renderingPage = (dontKnowTypeStringOrNumber(fields.is_picked, 1)) ? adminPageDirPath + "picked/" + "list"  : renderingPage;
+        let pagination_html = helper_pagination.html(url.base_url + "admin/book/?is_approved=" + fields.is_approved, page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
             "book_list"       : rows,
@@ -160,8 +167,8 @@ router.get("/serialization/cover", async (req, res, next) => {//연재본 커버
             ]
         });
         var total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_serialization_cover_list" : (dontKnowTypeStringOrNumber(fields.is_approved,0)) ? "admin/pages/unapproved_serialization_cover_list" : "admin/pages/notApproved_serialization_cover_list"  ; 
-        var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization", page, limit, total_count, fields);
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? book_dir + "serialization/" + "cover/" + "approved_list" : (dontKnowTypeStringOrNumber(fields.is_approved,0)) ? book_dir + "serialization/" + "cover/" + "unapproved_list" : book_dir + "serialization/" + "cover/" + "notApproved_list"  ; 
+        var pagination_html = helper_pagination.html(url.base_url + "admin/book/serialization", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
             "book_list"       : rows,
@@ -198,7 +205,7 @@ router.get("/serialization/:serializationId", async(req, res, next) => {//cover 
                 }
             ]
         });
-        res.render("admin/pages/serialization_cover_view", {
+        res.render(book_dir + "serialization/" + "cover/" + "view", {
                 "book"                  : findedBook,
                 "helper_date"           : helper_date,
         });
@@ -246,8 +253,8 @@ router.get("/serialization/content/list", async(req, res, next) => {//content �
                 },
             ]
         });
-        var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/serialization/content/list", page, limit, count, serialization_book_id);
-        res.render("admin/pages/serialization_content_list", {
+        var pagination_html = helper_pagination.html(url.base_url + "admin/book/serialization/content/list", page, limit, count, serialization_book_id);
+        res.render(book_dir + "serialization/" + "content/" + "list", {
             "total_count"       : count,
             "pagination_html"   : pagination_html,
             "contents"               : rows,
@@ -272,7 +279,7 @@ router.get("/serialization/content/:bookId", async (req, res, next) => {//conten
                 id : id,
             }
         });
-        res.render("admin/pages/serialization_content_view", {
+        res.render(book_dir + "serialization/" + "content/" + "view", {
                 "book"                  : findedBook,
                 "helper_date"           : helper_date,
         });
@@ -285,7 +292,7 @@ router.get("/serialization/content/:bookId", async (req, res, next) => {//conten
 
 router.get("/serialization/cover/info/create/", (req, res, next) => {
     
-    res.render("admin/pages/serialization_cover_create");
+    res.render(book_dir + "serialization/" + "cover/" + "create");
 });
 
 router.post("/serialization/cover", uploadFile, async (req, res, next) => {//생성하는 페이지가 다르니 굳이 붙여서 할 필요는 없을 듯, 연재본 페이지
@@ -334,7 +341,7 @@ router.post("/serialization/cover", uploadFile, async (req, res, next) => {//생
                 }
             ]
         })
-        res.render("admin/pages/serialization_cover_view",{
+        res.render(book_dir + "serialization/" + "cover/" + "view",{
             "book"                  : result,
             "helper_date"           : helper_date,
         });
@@ -346,7 +353,7 @@ router.post("/serialization/cover", uploadFile, async (req, res, next) => {//생
 
 router.get("/serialization/content/info/create/", (req, res, next) => {
     
-    res.render("admin/pages/serialization_content_create",{
+    res.render(book_dir + "serialization/" + "content/" + "create",{
         "serialization_book_id" : req.query.id,
     });
 });
@@ -376,7 +383,7 @@ router.post("/serialization/content", uploadFile, async (req, res, next) => {
                 }
             });
         }
-        res.render("admin/pages/serialization_content_view",{
+        res.render(book_dir + "serialization/" + "content/" + "view",{
             "book"                  : result,
             "helper_date"           : helper_date,
         });
@@ -454,8 +461,8 @@ router.get("/singlePublished", async (req, res, next) => {//단행본 가져오�
             ]
         });
         var total_count = count;
-        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/approved_single_published_book_list" : (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? "admin/pages/unapproved_single_published_book_list" : "admin/pages/notApproved_single_published_book_list" ; 
-        var pagination_html = helper_pagination.html(config_url.base_url + "admin/book/singlePublished", page, limit, total_count, fields);
+        let renderingPage = (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? book_dir + "single_published/" + "approved_list" : (dontKnowTypeStringOrNumber(fields.is_approved,1)) ? book_dir + "single_published/" + "unapproved_list" : book_dir + "single_published/" + "notApproved_list" ; 
+        var pagination_html = helper_pagination.html(url.base_url + "admin/book/singlePublished", page, limit, total_count, fields);
         res.render(renderingPage, {
             "fields"      : fields,
             "book_list"       : rows,
@@ -510,7 +517,7 @@ router.get("/singlePublished/:singlePublished", async (req, res, next) => {
                 }
             ]
         });
-        res.render("admin/pages/single_published_book_view", {
+        res.render(book_dir + "single_published/" + "view", {
                 "book"                  : findedBook,
                 "helper_date"           : helper_date,
         });
@@ -580,7 +587,7 @@ router.post("/singlePublished", uploadFile, async (req, res, next) => {
                 }
             ]
         })
-        res.render("admin/pages/single_published_book_view",{
+        res.render(book_dir + "single_published/" + "view",{
             "book"                  : result,
             "helper_date"           : helper_date,
         });
@@ -639,7 +646,7 @@ router.get("/unapproved/reason", async (req, res, next) => {
                 id : book_id
             }
         });
-        res.render("admin/pages/reject_approving_book",{
+        res.render(book_dir + "reject_approving_book",{
             "book"                  : rejecting_book,
             "helper_date"           : helper_date,
         });
@@ -851,7 +858,7 @@ router.get('/:bookId/update-charge/page', async(req,res,next) => {
                 id : book_id,
             }
         });
-        res.render("admin/pages/book_charge_update", {
+        res.render(book_dir + "charge_update", {
             "book": updatedBook,
             "helper_date": helper_date,
         });
@@ -937,7 +944,7 @@ router.post('/:bookDetailId/update', async(req, res, next) => {
                     id: book_detail_id,
                 }
             });
-            res.render("admin/pages/book_detail_update", {
+            res.render(book_dir + "detail_update", {
                 "book": updatedBook,
                 "helper_date": helper_date,
             });
@@ -956,7 +963,7 @@ router.get('/:bookId/pickedForm', async(req, res, next) => {
                 id: book_id,
             }
         });
-        res.render("admin/pages/pickedForm",{
+        res.render(adminPageDirPath + "picked/" + "create",{
             book: pickedBook,
         });
     }
@@ -972,7 +979,7 @@ router.get('/:bookId/bookRecommendingPhraseForm', async(req, res, next) => {
                 id: book_id,
             }
         });
-        res.render("admin/pages/bookRecommendingPhraseForm",{
+        res.render(adminPageDirPath + "recommending_phrase/" + "create",{
             book: recommendingBook,
         });
     }
@@ -998,8 +1005,8 @@ router.post('/:bookId/picked', async (req,res,next) => {
                 }
             }
         );
-        const url = base_url + "admin/book/?is_picked=1"  
-        res.redirect(url);
+        const redirectUrl = url.base_url + "admin/book/?is_picked=1"  
+        res.redirect(redirectUrl);
     }  
     catch(err){
         logger.error(err);
@@ -1023,8 +1030,8 @@ router.post('/:bookId/recommendingPhrase', async (req,res,next) => {
                 }
             }
         );
-        const url = base_url + "admin/book/?is_recommending_phrase=1"  
-        res.redirect(url);
+        const redirectUrl = url.base_url + "admin/book/?is_recommending_phrase=1"  
+        res.redirect(redirectUrl);
     }  
     catch(err){
         logger.error(err);
@@ -1048,8 +1055,8 @@ router.get('/:bookId/unpicked', async (req,res,next) => {
                 }
             }
         );
-        const url = base_url + "admin/book/?is_picked=1"  
-        res.redirect(url);
+        const redirectUrl = url.base_url + "admin/book/?is_picked=1"  
+        res.redirect(redirectUrl);
     }  
     catch(err){
         logger.error(err);
@@ -1073,8 +1080,8 @@ router.get('/:bookId/unrecommendingPhrase', async (req,res,next) => {
                 }
             }
         );
-        const url = base_url + "admin/book/?is_picked=1"  
-        res.redirect(url);
+        const redirectUrl = url.base_url + "admin/book/?is_picked=1"  
+        res.redirect(redirectUrl);
     }  
     catch(err){
         logger.error(err);
@@ -1104,8 +1111,8 @@ router.get('/download/:bookDetailId', async (req,res,next) => {
                 }
             ],
         });
-        const url = downloadFile(type, result.dataValues[type]);
-        res.redirect(url);
+        const redirectUrl = downloadFile(type, result.dataValues[type]);
+        res.redirect(redirectUrl);
 
     }
     catch(err){ 

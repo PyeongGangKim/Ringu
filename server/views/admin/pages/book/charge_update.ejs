@@ -1,0 +1,17 @@
+<%- include("../../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>charge 변경</h2>
+    </div>
+    <div class="panel-body padTopNone">
+        <form method="POST" action="/admin/book/<%=book.id%>/update-charge">
+            <div class="form-group">
+                <label>charge</label>
+                <input type="number" class="form-control" name="charge" value="<%=book.charge%>">
+            </div>
+            <button type="submit" class="btn btn-primary">변경하기</button>
+        </form>
+    </div>
+</div>
+<%- include("../../templates/foot"); %>
