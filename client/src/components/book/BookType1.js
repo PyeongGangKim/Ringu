@@ -371,7 +371,7 @@ class BookType1 extends Component {
                                                         <tr key={i}>
                                                             <td>
                                                                 {
-                                                                    (state.isAuthor === false && item.purchases.length === 0 && item.round !== 1) ?
+                                                                    (state.isAuthor === false && !item.purchased_id && item.round !== 1) ?
                                                                     <label className="cb-container">
                                                                         <input type="checkbox" checked={!!state.selected[item.id]} onChange={this.handleSelect} value={i} />
                                                                         <span className="checkmark"/>
@@ -400,7 +400,7 @@ class BookType1 extends Component {
                                                                 !state.isAuthor &&
                                                                 <td>
                                                                     {
-                                                                        !!item.purchases.length || item.round === 1 ?
+                                                                        !!item.purchased_id || item.round === 1 ?
                                                                         <em className="download" onClick={() => this.downloadAction(item.id, item.round === 1 ? true : false)} />
                                                                         :
                                                                         <em className="lock"/>

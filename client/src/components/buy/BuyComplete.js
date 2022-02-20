@@ -25,8 +25,6 @@ class BuyComplete extends Component {
             fn: propsState.pay_method === 'EPAY' ? payment.epayCode[propsState.fn] : propsState.fn,
             amount: propsState.amount,
         }
-
-        console.log(this.state)
     }
 
     render() {
