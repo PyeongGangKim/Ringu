@@ -157,6 +157,7 @@ module.exports = {
         },
         buy: {
             buy                 : "/buy",
+            callback            : "/buy/callback",
             complete            : "/complete",
         },
         home                    : "/",

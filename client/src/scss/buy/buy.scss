@@ -91,7 +91,7 @@
     #buy-detail-area {
         display: flex;
         justify-content: space-between;
-        height: 330px;
+        height: 400px;
 
         #detail-box {
             width: 750px;
@@ -104,11 +104,18 @@
         .header {
             font-size: 20px;
             font-weight: 600;
-            padding-top: 20px;
         }
 
         .content {
-            margin: 60px;
+            margin: 50px 60px;
+            display: flex;
+            justify-content: space-between;
+
+            label {
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+            }
 
             table {
                 width:100%;
@@ -176,14 +183,10 @@
             text-align: center;
 
             input[type="radio"] {
-                display:inline-block;
-                opacity: 0;
-                width: 0;
-                height: 0;
-                position: absolute;
-                z-index: -1;
-                vertical-align: top;
-                margin: 0;
+                display:inline-block;                
+                position: absolute;                
+                vertical-align: middle;
+                cursor: pointer;
             }
 
             label {
@@ -219,8 +222,6 @@
         }
 
         .detail-price {
-
-
             dl {
                 position: relative;
                 font-weight: 600;
@@ -257,11 +258,10 @@
         }
 
         .agree-txt {
-            font-size: 15px;
-            margin-top: 30px;
-            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 20px;
             position: relative;
-            padding-left: 30px;
 
             label, input {
                 cursor: pointer;
@@ -271,7 +271,8 @@
         .payment-btn {
             font-size: 20px;
             border-radius: 8px;
-            width: 100%;
+            width: 300px;
+            margin: 30px auto;
         }
     }
 }

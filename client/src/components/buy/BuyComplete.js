@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
 import URL from '../../helper/helper_url';
+import API from '../../utils/apiutils';
 import parse from '../../helper/parse';
+import payment from '../../helper/payment';
 import User from '../../utils/user';
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
@@ -13,14 +15,18 @@ class BuyComplete extends Component {
         super(props)
         let userInfo = User.getInfo();
 
+        this.data = new URLSearchParams(this.props.search)
+        
         var propsState = this.props.history.location.state;
 
         this.state = {
-            //purchaseList: 'purchaseList' in propsState && typeof propsState['purchaseList'] !== 'undefined' ? propsState.purchaseList : [],
-            user: 'user' in propsState && typeof propsState['user'] !== 'undefined' ? propsState.user : userInfo,
-            amount: 'amount' in propsState && typeof propsState['amount'] !== 'undefined' ? propsState.amount : 0,
-            card: 'card' in propsState && typeof propsState['card'] !== 'undefined' ? propsState.card : '',
+            user: propsState.user,
+            method: payment.method[propsState.pay_method],
+            fn: propsState.pay_method === 'EPAY' ? payment.epayCode[propsState.fn] : propsState.fn,
+            amount: propsState.amount,
         }
+
+        console.log(this.state)
     }
 
     render() {
@@ -32,7 +38,7 @@ class BuyComplete extends Component {
                     <h3 className="header">결제/주문완료</h3>
                     <div className="complete-box">
                         <div className="content">
-                            <span className="nickname">{state.user.nickname}</span>님, 주문하신 상품의 결제가 완료되었습니다.
+                            <span className="nickname">{state.user}</span>님, 주문하신 상품의 결제가 완료되었습니다.
                             <br/>
                             지금 바로 책을 펴보실 수 있어요!
 
@@ -113,7 +119,7 @@ class BuyComplete extends Component {
                                 <td>결제수단</td>
                                 <td>
                                     <div>
-                                        {state.card}
+                                        {`${state.method} - ${state.fn}`}
                                     </div>
                                 </td>
                             </tr>
