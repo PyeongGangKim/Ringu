@@ -16,6 +16,7 @@ export { default as ModifyBookSeriesPage } from './ModifyBookSeriesPage';
 export { default as RegisterPage } from './RegisterPage';
 export { default as RegisterDetailPage } from './RegisterDetailPage';
 export { default as BuyPage } from './BuyPage';
+export { default as BuyCallbackPage } from './BuyCallbackPage';
 export { default as BuyCompletePage } from './BuyCompletePage';
 export { default as SearchPage } from './SearchPage';
 export { default as LoginPage } from './LoginPage';

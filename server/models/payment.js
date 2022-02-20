@@ -9,112 +9,59 @@ module.exports = function(sequelize, DataTypes) {
     },
     member_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'member',
         key: 'id'
       }
     },
-    book_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'book',
-        key: 'id'
-      }
-    },
-    book_detail_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'book_detail',
-        key: 'id'
-      }
-    },
-    bank_name: {
-      type: DataTypes.STRING(20),
-      allowNull: true
-    },
-    card_code: {
-      type: DataTypes.STRING(3),
-      allowNull: true
-    },
-    card_name: {
-      type: DataTypes.STRING(20),
-      allowNull: true
-    },
-    card_number: {
-      type: DataTypes.STRING(16),
-      allowNull: true
-    },
-    card_type: {
-      type: DataTypes.TINYINT,
-      allowNull: true
-    },
-    currency: {
+    pay_method: {
       type: DataTypes.STRING(10),
-      allowNull: true
+      allowNull: false
     },
-    uid: {
-      type: DataTypes.STRING(20),
-      allowNull: true
+    mid: {
+      type: DataTypes.STRING(10),
+      allowNull: false
+    },
+    tid: {
+      type: DataTypes.STRING(30),
+      allowNull: false
     },
     paid_amount: {
       type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    pay_method: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-      primaryKey: true
-    },
-    receipt_url: {
-      type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    status: {
-      type: DataTypes.STRING(10),
-      allowNull: true
-    },
-    pg: {
-      type: DataTypes.STRING(45),
-      allowNull: true
-    },
-    merchant_uid: {
-      type: DataTypes.STRING(45),
-      allowNull: true
+      allowNull: false
     },
     buyer_name: {
       type: DataTypes.STRING(20),
-      allowNull: true
+      allowNull: false
     },
-    buyer_tel: {
-      type: DataTypes.STRING(10),
-      allowNull: true
+    item_name: {
+      type: DataTypes.STRING(40),
+      allowNull: false
+    },
+    moid: {
+      type: DataTypes.STRING(40),
+      allowNull: false
+    },
+    auth_date: {
+      type: DataTypes.STRING(12),
+      allowNull: false
+    },
+    auth_code: {
+      type: DataTypes.STRING(20),
+      allowNull: false
+    },
+    result_code: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    result_msg: {
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     buyer_email: {
       type: DataTypes.STRING(20),
-      allowNull: true
-    },
-    buyer_addr: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    buyer_postcode: {
-      type: DataTypes.STRING(5),
-      allowNull: true
-    },
-    item_name: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    tax_free_amount: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     created_date_time: {
       type: DataTypes.DATE,
@@ -126,6 +73,42 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     failed_at: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    fn_cd: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    fn_name: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    acqu_cd: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    acqu_name: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    quota: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    bank_cd: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    receipt_type: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    buyer_num: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    epay_cl: {
       type: DataTypes.INTEGER,
       allowNull: true
     }
@@ -140,21 +123,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-          { name: "pay_method" },
-        ]
-      },
-      {
-        name: "author_book_id_fk_idx",
-        using: "BTREE",
-        fields: [
-          { name: "book_id" },
-        ]
-      },
-      {
-        name: "payment_book_detail_id_fk_idx",
-        using: "BTREE",
-        fields: [
-          { name: "book_detail_id" },
         ]
       },
       {
