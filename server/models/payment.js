@@ -19,11 +19,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(10),
       allowNull: false
     },
-    MID: {
+    mid: {
       type: DataTypes.STRING(10),
       allowNull: false
     },
-    TID: {
+    tid: {
       type: DataTypes.STRING(30),
       allowNull: false
     },
@@ -39,7 +39,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(40),
       allowNull: false
     },
-    MOID: {
+    moid: {
       type: DataTypes.STRING(40),
       allowNull: false
     },
