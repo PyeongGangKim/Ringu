@@ -20,7 +20,7 @@ const { book, purchase, favorite_author ,review, favorite_book, member, reward_s
 const member_dir = adminPageDirPath + "member/";
 
 router.get("/", async(req, res, next) => {
-    helper_activity.checkLogin(req, res, "/admin/member/");
+//    helper_activity.checkLogin(req, res, "/admin/member/");
 
     var order_by        = ("order_by" in req.query) ? req.query["order_by"] : "id";
     var order_direction = ("order_direction" in req.query) ? req.query["order_direction"] : "desc";

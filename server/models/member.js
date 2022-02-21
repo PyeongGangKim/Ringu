@@ -9,8 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     email: {
       type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: "email"
+      allowNull: false
     },
     password: {
       type: DataTypes.STRING(100),
@@ -78,23 +77,19 @@ module.exports = function(sequelize, DataTypes) {
     },
     kakao_id: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      unique: "kakao_id_UNIQUE"
+      allowNull: true
     },
     naver_id: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      unique: "naver_id_UNIQUE"
+      allowNull: true
     },
     google_id: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      unique: "google_id_UNIQUE"
+      allowNull: true
     },
     facebook_id: {
       type: DataTypes.STRING(100),
-      allowNull: true,
-      unique: "facebook_id_UNIQUE"
+      allowNull: true
     }
   }, {
     sequelize,
@@ -107,46 +102,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id" },
-        ]
-      },
-      {
-        name: "email",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "email" },
-        ]
-      },
-      {
-        name: "kakao_id_UNIQUE",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "kakao_id" },
-        ]
-      },
-      {
-        name: "facebook_id_UNIQUE",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "facebook_id" },
-        ]
-      },
-      {
-        name: "google_id_UNIQUE",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "google_id" },
-        ]
-      },
-      {
-        name: "naver_id_UNIQUE",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "naver_id" },
         ]
       },
     ]

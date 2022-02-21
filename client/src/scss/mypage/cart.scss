@@ -9,13 +9,13 @@
         position: relative;
         border-bottom:1px solid #ccc;
 
-        input[type="checkbox"] {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            margin: 0 40px;
-            border: 2px solid #bcbcbc;
-            cursor: pointer;
+        .cb-container {
+            margin: 0 30px;
+
+            .checkmark:after {
+                left: 5px;
+                top: 2px;
+            }
         }
 
         img {

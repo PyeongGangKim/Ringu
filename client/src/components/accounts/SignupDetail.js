@@ -31,6 +31,14 @@ class SignupDetail extends Component {
             timer: {min: 0, sec:0, active: false, clear: false},
             timeout: false,
             naver: null,
+            passwordType1: {
+                type: 'password',
+                visible: false
+            },
+            passwordType2: {
+                type: 'password',
+                visible: false
+            }
         };
     }
 
@@ -343,6 +351,34 @@ class SignupDetail extends Component {
         }
     }
 
+    handlePasswordType1 = () => {
+        var state = this.state;        
+
+        if(!state.passwordType1.visible) {
+            state.passwordType1.type = 'text'
+            state.passwordType1.visible = true
+        } else {
+            state.passwordType1.type = 'password'
+            state.passwordType1.visible = false
+        }
+
+        this.setState(state)
+    }
+
+    handlePasswordType2 = () => {
+        var state = this.state;        
+
+        if(!state.passwordType2.visible) {
+            state.passwordType2.type = 'text'
+            state.passwordType2.visible = true
+        } else {
+            state.passwordType2.type = 'password'
+            state.passwordType2.visible = false
+        }
+
+        this.setState(state)
+    }
+
     render() {
         var state = this.state;
 
@@ -359,7 +395,7 @@ class SignupDetail extends Component {
                         </button>
                         {
                             state.email.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.email.msg}</span>
                             </div>
                         }
@@ -389,7 +425,7 @@ class SignupDetail extends Component {
 
                             {
                                 state.emailCode.msg &&
-                                <div className="error-wrap">
+                                <div className="info info-error">
                                     <span>{state.emailCode.msg}</span>
                                 </div>
                             }
@@ -409,7 +445,7 @@ class SignupDetail extends Component {
                         </button>
                         {
                             state.nickname.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.nickname.msg}</span>
                             </div>
                         }
@@ -419,22 +455,24 @@ class SignupDetail extends Component {
                 <div className="header"> 비밀번호 </div>
                 <div className="password-wrap">
                     <div id="password" className="form-group">
-                        <input type="password" name="password" autoComplete="off" className="input" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
+                        <input type={state.passwordType1.type} name="password" autoComplete="off" className="input" placeholder="비밀 번호를 입력해주세요." value={state.password.val} onChange={this.handlePasswordChange}/>
                         {
                             state.password.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.password.msg}</span>
                             </div>
                         }
+                        <em class={state.passwordType1.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType1}/>
                     </div>
                     <div id="password-confirm" className="form-group">
-                        <input type="password" name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
+                        <input type={state.passwordType2.type} name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
                         {
                             state.passwordCheck.msg &&
-                            <div className="error-wrap">
+                            <div className="info info-error">
                                 <span>{state.passwordCheck.msg}</span>
                             </div>
                         }
+                        <em class={state.passwordType2.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType2}/>
                     </div>
                 </div>
 
@@ -442,8 +480,9 @@ class SignupDetail extends Component {
                 <div className="terms-wrap">
                     <div className="terms-box">
                         <div className="checkbox-wrap all">
-                            <input type="checkbox" id="agree-all" onClick={this.handleCheckAll} checked={state.ageCheck && state.serviceAgree && state.eventAgree && state.infoAgree && state.activeAgree }/>
-                            <label htmlFor="agree-all" >
+                            <label htmlFor="agree-all" className="cb-container" >
+                                <input type="checkbox" id="agree-all" onClick={this.handleCheckAll} checked={state.ageCheck && state.serviceAgree && state.eventAgree && state.infoAgree && state.activeAgree }/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     모두 동의합니다.
                                 </div>
@@ -453,8 +492,9 @@ class SignupDetail extends Component {
                         <hr/>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-age" onClick={this.handleAgeCheck} checked={state.ageCheck}/>
-                            <label htmlFor="agree-age" >
+                            <label htmlFor="agree-age" className="cb-container">
+                                <input type="checkbox" id="agree-age" onClick={this.handleAgeCheck} checked={state.ageCheck}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     만 14세 이상입니다.
                                     <span className="red">(필수)</span>
@@ -463,8 +503,9 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={state.serviceAgree}/>
-                            <label htmlFor="agree-service">
+                            <label htmlFor="agree-service" className="cb-container" >
+                                <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={state.serviceAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     <Link to={URL.service.terms + 'using'} target="_blank" rel="noopener noreferrer"><u>서비스 이용약관</u></Link>에 동의합니다.
                                     <span className="red">(필수)</span>
@@ -473,8 +514,9 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={state.infoAgree}/>
-                            <label htmlFor="agree-info">
+                            <label htmlFor="agree-info" className="cb-container" >
+                                <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={state.infoAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     <Link to={URL.service.terms + 'personal'} target="_blank" rel="noopener noreferrer"><u>개인정보 수집/이용</u></Link>에 동의합니다.
                                     <span className="red">(필수)</span>
@@ -483,8 +525,9 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-event" onClick={this.handleEventAgree} checked={state.eventAgree}/>
-                            <label htmlFor="agree-event">
+                            <label htmlFor="agree-event" className="cb-container">
+                                <input type="checkbox" id="agree-event" onClick={this.handleEventAgree} checked={state.eventAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     이벤트 할인 혜택 수신에 동의합니다.(선택)
                                 </div>
@@ -492,8 +535,9 @@ class SignupDetail extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-active" onClick={this.handleActiveAgree} checked={state.activeAgree}/>
-                            <label htmlFor="agree-active">
+                            <label htmlFor="agree-active" className="cb-container" >
+                                <input type="checkbox" id="agree-active" onClick={this.handleActiveAgree} checked={state.activeAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     장기 미접속 시 계정 활성 상태 유지합니다.(선택)
                                 </div>

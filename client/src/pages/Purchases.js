@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 import SideMemberInfo from '../components/common/SideMemberInfo';
-import SideNav from '../components/mypage/SideNav';
+import SideNav from '../components/common/SideNav';
 import Purchase from '../components/mypage/Purchase';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
@@ -20,7 +20,7 @@ class Purchases extends Component {
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
                         <SideMemberInfo isAuthor={false}/>
-                        <SideNav path={this.props.location.pathname}/>
+                        <SideNav path={this.props.location.pathname + this.props.location.search}/>
                     </div>
                     <Purchase/>
                 </div>

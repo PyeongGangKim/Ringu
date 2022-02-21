@@ -182,12 +182,14 @@ class SignupDetailSNS extends Component {
     }
 
     render() {
+        var state = this.state;
+
         return (
             <div className="signup-content">
                 <div className="header"> 이메일 </div>
                 <div className="email-wrap">
                     <div id="email" className="form-group">
-                        <input type="email" name="email" autoComplete="off" value={this.state.email} className="input" disabled/>
+                        <input type="email" name="email" autoComplete="off" value={state.email} className="input" disabled/>
 
                     </div>
                 </div>
@@ -195,16 +197,16 @@ class SignupDetailSNS extends Component {
                 <div className="header"> 닉네임 </div>
                 <div className="nickname-wrap">
                     <div id="nickname" className="form-group">
-                        <input type="text" name="nickname" autoComplete="off" className="input" placeholder="닉네임을 입력해주세요." value={this.state.nickname.val} onChange={this.handleNicknameChange}/>
-                        <button className="btn"  disabled={!this.state.nickname.btn} onClick={this.verifyNickname}>
+                        <input type="text" name="nickname" autoComplete="off" className="input" placeholder="닉네임을 입력해주세요." value={state.nickname.val} onChange={this.handleNicknameChange}/>
+                        <button className="btn"  disabled={!state.nickname.btn} onClick={this.verifyNickname}>
                             {
-                                this.state.nickname.clear === true ? "확인완료" : "중복확인"
+                                state.nickname.clear === true ? "확인완료" : "중복확인"
                             }
                         </button>
                         {
                             this.state.nickname.msg &&
-                            <div className="error-wrap">
-                                <span>{this.state.nickname.msg}</span>
+                            <div className="info info-error">
+                                <span>{state.nickname.msg}</span>
                             </div>
                         }
                     </div>
@@ -214,8 +216,9 @@ class SignupDetailSNS extends Component {
                 <div className="terms-wrap">
                     <div className="terms-box">
                         <div className="checkbox-wrap all">
-                            <input type="checkbox" id="agree-all" onClick={this.handleCheckAll} checked={this.state.ageCheck && this.state.serviceAgree && this.state.eventAgree && this.state.infoAgree && this.state.activeAgree }/>
-                            <label htmlFor="agree-all" >
+                            <label htmlFor="agree-all" className="cb-container" >
+                                <input type="checkbox" id="agree-all" onClick={this.handleCheckAll} checked={state.ageCheck && state.serviceAgree && state.eventAgree && state.infoAgree && state.activeAgree }/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     모두 동의합니다.
                                 </div>
@@ -225,8 +228,9 @@ class SignupDetailSNS extends Component {
                         <hr/>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-age" onClick={this.handleAgeCheck} checked={this.state.ageCheck}/>
-                            <label htmlFor="agree-age" >
+                            <label htmlFor="agree-age" className="cb-container">
+                                <input type="checkbox" id="agree-age" onClick={this.handleAgeCheck} checked={state.ageCheck}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     만 14세 이상입니다.
                                     <span className="red">(필수)</span>
@@ -235,28 +239,31 @@ class SignupDetailSNS extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={this.state.serviceAgree}/>
-                            <label htmlFor="agree-service">
+                            <label htmlFor="agree-service" className="cb-container" >
+                                <input type="checkbox" id="agree-service" onClick={this.handleServiceAgree} checked={state.serviceAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
-                                    <a href=""><u>서비스 이용약관</u></a>에 동의합니다.
+                                    <Link to={URL.service.terms + 'using'} target="_blank" rel="noopener noreferrer"><u>서비스 이용약관</u></Link>에 동의합니다.
                                     <span className="red">(필수)</span>
                                 </div>
                             </label>
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={this.state.infoAgree}/>
-                            <label htmlFor="agree-info">
+                            <label htmlFor="agree-info" className="cb-container" >
+                                <input type="checkbox" id="agree-info" onClick={this.handleInfoAgree} checked={state.infoAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
-                                    <a href=""><u>개인정보 수집/이용</u></a>에 동의합니다.
+                                    <Link to={URL.service.terms + 'personal'} target="_blank" rel="noopener noreferrer"><u>개인정보 수집/이용</u></Link>에 동의합니다.
                                     <span className="red">(필수)</span>
                                 </div>
                             </label>
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-event" onClick={this.handleEventAgree} checked={this.state.eventAgree}/>
-                            <label htmlFor="agree-event">
+                            <label htmlFor="agree-event" className="cb-container">
+                                <input type="checkbox" id="agree-event" onClick={this.handleEventAgree} checked={state.eventAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     이벤트 할인 혜택 수신에 동의합니다.(선택)
                                 </div>
@@ -264,8 +271,9 @@ class SignupDetailSNS extends Component {
                         </div>
 
                         <div className="checkbox-wrap">
-                            <input type="checkbox" id="agree-active" onClick={this.handleActiveAgree} checked={this.state.activeAgree}/>
-                            <label htmlFor="agree-active">
+                            <label htmlFor="agree-active" className="cb-container" >
+                                <input type="checkbox" id="agree-active" onClick={this.handleActiveAgree} checked={state.activeAgree}/>
+                                <span className="checkmark"/>
                                 <div className="checkbox-text">
                                     장기 미접속 시 계정 활성 상태 유지합니다.(선택)
                                 </div>
@@ -275,7 +283,7 @@ class SignupDetailSNS extends Component {
                 </div>
 
 
-                <button className="btn signup-btn" disabled={!(this.state.nickname.clear && this.state.ageCheck && this.state.serviceAgree && this.state.infoAgree)} onClick={this.handleSubmit}>
+                <button className="btn signup-btn" disabled={!(state.nickname.clear && state.ageCheck && state.serviceAgree && state.infoAgree)} onClick={this.handleSubmit}>
                     가입완료!
                 </button>
 

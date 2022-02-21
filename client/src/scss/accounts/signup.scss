@@ -194,6 +194,17 @@
 
                     }
 
+                    .cb-container {
+                        .checkmark {
+                            margin: 0;
+                        }
+
+                        .checkmark:after {
+                            left: 5px;
+                            top: 5px;
+                        }
+                    }
+
                     .checkbox-wrap {
                         font-size: 14px;
                         font-weight: 500;
@@ -204,7 +215,7 @@
                         }
 
                         .checkbox-text {
-                            padding-left: 30px;
+                            padding-left: 5px;
 
                             u {
                                 text-decoration: underline;
@@ -221,11 +232,19 @@
                             height: 30px;
                         }
 
-                        .checkbox-text {
-                            padding-left: 40px;
+                        .checkmark { 
+                            width: 20px;
+                            height: 20px;
+                        }
+
+                        .checkmark:after {
+                            left: 6px;
+                            top: 5px;
+                            width: 9px;
+                            height: 15px;
+                            border-width: 0 4px 4px 0;
                         }
                     }
-
                 }
             }
         }

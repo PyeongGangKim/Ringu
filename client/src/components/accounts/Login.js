@@ -29,7 +29,7 @@ class Login extends Component {
 
         this.state = {
             ui: {
-
+                
             },
             data: {
                 id:"",
@@ -113,6 +113,7 @@ class Login extends Component {
     }
 
     render() {
+        var state = this.state;
 
         return (
             <div className="page3">
@@ -124,7 +125,7 @@ class Login extends Component {
                             </div>
 
                             <div id="password-form" className="form-group">
-                                <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>
+                                <input type="password" name="password" autoComplete="off" className="input" ref="password" placeholder="비밀번호를 입력해주세요."/>                                
                             </div>
 
                             <button className="btn btn-block btn-login">
@@ -134,17 +135,18 @@ class Login extends Component {
 
                         <div className="login-settings">
                             <div className="checkbox-wrap">
-                                <input type="checkbox" id="remember"/>
-                                <label htmlFor="remember">
+                                <label htmlFor="remember" className="cb-container" >
+                                    <input type="checkbox" id="remember"/>
+                                    <span className="checkmark"/>
                                     <span className="checkbox-text">
                                         로그인 상태 유지
                                     </span>
                                 </label>
                             </div>
 
-                            <a>
+                            <Link to={URL.service.accounts.find_email}>
                                 아이디/비밀번호 찾기
-                            </a>
+                            </Link>
                         </div>
                         {/* login-settings */}
 

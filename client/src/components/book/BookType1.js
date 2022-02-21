@@ -369,8 +369,21 @@ class BookType1 extends Component {
                                                 state.detailList.map((item, i) => {
                                                     return (
                                                         <tr key={i}>
-                                                            <td>{(item.purchases.length === 0 && state.isAuthor === false && item.round !== 1) &&
-                                                                <input type="checkbox" checked={(!!state.selected[item.id]) ? true : false} onChange={this.handleSelect} value={i} />}</td>
+                                                            <td>
+                                                                {
+                                                                    (state.isAuthor === false && !item.purchased_id && item.round !== 1) ?
+                                                                    <label className="cb-container">
+                                                                        <input type="checkbox" checked={!!state.selected[item.id]} onChange={this.handleSelect} value={i} />
+                                                                        <span className="checkmark"/>
+                                                                    </label>
+                                                                    :
+                                                                    <label className="cb-container disabled">
+                                                                        <input type="checkbox" checked={true} value={i} disabled />
+                                                                        <span className="checkmark"/>
+                                                                    </label>
+                                                                }
+
+                                                            </td>
                                                             <td>{item.round}회차.</td>
                                                             {
                                                                 item.round === 1 ?
@@ -387,7 +400,7 @@ class BookType1 extends Component {
                                                                 !state.isAuthor &&
                                                                 <td>
                                                                     {
-                                                                        !!item.purchases.length || item.round === 1 ?
+                                                                        !!item.purchased_id || item.round === 1 ?
                                                                         <em className="download" onClick={() => this.downloadAction(item.id, item.round === 1 ? true : false)} />
                                                                         :
                                                                         <em className="lock"/>

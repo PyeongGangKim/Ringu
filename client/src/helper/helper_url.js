@@ -11,6 +11,7 @@ module.exports = {
                 code:           "/auth/email/code",
                 duplicate:      "/auth/email/duplicate",
                 identification: "/auth/email/identification",
+                change_pwd:     "/auth/email/change_pwd",
             },
             company: {
                 get:            "/auth/company",
@@ -24,7 +25,9 @@ module.exports = {
                 google:         "/auth/google",
             },
             nickname_duplicate: "/auth/nickname/duplicate",
-        },
+            validate_token:     "/auth/validate_token",
+            reset_password:     "/auth/reset_password",
+        },        
         author: {
             get:                "/author",
             update:             "/author",
@@ -85,7 +88,7 @@ module.exports = {
             passwordCheck:      "/member/password/check",
             upload_profile:     "/member/upload_profile",
             profile:            "/member/profile/",
-            certification:      "/member/certification",
+            certifications:     "/member/certifications",
             update:             "/member/",
             delete:             "/member",
         },
@@ -137,6 +140,9 @@ module.exports = {
             signup              : "/signup",
             signup_step         : "/signup/step",
             welcome             : "/welcome",
+            find_email          : "/login/findpwd",
+            change_pwd          : "/change_pwd",
+            change_pwd_complete : "/change_pwd/complete",
         },
         auth: {
             naver               : "/auth/callback/naver",
@@ -151,6 +157,7 @@ module.exports = {
         },
         buy: {
             buy                 : "/buy",
+            callback            : "/buy/callback",
             complete            : "/complete",
         },
         home                    : "/",

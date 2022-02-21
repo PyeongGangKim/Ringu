@@ -11,15 +11,20 @@
             padding: 8px 20px;
             background-color: #e1e2e6;
             border: 0;
+            border: 1px solid white;
+
+            &:hover {
+                border: 1px solid black;
+            }
+
+            &:focus {
+                border: 1px solid black;
+            }
         }
         .form-group {
             .input {
                 line-height: 14px;
             }
-            .error-wrap {
-                position:absolute;
-            }
-
         }
 
     }

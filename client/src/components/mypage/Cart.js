@@ -186,7 +186,11 @@ class Cart extends Component {
                                 cartList.map((item,i) => {
                                     return (
                                         <div key={item.id} className="cart-box">
-                                            <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
+                                            <label className="cb-container" >
+                                                <input type="checkbox" checked={(!!state.data.selectedList[item.id]) ? true : false} onChange={this.handleSelect} value={i}/>
+                                                <span className="checkmark"/>
+                                            </label>
+                                            
                                             <Link to={URL.service.book.book + item.book_id} title="상세 페이지로 이동합니다">
                                                 <img src={item.img}/>
                                             </Link>

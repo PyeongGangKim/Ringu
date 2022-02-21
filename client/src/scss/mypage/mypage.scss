@@ -4,8 +4,8 @@
             font-size: 14px;
 
             &:disabled {
-                background-color: #f2f2f2;
-                color: #ababab;
+                background-color: #f8f8f8;
+                color: #666;
             }
         }
 
@@ -117,6 +117,33 @@
             text-indent: -9999px;
             top: 12px;
             right: 8px;
+        }
+    }
+
+    .years {
+        display: flex;
+        margin-top: 20px;
+        margin-left: 30px;
+
+        .year {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            padding: 15px 8px;
+            height: 25px;
+            min-width: 60px;
+            background-color: white;
+            border: 1px solid var(--color-2);
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 10px;
+            cursor: pointer;
+            
+            &.active {
+                color: white;
+                background-color: var(--color-2);
+            }
         }
     }
 }

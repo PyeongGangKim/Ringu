@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Switch, Route ,Redirect } from 'react-router-dom';
 
-import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegisterDetailPage, AuthorPage, BookPage, RegisterPage, RegisterDetailPage, BuyPage, BuyCompletePage, SearchPage,NotificationPage} from '../pages';
-import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage, ModifyBookSeriesPage, TermsPage } from '../pages';
+import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, LeavePage, Purchases, Carts, FavBookPage, FavAuthorPage, AuthorRegisterDetailPage, AuthorPage, BookPage, RegisterPage, RegisterDetailPage, BuyPage, BuyCompletePage, BuyCallbackPage, SearchPage,NotificationPage} from '../pages';
+import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage, ModifyBookSeriesPage, TermsPage, FindEmailPage, ChangePasswordPage, ChangePasswordCompletePage } from '../pages';
 
 import { ReviewPage, PaymentPage } from '../pages';
 
@@ -34,9 +34,13 @@ class App extends Component {
                 <Route path="/modify/pub/:bookId" component={ModifyBookPage} /> {}
                 <Route path="/modify/series/:bookId" component={ModifyBookSeriesPage} /> {}
                 <Route path="/complete" component={BuyCompletePage} />{}
+                <Route path="/buy/callback" component={BuyCallbackPage} />{}
                 <Route path="/buy" component={BuyPage} />{}
                 <Route path="/search" component={SearchPage} />{}
-                <Route path="/login" component={LoginPage} />{}
+                <Route exact path="/login/findpwd" component={FindEmailPage} />{}
+                <Route exact path="/change_pwd/complete" component={ChangePasswordCompletePage} />{}
+                <Route exact path="/change_pwd" component={ChangePasswordPage} />{}
+                <Route exact path="/login" component={LoginPage} />{}
                 <Route path="/signup/:sns/callback" component={SignupCallbackPage} />{}
                 <Route path="/signup/step" component={SignupDetailPage} />{}
                 <Route path="/signup" component={SignupPage} />{}
