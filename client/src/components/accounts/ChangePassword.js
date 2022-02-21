@@ -150,9 +150,7 @@ class ChangePassword extends Component {
                                     className={state.password ? "input error" : "input"} 
                                     ref={this.ref} 
                                     onChange={this.handlePasswordChange}/>
-                                <i class="eye" onClick={this.handlePasswordType1}>
-                                    { state.passwordType1.visible ? <span>숨기기</span> : <span>보이기</span>}
-                                </i>
+                                <em class={state.passwordType1.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType1}/>
                                 {
                                     state.password &&
                                     <div className="info info-error">
@@ -169,9 +167,7 @@ class ChangePassword extends Component {
                                     className={state.password2 ? "input error" : "input"} 
                                     ref={this.ref2} 
                                     onChange={this.handlePassword2Change}/> 
-                                <i class="eye" onClick={this.handlePasswordType2}>
-                                    { state.passwordType2.visible ? <span>숨기기</span> : <span>보이기</span>}
-                                </i>
+                                <em class={state.passwordType2.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType2}/>
                                 {
                                     state.password2 &&
                                     <div className="info info-error">

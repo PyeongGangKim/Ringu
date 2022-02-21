@@ -309,31 +309,34 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
         status: 1,
     }
 
-    var include = [
+    var include = [        
+        {
+            model: book,
+            as: "book",
+            attributes: [],
+            required: true,
+            include: [{
+                model:member,
+                as: "author",
+                attributes: [],
+                required: true,
+            }]
+        },
         {
             model: purchase,
             as : "purchases",
+            attributes: [],
             required: false,
             where: {
                 member_id: member_id,
             }
         },
-        {
-            model: book,
-            as: "book",
-            attributes: [],
-            include: [{
-                model:member,
-                as: "author",
-                attributes: [],
-            }]
-        }
     ]
 
     try{
         const detailList = await book_detail.findAll({ // data 형식이 공통되는 attributes는 그냥 가져오고, book_detail를 object로 review달려서 나올 수 있도록
-            where : where,
             attributes : [
+                [sequelize.literal("DISTINCT `purchases`.book_detail_id"), "purchased_id"],
                 "title",
                 "file",
                 "id",
@@ -344,6 +347,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 [sequelize.literal("book.serialization_day"), "serialization_day"],
                 [sequelize.literal("book.title"), "book_title"],
             ],
+            where : where,
             include: include,
             offset: offset,
             limit: limit,
@@ -377,6 +381,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
         }
     }
     catch(err){
+        console.log(err)
         logger.error(err.stack);
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"

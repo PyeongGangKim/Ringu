@@ -25,7 +25,6 @@ class RegisterAuthor extends Component {
 
         try {
             const { IMP } = window;
-            IMP.init(iamport.IMP_CODE)
 
             IMP.certification({
                 merchant_uid: "min_1231231",

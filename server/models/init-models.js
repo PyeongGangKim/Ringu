@@ -58,14 +58,10 @@ function initModels(sequelize) {
   book.hasMany(favorite_book, { as: "favorite_books", foreignKey: "book_id"});
   favorite_book_statistics.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(favorite_book_statistics, { as: "favorite_book_statistics", foreignKey: "book_id"});
-  payment.belongsTo(book, { as: "book", foreignKey: "book_id"});
-  book.hasMany(payment, { as: "payments", foreignKey: "book_id"});
   review_statistics.belongsTo(book, { as: "book", foreignKey: "book_id"});
   book.hasMany(review_statistics, { as: "review_statistics", foreignKey: "book_id"});
   cart.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
   book_detail.hasMany(cart, { as: "carts", foreignKey: "book_detail_id"});
-  payment.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
-  book_detail.hasMany(payment, { as: "payments", foreignKey: "book_detail_id"});
   purchase.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});
   book_detail.hasMany(purchase, { as: "purchases", foreignKey: "book_detail_id"});
   review.belongsTo(book_detail, { as: "book_detail", foreignKey: "book_detail_id"});

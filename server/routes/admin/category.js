@@ -6,7 +6,14 @@ var helper_pagination = require("../../helper/pagination");
 var helper_activity = require("../../helper/activity");
 const logger = require('../../utils/winston_logger');
 
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
 const {category, Sequelize :{Op} } = require("../../models");
+
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
+
+const category_dir = adminPageDirPath + "category/";
 
 
 router.get("/", async (req, res, next) => {
@@ -20,7 +27,7 @@ router.get("/", async (req, res, next) => {
             limit : limit
         });
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/category/", page, limit, count);
-        res.render("admin/pages/category_list", {
+        res.render(category_dir + "list", {
             "category_list": rows,
             "total_count"       : count,
             "pagination_html"   : pagination_html,
@@ -34,7 +41,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/info/create/", (req, res, next) => {
     
-    res.render("admin/pages/category_create");
+    res.render(category_dir + "create/");
 });
 
 router.post("/", async (req, res, next) => {
@@ -63,7 +70,7 @@ router.get("/info/update/:categoryId", async (req, res, next) => {
                 id : id
             }
         });
-        res.render("admin/pages/category_update", {
+        res.render(category_dir + "update", {
             "id"    : result.id,
             "name"  : result.name,
         });

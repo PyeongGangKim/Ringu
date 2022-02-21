@@ -1,0 +1,84 @@
+<%- include("../../templates/head"); %>
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>책</h1>
+	</div>
+	<!--/.panel-header-->
+
+   	<div class="panel-body padTopNone">
+	   	<div class="row-col">
+		   	<div class="col-4">
+			   <img src="" style="width: 100%;"/>
+		   	</div>
+			<!--/.col-4-->
+	   		<div class="col-2">
+                <div class="row-col">
+                    <dvi class="col-2">
+                        <label>실명</label>
+                        <div class="input"><%=author.name%>&nbsp;</div>
+                    </div>
+                    <br />
+                    <div class="col-2">
+                        <label>작가명</label>
+                        <div class="input">
+                            <% if (author.member.name) { %>
+                                <%=author.member.name%>
+                            <% } else { %>
+                                이름 없음
+                            <%} %>
+                            &nbsp;</div>
+                    </div>
+                    <br />
+                </div>
+                <div class="row">
+                    <label>설명</label>
+                    <div class="input"><%=author.description%></div>
+                </div>
+                <br />
+                <div class="row-col">
+                    <div class="col-2">
+                        <label>은행</label>
+                        <div class="input"><%=author.bank%></div>
+                    </div>
+                    <!--/.col-2-->
+                    <div class="col-2">
+                        <label>계좌번호</label>
+                        <div class="input"><%=author.account%></div>  
+                </div>
+                </div>
+                <br />
+			</div>
+			<!--/.col-2-->
+		</div>
+        <!--/.row-col-->
+	</div>
+	<!--/.panel-body-->
+    <div class="panel-block text-left">
+        <a href="/admin/author/delete/<%=author["id"]%>" onclick=" return confirm('삭제하시겠습니까?'); ">
+            <div class="btn btn-sm btn-danger">삭제</div>
+        </a>
+    </div>
+	<!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+<script>
+	$(function() {
+		$("input[name=start_date]").datepicker({"dateFormat" : "yy-mm-dd"});
+        $("input[name=end_date]").datepicker({"dateFormat" : "yy-mm-dd"});
+	});
+	var checkCreate = function() {
+		if ( $("input[name=start_date]").val() == "") {
+			alertify.message("시작일 등록해주세요");
+			return false;
+		}
+		if ( $("input[name=end_date]").val() == "") {
+			alertify.message("끝일 등록해주세요");
+			return false;
+		}
+		return true;
+	}
+</script>
+
+<%- include("../../templates/foot"); %>

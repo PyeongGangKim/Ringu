@@ -1,29 +1,29 @@
 import React, { Component, Fragment } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
 
 
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 import User from '../../utils/user';
-import iamport from '../../config/iamport';
 
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
 class Buy extends Component {
     userInfo = User.getInfo();
+    
     constructor(props) {
         super(props)
 
         this.state = {
             purchaseList: props.location.state.purchaseList,
-            pay_method: 'card',
             amount: 0,
-            agree: false,
+            agreeAgree: false,
+            agreeRefund: false,
+            payMethod: 'CARD',
             user: {}
-        }
+        }           
     }
 
     async componentDidMount() {
@@ -44,7 +44,7 @@ class Buy extends Component {
 
         }
     }
-
+    
     sum = (list) => {
         var state = this.state
         var sum = 0;
@@ -57,16 +57,24 @@ class Buy extends Component {
         this.setState(state)
     }
 
-    handleAgree = evt => {
+    handleAgreePayment = evt => {
         var state = this.state;
-        state.agree = evt.target.checked;
+        state.agreePayment = evt.target.checked;
 
         this.setState(state)
     }
 
-    onPayment = () => {
+    handleAgreeRefund = evt => {
+        var state = this.state;
+        state.agreeRefund = evt.target.checked;
+
+        this.setState(state)
+    }
+
+    onPayment = (e) => {
         var state = this.state
-        if(state.agree === false) {
+        e.preventDefault();
+        if(state.agreePayment === false || state.agreeRefund === false) {
             alert("동의해주세요.")
             return;
         }
@@ -76,55 +84,37 @@ class Buy extends Component {
             window.location.href = URL.service.accounts.login;
         }
 
-        const { IMP } = window;
-        IMP.init(iamport.IMP_CODE)
-
-        IMP.request_pay({
-            pg: 'html5_inicis',
-            pay_method: 'card',
-            merchant_uid: 'merchant_' + new Date().getTime(),
-            name: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
-            amount: state.amount,
-            buyer_email: state.user.email,
-            buyer_name: state.user.nickname,
-            buyer_tel: !!state.user.tel ? state.user.tel : null,
-            buyer_addr: '',
-            buyer_postcode: '',
-        },
-            async(rsp) => {
-                var msg
-                if (rsp.success) {
-                    msg = "결제가 완료되었습니다."
-
-                    let params = rsp;
-                    params.purchaseList = state.purchaseList;
-                    const res = await API.sendPost(URL.api.payment.create, params)
-                    if(res.status === 200) {
-                        this.props.history.push({
-                            pathname : URL.service.buy.complete,
-                            state: {
-                                card: params.card_name,
-                                amount: state.amount,
-                                user: state.user,
-                                //purchaseList: state.purchaseList
-                            }
-                        })
-                    }
-                    /*).catch((err) => {
-                        console.log(err);
-                        alert(err);
-                    });*/
-                } else {
-                    var return_url = "";
-                    alert( rsp.error_msg );
-                }
-            }
-        )
+        const { IMP, innopay } = window;
+        var purchaseList = state.purchaseList.map(x => x.id)
+        
+        innopay.goPay({
+            PayMethod: state.payMethod,
+            MID: 'testpay01m',
+            MerchantKey: 'Ma29gyAFhvv/+e4/AHpV6pISQIvSKziLIbrNoXPbRS5nfTx2DOs8OJve+NzwyoaQ8p9Uy1AN4S1I0Um5v7oNUg==',
+            GoodsName: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
+            Amt: state.amount + '',
+            BuyerName: state.user.nickname,
+            BuyerTel: !!state.user.tel ? state.user.tel : '0',
+            BuyerEmail: state.user.email,
+            ResultYN: 'Y',
+            Moid: 111111,
+            ReturnURL: "http://localhost:3000" + URL.service.buy.callback + "?ids=" + purchaseList.toString(),
+        })
     }
+
+    handleMethodChange = (e) => {
+        var state = this.state;
+        state.payMethod = e.target.value
+
+        this.setState(state)
+
+    }
+
+    
 
     render() {
         var state = this.state;
-        return (
+        return (            
             <div id="buy" className="page1">
                 <div id="cartlist-area">
                     <h3 className="header">구매하기({state.purchaseList.length} 건)</h3>
@@ -163,72 +153,128 @@ class Buy extends Component {
                         })
                     }
                 </div>
+                
+                <form onSubmit={this.onPayment}>
+                    <div id="buy-detail-area">                    
+                        <div id="detail-box" className="buy-detail-box">
+                            <h3 className="header"> 쿠폰/적립금  </h3>
+                            <div className="content">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <th>사용 가능한 쿠폰 </th>
+                                            <td>
+                                                <div className="input-discount">
+                                                    <input type="text" disabled/>
+                                                    <span className="input-txt">원</span>
+                                                </div>
+                                            </td>
+                                            <td><button className="btn btn-color-2" disabled>쿠폰선택</button></td>
+                                        </tr>
+                                        <tr>
+                                            <th>사용 가능한 적립금</th>
+                                            <td>
+                                                <div className="input-discount">
+                                                    <input type="text" disabled/>
+                                                    <span className="input-txt">원</span>
+                                                </div>
+                                            </td>
+                                            <td><button className="btn btn-color-2" disabled>전액사용</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                <div id="buy-detail-area">
-                    <div id="detail-box" className="buy-detail-box">
-                        <h3 className="header"> 쿠폰/적립금  </h3>
+                            <h3 className="header"> 결제 방법  </h3>
+                            <div className="content">
+                                <label for="card">
+                                    <input 
+                                        type="radio" 
+                                        id="card" 
+                                        name="paymethod" 
+                                        value="CARD"
+                                        checked={state.payMethod === 'CARD'}
+                                        onChange={this.handleMethodChange}
+                                    />
+                                    신용카드
+                                </label>
+                                
+                                <label for="bank">
+                                    <input 
+                                        type="radio" 
+                                        id="bank" 
+                                        name="paymethod"
+                                        value="BANK"
+                                        checked={state.payMethod === 'BANK'}
+                                        onChange={this.handleMethodChange}
+                                    />
+                                    계좌 이체
+                                </label>
 
-                        <div className="content">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <th>사용 가능한 쿠폰 </th>
-                                        <td>
-                                            <div className="input-discount">
-                                                <input type="text" disabled/>
-                                                <span className="input-txt">원</span>
-                                            </div>
-                                        </td>
-                                        <td><button className="btn btn-color-2" disabled>쿠폰선택</button></td>
-                                    </tr>
-                                    <tr>
-                                        <th>사용 가능한 적립금</th>
-                                        <td>
-                                            <div className="input-discount">
-                                                <input type="text" disabled/>
-                                                <span className="input-txt">원</span>
-                                            </div>
-                                        </td>
-                                        <td><button className="btn btn-color-2" disabled>전액사용</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="sum-box" className="buy-detail-box">
-                        <div className="detail-price">
-                            <dl >
-                                <dt>총 금액</dt>
-                                <dd>{parse.numberWithCommas(state.amount)} 원</dd>
-                            </dl>
-                            <dl>
-                                <dt>쿠폰 및 적립금 할인</dt>
-                                <dd>0 원</dd>
-                            </dl>
+                                <label for="epay">
+                                    <input 
+                                        type="radio" 
+                                        id="epay" 
+                                        name="paymethod" 
+                                        value="EPAY"
+                                        checked={state.payMethod === 'EPAY'}
+                                        onChange={this.handleMethodChange}
+                                    />
+                                    간편 결제
+                                </label>
+                                
 
-                            <dl className="total">
-                                <dt>결제금액</dt>
-                                <dd>{parse.numberWithCommas(state.amount)} 원</dd>
-                            </dl>
-                        </div>
-
-                        <hr/>
-
-                        <div className="agree-txt">
-                            <div className="checkbox-wrap">
-                            <label htmlFor="agree-payment" className="cb-container" >
-                            <input type="checkbox" id="agree-payment" checked={state.agree} onChange={this.handleAgree}/>
-                                <span className="checkmark"/>
-                                <div className="checkbox-text">
-                                    주문 내용을 확인하였으며 결제에 동의합니다 (필수)
-                                </div>
-                            </label>
+                                
+                                
                             </div>
                         </div>
+                        <div id="sum-box" className="buy-detail-box">
+                            <div className="detail-price">
+                                <dl >
+                                    <dt>총 금액</dt>
+                                    <dd>{parse.numberWithCommas(state.amount)} 원</dd>
+                                </dl>
+                                <dl>
+                                    <dt>쿠폰 및 적립금 할인</dt>
+                                    <dd>0 원</dd>
+                                </dl>
 
-                        <button className="payment-btn btn btn-block btn-color-2" onClick={this.onPayment}>결제하기</button>
+                                <dl className="total">
+                                    <dt>총 결제 금액</dt>
+                                    <dd>{parse.numberWithCommas(state.amount)} 원</dd>
+                                </dl>
+                            </div>
+
+                            <hr/>
+
+                            <div className="agree-txt">
+                                <div className="checkbox-wrap">
+                                    <label htmlFor="agree-payment" className="cb-container" >
+                                    <input type="checkbox" id="agree-payment" checked={state.agreePayment} onChange={this.handleAgreePayment}/>
+                                        <span className="checkmark"/>
+                                        <div className="checkbox-text">
+                                            상품, 결제, 주문정보를 확인하였으며 결제에 동의합니다. (필수)
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="agree-txt">
+                                <div className="checkbox-wrap">
+                                    <label htmlFor="agree-refund" className="cb-container" >
+                                    <input type="checkbox" id="agree-refund" checked={state.agreeRefund} onChange={this.handleAgreeRefund}/>
+                                        <span className="checkmark"/>
+                                        <div className="checkbox-text">
+                                            환불 및 교환이 안 된다는 사실을 확인하였으며 결제에 동의합니다. (필수)
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button className="payment-btn btn btn-block btn-color-2">결제하기</button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         )
     }

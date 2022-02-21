@@ -8,7 +8,6 @@ import Footer from '../components/common/Footer';
 class BuyCompletePage extends Component {
     constructor(props) {
         super(props);
-
     }
 
     render() {
@@ -17,7 +16,7 @@ class BuyCompletePage extends Component {
                 <Helmet title={string.buy + string.postfix}/>
                 <Header history={this.props.history}></Header>
                 <div id="wrap">
-                    <BuyComplete history={this.props.history}/>
+                    <BuyComplete history={this.props.history} search={this.props.location.search}/>
                 </div>
                 <Footer></Footer>
             </Fragment>

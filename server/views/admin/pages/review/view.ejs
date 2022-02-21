@@ -1,0 +1,51 @@
+<%- include("../../templates/head"); %>
+
+<div class="panel">
+	<div class="panel-header">
+		<h1>리뷰</h1>
+	</div>
+	<!--/.panel-header-->
+
+   	<div class="panel-body padTopNone">
+	   	<div class="row-col">
+		   	<div class="col-4">
+			   <img src="" style="width: 100%;"/>
+		   	</div>
+			<!--/.col-4-->
+	   		<div class="col-2">
+                <div class="row">
+                    <label>책</label>
+                    <div class="input"><%=review.book%>&nbsp;</div>
+                </div>
+                <br />
+                <div class="row">
+                    <label>구매자</label>
+                    <div class="input"><%=review.reviewer%>&nbsp;</div>
+                </div>
+                <br />
+                <div class="row">
+                    <label>별점</label>
+                    <div class="input"><%=review.score%></div>
+                </div>
+                <br />
+                <div class="row">
+                    <label>리뷰</label>
+                    <div class="input"><%=review.description%></div>
+                </div>
+			</div>
+			<!--/.col-2-->
+		</div>
+        <!--/.row-col-->
+	</div>
+	<!--/.panel-body-->
+    <div class="panel-block text-left">
+        <a href="/admin/review/delete/?id=<%=helper_security.encrypt(review["id"])%>" onclick=" return confirm('삭제하시겠습니까?'); ">
+            <div class="btn btn-sm btn-danger">삭제</div>
+        </a>
+    </div>
+	<!--/.panel-block-->
+</div>
+<!--/.panel-->
+
+
+<%- include("../../templates/foot"); %>
