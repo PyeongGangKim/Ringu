@@ -63,7 +63,6 @@ class Buy extends Component {
 
         this.setState(state)
     }
-
     onPayment = () => {
         var state = this.state
         if(state.agree === false) {
@@ -213,7 +212,7 @@ class Buy extends Component {
                             <label htmlFor="agree-payment">주문 내용을 확인하였으며 결제에 동의합니다 (필수)</label>
                         </div>
 
-                        <button className="payment-btn btn btn-block btn-color-2" onClick={this.onPayment}>결제하기</button>
+                        <button className="payment-btn btn btn-block btn-color-2" onClick={this.onPayment} name="btn_pay">결제하기</button>
                     </div>
                 </div>
             </div>
