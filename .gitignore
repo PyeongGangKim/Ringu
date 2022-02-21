@@ -117,4 +117,3 @@ package-lock.json
 ecosystem.config.js
 
 client/build
-client/src/utils/apiutils.js
