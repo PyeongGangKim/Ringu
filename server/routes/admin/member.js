@@ -41,7 +41,7 @@ router.get("/", async(req, res, next) => {
             include: [
                 {
                     model: reward_stat,
-                    as: "reward_stat",
+                    as: "reward_stats",
                     required: false,
                 },                
             ],
