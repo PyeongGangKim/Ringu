@@ -15,7 +15,7 @@ module.exports = {
     
     autorestart: true,
     
-    watch: false,
+    watch: true,
   
     env:{
     

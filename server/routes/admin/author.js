@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
-var config_url = require("../../config/url");
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
 
 var helper_pagination = require("../../helper/pagination");
 var helper_date = require("../../helper/date");
@@ -10,6 +11,9 @@ const helper_security = require("../../helper/security");
 const logger = require('../../utils/winston_logger');
 const {member, author, Sequelize : { Op } } = require("../../models");
 
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
+
+const author_dir = adminPageDirPath + "author/";
 
 router.get("/",async (req, res, next) => {
 
@@ -46,9 +50,10 @@ router.get("/",async (req, res, next) => {
                 as : "member",
             }
         });
+    
         var total_count = count;
-        var pagination_html = helper_pagination.html(config_url.base_url + "admin/author/", page, limit, total_count, fields);
-        res.render("admin/pages/author_list", {
+        var pagination_html = helper_pagination.html(url.base_url + "admin/author/", page, limit, total_count, fields);
+        res.render(author_dir + "list", {
             "fields"      : fields,
             "author_list"       : rows,
             "limit"             : limit,
@@ -63,7 +68,7 @@ router.get("/",async (req, res, next) => {
 });
 router.get("/info/create/", (req, res, next) => {
     
-    res.render("admin/pages/author_create");
+    res.render(author_dir + "create");
 });
 
 router.post("/", async (req, res, next) => {
@@ -80,7 +85,7 @@ router.post("/", async (req, res, next) => {
             tax_agreement : (fields.tax_agreement) ? 1 : 0,
             promotion_agency_agreement : (fields.promotion_agency_agreement) ? 1 : 0,
         });
-        res.render("admin/pages/author_view",{
+        res.render(author_dir + "view",{
             "author"                  : result,
             "helper_date"           : helper_date,
         })
@@ -106,7 +111,7 @@ router.get("/:authorId", async (req, res, next) => {
                 as : "member",
             }
         });
-        res.render("admin/pages/author_view", {
+        res.render(author_dir + "view", {
                 "author"                  : findedAuthor,
                 "helper_date"           : helper_date,
         });

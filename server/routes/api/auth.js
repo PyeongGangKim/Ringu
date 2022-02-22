@@ -143,6 +143,7 @@ router.get('/email/duplicate', async(req, res, next) => {//email 중복체크하
         }
     }
     catch(err){
+	    console.log(err)
         logger.error(err.stack);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             'error':'duplicate check fails'
@@ -478,6 +479,9 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
 
 router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변경 주소 메일 전송    
     const email = req.body.email;
+	console.log('3333333333')
+	console.log(member)
+	console.log(auth)
     
     try{
         const user = await member.findOne({
@@ -521,6 +525,7 @@ router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변�
             member_id: user.id,
             ttl: 1000,
         }
+	    console.log(auth)
         
         const Auth = await auth.findOne({
             where : {
@@ -543,7 +548,7 @@ router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변�
             subject: "[RINGU] 비밀번호 변경 이메일입니다",
             text: 
                 "아래의 URL을 클릭하시면 비밀번호 변경 페이지로 연결됩니다.\n\n" +
-                `http://localhost:3000/change_pwd?token=${token}`
+                `https://ringu.me/change_pwd?token=${token}`
             
         };
 
@@ -559,6 +564,7 @@ router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변�
     }
     catch(err){
         logger.error(err.stack);
+	    console.log(err)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: err});
     }    
 });

@@ -3,14 +3,19 @@ var router = express.Router();
 
 var config_url = require("../../config/url");
 
+const env = process.env.NODE_ENV !== "production" ? "development" : "production";
+const url = require("../../config/url")[env];
+
 var helper_pagination = require("../../helper/pagination");
 const logger = require('../../utils/winston_logger');
 const { checkLogin } = require("../../helper/activity");
 
-
+const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
 
 const { member, author ,withdrawal,notification, notiCount, account, Sequelize : { Op }, sequelize } = require("../../models/index");
 const { StatusCodes } = require("http-status-codes");
+
+const withdrawal_dir = adminPageDirPath + "withdrawal/";
 
 router.get("/", async (req, res, next) => {
 
@@ -60,7 +65,7 @@ router.get("/", async (req, res, next) => {
         });
         let total_count = count;
 
-        let renderingPage = (fields.is_remittance == 1) ? "admin/pages/remittance_withdrawal_list" : "admin/pages/unremittance_withdrawal_list";
+        let renderingPage = (fields.is_remittance == 1) ? withdrawal_dir + "remittance_list" : withdrawal_dir + "unremittance_list";
         let pagination_html = helper_pagination.html(config_url.base_url + "admin/withdrawal/", page, limit, total_count, fields);
         res.render(renderingPage , {
             "fields"      : fields,
