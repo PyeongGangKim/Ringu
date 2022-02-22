@@ -11,8 +11,6 @@ import '../../scss/common/slick.scss'
 import Book from '../../components/book/Book'
 
 import User from '../../utils/user';
-import date from '../../helper/date';
-import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
