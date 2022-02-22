@@ -1,4 +1,4 @@
-module.exports = {
+var parse = {
     numberWithCommas: (x) => {
         try {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -15,3 +15,5 @@ module.exports = {
         return result
     },
 }
+
+export default parse;
