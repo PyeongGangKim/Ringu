@@ -4,15 +4,11 @@ import { Link } from 'react-router-dom';
 import User from '../../utils/user';
 import '../../scss/common/sideinfo.scss';
 
-import date from '../../helper/date';
-import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
-import API from '../../utils/apiutils';
 
 class SideNav extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
 
         this.state = {
             display1: this.props.display1,

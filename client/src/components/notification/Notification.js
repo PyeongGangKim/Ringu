@@ -1,7 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-
-import User from '../../utils/user';
 
 import NormalNotification from "./NormalNotification";
 import BookNotification from "./BookNotification";
@@ -11,8 +8,6 @@ import '../../scss/common/tab.scss';
 import '../../scss/common/page.scss';
 import '../../scss/notification/notification.scss';
 
-import date from '../../helper/date';
-import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 

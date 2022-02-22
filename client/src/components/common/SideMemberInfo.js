@@ -5,8 +5,6 @@ import PropTypes from 'prop-types';
 import User from '../../utils/user';
 import '../../scss/common/sideinfo.scss';
 
-import date from '../../helper/date';
-import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 

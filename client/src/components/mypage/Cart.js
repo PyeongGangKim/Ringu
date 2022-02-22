@@ -2,12 +2,10 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
-
 import User from '../../utils/user';
 import '../../scss/mypage/cart.scss';
 import '../../scss/common/button.scss';
 
-import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';

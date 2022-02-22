@@ -1,14 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
-
-import User from '../../utils/user';
 import Paging from '../../components/common/Paging'
 import '../../scss/mypage/purchase.scss';
 import '../../scss/common/button.scss';
 
 import date from '../../helper/date';
-import { parse } from '../../helper/parse';
+import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 

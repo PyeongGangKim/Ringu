@@ -5,9 +5,6 @@ module.exports = {
         } catch (e) {
             return 0;
         }
-
-
-
     },
     searchToDict: (search) => {
         var dict = {}
