@@ -71,7 +71,7 @@ class Buy extends Component {
         this.setState(state)
     }
 
-    onPayment = (e) => {
+    onPayment = async(e) => {
         var state = this.state
         e.preventDefault();
         if(state.agreePayment === false || state.agreeRefund === false) {
@@ -88,15 +88,15 @@ class Buy extends Component {
         var purchaseList = state.purchaseList.map(x => x.id)
         var params = {
             member_id: state.user.id,
-            book_detail_id: purchaseList,
+            book_detail_ids: purchaseList,
         }
 
         try {
-            const res = API.sendGet(URL.api.purchase.duplicate_many, params)
+            const res = await API.sendGet(URL.api.purchase.duplicate_many, params)
             if(res.status === 200) {
                 if(res.data.message === "duplicate") {
                     alert("이미 결제된 상품입니다. 구매 내역 페이지로 이동합니다.")
-                    window.location.href = URL.service.mypage.purchase;
+                    window.location.href = URL.service.mypage.purchases;
                     return;
                 }
             }
