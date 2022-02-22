@@ -649,7 +649,7 @@ class Author extends Component {
                                                                     <em className="download"  onClick={() => this.downloadAction(detail.id)}/>
                                                                 </td>
                                                                 :
-                                                                !!detail.purchases.length ?
+                                                                !!detail.purchased_id ?
                                                                 <td className="icon"> <em className="download"/> </td>
                                                                 :
                                                                 <td className="icon"> <em className="lock"/> </td>
