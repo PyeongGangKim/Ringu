@@ -132,6 +132,42 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
         });
     }
 });
+
+router.get('/duplicate/many' ,isLoggedIn, async (req, res, next) => { // duplicate 체크
+
+    let member_id = req.query.member_id;
+    let book_detail_ids = req.query.book_detail_ids;
+
+    try{
+        const duplicate = await purchase.findAll({
+            where : {
+                member_id : member_id,
+                book_detail_id : {
+                    [Op.in]: book_detail_ids
+                },
+                status: 1,
+            }
+        });
+
+        if(duplicate.length > 0){
+            res.status(StatusCodes.DUPLICATE).json({
+                "message" : "duplicate",
+            });
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                "message" : "OK",
+            });
+        }
+    }
+    catch(err){
+        logger.error(err.stack);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            "error": "server error"
+        });
+    }
+});
+
 router.post('/many' , isLoggedIn, async (req, res, next) => { // 모두 구매
     try{
         let purchaseList = req.body.purchaseList;

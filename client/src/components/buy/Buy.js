@@ -86,6 +86,25 @@ class Buy extends Component {
 
         const { IMP, innopay } = window;
         var purchaseList = state.purchaseList.map(x => x.id)
+        var params = {
+            member_id: state.user.id,
+            book_detail_id: purchaseList,
+        }
+
+        try {
+            const res = API.sendGet(URL.api.purchase.duplicate_many, params)
+            if(res.status === 200) {
+                if(res.data.message === "duplicate") {
+                    alert("이미 결제된 상품입니다. 구매 내역 페이지로 이동합니다.")
+                    window.location.href = URL.service.mypage.purchase;
+                    return;
+                }
+            }
+        } 
+        catch(e) {
+            alert("결제를 진행할 수 없습니다")
+            return;
+        }
         
         innopay.goPay({
             PayMethod: state.payMethod,
