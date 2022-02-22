@@ -8,8 +8,6 @@ import '../../scss/common/header.scss';
 import '../../scss/common/input.scss';
 
 import URL from '../../helper/helper_url';
-import parse from '../../helper/parse';
-import Api from '../../utils/apiutils';
 import User from '../../utils/user';
 
 class Header extends Component {
