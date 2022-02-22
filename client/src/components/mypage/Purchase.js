@@ -12,8 +12,6 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-var axios = require('axios');
-
 class Purchase extends Component {
     limit = 5;
     constructor(props) {
