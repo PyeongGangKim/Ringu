@@ -182,5 +182,9 @@ module.exports = {
             book                : "/register/book/",
         },
         review          : "/review/",
+    },
+    base_url: {
+        "dev": "http://localhost:3000",
+        "prod": "https://ringu.me",
     }
 };

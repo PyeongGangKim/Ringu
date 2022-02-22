@@ -98,7 +98,7 @@ class Buy extends Component {
             BuyerEmail: state.user.email,
             ResultYN: 'Y',
             Moid: 111111,
-            ReturnURL: "http://localhost:3000" + URL.service.buy.callback + "?ids=" + purchaseList.toString(),
+            ReturnURL: URL.base_url[process.env.REACT_APP_ENV] + URL.service.buy.callback + "?ids=" + purchaseList.toString(),
         })
     }
 
