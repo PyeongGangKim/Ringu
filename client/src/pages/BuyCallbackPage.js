@@ -26,11 +26,26 @@ class BuyCallbackPage extends Component {
                         user: res.data.user,
                     }
                 });
-            } else {
-
+            } 
+            else if (res.status === 400) {
+                alert("이미 결제되었습니다")
+                this.props.history.replace({
+                    pathname:   URL.service.buy.complete,
+                    state: {
+                        pay_method: res.data.method,
+                        amount: res.data.amount,
+                        fn: res.data.fn,
+                        user: res.data.user,
+                    }
+                });
+            } 
+            else {
+                alert("결제가 실패하였습니다.")
+                this.props.history.goBack()
             }
         } catch(e) {
             alert("결제가 실패하였습니다.")
+            this.props.history.goBack()
         }
     }
 
