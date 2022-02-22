@@ -4,8 +4,6 @@ import BookType1 from '../components/book/BookType1';
 import BookType2 from '../components/book/BookType2';
 import Header from '../components/common/Header';
 
-import date from '../helper/date';
-import parse from '../helper/parse';
 import URL from '../helper/helper_url';
 import API from '../utils/apiutils';
 import User from '../utils/user';

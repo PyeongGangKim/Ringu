@@ -4,8 +4,6 @@ import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
 
-import URL from '../helper/helper_url';
-import parse from '../helper/parse';
 import Footer from '../components/common/Footer';
 
 class SearchPage extends Component {

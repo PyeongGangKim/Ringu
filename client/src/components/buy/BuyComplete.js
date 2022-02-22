@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
 
 import URL from '../../helper/helper_url';
-import API from '../../utils/apiutils';
 import parse from '../../helper/parse';
 import payment from '../../helper/payment';
 import User from '../../utils/user';
