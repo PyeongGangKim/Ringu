@@ -14,12 +14,6 @@ const { isLoggedIn } = require("../../middlewares/auth");
 const {reward_percent} = require("../../helper/reward_percent");
 
 
-/*const { Iamporter, IamporterError } = require('iamporter');
-const iamporter = new Iamporter({
-    apiKey: iamport.apikey,
-    secret: iamport.secret,
-});*/
-
 router.post('/', isLoggedIn, async(req, res, next) => {
     const t = await sequelize.transaction();
     
@@ -89,7 +83,6 @@ router.post('/', isLoggedIn, async(req, res, next) => {
 
         params['fail_reason'] =     data.ErrorMsg
         params['fail_code'] =       data.ErrorCode
-
         
 
         const new_payment = await payment.create(
@@ -211,6 +204,24 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             });
         }
 
+        const duplicate = await purchase.findAll({
+            where: {
+                member_id: req.user.id,
+                book_detail_id: {
+                    [Op.in] : bookDetailList,
+                },
+                status: 1,
+            }
+        })
+
+        if(duplicate.length > 0) {
+            await t.rollback();
+            res.status(statusCodes.BAD_REQUEST).json({
+                "message"   : "already exists",
+            })
+            return;
+        }
+
         await purchase.bulkCreate(purchaseList, {transaction: t});
         
         await cart.update({
@@ -226,6 +237,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             transaction: t,
         })
         await t.commit();
+
         var fn;
         if(data.pay_method === 'CARD') 
             fn = data.fn_name
@@ -235,7 +247,6 @@ router.post('/', isLoggedIn, async(req, res, next) => {
             fn = data.EPayCl
 
         res.status(statusCodes.OK).json({
-            "message"   : "OK",
             "user"      : data.name,
             "fn"        : fn,
             "amount"    : data.Amt,
@@ -247,7 +258,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             error: "server error",
-        });
+        });        
     }
 })
 

@@ -1,0 +1,25 @@
+<%- include("../../templates/head"); %>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>책 내용 변경</h2>
+    </div>
+    <div class="panel-body padTopNone">
+        <form method="POST" action="/admin/book/<%=book.id%>/update">
+            <div class="form-group">
+                <label>id</label>
+                <input type="text" class="form-control" name="id" value="<%=book.id%>">
+            </div>
+            <div class="form-group">
+                <label>title</label>
+                <input type="text" class="form-control" name="title" value="<%=book.title%>">
+            </div>
+            <div class="form-group">
+                <label>page_number</label>
+                <input type="number" class="form-control" name="page_number" value="<%=book.page_number%>">
+            </div>
+            <button type="submit" class="btn btn-primary">변경하기</button>
+        </form>
+    </div>
+</div>
+<%- include("../../templates/foot"); %>
