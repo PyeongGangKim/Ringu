@@ -8,7 +8,7 @@ import '../../scss/mypage/purchase.scss';
 import '../../scss/common/button.scss';
 
 import date from '../../helper/date';
-import parse from '../../helper/parse';
+import { parse } from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
