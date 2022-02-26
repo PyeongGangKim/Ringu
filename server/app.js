@@ -11,11 +11,11 @@ const logger = require('./utils/winston_logger');
 const morgan = require('morgan') 
 const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 const session_secretKey = require('./config/session_secret').secretKey;
-//const fileStore = require('session-file-store')(session);
-const sessionStore = require('connect-redis')(session);
-const redis = require("redis")
-const redisConfig = require('./config/redis')
-let redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+const fileStore = require('session-file-store')(session);
+// const sessionStore = require('connect-redis')(session);
+// const redis = require("redis")
+// const redisConfig = require('./config/redis')
+// let redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
 
 
@@ -65,7 +65,7 @@ app.use(session({
   cookie: {	//세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
     expires: 3600
   },
-  store: new sessionStore({client: redisClient})
+  store: new fileStore(),
 }));
 
 
