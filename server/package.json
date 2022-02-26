@@ -47,7 +47,7 @@
     "random-number": "0.0.9",
     "react-facebook-login": "^4.1.1",
     "react-kakao-login": "^2.1.0",
-    "redis": "^4.0.1",
+    "redis": "^3.1.2",
     "request": "^2.88.2",
     "sequelize": "^6.14.0",
     "sequelize-auto": "^0.7.11",

@@ -48,6 +48,9 @@ class Footer extends Component{
                                     <div className= "each-content">
                                         사업자 등록번호: 607-37-04967
                                     </div>
+                                    <div className= "each-content">
+                                        통신판매 사업자: 2022-서울구로-0474
+                                    </div>
                                 </div>
                                 
                             </div>
