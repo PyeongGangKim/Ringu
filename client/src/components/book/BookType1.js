@@ -10,8 +10,6 @@ import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/book/book.scss';
 
-import date from '../../helper/date';
-import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
@@ -178,41 +176,45 @@ class BookType1 extends Component {
     }
 
     handlePurchase = (type) => {
-        if(User.getInfo() === null) {
-            if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
-                window.location.href = URL.service.accounts.login;
-            }
-            return;
-        }
-
-        var state = this.state
-        var purchaseList = []
-        if(type === 0) {
-            purchaseList = Object.values(state.selected)
-            if(purchaseList.length === 0) {
-                alert('회차를 선택해주세요')
+        try {
+            if(User.getInfo() === null) {
+                if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
+                    window.location.href = URL.service.accounts.login;
+                }
                 return;
             }
-
-            if(!window.confirm('선택한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
-                return;
+            
+            var state = this.state
+            var purchaseList = []
+            if(type === 0) {
+                purchaseList = Object.values(state.selected)
+                if(purchaseList.length === 0) {
+                    alert('회차를 선택해주세요')
+                    return;
+                }
+    
+                if(!window.confirm('선택한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
+                    return;
+                }
             }
-        }
-        else {
-            if(!window.confirm('구매 가능한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
-                return;
+            else {
+                if(!window.confirm('구매 가능한 작품을 모두 구매하시겠습니까?\n확인을 누르면 구매 페이지로 이동합니다.')) {
+                    return;
+                }
+                purchaseList = state.detailList.filter(detail => detail.purchased_id === null && detail.round !== 1)
             }
-            purchaseList = state.detailList.filter(detail => detail.purchases.length === 0 && detail.round !== 1)
-        }
-        
-        purchaseList.map(detail => detail['type'] = 1)
-        
-        this.props.history.push({
-            pathname: URL.service.buy.buy,
-            state: {
-                purchaseList: purchaseList
-            }
-        })
+            
+            purchaseList.map(detail => detail['type'] = 1)
+            this.props.history.push({
+                pathname: URL.service.buy.buy,
+                state: {
+                    purchaseList: purchaseList
+                }
+            })
+        } catch(e) {
+            console.log(e)
+            alert("오류가 발생했습니다.")
+        }        
     }
 
     handleTabChange = (event, value) => {

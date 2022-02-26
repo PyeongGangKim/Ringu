@@ -1,14 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
-
-
-import User from '../../utils/user';
-
 import '../../scss/common/book.scss';
 
-
-import date from '../../helper/date';
 import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';

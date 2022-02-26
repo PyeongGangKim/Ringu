@@ -106,6 +106,7 @@ module.exports = {
         purchase: {
             list:               "/purchase",
             duplicate:          "/purchase/duplicate",
+            duplicate_many:     "/purchase/duplicate/many",
             sales:              "/purchase/sales",
             sales_ratio:        "/purchase/sales/ratio",
             sales_author:       "/purchase/sales/author",
@@ -182,5 +183,9 @@ module.exports = {
             book                : "/register/book/",
         },
         review          : "/review/",
+    },
+    base_url: {
+        "dev": "http://localhost:3000",
+        "prod": "https://ringu.me",
     }
 };

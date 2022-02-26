@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
 import Select from 'react-select'
 
 import User from '../../utils/user';
@@ -8,8 +7,6 @@ import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/register/book.scss';
 
-import date from '../../helper/date';
-import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
