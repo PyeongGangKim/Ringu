@@ -254,6 +254,7 @@ router.post('/', isLoggedIn, async(req, res, next) => {
         })
     }
     catch(err) {
+	    console.log(err)
         logger.error(err.stack);
         await t.rollback();
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
