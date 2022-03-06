@@ -284,7 +284,7 @@ class Buy extends Component {
                                     <input type="checkbox" id="agree-refund" checked={state.agreeRefund} onChange={this.handleAgreeRefund}/>
                                         <span className="checkmark"/>
                                         <div className="checkbox-text">
-                                            환불 및 교환이 안 된다는 사실을 확인하였으며 결제에 동의합니다. (필수)
+                                            e-book 제품 특성상 환불 및 교환이 어렵다는 사실을 확인하였으며 결제에 동의합니다. (필수)
                                         </div>
                                     </label>
                                 </div>
