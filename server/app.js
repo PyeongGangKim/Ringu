@@ -12,8 +12,10 @@ const morgan = require('morgan')
 const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 const session_secretKey = require('./config/session_secret').secretKey;
 const fileStore = require('session-file-store')(session);
-
-
+// const sessionStore = require('connect-redis')(session);
+// const redis = require("redis")
+// const redisConfig = require('./config/redis')
+// let redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
 
 
@@ -59,11 +61,11 @@ app.use(session({
 	
   secret: session_secretKey,	//암호화하는 데 쓰일 키
   resave: false,	//세션을 언제나 저장할지 설정함
-  saveUninitialized: false,	//세션이 저장되기 전 uninitialized 상태로 미리 만들어 저장
+  saveUninitialized: true,	//세션이 저장되기 전 uninitialized 상태로 미리 만들어 저장
   cookie: {	//세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
-    expires: 2400000
+    expires: 3600
   },
-  store: new fileStore()
+  store: new fileStore(),
 }));
 
 
