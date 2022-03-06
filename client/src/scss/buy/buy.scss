@@ -263,6 +263,10 @@
             margin-top: 20px;
             position: relative;
 
+            label {
+                align-items: baseline;
+            }
+
             label, input {
                 cursor: pointer;
             }
