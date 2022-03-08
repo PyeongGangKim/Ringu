@@ -63,7 +63,7 @@ app.use(session({
   resave: false,	//세션을 언제나 저장할지 설정함
   saveUninitialized: true,	//세션이 저장되기 전 uninitialized 상태로 미리 만들어 저장
   cookie: {	//세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
-    expires: 3600
+    expires: 3600000
   },
   store: new fileStore(),
 }));
