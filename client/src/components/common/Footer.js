@@ -60,7 +60,7 @@ class Footer extends Component{
                                 </div>
                                 <div className = "body-tag">
                                     <div className= "each-content">
-                                        ringu@gmail.com
+                                        ringu.music@gmail.com
                                     </div>
                                     <div className= "each-content">
                                         02-2689-6658
