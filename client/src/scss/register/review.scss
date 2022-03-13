@@ -3,11 +3,12 @@
         display: flex;
         align-items: flex-start;
         padding: 20px 30px 30px 30px;
-        width: 100%;
+        width: auto;
         height: 200px;
         border: 2px solid #ccc;
         border-radius: 4px;
         margin-bottom: 50px;
+        margin-left: 100px;
 
         .thumbnail-box {
             border-radius: 8px;
@@ -72,10 +73,10 @@
         padding-bottom: 30px;
 
         h3 {
-            width: 70px;
-            font-size: 18px;
-            font-weight: 500;
-            margin-right: 60px;
+            min-width: 70px;
+            font-size: 22px;
+            font-weight: 600;
+            margin-right: 30px;
         }
 
         .score {
@@ -124,7 +125,7 @@
         }
 
         textarea {
-            font-size: 14px;
+            font-size: 18px;
         }
     }
 }
