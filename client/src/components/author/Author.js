@@ -325,13 +325,6 @@ class Author extends Component {
         }
     }
 
-    handleModifyClick = () => {
-        var state = this.state;
-        state.modify = true;
-
-        this.setState(state)
-    }
-
     handleModifyDetailClick = (idx, detail_id) => {
         var state = this.state;
         if(state.oldIdx >= 0) {
@@ -357,6 +350,13 @@ class Author extends Component {
         } else {
             alert("변경에 실패하였습니다.")
         }
+
+        this.setState(state)
+    }
+
+    handleModifyClick = () => {
+        var state = this.state;
+        state.modify = true;
 
         this.setState(state)
     }
@@ -746,7 +746,7 @@ class Author extends Component {
                             </div>
                             <div className="inner-content">
                                 {
-                                    this.props.isHost === true ?
+                                    this.props.isHost === true && (state.modify === true) ?
                                     <textarea className="intro" value={state.user.description === null ? '' : state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
                                     :
                                     <div className="intro"> {state.user.description === null ? '' : state.user.description} </div>
