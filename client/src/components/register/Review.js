@@ -116,25 +116,12 @@ class Review extends Component {
                         onClose={this.handleCloseClick}
                         overlay={true}
                     >
-                        <div className="modal review">
-                            <div className="review-point-box">
-                                <div className="mark">
-                                    <em>P</em>
-                                </div>
-                                <div className="point">
-                                    <div className="label">
-                                        적립 포인트
-                                    </div>
-                                    <div className="value">
-                                        100P
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="modal review">                            
                             <div className="header">
                                 리뷰를 써주셔서 감사합니다.
                             </div>
                             <div className="content">
-                                축하합니다! 포인트가 지급되었습니다. RINGU는 고객님들의 생생한 리뷰를 모아 신뢰할 수 있는 리뷰 서비스를 제공하기 위해 노력하겠습니다.
+                                RINGU는 고객님들의 생생한 리뷰를 모아 신뢰할 수 있는 리뷰 서비스를 제공하기 위해 노력하겠습니다.
                             </div>
 
                             <Link to={URL.service.mypage.purchases}>
