@@ -369,11 +369,15 @@ class BookType1 extends Component {
                                         <tbody>
                                             {
                                                 state.detailList.map((item, i) => {
+                                                    console.log(item)
                                                     return (
                                                         <tr key={i}>
                                                             <td>
                                                                 {
-                                                                    (state.isAuthor === false && !item.purchased_id && item.round !== 1) ?
+                                                                    (item.round === 1) ? 
+                                                                    null
+                                                                    :
+                                                                    (state.isAuthor === false && !item.purchased_id) ?
                                                                     <label className="cb-container">
                                                                         <input type="checkbox" checked={!!state.selected[item.id]} onChange={this.handleSelect} value={i} />
                                                                         <span className="checkmark"/>
