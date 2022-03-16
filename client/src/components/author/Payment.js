@@ -181,7 +181,7 @@ class Payment extends Component {
             author_id: this.user.id,
             year: year
         }
-        console.log()
+        
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales_book, params)
             if(salesRes.status === 200) {
@@ -608,7 +608,11 @@ class Payment extends Component {
                                                             <div className="price">{parse.numberWithCommas(item.amount)}원</div>
                                                             <div className="order">
                                                                 <span>출금번호 : {item.id}</span>
-                                                                <span>출금일 : {date.fullFormat(item.remitted_date_time)}</span>
+                                                                <span>출금신청일 : {date.fullFormat(item.created_date_time)}</span>
+                                                                {
+                                                                    item.is_remittance === 1 &&
+                                                                    <span>출금일 : {date.fullFormat(item.remitted_date_time)}</span>
+                                                                }                                                                
                                                             </div>
                                                         </td>
                                                     </tr>
