@@ -723,6 +723,9 @@ router.get('/sales/author', isLoggedIn, isAuthor, async(req, res, next) => {
                     attributes: [],
                 }
             ],
+            order: [
+                ['created_date_time', 'DESC']
+            ]
         });
         if(sales.length === 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");;
