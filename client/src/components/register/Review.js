@@ -173,7 +173,7 @@ class Review extends Component {
                         <span className="score"> {state.score} / 5 </span>
                     </div>
 
-                    <div className="row">
+                    <div className="row" style={{alignItems: "start"}}>
                         <h3>리뷰</h3>
                         <textarea rows={7} placeholder="책에 대한 간단한 리뷰를 작성해주세요." onChange={this.handleDescriptionChange} value={state.description}/>
                     </div>
