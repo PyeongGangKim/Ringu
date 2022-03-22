@@ -1,10 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import ReactDOM from 'react-dom'
-import { Link } from 'react-router-dom';
 import Select from 'react-select'
-import { BarChart, LineChart, AreaChart, PieChart, Area, Cell, Bar, Pie, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart, PieChart, Cell, Bar, Pie, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import moment from 'moment';
 
 import User from '../../utils/user';
 import '../../scss/author/payment.scss';
@@ -17,7 +14,9 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-import Modal from '../../components/modal/Modal';
+import Modal from '../modal/Modal';
+
+import PaymentChartAll from '../author/PaymentChartAll';
 
 class Payment extends Component {
     constructor(props) {
@@ -46,6 +45,7 @@ class Payment extends Component {
             withdrawals: [],
             yearOptions: [{value: this.currentYear, label: `${this.currentYear}`}],
             books: [],
+            is_total: false,
         }
     }
 
@@ -73,7 +73,6 @@ class Payment extends Component {
 
             if(salesRes.status === 200) {
                 state.sales = salesRes.data.sales;
-
                 this.setState(state)
             }
         }
@@ -89,8 +88,6 @@ class Payment extends Component {
                 state.balance = amount.amount_available_withdrawal;
                 state.balance2 = amount.amount_available_withdrawal;
                 state.remitted = amount.total_withdrawal_amount;
-                //state.is_waiting = amount.request_withdrawal_amount !== 0;
-
                 this.setState(state)
             }
         }
@@ -109,13 +106,13 @@ class Payment extends Component {
         catch(e) {
             console.error(e)
         }
-        this.filter0(this.currentYear, true);
+        //this.filter0(this.currentYear, true);
     }
 
     handleYearChange = (value) => {
         var state = this.state;
         state.year = value;
-        this.filter0(state.year.value);
+        //this.filter0(state.year.value);
         this.setState(state)
     }
 
@@ -128,7 +125,6 @@ class Payment extends Component {
 
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales, params)
-            console.log(salesRes)
             if(salesRes.status === 200) {
                 var sales = salesRes.data.sales;
                 var data = []
@@ -175,7 +171,7 @@ class Payment extends Component {
         this.setState(state);
     }
 
-    filter1 = async(year, init=false) => {
+    filter1 = async(year) => {
         var state = this.state;
         var params = {
             author_id: this.user.id,
@@ -265,18 +261,22 @@ class Payment extends Component {
             this.filter2();
         }
 
+        console.log(state)
+
         this.setState(state);
     }
 
-    handleWithdrawalChange = (e) => {
+    handleWithdrawalAmountChange = (e) => {
         var state = this.state;
         var value  = e.target.value;
         state.balance2 = state.balance;
 
-        if(value > state.balance2) {
+        if(value >= state.balance2) {
             state.withdrawal = state.balance2;
             state.balance2 = 0;
+            state.is_total = true;
         } else {
+            state.is_total = false;
             state.balance2 -= value;
             state.withdrawal = value
         }
@@ -286,8 +286,8 @@ class Payment extends Component {
 
     handleWithdraw = async() => {
         var state = this.state;
-        if(state.withdrawal === 0) {
-            alert('출금할 금액을 입력해주세요.')
+        if(state.withdrawal < 10000) {
+            alert('최소 출금 가능 금액은 1만원입니다.')
             return 0;
         }
         try {
@@ -308,7 +308,15 @@ class Payment extends Component {
 
     showModal = () => { var state = this.state; state.modal = true; this.setState(state); }
 
-    handleCloseClick = () => { var state = this.state; state.modal = false; this.setState(state) }
+    handleCloseClick = () => { var state = this.state; state.modal = false; this.setState(state) }    
+
+    handleTotalClick = () => { 
+
+        this.setState({is_total: !this.state.is_total,
+                       withdrawal: this.state.balance,
+                       balance2: 0,
+        })
+    }
 
     render() {
         var state = this.state;
@@ -345,6 +353,18 @@ class Payment extends Component {
                             <div className="header"> 출금 신청 </div>
                             <em className="close" onClick={this.handleCloseClick}> &times; </em>
                             <div className="box">
+                                <div className="check-wrap">
+                                    <span className="check">
+                                        <label htmlFor="total" className="cb-container" >
+                                            <input type="checkbox" id="total" onClick={this.handleTotalClick} checked={state.is_total} value={false} disabled={state.balance === 0}/>
+                                            <span className="checkmark"/>
+                                            <div className="checkbox-text">
+                                                전액 사용
+                                            </div>
+                                        </label>
+                                    </span>
+                                </div>
+                            
                                 <table>
                                     <tbody>
                                         <tr>
@@ -354,14 +374,12 @@ class Payment extends Component {
                                         </tr>
                                         <tr>
                                             <td>출금 신청 금액</td>
-                                            <td>
-                                                <input type="number"autoComplete="off" className="input" value={state.withdrawal} onChange={this.handleWithdrawalChange}/>
-                                            </td>
+                                            <td><input type="number"autoComplete="off" className="input" value={state.withdrawal} onChange={this.handleWithdrawalAmountChange}/></td>
                                             <td>원</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <button className="btn btn-color-2" onClick={this.handleWithdraw}>
+                                <button className="btn btn-color-2" onClick={this.handleWithdraw} disabled={state.balance === 0}>
                                     출금 신청
                                 </button>
                             </div>
@@ -440,112 +458,90 @@ class Payment extends Component {
                         </div>
                         <div className="canvas">
                             {
-                                state.type === 0 ?
                                 state.data.length === 0 ?
                                 <div className="no-content">
                                     판매 내역이 없습니다.
                                 </div>
                                 :
-                                <ResponsiveContainer
-                                    width="100%"
-                                    height="100%"
-                                >
-                                    <BarChart data={state.data}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5
-                                    }}>
-                                        <XAxis dataKey="m"/>
-                                        <YAxis dataKey="revenue" />
-                                        <Tooltip/>
-                                        <Bar dataKey='revenue' fill='#5c4ce5'/>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                                :
-                                state.type === 1 ?
-                                state.data.length === 0 ?
-                                <div className="no-content">
-                                    판매 내역이 없습니다.
-                                </div>
-                                :
-                                <ResponsiveContainer
-                                    width="100%"
-                                    height="100%"
-                                >
-                                    <BarChart data={state.data}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5
-                                    }}>
-                                        <XAxis dataKey="m"/>
-                                        <YAxis />
-                                        <Tooltip/>
-                                        {
-                                            state.books.map((item, idx) => {
-                                                return (
-                                                    <Bar dataKey={item.book_title} stackId="a" fill={COLORS[idx % COLORS.length]}/>
-                                                )
-                                            })
-                                        }
-
-                                    </BarChart>
-                                </ResponsiveContainer>
-                                :
-                                state.data.length === 0 ?
-                                <div className="no-content">
-                                    판매 내역이 없습니다.
-                                </div>
-                                :
-                                <div className="container">
-                                    <div className="content">
-                                        <div className="header">
-                                            <div className="total">{parse.numberWithCommas(state.total.value)} 원</div>
-                                            <div className="sub">총 판매량</div>
-                                        </div>
-                                        <table>
-                                            <tbody>
-                                                {
-                                                    state.data.map((data, idx)=>{
-                                                        return (
-                                                            <tr className="row">
-                                                                <td>{parse.numberWithCommas(data.value) + " 원"}</td>
-                                                                <td ><div className="circle" style={{"backgroundColor" : COLORS[idx]}}/></td>
-                                                                <td>{data.book_title}</td>
-                                                                <td>{Math.round(data.value / state.total.value * 100, 0)}%</td>
-                                                            </tr>
-                                                        )
-                                                    })
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    state.type === 0 ?
+                                    <PaymentChartAll
+                                        year = {state.year}
+                                        id = {this.user.id}
+                                    />
+                                    :
+                                    state.type === 1 ?
                                     <ResponsiveContainer
                                         width="100%"
                                         height="100%"
                                     >
-                                        <PieChart width={400} height={400}>
-                                            <Pie
-                                                data={state.data}
-                                                dataKey="value"
-                                                nameKey="book_title"
-                                                cx="800"
-                                                cy="50%"
-                                                outerRadius={100}
-                                                fill='#5c4ce5'
-                                                label
-                                            >
-                                                {state.data.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip />
-                                        </PieChart>
+                                        <BarChart data={state.data}
+                                        margin={{
+                                            top: 5,
+                                            right: 30,
+                                            left: 20,
+                                            bottom: 5
+                                        }}>
+                                            <XAxis dataKey="m"/>
+                                            <YAxis />
+                                            <Tooltip/>
+                                            {
+                                                state.books.map((item, idx) => {
+                                                    return (
+                                                        <Bar dataKey={item.book_title} stackId="a" fill={COLORS[idx % COLORS.length]}/>
+                                                    )
+                                                })
+                                            }
+
+                                        </BarChart>
                                     </ResponsiveContainer>
-                                </div>
+                                    :
+                                    <div className="container">
+                                        <div className="content">
+                                            <div className="header">
+                                                <div className="total">{parse.numberWithCommas(state.total.value)} 원</div>
+                                                <div className="sub">총 판매량</div>
+                                            </div>
+                                            <table>
+                                                <tbody>
+                                                    {
+                                                        state.data.map((data, idx)=>{
+                                                            console.log(data)
+                                                            return (
+                                                                <tr className="row">
+                                                                    <td>{parse.numberWithCommas(data.value) + " 원"}</td>
+                                                                    <td ><div className="circle" style={{"backgroundColor" : COLORS[idx]}}/></td>
+                                                                    <td>{data.book_title}</td>
+                                                                    <td>{Math.round(data.value / state.total.value * 100, 0)}%</td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <ResponsiveContainer
+                                            width="100%"
+                                            height="100%"
+                                        >
+                                            <PieChart width={400} height={400}>
+                                                <Pie
+                                                    data={state.data}
+                                                    dataKey="value"
+                                                    nameKey="book_title"
+                                                    cx="800"
+                                                    cy="50%"
+                                                    outerRadius={100}
+                                                    fill='#5c4ce5'
+                                                    label
+                                                >
+                                                    {state.data.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                    ))}
+                                                </Pie>
+                                                <Tooltip />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
                             }
                         </div>
                     </div>
