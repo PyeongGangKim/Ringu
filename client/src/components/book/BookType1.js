@@ -358,7 +358,16 @@ class BookType1 extends Component {
                             <div id="intro-area" className="inner-box" ref={this.introRef}>
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.book_description}
+                                    {
+                                        book.book_description.split("\n").map((line) => {
+                                            return (
+                                                <span>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </div>
 

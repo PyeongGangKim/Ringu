@@ -357,7 +357,16 @@ class BookType2 extends Component {
                             <div id="intro-area" className="inner-box" ref={this.introRef}>
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.book_description}
+                                    {
+                                        book.book_description.split("\n").map((line) => {
+                                            return (
+                                                <span>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </div>
 
@@ -367,7 +376,16 @@ class BookType2 extends Component {
                                     <div className="preview">
                                         <div className="preview-mark" onClick={() => this.downloadAction(true)}>무료 미리보기</div>
                                     </div>
-                                    {book.content}
+                                    {
+                                        book.content.split("\n").map((line) => {
+                                            return (
+                                                <span>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </div>
 
