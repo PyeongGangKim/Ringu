@@ -360,6 +360,12 @@ class RegisterBook extends Component {
         }
     }
 
+    handleCancel = () => {
+        if(window.confirm("작품 등록을 취소하시겠습니까?")) {
+            window.location.href = URL.service.author + this.state.author.id;
+        }
+    }
+
     handleAddBook = () => {
         var state = this.state;
         state.books.push({name:"", file:null})
@@ -576,7 +582,7 @@ class RegisterBook extends Component {
                         <button className="btn btn-color-2" onClick={this.handleRegister}>
                             등록하기
                         </button>
-                        <button className="btn ">
+                        <button className="btn" onClick={this.handleCancel}>
                             취소하기
                         </button>
                     </div>
