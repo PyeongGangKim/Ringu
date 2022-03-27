@@ -68,6 +68,14 @@ class Author extends Component {
         var state = this.state;
 
         try {
+            const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
+            if(userRes.status === 200) {
+                var user = userRes.data.user
+
+                state.user = user
+                this.setState(state)
+            }
+            
             var params = {
                 author_id: this.props.authorId,
             }
@@ -75,7 +83,6 @@ class Author extends Component {
             const res = await API.sendGet(URL.api.book.list, params = params)
             if(res.status === 200) {
                 var bookList = res.data.bookList
-                console.log(bookList)
                 if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
                     state.host = true
                 }
@@ -130,14 +137,6 @@ class Author extends Component {
 
                 state.reviewList = reviewData.reviewList
                 state.reviewTitleList = reviewData.reviewTitleList
-                this.setState(state)
-            }
-
-            const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
-            if(userRes.status === 200) {
-                var user = userRes.data.user
-
-                state.user = user
                 this.setState(state)
             }
 
