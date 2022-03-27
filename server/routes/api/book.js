@@ -342,6 +342,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 "file",
                 "id",
                 "round",
+                "created_date_time",
                 [sequelize.literal("`book->author`.nickname"), "author"],
                 [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.price"), "price"],
