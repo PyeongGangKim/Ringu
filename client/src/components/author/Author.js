@@ -75,6 +75,7 @@ class Author extends Component {
             const res = await API.sendGet(URL.api.book.list, params = params)
             if(res.status === 200) {
                 var bookList = res.data.bookList
+                console.log(bookList)
                 if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
                     state.host = true
                 }
