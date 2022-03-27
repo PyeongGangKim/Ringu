@@ -115,7 +115,7 @@ class Author extends Component {
                     state.bookList['pub'] = pubList
                 }
 
-                if(waitingList.length !== 0 && state.user.id === this.props.authorId) {
+                if(waitingList.length !== 0 && state.user.id === parseInt(this.props.authorId)) {
                     state.bookList['wait'] = waitingList
                 }
 
@@ -763,7 +763,7 @@ class Author extends Component {
                                     <div className={this.state.active === 'ser-ed' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser-ed')}> 연재완료 </div>
                                     <div className={this.state.active === 'pub' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('pub')}> 단행본</div>
                                     {
-                                        state.user.id === this.props.authorId &&
+                                        state.user.id === parseInt(this.props.authorId) &&
                                         <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 미승인 </div>
                                     }
                                     
