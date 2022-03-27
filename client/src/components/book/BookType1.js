@@ -11,6 +11,7 @@ import '../../scss/common/button.scss';
 import '../../scss/book/book.scss';
 
 import URL from '../../helper/helper_url';
+import date from '../../helper/date';
 import API from '../../utils/apiutils';
 
 // 연재본
@@ -325,7 +326,7 @@ class BookType1 extends Component {
     render() {
         var state = this.state;
         var book = state.book;
-
+        console.log('월목'.split())
         return (
             <div id="book" className="page3" >
                 <div className="book-content">
@@ -342,6 +343,7 @@ class BookType1 extends Component {
 
                         <div className="book-detail-box">
                             <span className="book-detail">{book.author_nickname}</span>
+                            <span className="book-detail">{book.serialization_day}</span>
                         </div>
 
                         <h3 className="book-title">{book.book_title}</h3>
@@ -411,6 +413,11 @@ class BookType1 extends Component {
                                                                     {item.title}
                                                                 </td>
                                                             }
+                                                            <td>
+                                                                <em>
+                                                                    {date.format(item.created_date_time)}
+                                                                </em>
+                                                            </td>
                                                             {
                                                                 !state.isAuthor &&
                                                                 <td>
