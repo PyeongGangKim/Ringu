@@ -29,7 +29,7 @@ class Purchase extends Component {
             data: {
                 purchaseList:[],
                 years: years,
-                selectedYear: (searchParams.has('year') && !!searchParams.get('year')) ? parseInt(searchParams.get('year')) : 1,
+                selectedYear: (searchParams.has('period') && !!searchParams.get('period')) ? parseInt(searchParams.get('period')) : 1,
                 total: 0,
                 page: 1,
             },
@@ -52,7 +52,7 @@ class Purchase extends Component {
             offset: (state.data.page - 1) * this.limit,
             limit: this.limit,
         }
-
+        
         try {
             const res = await API.sendGet(URL.api.purchase.list, params)
             if(res.status === 200) {
@@ -64,7 +64,15 @@ class Purchase extends Component {
                 this.setState(state)
 
                 if(!init) {
-                    this.props.history.replace(URL.service.mypage.purchases + (year === 0 ? '' : `?year=${year}`))
+                    this.props.history.replace(URL.service.mypage.purchases + (year === 0 ? '' : `?period=${year}`))
+                }
+            } else if(res.status === 204) {
+                state.data.purchaseList = []
+                state.data.total = 0
+                this.setState(state)
+
+                if(!init) {
+                    this.props.history.replace(URL.service.mypage.purchases + (year === 0 ? '' : `?period=${year}`))
                 }
             }
         } catch(e) {
