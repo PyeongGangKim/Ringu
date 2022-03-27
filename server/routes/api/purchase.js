@@ -253,6 +253,7 @@ router.get('/', isLoggedIn, async (req, res, next) => {// 구매한 리스트 �
                     required: false,
                     where: {
                         member_id: member_id,
+                        status: 1,
                     },
                 },
                 {
@@ -369,8 +370,10 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
             ],
         });
 
+        console.log(sales)
+
         if(sales.length == 0){
-            res.status(StatusCodes.NO_CONTENT).send("No content");;
+            res.status(StatusCodes.NO_CONTENT).send("No content");
         }
         else{
             res.status(StatusCodes.OK).json({
@@ -687,6 +690,67 @@ router.get('/sales/amount/author', isLoggedIn, isAuthor, async(req, res, next) =
 });
 
 router.get('/sales/author', isLoggedIn, isAuthor, async(req, res, next) => {
+    var author_id = req.query.author_id;
+    var now = new Date();
+    var date = now.getDate();
+    try {
+        const sales = await purchase.findAll({
+            attributes: [
+                'id',
+                'created_date_time',
+                'price',
+                [sequelize.literal("`book_detail->book`.charge"),"charge"],
+                [sequelize.literal("member.nickname"), "buyer"],
+            ],
+            where: {
+                created_date_time: {
+                    $between: []
+                },
+                status: 1,
+            },
+            include: [
+                {
+                    model : book_detail,
+                    as : "book_detail",
+                    attributes : [],
+                    required: true,
+                    include : [
+                        {
+                            model: book,
+                            as : "book",
+                            where : {
+                                author_id: author_id
+                            },
+                            attributes: [],
+                        }
+                    ]
+                },
+                {
+                    model: member,
+                    as : "member",
+                    attributes: [],
+                }
+            ],
+            order: [
+                ['created_date_time', 'DESC']
+            ]
+        });
+        if(sales.length === 0){
+            res.status(StatusCodes.NO_CONTENT).send("No content");;
+        }
+        else{
+            res.status(StatusCodes.OK).json({
+                sales : sales,
+            });
+        }
+    }
+    catch(err){
+        logger.error(err.stack);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+});
+
+router.get('/sales/author/daily', isLoggedIn, isAuthor, async(req, res, next) => {
     var author_id = req.query.author_id;
     try {
         const sales = await purchase.findAll({
