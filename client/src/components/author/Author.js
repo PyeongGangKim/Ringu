@@ -78,7 +78,7 @@ class Author extends Component {
                 if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
                     state.host = true
                 }
-
+                
                 var waitingList = bookList.filter(book => {
                     return book.is_approved === 0
                 })
@@ -115,7 +115,7 @@ class Author extends Component {
                     state.bookList['pub'] = pubList
                 }
 
-                if(waitingList.length !== 0) {
+                if(waitingList.length !== 0 && state.user.id === this.props.authorId) {
                     state.bookList['wait'] = waitingList
                 }
 
@@ -762,7 +762,11 @@ class Author extends Component {
                                     <div className={this.state.active === 'ser' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser')}> 연재중 </div>
                                     <div className={this.state.active === 'ser-ed' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser-ed')}> 연재완료 </div>
                                     <div className={this.state.active === 'pub' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('pub')}> 단행본</div>
-                                    <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 미승인 </div>
+                                    {
+                                        state.user.id === this.props.authorId &&
+                                        <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 미승인 </div>
+                                    }
+                                    
                                 </div>
                             </div>
                             <div className="inner-content">
