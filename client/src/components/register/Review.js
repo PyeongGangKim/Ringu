@@ -15,6 +15,7 @@ import Modal from '../../components/modal/Modal';
 class Review extends Component {
     constructor(props) {
         super(props)
+        
         this.state = {
             book: {},
             book_detail: this.props.book_detail,
@@ -29,7 +30,7 @@ class Review extends Component {
         var state = this.state;
         const res = await API.sendGet(URL.api.book_detail.get + state.book_detail)
         if(res.status === 200)
-        {
+        {   
             var book = res.data.book
             state.book = book
             state.isSuccess = true
@@ -104,6 +105,15 @@ class Review extends Component {
         }
     }
 
+    toReview = () => {
+        this.props.history.push({
+            pathname: URL.service.book.book + this.state.book.book_id,
+            state: {
+                toReview: true,
+            }
+        })
+    }
+
     render() {
         var state = this.state
 
@@ -130,7 +140,7 @@ class Review extends Component {
                                 </button>
                             </Link>
 
-                            <button className="btn btn-block btn-transparent">
+                            <button className="btn btn-block btn-transparent" onClick={this.toReview}>
                                 리뷰 보러가기
                             </button>
 
