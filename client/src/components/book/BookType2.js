@@ -317,7 +317,13 @@ class BookType2 extends Component {
             <div id="book" className="page3" >
                 <div className="merchant-bar">
                     <div className="merchant-box">
-                        <span className="title">{book.book_title}</span>
+                        <div className="book-title">
+                            <div className="img-wrap">
+                                <img src={!!state.book.img ? state.book.img : "/ringu_thumbnail.png" }/>
+                            </div>
+                            
+                            <span className="title">{book.book_title}</span>
+                        </div>
                         <div className="payment-wrap">
                             <span className="price">{parse.numberWithCommas(book.price)}원</span>
                             <button className="btn btn-color-4" onClick={this.handleCartClick}> 장바구니 </button>
