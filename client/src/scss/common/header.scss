@@ -1,12 +1,6 @@
 header {
     border-bottom: 1px solid #c2c2c2;
     background-color: white;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 110px;
     z-index: 500;
 
     #signup-header {
@@ -23,23 +17,22 @@ header {
         }
     }
 
-    #header {
-        position: relative;
+    #header-wrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         margin: 0 auto;
         width: 1360px;
-        height: 100%;
+        height: 110px;
     }
 
     #logo {
-        position: absolute;
-        top: 20px;
-        left: 0;
-        width: 220px;
+        width: 150px;
         height: 70px;
 
         a {
             display: block;
-            width: 220px;
+            width: 150px;
             height: 70px;
 
             background-image: url("/assets/img/logo.png");
@@ -52,10 +45,7 @@ header {
         }
     }
 
-    #user-area {
-        position: absolute;
-        top: 25px;
-        right: 0;
+    #user-area {        
         width: 250px;
         height: 60px;
 
@@ -154,9 +144,6 @@ header {
     }
 
     #search-area {
-        position: absolute;
-        top: 35px;
-        right: 280px;
         height: 40px;
 
         .search {

@@ -92,12 +92,13 @@ class Header extends Component {
 
         return (
             <header>
-                <div id="header" className={this.props.searchVisible ? "bottom-line" : ""}>
+                <div id="header-wrap" className={this.props.searchVisible ? "bottom-line" : ""}>
                     <h1 id="logo">
                         <Link to={URL.service.home}>
                             <img src="/logo.png" width="220px" height="70px"/>
                         </Link>
                     </h1>
+                    <div style={{"flexGrow":1}}></div>
                     <div id="search-area">
                         {
                             this.props.searchVisible !== false &&

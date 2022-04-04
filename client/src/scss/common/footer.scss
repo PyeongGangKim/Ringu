@@ -1,11 +1,14 @@
-#footer{
+footer {
     background-color: #f5f5f5;
-    width: 100vw !important;
-    left: 0;
-    position: absolute;
- 
-    display: flex;
-   
+
+    #footer-wrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 0 auto;
+        width: 1360px;
+        padding-bottom: 25px;
+
         .vertical-div{
             margin: auto;
             width: 1560px !important;
@@ -30,6 +33,10 @@
                     font-weight:500;
                     font-size: 19px;
                     display: flex;
+
+                    span {
+                        white-space: pre;
+                    }
                 }
                 .copyright{
                     font-weight: 400;
@@ -57,7 +64,7 @@
                         color: #818181;
                     }
                     .each-content{
-                        margin-bottom: 10px;
+                        margin-bottom: 5px;
                     }
                 }
                 .contact{
@@ -75,7 +82,7 @@
                         color: #818181;
                     }
                     .each-content{
-                        margin-bottom: 10px;
+                        margin-bottom: 5px;
                     }
                 }
                 .visit{
@@ -92,7 +99,7 @@
                         display: flex !important;
                         
                         .visit-button{
-                            margin-bottom: 10px;
+                            margin-bottom: 5px;
                             padding: 0px;
                             .button-content{
                                 color: #818181;
@@ -118,9 +125,8 @@
                             
                         }
                     }
-                }
-                
+                }                
             }
-      
+        }
     }
 }
