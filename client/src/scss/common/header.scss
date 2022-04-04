@@ -1,21 +1,17 @@
+#signup-header {
+    width: 100%;
+    text-align: center;
+    height: 100%;
+
+    #signup-logo {
+        padding-top: 30px;
+    }
+}
+
 header {
     border-bottom: 1px solid #c2c2c2;
     background-color: white;
     z-index: 500;
-
-    #signup-header {
-        width: 100%;
-        text-align: center;
-        height: 100%;
-
-        #signup-logo {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 60px;
-        }
-    }
 
     #header-wrap {
         display: flex;
@@ -144,6 +140,7 @@ header {
     }
 
     #search-area {
+        padding: 0 15px;
         height: 40px;
 
         .search {

@@ -14,9 +14,11 @@ class FindEmailPage extends Component {
         return (
             <Fragment>
                 <Helmet title={string.base}/>
-                <Header searchVisible={false} history={this.props.history}></Header>
-                <FindEmail history={this.props.history}></FindEmail>
-                <Footer></Footer>
+                <Header searchVisible={false} history={this.props.history}/>
+                <div id="wrap">
+                    <FindEmail history={this.props.history}/>
+                </div>
+                <Footer/>
             </Fragment>
         )
     }
