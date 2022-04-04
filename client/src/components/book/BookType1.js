@@ -343,7 +343,7 @@ class BookType1 extends Component {
 
                         <div className="book-detail-box">
                             <span className="book-detail">{book.author_nickname}</span>
-                            <span className="book-detail">{book.serialization_day}</span>
+                            <span className="book-detail">연재 요일: {book.serialization_day}</span>
                         </div>
 
                         <h3 className="book-title">{book.book_title}</h3>
@@ -380,7 +380,6 @@ class BookType1 extends Component {
                                         <tbody>
                                             {
                                                 state.detailList.map((item, i) => {
-                                                    console.log(item)
                                                     return (
                                                         <tr key={i}>
                                                             <td>
