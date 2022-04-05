@@ -26,6 +26,7 @@ class Main extends Component {
             latestBookList: [],
             recommend: null,
             searchClear: false,
+            categories: [],
         };
     }
 
@@ -45,7 +46,7 @@ class Main extends Component {
             const latestRes = await API.sendGet(URL.api.book.list, latestBookParams);
 
             if(res.status === 200) state.bookList = res.data.bookList;
-            if(latestRes.status === 200)state.latestBookList = latestRes.data.bookList;
+            if(latestRes.status === 200) state.latestBookList = latestRes.data.bookList;
             if(res.status === 200 || latestRes.status === 200) this.setState(state);
 
         } catch(e) {
@@ -56,6 +57,16 @@ class Main extends Component {
             const res = await API.sendGet(URL.api.book.recommend)
             if(res.status === 200) {
                 state.recommend = res.data.recommend;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.category.list)
+            if(res.status === 200) {
+                state.categories = res.data.categoryList;
                 this.setState(state);
             }
         } catch(e) {
@@ -201,9 +212,40 @@ class Main extends Component {
                         </div>
                     </Slider>
                 </div>
-
+                
 
                 <div id="home" className="page1">
+                    <div className="category-wrap">
+                        {
+                            state.categories.map((category, idx) => {
+                                return(
+                                    
+                                    <div class="category">
+                                        <div class="category-box">
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <span className="icon">
+                                                                <img src={"/ringu_thumbnail.png"}/>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span>
+                                                                {category.name}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+
+                                    
+                                )
+                            })
+                        }
+                    </div>
                     <div className="title-wrap">
                         <h2> NEW </h2>
                         {
