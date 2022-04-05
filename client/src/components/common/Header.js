@@ -9,6 +9,7 @@ import '../../scss/common/input.scss';
 
 import URL from '../../helper/helper_url';
 import User from '../../utils/user';
+import API from '../../utils/apiutils';
 
 class Header extends Component {
     userInfo = User.getInfo();
@@ -36,18 +37,32 @@ class Header extends Component {
                 login : 'Y',
                 id : userInfo.id,
                 type: userInfo.type,
+                categories: [],
+                popup: false,
             }
         } else {
             this.state = {
                 ...params,
                 login: 'N',
                 id: '',
+                categories: [],
+                popup: false,
             }
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        var state = this.state;
 
+        try {
+            const res = await API.sendGet(URL.api.category.list)
+            if(res.status === 200) {
+                state.categories = res.data.categoryList;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
     }
 
     handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
@@ -86,6 +101,12 @@ class Header extends Component {
         }
     };
 
+    toggleSearchPopup = (value) => {
+        var state = this.state;
+        state.popup = value;
+        this.setState(state);
+    }
+
     render() {
         var state = this.state;
         const displayClass = state.display ? "display" : "";
@@ -99,12 +120,32 @@ class Header extends Component {
                         </Link>
                     </h1>
                     <div style={{"flexGrow":1}}></div>
-                    <div id="search-area">
+                    <div id="search-area" onFocus={() => this.toggleSearchPopup(true)} onBlur={() => this.toggleSearchPopup(false)}>
                         {
                             this.props.searchVisible !== false &&
                             <div className="search">
                                 <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
+                            </div>
+                        }
+                        {
+                            state.popup &&
+                            <div className="search-popup">
+                                <hr/>
+                                <div className="category-wrap">
+                                    <span>카테고리</span>
+                                    <div className="category-list">
+                                        {
+                                            state.categories.map(category => {
+                                                return (
+                                                    <span className="category">
+                                                        {category.name}
+                                                    </span>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         }
                     </div>
