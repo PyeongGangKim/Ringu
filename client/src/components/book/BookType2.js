@@ -152,9 +152,7 @@ class BookType2 extends Component {
                 var params = {
                     book_id: book.book_id,
                 }
-
                 const duplicate = await API.sendGet(URL.api.favorite.book.duplicate, params)
-
                 if(duplicate.status === 200) {
                     if(duplicate.data.message === 'OK') {
                         const res = await API.sendPost(URL.api.favorite.book.create, params)
@@ -169,7 +167,7 @@ class BookType2 extends Component {
                 }
             } catch(e) {
                 var error = e.response;
-                if(error.status === 403) {
+                if(error.status === 401) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }

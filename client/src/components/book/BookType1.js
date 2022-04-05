@@ -164,7 +164,7 @@ class BookType1 extends Component {
                 }
             } catch(e) {
                 var error = e.response;
-                if(error.status === 403) {
+                if(error.status === 401) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
