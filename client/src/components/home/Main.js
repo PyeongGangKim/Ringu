@@ -42,6 +42,16 @@ class Main extends Component {
         }
 
         try {
+            const res = await API.sendGet(URL.api.category.list)
+            if(res.status === 200) {
+                state.categories = res.data.categoryList;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
+
+        try {
             const res = await API.sendGet(URL.api.book.list, params);
             const latestRes = await API.sendGet(URL.api.book.list, latestBookParams);
 
@@ -57,16 +67,6 @@ class Main extends Component {
             const res = await API.sendGet(URL.api.book.recommend)
             if(res.status === 200) {
                 state.recommend = res.data.recommend;
-                this.setState(state);
-            }
-        } catch(e) {
-            console.error(e)
-        }
-
-        try {
-            const res = await API.sendGet(URL.api.category.list)
-            if(res.status === 200) {
-                state.categories = res.data.categoryList;
                 this.setState(state);
             }
         } catch(e) {
