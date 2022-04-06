@@ -86,13 +86,17 @@ html {
 }
 
 body {
+    height: 100%;
+    min-height: 100vh;
     padding: 0;
     font-size: 14px;
 }
 
 #root {
-    height: 100%;
+    position: relative;
+    min-height: 100vh;
     min-width:1360px;
+    padding-bottom: 220px;
 }
 
 #wrap {

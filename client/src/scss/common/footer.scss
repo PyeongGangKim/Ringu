@@ -1,7 +1,11 @@
 footer {
+    position: absolute;    
     background-color: #f5f5f5;
+    width: 100%;
+    bottom: 0;
 
     #footer-wrap {
+        position: relative;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -11,7 +15,7 @@ footer {
 
         .vertical-div{
             margin: auto;
-            width: 1560px !important;
+            width: 1360px !important;
             display: flex;
             background-color: #f5f5f5;
             // margin: 0 auto;
