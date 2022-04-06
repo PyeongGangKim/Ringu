@@ -13,7 +13,7 @@ var _favorite_book = require("./favorite_book");
 var _favorite_book_statistics = require("./favorite_book_statistics");
 var _identification = require("./identification");
 var _member = require("./member");
-var _notiCount = require("./notiCount");
+var _noticount = require("./noticount");
 var _notification = require("./notification");
 var _payment = require("./payment");
 var _purchase = require("./purchase");
@@ -39,7 +39,7 @@ function initModels(sequelize) {
   var favorite_book_statistics = _favorite_book_statistics(sequelize, DataTypes);
   var identification = _identification(sequelize, DataTypes);
   var member = _member(sequelize, DataTypes);
-  var notiCount = _notiCount(sequelize, DataTypes);
+  var noticount = _noticount(sequelize, DataTypes);
   var notification = _notification(sequelize, DataTypes);
   var payment = _payment(sequelize, DataTypes);
   var purchase = _purchase(sequelize, DataTypes);
@@ -88,8 +88,8 @@ function initModels(sequelize) {
   member.hasOne(favorite_author_statistics, { as: "favorite_author_statistic", foreignKey: "author_id"});
   favorite_book.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(favorite_book, { as: "favorite_books", foreignKey: "member_id"});
-  notiCount.belongsTo(member, { as: "member", foreignKey: "member_id"});
-  member.hasMany(notiCount, { as: "notiCounts", foreignKey: "member_id"});
+  noticount.belongsTo(member, { as: "member", foreignKey: "member_id"});
+  member.hasMany(noticount, { as: "noticounts", foreignKey: "member_id"});
   notification.belongsTo(member, { as: "member", foreignKey: "member_id"});
   member.hasMany(notification, { as: "notifications", foreignKey: "member_id"});
   payment.belongsTo(member, { as: "member", foreignKey: "member_id"});
@@ -124,7 +124,7 @@ function initModels(sequelize) {
     favorite_book_statistics,
     identification,
     member,
-    notiCount,
+    noticount,
     notification,
     payment,
     purchase,
