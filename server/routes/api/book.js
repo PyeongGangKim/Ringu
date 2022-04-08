@@ -56,9 +56,6 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 '$author.nickname$' : {
                     [Op.like] :  "%"+keyword+"%",
                 },
-                '$author.nickname$' : {
-                    [Op.like] :  "%"+keyword+"%",
-                },
                 '$book.description$' : {
                     [Op.like] :  "%"+keyword+"%",
                 },
