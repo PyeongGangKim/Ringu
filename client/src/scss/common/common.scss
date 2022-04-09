@@ -97,6 +97,8 @@ body {
     min-height: 100vh;
     min-width:1360px;
     padding-bottom: 220px;
+    display: flex;
+    flex-direction: column;
 }
 
 #wrap {

@@ -1,22 +1,27 @@
 import React, { Component, Fragment } from 'react';
+import Helmet from 'react-helmet';
+import {Oval} from 'react-loader-spinner'
 
 import '../../scss/search/search.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
+import '../../scss/common/loading.scss'
 
 import Book from '../../components/book/Book'
 
 import User from '../../utils/user';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
+import string from '../../config/str';
 
 import Modal from '../../components/modal/Modal';
+
 
 class Search extends Component {
     constructor(props) {
         super(props);
 
-        this.search = new URLSearchParams(this.props.search)
+        this.search = props.search
 
         this.state = {
             searchList: [],
@@ -29,54 +34,68 @@ class Search extends Component {
             display: 0,
             keyword: this.search.get('keyword'),
             order: [],
+            isCategorySearch: false,
+            isLoading: true,
         };
     }
 
     async componentDidMount() {
-        try {
-            var state = this.state;
+        var state = this.state;        
 
-            if (this.search.has('filter') && this.search.has('order')) {
-                var filter = this.search.get('filter')
-                var order = this.search.get('order')
-                state.order = [filter, order]
-
-                if(filter === 'recent') {
-                    state.filter = 1
+        if(this.search.has('keyword') || this.search.has('category')) {
+            try {
+                state.isLoading = true;
+                if(!this.search.has('keyword') && this.search.has('category')) {
+                    state.isCategorySearch = true;
+                    state.selected = [parseInt(this.search.get('category'))]
+                    state.newSelected = [parseInt(this.search.get('category'))]
                 }
-                else if(filter === 'score') {
-                    state.filter = 2
-                }
-                else if(filter === 'title') {
-                    if(order === 'asc') {
-                        state.filter = 3
-                    }
-                    else {
-                        state.filter = 4
+                else {
+                    if (this.search.has('category')) {
+                        var selectedCategories = this.search.get('category').split('|').map((x) => parseInt(x))
+                        state.selected = new Set(selectedCategories);
+                        state.newSelected = new Set(selectedCategories);
+                        if(selectedCategories.length !== 0) {
+                            state.category = "선택됨"
+                        }
                     }
                 }
-            }
 
-            if (this.search.has('category')) {
-                var selectedCategories = this.search.get('category').split('|').map((x) => parseInt(x))
-                state.selected = new Set(selectedCategories);
-                state.newSelected = new Set(selectedCategories);
-                if(selectedCategories.length !== 0) {
-                    state.category = "선택됨"
+                const categoryRes = await API.sendGet(URL.api.category.list)
+                    if(categoryRes.status === 200){
+                        state.categoryList = categoryRes.data.categoryList
+                    }
+
+                if (this.search.has('filter') && this.search.has('order')) {
+                    var filter = this.search.get('filter')
+                    var order = this.search.get('order')
+                    state.order = [filter, order]
+    
+                    if(filter === 'recent') {
+                        state.filter = 1
+                    }
+                    else if(filter === 'score') {
+                        state.filter = 2
+                    }
+                    else if(filter === 'title') {
+                        if(order === 'asc') {
+                            state.filter = 3
+                        }
+                        else {
+                            state.filter = 4
+                        }
+                    }
                 }
-            }
 
-            const categoryRes = await API.sendGet(URL.api.category.list)
-            if(categoryRes.status === 200){
-                state.categoryList = categoryRes.data.categoryList
+                this.handleSearch(false)
             }
+            catch(e) {
+                console.log(e)
+                state.isLoading = false;
+            }
+        }
 
-            this.setState(state)
-            this.handleSearch(false)
-        }
-        catch(e) {
-            console.log(e)
-        }
+        this.setState(state);
     }
 
     handleDisplayClick = (value) => {
@@ -102,7 +121,7 @@ class Search extends Component {
         else {
             newSelected.add(id)
         }
-        console.log(newSelected)
+        
         state.newSelected = newSelected;
 
         this.setState(state)
@@ -142,35 +161,39 @@ class Search extends Component {
             params['order'] = state.order[0]
             params['orderBy'] = state.order[1]
         }
-
+        
         try {
             const res = await API.sendGet(URL.api.book.list, params = params)
-
             if(res.status === 200) {
                 state.searchList = res.data.bookList;
-
-                this.setState(state);
                 if(mounted) {
                     this.handleUpdateSearch()
                 }
             }
+            state.isLoading = false;
         } catch(e) {
+            state.isLoading = false;
             console.error(e)
             alert("검색에 실패하였습니다.")
         }
+        
+        this.setState(state);
     }
 
     handleUpdateSearch = () => {
         var state = this.state;
-
-        var search = `?keyword=${encodeURIComponent(state.keyword)}`
-        if (state.order.length !== 0) {
-            search = search + `&filter=${encodeURIComponent(state.order[0])}&order=${encodeURIComponent(state.order[1])}`
+        var search = '?'
+        if(!state.isCategorySearch) {
+            search += `keyword=${encodeURIComponent(state.keyword)}&`
         }
 
         var categories = Array.from(state.selected)
         if (categories.length !== 0){
-            search = search + `&category=${encodeURIComponent(Array.from(state.selected).join('|'))}`
+            search += `category=${encodeURIComponent(Array.from(state.selected).join('|'))}`
+        }
+
+        if (state.order.length !== 0) {
+            search += `&filter=${encodeURIComponent(state.order[0])}&order=${encodeURIComponent(state.order[1])}`
         }
 
         window.location = URL.service.search + search
@@ -179,9 +202,22 @@ class Search extends Component {
     render() {
         var searchList = this.state.searchList
         var state = this.state;
-
+        
         return (
+            state.isLoading ?
+            <div className="loading-container">
+                <Oval
+                    ariaLabel="loading-indicator"
+                    width={100}
+                    height={100}
+                    strokeWidth={3}
+                    color="#c2c2c2"
+                    secondaryColor="#d5d5d5"
+                />
+            </div>
+            :
             <div id="wrap">
+                <Helmet title={`${!this.search.has('keyword') && state.categoryList.length > 0 ? state.categoryList.filter(x => x.id === parseInt(this.search.get('category')))[0].name : this.search.get('keyword')}` + string.search + string.postfix}/>
                 <div id="search" className="page1">
                     {
                         state.display > 0 &&
@@ -239,19 +275,27 @@ class Search extends Component {
                                     </div>
                                 </div>
                             }
-
                         </Modal>
                     }
 
                     <div className="title-wrap">
-                        <h2 className="title">{`'${this.search.get('keyword')}'`} 검색 결과 ({state.searchList.length} 건)</h2>
+                        {
+                            state.isCategorySearch ?
+                            <h2 className="title">{`카테고리 '${state.categoryList.filter(x => x.id === parseInt(this.search.get('category')) )[0].name}'`} 검색 결과 ({state.searchList.length} 건)</h2>
+                            :
+                            <h2 className="title">{`'${this.search.get('keyword')}'`} 검색 결과 ({state.searchList.length} 건)</h2>
+                        }
                     </div>
 
                     <div className="filter-area">
-                        <div className="filter" onClick={() => this.handleDisplayClick(1)}>
-                            <span> {state.category}</span>
-                            <em/>
-                        </div>
+                        {
+                            !state.isCategorySearch &&
+                            <div className="filter" onClick={() => this.handleDisplayClick(1)}>
+                                <span> {state.category}</span>
+                                <em/>
+                            </div>
+                        }
+                        
                         {
                             state.searchList.length !== 0 &&
                             <div className="filter" onClick={() => this.handleDisplayClick(2)}>

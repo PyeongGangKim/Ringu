@@ -7,6 +7,8 @@ import '../../scss/common/common.scss'
 import '../../scss/common/header.scss';
 import '../../scss/common/input.scss';
 
+import Chip from '../../components/common/Chip'
+
 import URL from '../../helper/helper_url';
 import User from '../../utils/user';
 import API from '../../utils/apiutils';
@@ -19,16 +21,17 @@ class Header extends Component {
 
         var userInfo = this.userInfo;
 
+        this.search = props.search
+
         if (props.mypage && !userInfo) {
             alert("로그인이 필요합니다.")
             window.location.href = URL.service.home
         }
 
-        var searchParams = props.search
-
         var params = {
             display: false,
-            keyword: (!!searchParams && searchParams.has('keyword')) ? searchParams.get('keyword') : "",
+            keyword: (!!this.search && this.search.has('keyword')) ? this.search.get('keyword') : "",
+            isCategorySearch: !this.search.has('keyword') && this.search.has('category') ? true : false,
         }
 
         if (!!userInfo) {
@@ -73,6 +76,9 @@ class Header extends Component {
     }
     handleDisplay = (evt) =>{var state = this.state;state.display = !state.display;this.setState(state);}
     handleSearchClick = () => {
+        if(!!this.state.isCategorySearch) {
+            return;
+        }
         this.handleSearch()
     }
 
@@ -101,10 +107,13 @@ class Header extends Component {
         }
     };
 
-    toggleSearchPopup = (value) => {
-        var state = this.state;
-        state.popup = value;
-        this.setState(state);
+    toggleSearchPopup = (e, value) => {
+        if(value === false && !e.currentTarget.contains(e.relatedTarget) || value === true)
+            this.setState({popup: value})
+    }
+
+    removeChip = () => {
+        this.setState({isCategorySearch: false});
     }
 
     render() {
@@ -120,27 +129,36 @@ class Header extends Component {
                         </Link>
                     </h1>
                     <div style={{"flexGrow":1}}></div>
-                    <div id="search-area" onFocus={() => this.toggleSearchPopup(true)} onBlur={() => this.toggleSearchPopup(false)}>
+                    <div id="search-area" tabIndex={0} onFocus={(e) => this.toggleSearchPopup(e, true)} onBlur={(e) => this.toggleSearchPopup(e, false)}>
                         {
                             this.props.searchVisible !== false &&
                             <div className="search">
-                                <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
+                                {
+                                    state.isCategorySearch && state.categories.length > 0
+                                    ?
+                                    <Chip label={state.categories.filter(x => x.id === parseInt(this.search.get('category')))[0].name} onRemove={this.removeChip}/>
+                                    :
+                                    <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
+                                }
+                                
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
                             </div>
                         }
                         {
                             state.popup &&
-                            <div className="search-popup">
-                                <hr/>
+                            <div className="search-popup" tabindex={0}>
+                                {/*<hr/>*/}
                                 <div className="category-wrap">
                                     <span>카테고리</span>
                                     <div className="category-list">
                                         {
                                             state.categories.map(category => {
                                                 return (
-                                                    <span className="category">
-                                                        {category.name}
-                                                    </span>
+                                                    <a href={URL.service.search + "?category=" + category.id}>
+                                                        <span className="category">
+                                                            {category.name}
+                                                        </span>
+                                                    </a>
                                                 )
                                             })
                                         }
