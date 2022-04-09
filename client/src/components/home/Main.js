@@ -219,114 +219,126 @@ class Main extends Component {
                         {
                             state.categories.map((category, idx) => {
                                 return(
-                                    
-                                    <div class="category">
-                                        <div class="category-box">
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <span className="icon">
-                                                                <img src={"/ringu_thumbnail.png"}/>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span>
-                                                                {category.name}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                    <Link to={URL.service.search + `?category=${category.id}`}>
+                                        <div class="category" tabIndex={idx} onMouseOver={this.handle}>
+                                            <div class="category-box">
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <span className="icon">
+                                                                    <img src={require("../../assets/img/" + category.img).default}/>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span>
+                                                                    {category.name}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                            </div>
                                         </div>
-                                </div>
+                                    </Link>
 
                                     
                                 )
                             })
                         }
                     </div>
-                    <div className="title-wrap">
-                        <h2> NEW </h2>
-                        {
-                            state.latestBookList.length > 5 &&
-                            <div className="slick--arrow">
-                                <div className="slick-arrow-wrapper">
-                                    <a className="slick-arrow arrow-left" onClick={() => this.previous(this.newSlider)}>
-                                        <em/>
-                                    </a>
-                                    <a className="slick-arrow arrow-right" onClick={() => this.next(this.newSlider)}>
-                                        <em/>
-                                    </a>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <div className="book-area slick-slider-wrapper">
-                        <StyledBookSlider ref={c => (this.newSlider = c)} {...settings} infinite={state.latestBookList.length > 5 ? true: false}>
-                            {
-                                state.latestBookList.map(item => {
-                                    var status = '';
-                                    if(item.type === 2) {
-                                        status  = 'pub'
-                                    } else {
-                                        status  = 'ser'
-                                    }
-                                    return (
-                                        <Book
-                                            key={item.id}
-                                            book={item}
-                                            status={status}
-                                            favorite
-                                        />
-                                    )
-                                })
-                            }
-                        </StyledBookSlider>
-                    </div>
-
-                    <div className="title-wrap">
-                        <h2> MD{`'`}s Pick </h2>
-                        {
-                            state.bookList.length > 5 &&
-                            <div className="slick--arrow">
-                                <div className="slick-arrow-wrapper">
-                                    <a className="slick-arrow arrow-left" onClick={() => this.previous(this.recSlider)}>
-                                        <em/>
-                                    </a>
-                                    <a className="slick-arrow arrow-right" onClick={() => this.next(this.recSlider)}>
-                                        <em/>
-                                    </a>
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <div className="book-area slick-slider-wrapper">
-                        <StyledBookSlider ref={c => (this.recSlider = c)} {...settings} infinite={state.bookList.length > 5 ? true: false}>
-                            {
-                                state.bookList.map(item => {
-                                    var status = '';
-                                    if(item.type === 2) {
-                                        status  = 'pub'
-                                    } else {
-                                        status  = 'ser'
-                                    }
-                                    return (
-                                        <div>
-                                            <Book
-                                                key={item.id}
-                                                book={item}
-                                                status={status}
-                                                favorite
-                                            />
+                    {
+                        state.latestBookList.length > 0 &&
+                        <div>
+                            <div className="title-wrap">
+                                <h2> NEW </h2>
+                                {
+                                    state.latestBookList.length > 5 &&
+                                    <div className="slick--arrow">
+                                        <div className="slick-arrow-wrapper">
+                                            <a className="slick-arrow arrow-left" onClick={() => this.previous(this.newSlider)}>
+                                                <em/>
+                                            </a>
+                                            <a className="slick-arrow arrow-right" onClick={() => this.next(this.newSlider)}>
+                                                <em/>
+                                            </a>
                                         </div>
-                                    )
-                                })
-                            }
-                        </StyledBookSlider>
-                    </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div className="book-area slick-slider-wrapper">
+                                <StyledBookSlider ref={c => (this.newSlider = c)} {...settings} infinite={state.latestBookList.length > 5 ? true: false}>
+                                    {
+                                        state.latestBookList.map(item => {
+                                            var status = '';
+                                            if(item.type === 2) {
+                                                status  = 'pub'
+                                            } else {
+                                                status  = 'ser'
+                                            }
+                                            return (
+                                                <Book
+                                                    key={item.id}
+                                                    book={item}
+                                                    status={status}
+                                                    favorite
+                                                />
+                                            )
+                                        })
+                                    }
+                                </StyledBookSlider>
+                            </div>
+                        </div>
+                    }
+
+                    {
+                        state.bookList.length > 0 &&
+                        <div>
+                            <div className="title-wrap">
+                                <h2> MD{`'`}s Pick </h2>
+                                {
+                                    state.bookList.length > 5 &&
+                                    <div className="slick--arrow">
+                                        <div className="slick-arrow-wrapper">
+                                            <a className="slick-arrow arrow-left" onClick={() => this.previous(this.recSlider)}>
+                                                <em/>
+                                            </a>
+                                            <a className="slick-arrow arrow-right" onClick={() => this.next(this.recSlider)}>
+                                                <em/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div className="book-area slick-slider-wrapper">
+                                <StyledBookSlider ref={c => (this.recSlider = c)} {...settings} infinite={state.bookList.length > 5 ? true: false}>
+                                    {
+                                        state.bookList.map(item => {
+                                            var status = '';
+                                            if(item.type === 2) {
+                                                status  = 'pub'
+                                            } else {
+                                                status  = 'ser'
+                                            }
+                                            return (
+                                                <div>
+                                                    <Book
+                                                        key={item.id}
+                                                        book={item}
+                                                        status={status}
+                                                        favorite
+                                                    />
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </StyledBookSlider>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         );

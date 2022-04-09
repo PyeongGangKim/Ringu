@@ -1,7 +1,12 @@
 .tab-wrap {
     .tab-nav {
+        position: sticky;
+        top: 0;
         height: 60px;
         border-bottom: 2px solid #ccc;
+        background-color: white;
+        width: 100%;
+        z-index: 100;
 
         .tab-btn {
             display:inline-block;
@@ -30,7 +35,7 @@
             display: flex;
             width: 100%;
             min-height: 150px;
-            padding-top: 25px;
+            padding-top: 40px;
 
             .inner-header{
                 margin-top: 20px;
@@ -76,14 +81,15 @@
         }
     }
 }
-.tab-dock-top {
+/*.tab-dock-top {
     padding-top: 63px;
 
     .tab-nav {
         position: fixed;
-        width: 1060px;
+        width: 980px;
         background-color: white;
         top: 0;
         z-index: 100;
     }
 }
+*/
