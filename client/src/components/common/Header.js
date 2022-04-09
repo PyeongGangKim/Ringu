@@ -31,7 +31,7 @@ class Header extends Component {
         var params = {
             display: false,
             keyword: (!!this.search && this.search.has('keyword')) ? this.search.get('keyword') : "",
-            isCategorySearch: !this.search.has('keyword') && this.search.has('category') ? true : false,
+            isCategorySearch: !!this.search && !this.search.has('keyword') && this.search.has('category') ? true : false,
         }
 
         if (!!userInfo) {
