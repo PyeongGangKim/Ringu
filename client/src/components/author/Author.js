@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Link } from 'react-scroll';
 
 import User from '../../utils/user';
 import Book from '../../components/book/Book'
@@ -25,13 +26,9 @@ class Author extends Component {
     constructor(props) {
         super(props)
 
-        this.introRef = React.createRef();
-        this.bookRef = React.createRef();
-        this.reviewRef = React.createRef();
-
         this.state = {
-            tab: 'intro',
-            tabChange: false,
+            tab: 1,
+            
             detailList: [],
             detailTotal: 0,
             bookList: {},
@@ -43,7 +40,7 @@ class Author extends Component {
             },
             active: 'a',
             activeReview: 0,
-            dock: false,
+            
             reviewList: [],
             reviewTitleList: [],
 
@@ -62,10 +59,25 @@ class Author extends Component {
             host: false,
             book: {title:"", filename:"선택 파일 없음", file:null},
         }
+
+        //this.throttleScroll = this.throttle(this.handleScroll, 150);
     }
+
+    /*throttle = (callback, delay) => {
+        var timer;
+        return () => {
+            if (timer) return;
+            timer = setTimeout(() => {
+                callback();
+                timer = null;
+            }, delay);
+        };
+    };*/
 
     async componentDidMount() {
         var state = this.state;
+
+        //window.addEventListener('scroll', this.throttleScroll);
 
         try {
             const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
@@ -140,12 +152,7 @@ class Author extends Component {
                 this.setState(state)
             }
 
-            window.addEventListener('scroll', this.handleScroll)
-            if (window.scrollY > 100) {
-                state.dock = true;
-            } else {
-                state.dock = false;
-            }
+            
 
             this.setState(state)
 
@@ -154,68 +161,21 @@ class Author extends Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
-            window.addEventListener('scroll', this.handleScroll)
-            if (window.scrollY > 100) {
-                this.state.dock = true;
-            } else {
-                this.state.dock = false;
-            }
-
-            this.setState(this.state)
-        }
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll)
-    }
-
-    handleTabChange = (event, value) => {
-        this.setState({tab: value, tabChange: true})
-        window.removeEventListener('scroll', this.handleScroll)
-
-        if (value === 'intro') {
-            window.scrollTo({
-                top: this.introRef.current.offsetTop - tabHeight,
-            })
-        } else if (value === 'book') {
-            window.scrollTo({
-                top: this.bookRef.current.offsetTop - tabHeight,
-            })
-        } else {
-            window.scrollTo({
-                top: this.reviewRef.current.offsetTop - tabHeight,
-            })
-        }
-    }
-
-    handleScroll = (event) => {
+    /*handleScroll = (e) => {
         var state = this.state;
 
-        const scrollTop = ('scroll', event.srcElement.scrollingElement.scrollTop);
-        if (scrollTop > 100) {
-            state.dock = true;
-        } else {
-            state.dock = false;
-        }
-
-        if(state.tabChange === true) {
-            state.tabChange = false
-            return;
-        }
-
-        if (scrollTop >= this.reviewRef.current.offsetTop - tabHeight) {
+        const {scrollY} = window;
+        if (!!this.reviewRef.current && scrollY >= this.reviewRef.current.offsetTop - tabHeight) {
             state.tab = 'review';
         }
-        else if (scrollTop >= this.bookRef.current.offsetTop - tabHeight) {
+        else if (!!this.bookRef.current.offsetTop && scrollY >= this.bookRef.current.offsetTop - tabHeight) {
             state.tab = 'book';
         } else {
             state.tab = 'intro';
         }
 
         this.setState(state);
-    }
+    }*/
 
     handleSubClick = (value) => {
         var state = this.state;
@@ -248,9 +208,6 @@ class Author extends Component {
         }
 
         state.selectedBook = book;
-
-        //var modalRoot = document.getElementById('modal-root')
-        //modalRoot.style.cssText = `top:${coordY}px; left:${coordX}px;`
 
         state.modalPos = {x: x, y: y}
 
@@ -589,10 +546,13 @@ class Author extends Component {
         }
     }
 
+    tabChange = (value) => {
+        this.setState({tab: value})
+    }
+
     render() {
         var state = this.state;
         var bookList = state.bookList;
-        var selectedBook = state.selectedBook;
 
         return (
             <div id="author-page" className="page2">
@@ -719,14 +679,20 @@ class Author extends Component {
                     </Modal>
                 }
 
-                <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
+                <div className="tab-wrap">
                     <ul className="tab-nav">
-                        <li className={"tab-btn " + (state.tab === "intro" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'intro')}>소개</li>
-                        <li className={"tab-btn " + (state.tab === "book" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'book')}>작품</li>
-                        <li className={"tab-btn " + (state.tab === "review" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'review')}>리뷰</li>
+                        <Link to="intro-area" className={"tab-btn " + (state.tab === 1 ? "active" : "")} spy={true} smooth={true} onSetActive={() => this.tabChange(1)}>
+                            <li className="tab-item">소개</li>
+                        </Link>
+                        <Link to="book-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(2)}>
+                            <li className="tab-item">작품</li>
+                        </Link>
+                        <Link to="review-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(3)}>
+                            <li className="tab-item">리뷰</li>
+                        </Link>
                     </ul>
                     <div className="tab-inner">
-                        <div id="intro-area" className="inner-box" ref={this.introRef}>
+                        <div id="intro-area" className="inner-box">
                             <div className="inner-header">
                                 소개
                                 {
@@ -754,7 +720,7 @@ class Author extends Component {
                             </div>
                         </div>
 
-                        <div id="book-area" className="inner-box" ref={this.bookRef}>
+                        <div id="book-area" className="inner-box">
                             <div className="inner-header">
                                 <span> 작품 </span>
                                 <div className="inner-subheader-wrap">
@@ -805,7 +771,7 @@ class Author extends Component {
                             </div>
                         </div>
                         {
-                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                            <div id="review-area" className="inner-box">
                                 <div className="inner-header">
                                     <span> 리뷰 </span>
                                     {

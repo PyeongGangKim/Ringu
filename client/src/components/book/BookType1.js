@@ -1,7 +1,7 @@
 // 연재본
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import { Link as ScrollLink } from 'react-scroll';
 
 
 import User from '../../utils/user';
@@ -19,10 +19,7 @@ class BookType1 extends Component {
     userInfo = User.getInfo();
     constructor(props) {
         super(props)
-        this.introRef = React.createRef();
-        this.authorRef = React.createRef();
-        this.seriesRef = React.createRef();
-        this.reviewRef = React.createRef();
+        
         this.perPage = 10;
 
         this.state = {
@@ -31,9 +28,8 @@ class BookType1 extends Component {
             detailList: [],
             detailTotal: 0,
             detailPage: 1,
-            tab: 'intro',
-            tabChange: false,
-            dock: false,
+            tab: 1,
+            
             selected: {},
             isAuthor: false,
             isFavorite: false,
@@ -73,30 +69,13 @@ class BookType1 extends Component {
             }
 
             this.getDetailList();
-
-            window.addEventListener('scroll', this.handleScroll)
-
-            if (window.scrollY > 650) {
-                state.dock = true;
-            } else {
-                state.dock = false;
-            }
+            
 
             this.setState(state)
         }
         catch(e) {
             console.error(e)
         }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
-            window.addEventListener('scroll', this.handleScroll)
-        }
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll)
     }
 
     getDetailList = async(page = 1, order = 'ASC') => {
@@ -218,65 +197,6 @@ class BookType1 extends Component {
         }        
     }
 
-    handleTabChange = (event, value) => {
-        const tabHeight = 60;
-
-        this.setState({tab: value, tabChange: true})
-        window.removeEventListener('scroll', this.handleScroll)
-
-        if (value === 'intro') {
-            window.scrollTo({
-                top: this.introRef.current.offsetTop - tabHeight,
-            })
-        } else if (value === 'author') {
-            window.scrollTo({
-                top: this.authorRef.current.offsetTop - tabHeight,
-            })
-        } else if (value === 'series'){
-            window.scrollTo({
-                top: this.seriesRef.current.offsetTop - tabHeight,
-            })
-        }
-        else {
-            window.scrollTo({
-                top: this.reviewRef.current.offsetTop - tabHeight,
-            })
-        }
-    }
-
-    handleScroll = (event) => {
-        const tabHeight = 60;
-        var state = this.state;
-
-        const scrollTop = ('scroll', event.srcElement.scrollingElement.scrollTop);
-        if (scrollTop > 650) {
-            state.dock = true;
-        } else {
-            state.dock = false;
-        }
-
-        if(state.tabChange === true) {
-            state.tabChange = false
-            this.setState(state);
-            return;
-        }
-
-        if (scrollTop >= this.reviewRef.current.offsetTop - tabHeight) {
-            state.tab = 'review';
-        }
-        else if (scrollTop >= this.seriesRef.current.offsetTop - tabHeight) {
-            state.tab = 'series';
-        }
-        else if (scrollTop >= this.authorRef.current.offsetTop - tabHeight) {
-            state.tab = 'author';
-        }
-        else {
-            state.tab = 'intro';
-        }
-
-        this.setState(state);
-    }
-
     handleSelect = evt => {
         var state = this.state;
         var detailList = state.detailList;
@@ -323,10 +243,14 @@ class BookType1 extends Component {
         this.getDetailList(page, order);
     }
 
+    tabChange = (value) => {
+        this.setState({tab: value})
+    }
+
     render() {
         var state = this.state;
         var book = state.book;
-        console.log('월목'.split())
+
         return (
             <div id="book" className="page3" >
                 <div className="book-content">
@@ -349,15 +273,23 @@ class BookType1 extends Component {
                         <h3 className="book-title">{book.book_title}</h3>
                     </div>
 
-                    <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
+                    <div className="tab-wrap">
                         <ul className="tab-nav">
-                            <li className={"tab-btn " + (state.tab === "intro" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'intro')}>책소개</li>
-                            <li className={"tab-btn " + (state.tab === "series" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'series')}>회차</li>
-                            <li className={"tab-btn " + (state.tab === "author" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'author')}>작가소개</li>
-                            <li className={"tab-btn " + (state.tab === "review" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'review')}>리뷰</li>
+                            <ScrollLink to="intro-area" className={"tab-btn " + (state.tab === 1 ? "active" : "")} spy={true} smooth={true} onSetActive={() => this.tabChange(1)}>
+                                <li className="tab-item">책소개</li>
+                            </ScrollLink>
+                            <ScrollLink to="series-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(2)}>
+                                <li className="tab-item">회차</li>
+                            </ScrollLink>
+                            <ScrollLink to="author-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(3)}>
+                                <li className="tab-item">작가소개</li>
+                            </ScrollLink>
+                            <ScrollLink to="review-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(4)}>
+                                <li className="tab-item">리뷰</li>
+                            </ScrollLink>
                         </ul>
                         <div className="tab-inner">
-                            <div id="intro-area" className="inner-box" ref={this.introRef}>
+                            <div id="intro-area" className="inner-box">
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
                                     {
@@ -373,7 +305,7 @@ class BookType1 extends Component {
                                 </div>
                             </div>
 
-                            <div id="series-area" className="inner-box" ref={this.seriesRef}>
+                            <div id="series-area" className="inner-box">
                                 <div className="inner-header"> 회차</div>
                                 <div className="inner-content">
                                     <table>
@@ -454,7 +386,7 @@ class BookType1 extends Component {
                                 </div>
                             </div>
 
-                            <div id="author-area" className="inner-box" ref={this.authorRef}>
+                            <div id="author-area" className="inner-box">
                                 <div className="inner-header"> 작가소개</div>
                                 <div className="inner-content">
                                     <div className="author-box">
@@ -475,7 +407,7 @@ class BookType1 extends Component {
                                 </div>
                             </div>
 
-                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                            <div id="review-area" className="inner-box">
                                 <div className="inner-header"> 리뷰</div>
                                 {
                                     state.reviewList.length === 0 ?
