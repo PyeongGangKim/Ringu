@@ -93,17 +93,16 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
     }
 });
 
-
-
 router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
+    console.log(req.query)
     try{
         var member_id = ("member_id" in req.query && req.query.member_id !== null) ? req.query.member_id : null;
         var author_id = ("author_id" in req.query && req.query.author_id !== null) ? req.query.author_id : null;
         var book_id =   ("book_id" in req.query && req.query.book_id !== null) ? req.query.book_id : null;
-        var time =      ("time" in req.query && req.query.time !== null) ? req.query.time : 0;
+        var page =      ("page" in req.query && req.query.page !== null) ? parseInt(req.query.page) : 1;
 
-        var offset = time * 5;
-        var limit = 5;
+        var limit = 5
+        var offset = (page-1) * limit;
 
         var where = {
             status: 1,
@@ -119,7 +118,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
             where['$book_id$'] = book_id
         }
 
-        const getReviewList = async(where, distinct) => {
+        const getReviewList = async(where, distinct, limit, offset) => {
             var attr = []
             var group = []
             if (distinct) {
@@ -181,14 +180,12 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
 
             return list
         }
-        const reviewList = await getReviewList(where, false)
+        const reviewList = await getReviewList(where, false, limit, offset)
         var reviewTitleList = null;
 
         if (req.query.title !== null && req.query.title === 'true') {
-            reviewTitleList = await  getReviewList(where, true)
+            reviewTitleList = await getReviewList(where, true)
         }
-
-
 
         if(reviewList.length == 0){
             res.status(statusCodes.NO_CONTENT).send("no review");
@@ -204,6 +201,7 @@ router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져�
     }
     catch(err){
         logger.error(err.stack);
+        console.error(err)
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             "error": "server error"
         });

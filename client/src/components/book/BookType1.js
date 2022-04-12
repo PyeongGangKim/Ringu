@@ -62,7 +62,7 @@ class BookType1 extends Component {
             if (this.userInfo !== null && typeof this.userInfo !== "undefined" && this.userInfo.id === state.book.author_id) {
                 state.isAuthor = true;
             }
-            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
+            const res = await API.sendGet(URL.api.review.getReviewList, {title : false, book_id: state.book.book_id})
 
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList

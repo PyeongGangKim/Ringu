@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-scroll';
+import {Oval} from 'react-loader-spinner'
 
 import User from '../../utils/user';
 import Book from '../../components/book/Book'
@@ -58,26 +59,15 @@ class Author extends Component {
             modalPos:{},
             host: false,
             book: {title:"", filename:"선택 파일 없음", file:null},
+
+            reviewLoading: false,
+            noMoreReview: false,
+            newReviewPage: 2,
         }
-
-        //this.throttleScroll = this.throttle(this.handleScroll, 150);
     }
-
-    /*throttle = (callback, delay) => {
-        var timer;
-        return () => {
-            if (timer) return;
-            timer = setTimeout(() => {
-                callback();
-                timer = null;
-            }, delay);
-        };
-    };*/
 
     async componentDidMount() {
         var state = this.state;
-
-        //window.addEventListener('scroll', this.throttleScroll);
 
         try {
             const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
@@ -142,17 +132,18 @@ class Author extends Component {
                 this.setState(state)
             }
 
-            const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = {title: true, author_id: this.props.authorId})
+            const reviewRes = await API.sendGet(URL.api.review.getReviewList, params = {title: true, author_id: this.props.authorId})
 
             if(reviewRes.status === 200) {
                 var reviewData = reviewRes.data
 
                 state.reviewList = reviewData.reviewList
                 state.reviewTitleList = reviewData.reviewTitleList
+                if(state.reviewList.length > 5) {
+                    state.noMoreReview = true;
+                }
                 this.setState(state)
             }
-
-            
 
             this.setState(state)
 
@@ -160,22 +151,6 @@ class Author extends Component {
             console.log(e)
         }
     }
-
-    /*handleScroll = (e) => {
-        var state = this.state;
-
-        const {scrollY} = window;
-        if (!!this.reviewRef.current && scrollY >= this.reviewRef.current.offsetTop - tabHeight) {
-            state.tab = 'review';
-        }
-        else if (!!this.bookRef.current.offsetTop && scrollY >= this.bookRef.current.offsetTop - tabHeight) {
-            state.tab = 'book';
-        } else {
-            state.tab = 'intro';
-        }
-
-        this.setState(state);
-    }*/
 
     handleSubClick = (value) => {
         var state = this.state;
@@ -219,6 +194,8 @@ class Author extends Component {
     handleReviewTitleClick = async(title, book_id) => {
         var state = this.state;
         state.activeReview = title;
+        state.newReviewPage = 2;
+        state.noMoreReview = false;
         this.setState(state)
 
         var params = {
@@ -230,9 +207,13 @@ class Author extends Component {
             params['author_id'] = this.props.authorId;
         }
 
-        const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = params)
+        const reviewRes = await API.sendGet(URL.api.review.getReviewList, params = params)
         if(reviewRes.status === 200){
             var reviewData = reviewRes.data
+            if(reviewData.length < 5){
+                state.noMoreReview = true;
+            }
+            
 
             state.reviewList = reviewData.reviewList
             this.setState(state)
@@ -550,10 +531,35 @@ class Author extends Component {
         this.setState({tab: value})
     }
 
+    updateReviewList = async() => {
+        var state = this.state;
+        
+        this.setState({reviewLoading: true})
+        try {
+            const res = await API.sendGet(URL.api.review.getReviewList, {title: true, author_id: this.props.authorId, page: state.newReviewPage})
+            if(res.status === 200) {
+                var newReviewList = res.data.reviewList;
+                state.reviewList = state.reviewList.concat(newReviewList);
+                state.newReviewPage += 1;
+                if(newReviewList.length < 5) {
+                    state.noMoreReview = true;
+                }
+            } else if(res.status === 204) {
+                state.noMoreReview = true;
+            }
+            state.reviewLoading = false;
+        } catch(e) {
+            state.reviewLoading = false;
+            alert("리뷰를 불러오지 못 했습니다.")
+        }
+
+        this.setState(state)
+    }
+
     render() {
         var state = this.state;
         var bookList = state.bookList;
-
+        console.log(state)
         return (
             <div id="author-page" className="page2">
                 <Helmet title={`${state.user.nickname} `+ string.author + string.postfix}/>
@@ -797,7 +803,7 @@ class Author extends Component {
                                             작성된 리뷰가 없습니다.
                                         </div>
                                         :
-                                        <div className="review-area">
+                                        <div className="review">
                                             {
                                                 this.state.reviewList.map((item, review_idx) => {
                                                     return (
@@ -828,10 +834,24 @@ class Author extends Component {
                                             }
 
                                             {
-                                                this.state.reviewList.length >= 5 &&
-                                                <div className="add-btn">
-                                                    <button className="add-btn btn btn-transparent"> + 더보기 </button>
+                                                this.state.reviewLoading === true ?                                                
+                                                <div className="loading-container">
+                                                    <Oval
+                                                        ariaLabel="loading-indicator"
+                                                        width={100}
+                                                        height={100}
+                                                        strokeWidth={3}
+                                                        color="#c2c2c2"
+                                                        secondaryColor="#d5d5d5"
+                                                    />
                                                 </div>
+                                                :
+                                                this.state.reviewList.length >= 5 && this.state.noMoreReview === false ?
+                                                <div className="add-btn">
+                                                    <button className="add-btn btn btn-transparent" onClick={this.updateReviewList}> + 더보기 </button>
+                                                </div>
+                                                :
+                                                null
                                             }
                                         </div>
                                     }

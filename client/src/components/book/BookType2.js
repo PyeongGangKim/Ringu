@@ -214,7 +214,7 @@ class BookType2 extends Component {
         }
 
         try {
-            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
+            const res = await API.sendGet(URL.api.review.getReviewList, {title : false, book_id: state.book.book_id})
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
             }

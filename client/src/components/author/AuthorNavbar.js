@@ -87,7 +87,7 @@ function AuthorNavbar(user, isHost, authorId, handleDisplayClick, handleUpdate )
                 title: true, 
                 author_id: authorId
             }
-            const reviewRes = await API.sendGet(URL.api.review.getReivewList, params)
+            const reviewRes = await API.sendGet(URL.api.review.getReviewList, params)
 
             if(reviewRes.status === 200) {
                 var reviewData = reviewRes.data
@@ -144,7 +144,7 @@ function AuthorNavbar(user, isHost, authorId, handleDisplayClick, handleUpdate )
         }
 
         try {
-            const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = params)
+            const reviewRes = await API.sendGet(URL.api.review.getReviewList, params = params)
             if(reviewRes.status === 200){
                 var reviewData = reviewRes.data
                 setReviewList(reviewData.reviewList)

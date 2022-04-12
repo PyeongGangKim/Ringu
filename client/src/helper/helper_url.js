@@ -119,7 +119,7 @@ module.exports = {
             bookDetail:         "/book_detail"
         },
         review: {
-            getReivewList:      "/review",
+            getReviewList:      "/review",
             getByMember:        "/review/member/",
             getByAuthor:        "/review/author/",
             getByBook:          "/review/book/",
