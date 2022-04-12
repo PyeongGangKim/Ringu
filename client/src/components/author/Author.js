@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-scroll';
-import {Oval} from 'react-loader-spinner'
+import {Oval} from 'react-loader-spinner';
 
 import User from '../../utils/user';
-import Book from '../../components/book/Book'
-import Paging from '../../components/common/Paging'
+import Book from '../../components/book/Book';
+import Paging from '../../components/common/Paging';
+import ReviewTabInner from '../../components/common/ReviewTabInner';
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/common/common.scss';
@@ -559,7 +560,7 @@ class Author extends Component {
     render() {
         var state = this.state;
         var bookList = state.bookList;
-        console.log(state)
+
         return (
             <div id="author-page" className="page2">
                 <Helmet title={`${state.user.nickname} `+ string.author + string.postfix}/>
@@ -776,88 +777,10 @@ class Author extends Component {
                                 }
                             </div>
                         </div>
-                        {
-                            <div id="review-area" className="inner-box">
-                                <div className="inner-header">
-                                    <span> 리뷰 </span>
-                                    {
-                                        this.state.reviewTitleList.length === 0 ?
-                                        null
-                                        :
-                                        <div className="inner-subheader-wrap">
-                                            <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
-                                            {
-                                                this.state.reviewTitleList.map((item, title_idx) => {
-                                                    return (
-                                                        <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                                <div className="inner-content">
-                                    {
-                                        this.state.reviewList.length === 0 ?
-                                        <div className="no-content">
-                                            작성된 리뷰가 없습니다.
-                                        </div>
-                                        :
-                                        <div className="review">
-                                            {
-                                                this.state.reviewList.map((item, review_idx) => {
-                                                    return (
-                                                        <div key={item.id} className="review-box">
-                                                            <div className="review-details">
-                                                                <strong className="title"> {item.book_title}</strong>
-                                                                <span className="user"> {item.nickname} </span>
-                                                                <span className="sep">  | </span>
-                                                                <span className="stars">
-                                                                    {"★".repeat(item.score)}
-                                                                </span>
-
-                                                                <span className="score"> {item.score ? parseFloat(item.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
-                                                            </div>
-                                                            {
-                                                                item.book_type === 1 &&
-                                                                <div className="review-subtitle">
-                                                                    {item.subtitle}
-                                                                </div>
-                                                            }
-
-                                                            <div className="review-content">
-                                                                {item.description}
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-
-                                            {
-                                                this.state.reviewLoading === true ?                                                
-                                                <div className="loading-container">
-                                                    <Oval
-                                                        ariaLabel="loading-indicator"
-                                                        width={100}
-                                                        height={100}
-                                                        strokeWidth={3}
-                                                        color="#c2c2c2"
-                                                        secondaryColor="#d5d5d5"
-                                                    />
-                                                </div>
-                                                :
-                                                this.state.reviewList.length >= 5 && this.state.noMoreReview === false ?
-                                                <div className="add-btn">
-                                                    <button className="add-btn btn btn-transparent" onClick={this.updateReviewList}> + 더보기 </button>
-                                                </div>
-                                                :
-                                                null
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
+                        <ReviewTabInner
+                            id={"review-area"}
+                            isAuthorReview={true}
+                            authorId={this.props.authorId}/>
                     </div>
                 </div>
             </div>
