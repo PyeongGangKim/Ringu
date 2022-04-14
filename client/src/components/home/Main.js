@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 import Slider from "react-slick";
 
 import '../../scss/common/main.scss'
@@ -8,7 +7,7 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
-import Book from '../../components/book/Book'
+import BookSlider from '../../components/home/BookSlider'
 
 import User from '../../utils/user';
 import URL from '../../helper/helper_url';
@@ -22,7 +21,7 @@ class Main extends Component {
         this.state = {
             showModal: false,
             keyword: "",
-            bookList: [],
+            recommendBookList: [],
             latestBookList: [],
             recommend: null,
             searchClear: false,
@@ -55,7 +54,7 @@ class Main extends Component {
             const res = await API.sendGet(URL.api.book.list, params);
             const latestRes = await API.sendGet(URL.api.book.list, latestBookParams);
 
-            if(res.status === 200) state.bookList = res.data.bookList;
+            if(res.status === 200) state.recommendBookList = res.data.bookList;
             if(latestRes.status === 200) state.latestBookList = latestRes.data.bookList;
             if(res.status === 200 || latestRes.status === 200) this.setState(state);
 
@@ -81,7 +80,7 @@ class Main extends Component {
         this.setState(state);
     }
 
-    handleSearchClick = () => {
+    /*handleSearchClick = () => {
         var state = this.state;
         if(!state.searchClear) {
             this.props.history.push(URL.service.search + "?keyword=" + state.recommend.recommending_phrase)
@@ -94,15 +93,15 @@ class Main extends Component {
         }
 
         this.props.history.push(URL.service.search + "?keyword=" + state.keyword)
-    }
+    }*/
 
-    handleSearchClear = () => {
+    /*handleSearchClear = () => {
         var state = this.state;
         if(state.searchClear === false) {
             state.searchClear = true;
             this.setState(state)
         }
-    }
+    }*/
 
     handleRegisterClick = () => {
         var state = this.state;
@@ -130,26 +129,6 @@ class Main extends Component {
     }
 
     render() {
-        /*const StyledSlider = styled(Slider)`
-            .slick-list, .slick-track, .slick-slide div {
-                height: 100%;
-            }
-            .slick-dots {
-                bottom: 20px;
-            }
-        `;*/
-
-        const StyledBookSlider = styled(Slider)`
-            .slick-list {
-                margin-right: -15px;
-                padding-left: 1px;
-            }
-            .slick-track {
-                margin-top: 20px;
-                margin-bottom: 10px;
-            }
-        `;
-
         var state = this.state;
         const settings = {
             arrows: false,
@@ -182,14 +161,14 @@ class Main extends Component {
                                 <strong>당신의 이야기가 세상에 알려지는 순간!</strong>
                                 <p>전자책만 따라해도 나도 고수!<br/>
                                 지금 바로 당신의 책을 만들어줍니다.</p>
-                                <form onSubmit={this.handleSearchClick}>
+                                {/*<form onSubmit={this.handleSearchClick}>
                                     <div className="search">
                                         <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
                                         <button type="submit">
                                             검색
                                         </button>
                                     </div>
-                                </form>
+        </form>*/}
                             </div>
                             <div onClick={this.handleRegisterClick} className="btn-wrapper">
                                 <button className="btn btn-rounded register btn-color-1"> 작가등록하기
@@ -200,14 +179,14 @@ class Main extends Component {
                             <div className="search-area">
                                 <strong>당신이 찾는 모든 것들의 공간</strong>
                                 <p>당신이 찾는 모든 것들의 공간</p>
-                                <form onSubmit={this.handleSearchClick}>
+                                {/*<form onSubmit={this.handleSearchClick}>
                                     <div className="search">
                                         <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
                                         <button type="submit">
                                             검색
                                         </button>
                                     </div>
-                                </form>
+    </form>*/}
                             </div>
                         </div>
                     </Slider>
@@ -250,94 +229,18 @@ class Main extends Component {
                     </div>
                     {
                         state.latestBookList.length > 0 &&
-                        <div>
-                            <div className="title-wrap">
-                                <h2> NEW </h2>
-                                {
-                                    state.latestBookList.length > 5 &&
-                                    <div className="slick--arrow">
-                                        <div className="slick-arrow-wrapper">
-                                            <a className="slick-arrow arrow-left" onClick={() => this.previous(this.newSlider)}>
-                                                <em/>
-                                            </a>
-                                            <a className="slick-arrow arrow-right" onClick={() => this.next(this.newSlider)}>
-                                                <em/>
-                                            </a>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-
-                            <div className="book-area slick-slider-wrapper">
-                                <StyledBookSlider ref={c => (this.newSlider = c)} {...settings} infinite={state.latestBookList.length > 5 ? true: false}>
-                                    {
-                                        state.latestBookList.map(item => {
-                                            var status = '';
-                                            if(item.type === 2) {
-                                                status  = 'pub'
-                                            } else {
-                                                status  = 'ser'
-                                            }
-                                            return (
-                                                <Book
-                                                    key={item.id}
-                                                    book={item}
-                                                    status={status}
-                                                    favorite
-                                                />
-                                            )
-                                        })
-                                    }
-                                </StyledBookSlider>
-                            </div>
-                        </div>
+                        <BookSlider
+                            title = {"NEW"}
+                            bookList = {state.latestBookList}
+                        />
                     }
 
                     {
-                        state.bookList.length > 0 &&
-                        <div>
-                            <div className="title-wrap">
-                                <h2> MD{`'`}s Pick </h2>
-                                {
-                                    state.bookList.length > 5 &&
-                                    <div className="slick--arrow">
-                                        <div className="slick-arrow-wrapper">
-                                            <a className="slick-arrow arrow-left" onClick={() => this.previous(this.recSlider)}>
-                                                <em/>
-                                            </a>
-                                            <a className="slick-arrow arrow-right" onClick={() => this.next(this.recSlider)}>
-                                                <em/>
-                                            </a>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-
-                            <div className="book-area slick-slider-wrapper">
-                                <StyledBookSlider ref={c => (this.recSlider = c)} {...settings} infinite={state.bookList.length > 5 ? true: false}>
-                                    {
-                                        state.bookList.map(item => {
-                                            var status = '';
-                                            if(item.type === 2) {
-                                                status  = 'pub'
-                                            } else {
-                                                status  = 'ser'
-                                            }
-                                            return (
-                                                <div>
-                                                    <Book
-                                                        key={item.id}
-                                                        book={item}
-                                                        status={status}
-                                                        favorite
-                                                    />
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                </StyledBookSlider>
-                            </div>
-                        </div>
+                        state.recommendBookList.length > 0 &&
+                        <BookSlider
+                            title = {"MD's Pick"}
+                            bookList = {state.recommendBookList}
+                        />
                     }
                 </div>
             </div>
