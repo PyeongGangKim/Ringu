@@ -151,6 +151,11 @@
             background-image: url("/assets/img/write.png");
             transition: 0.2s;
             padding: 5px;
+            border-radius: 50%;
+
+            &:hover {
+                box-shadow: rgba(159, 182, 255, 1) 0 0 5px 2px;
+            }
         }
 
         label {
