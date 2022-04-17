@@ -104,12 +104,13 @@ footer {
                         .visit-button{
                             margin-bottom: 10px;
                             padding: 0px;
+
                             .button-content{
                                 color: #818181;
                                 align-items: center;
                                 display: flex;
                                 .img{
-                                    background-size: cover;
+                                    background-size: contain;
                                     background-repeat: no-repeat;
                                     background-position: center;
                                     width: 18px;

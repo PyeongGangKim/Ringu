@@ -129,9 +129,9 @@ class Header extends Component {
                         </Link>
                     </h1>
                     <div style={{"flexGrow":1}}></div>
-                    <div id="search-area" tabIndex={0} onFocus={(e) => this.toggleSearchPopup(e, true)} onBlur={(e) => this.toggleSearchPopup(e, false)}>
-                        {
-                            this.props.searchVisible !== false &&
+                    {
+                        this.props.searchVisible !== false &&
+                        <div id="search-area" tabIndex={0} onFocus={(e) => this.toggleSearchPopup(e, true)} onBlur={(e) => this.toggleSearchPopup(e, false)}>
                             <div className="search">
                                 {
                                     state.isCategorySearch && state.categories.length > 0
@@ -143,45 +143,54 @@ class Header extends Component {
                                 
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
                             </div>
-                        }
-                        {
-                            state.popup &&
-                            <div className="search-popup" tabindex={0}>
-                                {/*<hr/>*/}
-                                <div className="category-wrap">
-                                    <span>카테고리</span>
-                                    <div className="category-list">
-                                        {
-                                            state.categories.map(category => {
-                                                return (
-                                                    <a href={URL.service.search + "?category=" + category.id}>
-                                                        <span className="category">
-                                                            {category.name}
-                                                        </span>
-                                                    </a>
-                                                )
-                                            })
-                                        }
+                            {
+                                state.popup &&
+                                <div className="search-popup" tabindex={0}>
+                                    {/*<hr/>*/}
+                                    <div className="category-wrap">
+                                        <span>카테고리</span>
+                                        <div className="category-list">
+                                            {
+                                                state.categories.map(category => {
+                                                    return (
+                                                        <a href={URL.service.search + "?category=" + category.id}>
+                                                            <span className="category">
+                                                                {category.name}
+                                                            </span>
+                                                        </a>
+                                                    )
+                                                })
+                                            }
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </div>
+                            }
+                        </div>
+                    }                    
 
                     <div id="user-area">
                         {
                             state.login == 'Y'
                             ?
-                            <div id="user-page">
-                                <Link to={URL.service.notification} id="notification-page">
+                            <div id="user-menu">
+                                <Link 
+                                    id="notification-page" 
+                                    className="menu-item"
+                                    to={URL.service.notification} 
+                                >
                                     <img src="/notification.png" />
                                     <span>알림</span>
                                 </Link>
                                 {
                                     state.type === 1 ?
-                                    <Link to={URL.service.author + this.state.id} onClick={() => {window.location.href=URL.service.author + this.state.id}} id="author-page">
+                                    <Link 
+                                        id="author-page" 
+                                        className={!!this.props.isHost ? "menu-item active" : "menu-item"}
+                                        to={URL.service.author + this.state.id} 
+                                        onClick={() => {window.location.href=URL.service.author + this.state.id}}
+                                    >
                                         {
-                                            this.props.isHost === true ?
+                                            !!this.props.isHost === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>
@@ -190,9 +199,13 @@ class Header extends Component {
                                         <span>작가 공간</span>
                                     </Link>
                                     :
-                                    <Link to={URL.service.register.author} id="author-page">
+                                    <Link 
+                                        id="author-page" 
+                                        className={!!this.props.author ? "menu-item active" : "menu-item"}
+                                        to={URL.service.register.author} 
+                                    >
                                         {
-                                            this.props.author === true ?
+                                            !!this.props.author === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>
@@ -203,14 +216,17 @@ class Header extends Component {
                                 }
 
 
-                                <div id="user-nb" onClick={this.handleDisplay}>
+                                <div id="user-nb" 
+                                    className={!!this.state.display || !!this.props.mypage ? "menu-item active" : "menu-item" }
+                                    onClick={this.handleDisplay}
+                                >
                                     {
-                                        this.state.display || this.props.mypage ?
-                                        <div id="nb-box">
+                                        !!this.state.display || !!this.props.mypage ?
+                                        <div className="box">
                                             <img src="/mypage-active.png" alt="마이페이지"/>
                                         </div>
                                         :
-                                        <div id="nb-box">
+                                        <div className="box">
                                             <img src="/mypage.png" alt="마이페이지"/>
                                         </div>
                                     }
@@ -218,21 +234,22 @@ class Header extends Component {
 
                                     <span>마이페이지</span>
                                     <ul className={"nb-menu " + displayClass}>
-                                        <li><Link to={URL.service.mypage.info}>계정관리</Link></li>
-                                        <li><Link to={URL.service.mypage.carts}>장바구니</Link></li>
-                                        <li><Link to={URL.service.mypage.fav_book}>찜한목록</Link></li>
-                                        <li><Link to={URL.service.mypage.purchases}>구매내역</Link></li>
-                                        <li><button onClick={this.logOut}>로그아웃</button></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.info}>계정관리</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.carts}>장바구니</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.fav_book}>찜한목록</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.purchases}>구매내역</Link></li>
+                                        <li className="nb-item"><div onClick={this.logOut}>로그아웃</div></li>
                                     </ul>
                                 </div>
                             </div>
                             :
-                            <div id="accounts">
-                                <Link to={URL.service.accounts.login} className="btn-login">
-                                    로그인
+                            <div id="account-menu">
+                                <Link to={URL.service.accounts.login} id="login">
+                                    <span className="">로그인</span>
                                 </Link>
-                                <Link to={URL.service.accounts.signup} className="btn-signup">
-                                    <div className="btn btn-rounded btn-color-2">회원가입</div>
+                                
+                                <Link to={URL.service.accounts.signup} id="register">
+                                    <button className="btn btn-rounded btn-color-2">회원가입</button>
                                 </Link>
                             </div>
                         }
