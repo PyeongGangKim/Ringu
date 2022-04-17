@@ -11,14 +11,13 @@ footer {
         align-items: center;
         margin: 0 auto;
         width: 1360px;
-        padding-bottom: 25px;
 
         .vertical-div{
             margin: auto;
             width: 1360px !important;
             display: flex;
             background-color: #f5f5f5;
-            // margin: 0 auto;
+            margin-bottom: 25px;
     
             .logo-img{
                 background-image: url("/assets/img/logo.png");
@@ -28,10 +27,11 @@ footer {
                 height: 50px;
             }
             .left{
-                padding-left : 5%;
+                padding-left : 4%;
                 margin-bottom: 45px;
                 margin-top: 45px;
                 width: 40%;
+
                 .info-tag{
                     padding-top: 5px;
                     font-weight:500;
@@ -50,8 +50,7 @@ footer {
             }
             .right{
                 width: 60%;
-                padding-left: 7%;
-                margin-top: 25px;
+                margin: 25px 4% 0 4%;
                 display: flex;
                 .information{
                     width: 100%;
@@ -103,17 +102,18 @@ footer {
                         display: flex !important;
                         
                         .visit-button{
-                            margin-bottom: 5px;
+                            margin-bottom: 10px;
                             padding: 0px;
                             .button-content{
                                 color: #818181;
                                 align-items: center;
                                 display: flex;
                                 .img{
-                                    background-size: contain;
+                                    background-size: cover;
                                     background-repeat: no-repeat;
-                                    width: 17px;
-                                    height: 17px;
+                                    background-position: center;
+                                    width: 18px;
+                                    height: 18px;
                                 }
                                 .instagram{
                                     background-image: url("/assets/img/instagram.png");
@@ -123,7 +123,7 @@ footer {
                                 }
                                 .content{
                                     padding-left: 5px;
-                                    font-size: 17px;
+                                    font-size: 16px;
                                 }
                             }
                             
