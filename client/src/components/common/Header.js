@@ -115,6 +115,7 @@ class Header extends Component {
     handleRecommendClear = () => {
         var state = this.state;
         if(state.recommendClear === false) {
+            state.keyword = "";
             state.recommendClear = true;
             this.setState(state)
         }
