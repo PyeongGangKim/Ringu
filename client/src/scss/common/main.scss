@@ -1,42 +1,99 @@
 #home-header {
     position: relative;
     padding-top: 20px;
-    width: 1360px;    
-    height: 480px;
+    width: 1360px;
 
     .slick-slider {
         height: 100%;
-    }
 
-    .slick-list, .slick-track, .slick-slide div {
-        height: 100%;
-    }
-    .slick-dots {
-        bottom: 20px;
-    }
+        .slick-dots-wide {
+            position: absolute;
+            margin: 0;
+            list-style: none;
+            text-align: center;
+            left: 140px;
+            bottom: 40px;
+            background: #abbaf4;
+            border-radius: 6px;
 
-    .home-header-content {
-        width:100%;
-        height: 100%;
-        padding: 20px 120px;
-        border-radius: 25px;
-        background-color: var(--color-3);
-        //background-image: url("/assets/img/main.png");
-        background-size: cover;
-        &.main1 {
-            background-image: url("/assets/img/main.png");
-        }
-        &.main2 {
-            background-image: url("/assets/img/main2.png");
-            position: relative;
+            li {
+                position: relative;
+                display: inline-block;
+                float: left;
+                width: 80px;
+                height: 8px;
+                padding: 0;
+                cursor: pointer;
+                
 
-            .search-area {
-                padding-top: 60px;
+                button {
+                    font-size: 0;
+                    line-height: 0;
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    cursor: pointer;
+                    border: 0;
+                    border-radius: 6px;
+                    background-color: transparent;
+                }
 
-                p {
-                    margin: 15px 0 0 0;
+                &.slick-active button {
+                    background: var(--color-1);
                 }
             }
+        }
+    }
+
+    .slider-wrap {
+        width: 100%;
+        min-height: 350px;
+        max-height: 350px;
+        border-radius: 25px;
+        position: relative;
+
+        .introduction {
+            position: absolute;
+            display: flex;
+            align-items: end;
+            top: 200px;
+            left: 80px;
+            height: 80px;
+            
+
+            .intro-text {
+                font-size: 32px;
+                white-space: pre-line;
+            }
+
+            .regi-button {
+                display:flex;
+                align-items: center;
+                text-align: left;
+                width: 240px;
+                margin-left: 25px;
+                border-radius: 12px;
+                font-size: 18px;
+                font-weight: 500;
+                padding: 6px 16px;
+                white-space:pre-wrap;
+
+                em {
+                    width: 15px;
+                    height: 15px;
+                    background-image:  url(/assets/img/right_arrow.png);
+                }
+            }
+        }
+
+        img {
+            position: absolute;
+            width: 100%;
+        }
+        &.main2 {
+            
+
+            
 
             .btn-wrapper {
                 display: inline-block;

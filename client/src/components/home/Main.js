@@ -23,8 +23,6 @@ class Main extends Component {
             keyword: "",
             recommendBookList: [],
             latestBookList: [],
-            recommend: null,
-            searchClear: false,
             categories: [],
         };
     }
@@ -74,8 +72,10 @@ class Main extends Component {
         var state = this.state;
 
         if(this.user === null) {
-            alert("로그인이 필요합니다.")
-            window.location.href = URL.service.accounts.login
+            if(window.confirm("로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                window.location.href = URL.service.accounts.login
+            }
+
             return;
         }
 
@@ -93,35 +93,56 @@ class Main extends Component {
         const settingsMain = {
             arrows: false,
             dots: true,
+            dotsClass: "slick-dots-wide",
             infinite: true,
             slidesToShow: 1,
             slidesToScroll: 1,
             swipe: false,
-            autoplay: true,            
+            autoplay: true,          
             speed: 500,
             autoplaySpeed: 10000,
-            cssEase: "linear"
+            cssEase: "linear",
+            customPaging: function(i) {
+                return (
+                    <button>{i}</button>
+                );
+            },
         };
 
         return (
             <div id="wrap">
                 <div id="home-header">
                     <Slider {...settingsMain}>
-                        <div className="home-header-content main2">
-                            <div className="search-area">
-                                <strong>당신의 이야기가 세상에 알려지는 순간!</strong>
-                                <p>전자책만 따라해도 나도 고수!<br/>
-                                지금 바로 당신의 책을 만들어줍니다.</p>
-                            </div>
-                            <div onClick={this.handleRegisterClick} className="btn-wrapper">
-                                <button className="btn btn-rounded register btn-color-1"> 작가등록하기
+                        <div className="slider-wrap main1">
+                            <img src={require("../../assets/img/main.png").default}/>
+                            <div className="introduction">
+                                <span className="intro-text">
+                                    {"전자책만 따라해도 나도 고수!\n지금 바로 당신의 책을 만들어드립니다"}
+                                </span>
+                                <button 
+                                    className="btn-outline-1 btn regi-button"
+                                    onClick={this.handleRegisterClick}
+                                >
+                                    <span>작가등록하기</span>
+                                    <div style={{"flex":"1"}}></div>
+                                    <em></em>
                                 </button>
                             </div>
                         </div>
-                        <div className="home-header-content main1">
-                            <div className="search-area">
-                                <strong>당신이 찾는 모든 것들의 공간</strong>
-                                <p>당신이 찾는 모든 것들의 공간</p>
+                        <div className="slider-wrap main2">
+                            <img src={require("../../assets/img/main2.png").default}/>
+                            <div className="introduction">
+                            <span className="intro-text">
+                                    {"당신이 찾는 모든 것들의 공간"}
+                                </span>
+                                <button 
+                                    className="btn-outline-1 btn regi-button"
+                                    onClick={this.handleRegisterClick}
+                                >
+                                    <span>작가등록하기</span>
+                                    <div style={{"flex":"1"}}></div>
+                                    <em></em>
+                                </button>
                             </div>
                         </div>
                     </Slider>
