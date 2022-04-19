@@ -9,7 +9,7 @@ import '../../scss/skeleton/skeleton.scss';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-import Modal from '../../components/modal/Modal';
+import FormatDownloadModal from '../../components/author/FormatDownloadModal';
 
 class SideMemberInfo extends Component {
     constructor(props) {
@@ -202,20 +202,10 @@ class SideMemberInfo extends Component {
 
     handleCloseClick = () => {
         var state = this.state;
+        console.log(55555555555)
 
         state.modal = false;
         this.setState(state)
-    }
-
-    downloadFormat = (type) => {
-        if (type === 0) {            
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%eb%8b%a8%ed%96%89%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ec%9b%8c%eb%93%9c).docx')
-        }
-        else {
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%eb%8b%a8%ed%96%89%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ed%95%9c%ea%b8%80).hwp')
-        }
-        
-        this.handleCloseClick();
     }
 
     render() {
@@ -256,41 +246,9 @@ class SideMemberInfo extends Component {
             <div className="side-info">
                 {
                     state.modal === true &&
-                    <Modal
-                        onClose={this.handleCloseClick}
-                        overlay={true}
-                    >
-                        <div className="format-modal">
-                            <div className="header">
-                                <h3>원하시는 양식을 다운로드 해주세요</h3>
-                            </div>
-                            <em className="close" onClick={this.handleCloseClick}> &times; </em>
-
-                            <div className="format">
-                                <div className="item">
-                                    <div className="type" id="word">
-                                        <em/>
-                                        <span> 워드 파일 양식 </span>
-                                    </div>
-                                    <button className="download" onClick={() => this.downloadFormat(0)}>
-                                        <em/>
-                                    </button>
-                                </div>
-                                <hr/>
-                                <div className="item">
-                                    <div className="type" id="hangeul">
-                                        <em/>
-                                        <span> 한글 파일 양식 </span>
-                                    </div>
-                                    <button className="download" onClick={() => this.downloadFormat(1)}>
-                                        <em/>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </Modal>
+                    <FormatDownloadModal
+                        handleCloseClick={this.handleCloseClick}
+                    />
                 }
                 {
                     this.props.isHost === false &&
