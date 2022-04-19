@@ -209,10 +209,10 @@ class SideMemberInfo extends Component {
 
     downloadFormat = (type) => {
         if (type === 0) {            
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%EB%A7%81%EA%B5%AC+%EA%B8%80%ED%8F%AC%EB%A7%B7(%EC%9B%8C%EB%93%9C).docx')
+            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%eb%8b%a8%ed%96%89%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ec%9b%8c%eb%93%9c).docx')
         }
         else {
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%EB%A7%81%EA%B5%AC+%EA%B8%80%ED%8F%AC%EB%A7%B7(%ED%95%9C%EA%B8%80).hwp')
+            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%eb%8b%a8%ed%96%89%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ed%95%9c%ea%b8%80).hwp')
         }
         
         this.handleCloseClick();
