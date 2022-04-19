@@ -22,7 +22,6 @@ class SearchPage extends Component {
             <Fragment>
                 <Header search={this.search}></Header>
                 <Search search={this.search} history={this.props.history}/>
-                <Footer></Footer>
             </Fragment>
         )
     }

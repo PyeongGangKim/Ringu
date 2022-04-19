@@ -26,7 +26,6 @@ class FavBookPage extends Component {
                     </div>
                     <FavBook/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

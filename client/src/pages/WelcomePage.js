@@ -34,7 +34,6 @@ class WelcomePage extends Component {
                         </div>
                     </div>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

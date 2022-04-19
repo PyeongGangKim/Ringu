@@ -18,7 +18,6 @@ class FindEmailPage extends Component {
                 <div id="wrap">
                     <FindEmail history={this.props.history}/>
                 </div>
-                <Footer/>
             </Fragment>
         )
     }

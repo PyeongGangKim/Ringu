@@ -24,7 +24,6 @@ class Carts extends Component {
                     </div>
                     <Cart history={this.props.history}/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

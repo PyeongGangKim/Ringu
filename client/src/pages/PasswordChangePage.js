@@ -26,7 +26,6 @@ class PasswordChangePage extends Component {
                     </div>
                     <PasswordChange/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

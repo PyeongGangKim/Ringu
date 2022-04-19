@@ -18,7 +18,6 @@ class ModifyBookPage extends Component {
                 <div id="wrap">
                     <ModifyBook bookId={this.props.match.params.bookId}/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

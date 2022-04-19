@@ -25,7 +25,6 @@ class RegisterPage extends Component {
                         <RegisterBookSelect history={this.props.history}/>
                     }
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

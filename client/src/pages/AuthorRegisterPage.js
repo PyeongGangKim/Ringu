@@ -20,7 +20,6 @@ class AuthorRegisterPage extends Component {
                 <div id="wrap">
                     <RegisterAuthor/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

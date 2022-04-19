@@ -62,7 +62,6 @@ class AuthorPage extends Component {
                     </div>
                     <Author authorId={state.authorId} isHost={this.isHost}/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

@@ -26,7 +26,6 @@ class RegisterDetailPage extends Component {
                         <RegisterBook location={this.props.location}/>
                     }
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

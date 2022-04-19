@@ -18,7 +18,6 @@ class TermsPage extends Component {
                 <Helmet title={string.notification + string.postfix}/>
                 <Header></Header>
                 <Terms title = {this.props.match.params.type}></Terms>
-                <Footer></Footer>
             </Fragment>
         )
     }

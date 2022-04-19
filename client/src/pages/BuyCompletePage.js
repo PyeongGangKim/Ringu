@@ -18,7 +18,6 @@ class BuyCompletePage extends Component {
                 <div id="wrap">
                     <BuyComplete history={this.props.history} search={this.props.location.search}/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

@@ -26,7 +26,6 @@ class LeavePage extends Component {
                   </div>
                   <Leave/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

@@ -34,7 +34,6 @@ class MyPage extends Component {
                     </div>
                     <MyInfo handleNicknameChange={this.handleNicknameChange}/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

@@ -18,7 +18,6 @@ class AuthorRegisterDetailPage extends Component {
                 <div id="wrap">
                     <RegisterAuthorDetail/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

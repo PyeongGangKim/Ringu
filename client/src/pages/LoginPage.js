@@ -17,7 +17,6 @@ class LoginPage extends Component {
                 <div id="wrap">
                     <Login/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

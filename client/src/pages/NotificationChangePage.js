@@ -26,7 +26,6 @@ class NotificationChangePage extends Component {
                     </div>
                     <NotificationChange/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }
