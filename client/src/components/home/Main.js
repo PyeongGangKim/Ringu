@@ -61,16 +61,6 @@ class Main extends Component {
         } catch(e) {
             console.error(e)
         }
-
-        try {
-            const res = await API.sendGet(URL.api.book.recommend)
-            if(res.status === 200) {
-                state.recommend = res.data.recommend;
-                this.setState(state);
-            }
-        } catch(e) {
-            console.error(e)
-        }
     }
 
     handleKeywordChange = (evt) => {
@@ -79,29 +69,6 @@ class Main extends Component {
         
         this.setState(state);
     }
-
-    /*handleSearchClick = () => {
-        var state = this.state;
-        if(!state.searchClear) {
-            this.props.history.push(URL.service.search + "?keyword=" + state.recommend.recommending_phrase)
-            return;
-        }
-
-        if(!state.keyword) {
-            alert("검색어를 입력해주세요.")
-            return;
-        }
-
-        this.props.history.push(URL.service.search + "?keyword=" + state.keyword)
-    }*/
-
-    /*handleSearchClear = () => {
-        var state = this.state;
-        if(state.searchClear === false) {
-            state.searchClear = true;
-            this.setState(state)
-        }
-    }*/
 
     handleRegisterClick = () => {
         var state = this.state;
@@ -120,24 +87,8 @@ class Main extends Component {
         window.location.href = URL.service.register.author;
     }
 
-    next = (slider) => {
-        slider.slickNext();
-    }
-
-    previous = (slider) => {
-        slider.slickPrev();
-    }
-
     render() {
         var state = this.state;
-        const settings = {
-            arrows: false,
-            dots: false,
-            speed: 500,
-            slidesToShow: 5,
-            slidesToScroll: 1,
-            swipe: false,
-        };
 
         const settingsMain = {
             arrows: false,
@@ -161,14 +112,6 @@ class Main extends Component {
                                 <strong>당신의 이야기가 세상에 알려지는 순간!</strong>
                                 <p>전자책만 따라해도 나도 고수!<br/>
                                 지금 바로 당신의 책을 만들어줍니다.</p>
-                                {/*<form onSubmit={this.handleSearchClick}>
-                                    <div className="search">
-                                        <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
-                                        <button type="submit">
-                                            검색
-                                        </button>
-                                    </div>
-        </form>*/}
                             </div>
                             <div onClick={this.handleRegisterClick} className="btn-wrapper">
                                 <button className="btn btn-rounded register btn-color-1"> 작가등록하기
@@ -179,14 +122,6 @@ class Main extends Component {
                             <div className="search-area">
                                 <strong>당신이 찾는 모든 것들의 공간</strong>
                                 <p>당신이 찾는 모든 것들의 공간</p>
-                                {/*<form onSubmit={this.handleSearchClick}>
-                                    <div className="search">
-                                        <input type="text" style={state.searchClear === false ? {color:"#888888"} : {}} autoComplete="off" value={state.searchClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword} onChange={this.handleKeywordChange} onMouseDown={this.handleSearchClear}/>
-                                        <button type="submit">
-                                            검색
-                                        </button>
-                                    </div>
-    </form>*/}
                             </div>
                         </div>
                     </Slider>

@@ -30,7 +30,7 @@ class Header extends Component {
 
         var params = {
             display: false,
-            keyword: (!!this.search && this.search.has('keyword')) ? this.search.get('keyword') : "",
+            keyword: (!!this.search && this.search.has('keyword')) ? this.search.get('keyword') : null,
             isCategorySearch: !!this.search && !this.search.has('keyword') && this.search.has('category') ? true : false,
         }
 
@@ -42,6 +42,8 @@ class Header extends Component {
                 type: userInfo.type,
                 categories: [],
                 popup: false,
+                recommend: {},
+                recommendClear: !!params.keyword,
             }
         } else {
             this.state = {
@@ -50,6 +52,8 @@ class Header extends Component {
                 id: '',
                 categories: [],
                 popup: false,
+                recommend: {},
+                recommendClear: !!params.keyword,
             }
         }
     }
@@ -61,6 +65,16 @@ class Header extends Component {
             const res = await API.sendGet(URL.api.category.list)
             if(res.status === 200) {
                 state.categories = res.data.categoryList;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.book.recommend)
+            if(res.status === 200) {
+                state.recommend = res.data.recommend;
                 this.setState(state);
             }
         } catch(e) {
@@ -83,12 +97,27 @@ class Header extends Component {
     }
 
     handleSearch = () => {
-        if(!this.state.keyword) {
+        var state = this.state;
+
+        if(!state.recommendClear) {
+            window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(state.recommend.recommending_phrase)
+            return;
+        }
+
+        if(!state.keyword) {
             alert("검색어를 입력해주세요.")
             return;
         }
 
-        window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(this.state.keyword)
+        window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(state.keyword)
+    }
+
+    handleRecommendClear = () => {
+        var state = this.state;
+        if(state.recommendClear === false) {
+            state.recommendClear = true;
+            this.setState(state)
+        }
     }
 
     logOut = () => {
@@ -138,7 +167,15 @@ class Header extends Component {
                                     ?
                                     <Chip label={state.categories.filter(x => x.id === parseInt(this.search.get('category')))[0].name} onRemove={this.removeChip}/>
                                     :
-                                    <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
+                                    <input 
+                                        type="text" 
+                                        autoComplete="off" 
+                                        style={state.recommendClear === false ? {color:"#888888"} : {}} 
+                                        value={state.recommendClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword}
+                                        onChange={this.handleKeywordChange} 
+                                        onKeyPress={this.handleKeyPress} 
+                                        onMouseDown={this.handleRecommendClear}
+                                    />
                                 }
                                 
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
