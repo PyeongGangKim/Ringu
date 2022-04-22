@@ -1,10 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import ReactDOM from 'react-dom'
-import { Link } from 'react-router-dom';
 import Select from 'react-select'
-import { BarChart, LineChart, AreaChart, PieChart, Area, Cell, Bar, Pie, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart, PieChart, Cell, Bar, Pie, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import moment from 'moment';
 
 import User from '../../utils/user';
 import '../../scss/author/payment.scss';
@@ -17,7 +14,9 @@ import parse from '../../helper/parse';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-import Modal from '../../components/modal/Modal';
+import Modal from '../modal/Modal';
+
+import PaymentChartAll from '../author/PaymentChartAll';
 
 class Payment extends Component {
     constructor(props) {
@@ -46,6 +45,8 @@ class Payment extends Component {
             withdrawals: [],
             yearOptions: [{value: this.currentYear, label: `${this.currentYear}`}],
             books: [],
+            is_total: false,
+            is_loading_chart: false,
         }
     }
 
@@ -73,7 +74,6 @@ class Payment extends Component {
 
             if(salesRes.status === 200) {
                 state.sales = salesRes.data.sales;
-
                 this.setState(state)
             }
         }
@@ -89,8 +89,6 @@ class Payment extends Component {
                 state.balance = amount.amount_available_withdrawal;
                 state.balance2 = amount.amount_available_withdrawal;
                 state.remitted = amount.total_withdrawal_amount;
-                //state.is_waiting = amount.request_withdrawal_amount !== 0;
-
                 this.setState(state)
             }
         }
@@ -109,13 +107,13 @@ class Payment extends Component {
         catch(e) {
             console.error(e)
         }
-        this.filter0(this.currentYear, true);
+        //this.filter0(this.currentYear, true);
     }
 
     handleYearChange = (value) => {
         var state = this.state;
         state.year = value;
-        this.filter0(state.year.value);
+        //this.filter0(state.year.value);
         this.setState(state)
     }
 
@@ -128,7 +126,6 @@ class Payment extends Component {
 
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales, params)
-            console.log(salesRes)
             if(salesRes.status === 200) {
                 var sales = salesRes.data.sales;
                 var data = []
@@ -160,11 +157,12 @@ class Payment extends Component {
                         state.year = year[0];
                     }
                 }
-
+                state.is_loading_chart = false;
                 state.data = data;
                 this.setState(state)
             } else if(salesRes.status === 204) {
                 state.data = [];
+                state.is_loading_chart = false;
                 this.setState(state)
             }
         }
@@ -175,13 +173,13 @@ class Payment extends Component {
         this.setState(state);
     }
 
-    filter1 = async(year, init=false) => {
+    filter1 = async(year) => {
         var state = this.state;
         var params = {
             author_id: this.user.id,
             year: year
         }
-        console.log()
+        
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales_book, params)
             if(salesRes.status === 200) {
@@ -208,11 +206,11 @@ class Payment extends Component {
                 state.books = books;
                 state.stats = stats;
                 state.data = data;
-
+                state.is_loading_chart = false;
                 this.setState(state)
             } else if(salesRes.status === 204){
                 state.data = [];
-
+                state.is_loading_chart = false;
                 this.setState(state)
             }
         }
@@ -228,6 +226,8 @@ class Payment extends Component {
         var params = {
             author_id: this.user.id,
         }
+        
+        this.setState(state)
 
         try {
             const salesRes = await API.sendGet(URL.api.purchase.sales_ratio, params)
@@ -238,15 +238,17 @@ class Payment extends Component {
                 for(var i = 0; i < sales.length; i++) {
                     sales[i].value = parseInt(sales[i].value)
                 }
+                state.is_loading_chart = false;
                 this.setState(state)
             } else if(salesRes.status === 204) {
+                state.is_loading_chart = false;
                 state.data = []
+                this.setState(state)
             }
         }
         catch(e) {
             console.error(e)
         }
-
         this.setState(state);
     }
 
@@ -256,7 +258,9 @@ class Payment extends Component {
             return;
         }
         state.type = type;
-
+        state.is_loading_chart = true;
+        this.setState(state);
+        
         if(type === 0) {
             this.filter0(this.currentYear);
         } else if(type === 1) {
@@ -264,19 +268,21 @@ class Payment extends Component {
         } else {
             this.filter2();
         }
-
+        
         this.setState(state);
     }
 
-    handleWithdrawalChange = (e) => {
+    handleWithdrawalAmountChange = (e) => {
         var state = this.state;
         var value  = e.target.value;
         state.balance2 = state.balance;
 
-        if(value > state.balance2) {
+        if(value >= state.balance2) {
             state.withdrawal = state.balance2;
             state.balance2 = 0;
+            state.is_total = true;
         } else {
+            state.is_total = false;
             state.balance2 -= value;
             state.withdrawal = value
         }
@@ -286,8 +292,8 @@ class Payment extends Component {
 
     handleWithdraw = async() => {
         var state = this.state;
-        if(state.withdrawal === 0) {
-            alert('출금할 금액을 입력해주세요.')
+        if(state.withdrawal < 10000) {
+            alert('최소 출금 가능 금액은 1만원입니다.')
             return 0;
         }
         try {
@@ -308,7 +314,15 @@ class Payment extends Component {
 
     showModal = () => { var state = this.state; state.modal = true; this.setState(state); }
 
-    handleCloseClick = () => { var state = this.state; state.modal = false; this.setState(state) }
+    handleCloseClick = () => { var state = this.state; state.modal = false; this.setState(state) }    
+
+    handleTotalClick = () => { 
+
+        this.setState({is_total: !this.state.is_total,
+                       withdrawal: this.state.balance,
+                       balance2: 0,
+        })
+    }
 
     render() {
         var state = this.state;
@@ -332,7 +346,7 @@ class Payment extends Component {
 
         const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7C51F0', '#F9ED0F'];
 
-        return (
+        return (            
             <div className="payment">
                 {
                     state.modal > 0 &&
@@ -345,6 +359,18 @@ class Payment extends Component {
                             <div className="header"> 출금 신청 </div>
                             <em className="close" onClick={this.handleCloseClick}> &times; </em>
                             <div className="box">
+                                <div className="check-wrap">
+                                    <span className="check">
+                                        <label htmlFor="total" className="cb-container" >
+                                            <input type="checkbox" id="total" onClick={this.handleTotalClick} checked={state.is_total} value={false} disabled={state.balance === 0}/>
+                                            <span className="checkmark"/>
+                                            <div className="checkbox-text">
+                                                전액 사용
+                                            </div>
+                                        </label>
+                                    </span>
+                                </div>
+                            
                                 <table>
                                     <tbody>
                                         <tr>
@@ -354,14 +380,12 @@ class Payment extends Component {
                                         </tr>
                                         <tr>
                                             <td>출금 신청 금액</td>
-                                            <td>
-                                                <input type="number"autoComplete="off" className="input" value={state.withdrawal} onChange={this.handleWithdrawalChange}/>
-                                            </td>
+                                            <td><input type="number"autoComplete="off" className="input" value={state.withdrawal} onChange={this.handleWithdrawalAmountChange}/></td>
                                             <td>원</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <button className="btn btn-color-2" onClick={this.handleWithdraw}>
+                                <button className="btn btn-color-2" onClick={this.handleWithdraw} disabled={state.balance === 0}>
                                     출금 신청
                                 </button>
                             </div>
@@ -417,6 +441,9 @@ class Payment extends Component {
                             <div className="value">{parse.numberWithCommas(state.remitted)}</div>
                         </div>
                     </div>
+                    {
+
+                    }
                     <div className="chart">
                         <div className="menu">
                             <ul className="filter">
@@ -438,38 +465,26 @@ class Payment extends Component {
                                 isSearchable={false}
                                 placeholder={""}/>
                         </div>
-                        <div className="canvas">
+                        {
+                            <div className="canvas">
                             {
-                                state.type === 0 ?
+                                state.is_loading_chart === true ?
+                                <div className="no-content">
+                                    불러오는 중입니다.
+                                </div>
+                                :
                                 state.data.length === 0 ?
                                 <div className="no-content">
                                     판매 내역이 없습니다.
                                 </div>
-                                :
-                                <ResponsiveContainer
-                                    width="100%"
-                                    height="100%"
-                                >
-                                    <BarChart data={state.data}
-                                    margin={{
-                                        top: 5,
-                                        right: 30,
-                                        left: 20,
-                                        bottom: 5
-                                    }}>
-                                        <XAxis dataKey="m"/>
-                                        <YAxis dataKey="revenue" />
-                                        <Tooltip/>
-                                        <Bar dataKey='revenue' fill='#5c4ce5'/>
-                                    </BarChart>
-                                </ResponsiveContainer>
+                                :                                
+                                state.type === 0 ?
+                                <PaymentChartAll
+                                    year = {state.year}
+                                    id = {this.user.id}
+                                />
                                 :
                                 state.type === 1 ?
-                                state.data.length === 0 ?
-                                <div className="no-content">
-                                    판매 내역이 없습니다.
-                                </div>
-                                :
                                 <ResponsiveContainer
                                     width="100%"
                                     height="100%"
@@ -494,11 +509,6 @@ class Payment extends Component {
 
                                     </BarChart>
                                 </ResponsiveContainer>
-                                :
-                                state.data.length === 0 ?
-                                <div className="no-content">
-                                    판매 내역이 없습니다.
-                                </div>
                                 :
                                 <div className="container">
                                     <div className="content">
@@ -547,7 +557,9 @@ class Payment extends Component {
                                     </ResponsiveContainer>
                                 </div>
                             }
-                        </div>
+                            </div>                            
+                        }
+
                     </div>
                 </div>
 
@@ -608,7 +620,11 @@ class Payment extends Component {
                                                             <div className="price">{parse.numberWithCommas(item.amount)}원</div>
                                                             <div className="order">
                                                                 <span>출금번호 : {item.id}</span>
-                                                                <span>출금일 : {date.fullFormat(item.remitted_date_time)}</span>
+                                                                <span>출금신청일 : {date.fullFormat(item.created_date_time)}</span>
+                                                                {
+                                                                    item.is_remittance === 1 &&
+                                                                    <span>출금일 : {date.fullFormat(item.remitted_date_time)}</span>
+                                                                }                                                                
                                                             </div>
                                                         </td>
                                                     </tr>

@@ -15,6 +15,7 @@ import Modal from '../../components/modal/Modal';
 class Review extends Component {
     constructor(props) {
         super(props)
+        
         this.state = {
             book: {},
             book_detail: this.props.book_detail,
@@ -29,7 +30,7 @@ class Review extends Component {
         var state = this.state;
         const res = await API.sendGet(URL.api.book_detail.get + state.book_detail)
         if(res.status === 200)
-        {
+        {   
             var book = res.data.book
             state.book = book
             state.isSuccess = true
@@ -104,6 +105,15 @@ class Review extends Component {
         }
     }
 
+    toReview = () => {
+        this.props.history.push({
+            pathname: URL.service.book.book + this.state.book.book_id,
+            state: {
+                toReview: true,
+            }
+        })
+    }
+
     render() {
         var state = this.state
 
@@ -116,25 +126,12 @@ class Review extends Component {
                         onClose={this.handleCloseClick}
                         overlay={true}
                     >
-                        <div className="modal review">
-                            <div className="review-point-box">
-                                <div className="mark">
-                                    <em>P</em>
-                                </div>
-                                <div className="point">
-                                    <div className="label">
-                                        적립 포인트
-                                    </div>
-                                    <div className="value">
-                                        100P
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="modal review">                            
                             <div className="header">
                                 리뷰를 써주셔서 감사합니다.
                             </div>
                             <div className="content">
-                                축하합니다! 포인트가 지급되었습니다. RINGU는 고객님들의 생생한 리뷰를 모아 신뢰할 수 있는 리뷰 서비스를 제공하기 위해 노력하겠습니다.
+                                RINGU는 고객님들의 생생한 리뷰를 모아 신뢰할 수 있는 리뷰 서비스를 제공하기 위해 노력하겠습니다.
                             </div>
 
                             <Link to={URL.service.mypage.purchases}>
@@ -143,7 +140,7 @@ class Review extends Component {
                                 </button>
                             </Link>
 
-                            <button className="btn btn-block btn-transparent">
+                            <button className="btn btn-block btn-transparent" onClick={this.toReview}>
                                 리뷰 보러가기
                             </button>
 
@@ -186,7 +183,7 @@ class Review extends Component {
                         <span className="score"> {state.score} / 5 </span>
                     </div>
 
-                    <div className="row">
+                    <div className="row" style={{alignItems: "start"}}>
                         <h3>리뷰</h3>
                         <textarea rows={7} placeholder="책에 대한 간단한 리뷰를 작성해주세요." onChange={this.handleDescriptionChange} value={state.description}/>
                     </div>

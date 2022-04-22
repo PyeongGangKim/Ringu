@@ -129,7 +129,13 @@ class Buy extends Component {
 
     }
 
-    
+    handleCouponSelect = () => {
+        window.alert("현재 준비중입니다")
+    }
+
+    handleTotalMileage = () => {
+        window.alert("현재 준비중입니다")
+    }
 
     render() {
         var state = this.state;
@@ -188,7 +194,7 @@ class Buy extends Component {
                                                     <span className="input-txt">원</span>
                                                 </div>
                                             </td>
-                                            <td><button className="btn btn-color-2" disabled>쿠폰선택</button></td>
+                                            <td><div className="btn btn-color-2" onClick={this.handleCouponSelect}>쿠폰선택</div></td>
                                         </tr>
                                         <tr>
                                             <th>사용 가능한 적립금</th>
@@ -198,7 +204,7 @@ class Buy extends Component {
                                                     <span className="input-txt">원</span>
                                                 </div>
                                             </td>
-                                            <td><button className="btn btn-color-2" disabled>전액사용</button></td>
+                                            <td><div className="btn btn-color-2" onClick={this.handleTotalMileage}>전액사용</div></td>
                                         </tr>
                                     </tbody>
                                 </table>

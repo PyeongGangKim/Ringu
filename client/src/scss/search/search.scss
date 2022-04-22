@@ -55,13 +55,10 @@
 .search {
     overflow: hidden;
     position: relative;
+    border: 1px solid #aaa;
+    border-radius: 20px;
     width: 400px;
     height: 40px;
-
-    input {
-        border: 2px solid #aaa;
-        border-radius: 10px;
-    }
 
     button[type='submit']{
         position: absolute;

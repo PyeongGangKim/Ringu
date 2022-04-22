@@ -1,11 +1,9 @@
 .book-area {
-    padding-bottom: 60px;
     margin-bottom: 30px;
 
     .container {
         padding: 0;
         display: flex;
-        margin-right: -100px;
 
         .book-box {
             flex: 0 1 auto;
@@ -76,7 +74,7 @@
 
 .book-box {
     position: relative;
-    width: 260px;
+    width: 255px;
 
     .btn-wrap {
         margin: 0 !important;
@@ -209,6 +207,10 @@
                 padding: 5px 0;
                 border: 0;
                 background-color: #f2f2f2;
+
+                &:hover, &:focus {
+                    box-shadow: rgba(159, 182, 255, 0.6) 0px 0px 1px 2px;
+                }
             }
         }
     }

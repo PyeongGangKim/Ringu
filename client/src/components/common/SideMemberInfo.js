@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 
 import User from '../../utils/user';
 import '../../scss/common/sideinfo.scss';
+import '../../scss/skeleton/skeleton.scss';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-import Modal from '../../components/modal/Modal';
+import FormatDownloadModal from '../../components/author/FormatDownloadModal';
 
 class SideMemberInfo extends Component {
     constructor(props) {
@@ -25,6 +26,7 @@ class SideMemberInfo extends Component {
             reviewTotal: 0,
             reviewCount: 0,
             isFavorite: false,
+            isLoading: true,
         }
     }
 
@@ -83,9 +85,8 @@ class SideMemberInfo extends Component {
             if (this.props.isHost === false && state.user !== null) {
                 const res = await API.sendGet(URL.api.favorite.author.get + this.props.authorId)
                 if(res.status === 200) {
-                    var fa = res.data.favoriteAuthor;
+                    //var fa = res.data.favoriteAuthor;
                     state.isFavorite = true;
-                    this.setState(state);
                 }
             }
 
@@ -93,17 +94,20 @@ class SideMemberInfo extends Component {
             if(userRes.status === 200) {
                 user = userRes.data.user
             }
-            this.setState({
-                favorites: favoriteBookList.length + favoriteAuthorList.length,
-                purchases: purchaseList.length,
-                carts: cartList.length,
-                host: user,
-                total: parseInt(reviewStats.total),
-                count: parseInt(reviewStats.count),
-            })
+
+            state.favorites = favoriteBookList.length + favoriteAuthorList.length;
+            state.purchases = purchaseList.length;
+            state.carts = cartList.length;
+            state.host = user;
+            state.total = parseInt(reviewStats.total);
+            state.count = parseInt(reviewStats.count);
+            state.isLoading = false;
         } catch(e) {
+            state.isLoading = false;
             console.error(e)
         }
+
+        this.setState(state)
     }
 
     handleProfileChange = async(e) => {
@@ -198,64 +202,53 @@ class SideMemberInfo extends Component {
 
     handleCloseClick = () => {
         var state = this.state;
+        console.log(55555555555)
 
         state.modal = false;
         this.setState(state)
-    }
-
-    downloadFormat = (type) => {
-        if (type === 0) {            
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%EB%A7%81%EA%B5%AC+%EA%B8%80%ED%8F%AC%EB%A7%B7(%EC%9B%8C%EB%93%9C).docx')
-        }
-        else {
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%EB%A7%81%EA%B5%AC+%EA%B8%80%ED%8F%AC%EB%A7%B7(%ED%95%9C%EA%B8%80).hwp')
-        }
-        
-        this.handleCloseClick();
     }
 
     render() {
         var state = this.state
 
         return (
+            !!state.isLoading ?
+            <div className="side-info">
+                <div className="skeleton-wrapper">
+                    <div className="skeleton-profile">
+                        <div className="skeleton avatar"/>
+                        <div className="skeleton title"/>
+                        {
+                            this.props.isAuthor === true ?
+                            <div>
+                                <div className="skeleton button"/>
+                                <div className="skeleton button"/>
+                                <div className="skeleton button"/>
+                            </div>
+                            :
+                            <table>
+                                <tr>
+                                    <td><div className="skeleton text"/></td>
+                                    <td><div className="skeleton text"/></td>
+                                    <td><div className="skeleton text"/></td>
+                                </tr>
+                                <tr>
+                                    <td><div className="skeleton text"/></td>
+                                    <td><div className="skeleton text"/></td>
+                                    <td><div className="skeleton text"/></td>
+                                </tr>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+            :
             <div className="side-info">
                 {
                     state.modal === true &&
-                    <Modal
-                        onClose={this.handleCloseClick}
-                        overlay={true}
-                    >
-                        <div className="format-modal">
-                            <div className="header">
-                                <h3>원하시는 양식을 다운로드 해주세요</h3>
-                            </div>
-                            <em className="close" onClick={this.handleCloseClick}> &times; </em>
-
-                            <div className="format">
-                                <div className="item">
-                                    <div className="type" id="word">
-                                        <em/>
-                                        <span> 워드 파일 양식 </span>
-                                    </div>
-                                    <button className="download" onClick={() => this.downloadFormat(0)}>
-                                        <em/>
-                                    </button>
-                                </div>
-                                <hr/>
-                                <div className="item">
-                                    <div className="type" id="hangeul">
-                                        <em/>
-                                        <span> 한글 파일 양식 </span>
-                                    </div>
-                                    <button className="download" onClick={() => this.downloadFormat(1)}>
-                                        <em/>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </Modal>
+                    <FormatDownloadModal
+                        handleCloseClick={this.handleCloseClick}
+                    />
                 }
                 {
                     this.props.isHost === false &&
@@ -271,9 +264,6 @@ class SideMemberInfo extends Component {
                         this.props.isAuthor === true ?
                         <div className="img-area">
                             {
-                                typeof state.host.profile === 'undefined' ?
-                                <div className="img-dummy"/>
-                                :
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
@@ -284,9 +274,6 @@ class SideMemberInfo extends Component {
                         <div className="img-area">
                             <input type="file" id="profile" onChange={this.handleProfileChange} accept="image/*"/>
                             {
-                                typeof state.host.profile === 'undefined' ?
-                                <div className="img-dummy"/>
-                                :
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
@@ -299,14 +286,7 @@ class SideMemberInfo extends Component {
                     }
                 </div>
 
-
-                {
-                    typeof state.host.nickname === 'undefined' || state.host.nickname === '' ?
-                    <div className="nickname-dummy"></div>
-                    :
-                    <strong className="nickname"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
-                }
-
+                <strong className="nickname"> {"nickname" in this.props && this.props.nickname !== null ? this.props.nickname : state.host.nickname} </strong>
 
                 {
                     this.props.isAuthor === true ?
@@ -372,7 +352,7 @@ class SideMemberInfo extends Component {
                 }
 
             </div>
-
+            
         )
     }
 }

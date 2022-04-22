@@ -24,7 +24,6 @@ class Purchases extends Component {
                     </div>
                     <Purchase/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

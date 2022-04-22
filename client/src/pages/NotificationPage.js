@@ -18,7 +18,6 @@ class NotificationPage extends Component {
                 <Helmet title={string.notification + string.postfix}/>
                 <Header></Header>
                 <Notification></Notification>
-                <Footer></Footer>
             </Fragment>
         )
     }

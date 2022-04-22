@@ -21,7 +21,6 @@ class PaymentPage extends Component {
                         <Payment/>
                     }
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

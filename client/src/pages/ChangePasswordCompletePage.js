@@ -16,7 +16,6 @@ class ChangePasswordCompletePage extends Component {
                 <Helmet title={string.base}/>
                 <Header searchVisible={false} history={this.props.history}></Header>
                 <ChangePasswordComplete/>
-                <Footer></Footer>
             </Fragment>
         )
     }

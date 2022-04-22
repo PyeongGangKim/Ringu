@@ -301,21 +301,35 @@
 .withdraw-modal {
     .header {
         position: absolute;
-        left: 20px;
+        left: 60px;
         top: 20px;
         font-size: 24px;
         font-weight: 500;
     }
 
     .box {
-        width: 400px;
-        height: 220px;
+        width: 450px;
+        height: 300px;
+
+        .check-wrap {
+            position: relative;
+            top: 45px;
+            display: flex;
+            justify-content: end;
+            font-size: 16px;
+            font-weight: 500;
+            margin-right: 55px;
+        }
 
         table {
             width: 100%;
             table-layout: fixed;
             position: relative;
             top: 50px;
+
+            tr {
+                height: 60px;
+            }
             td {
                 height: 50px;
                 font-weight: 400;
@@ -328,26 +342,36 @@
             }
 
             td:nth-child(2) {
-                width: 50%;
+                width: 250px;
                 text-align: right;
 
                 input {
                     height: 40px;
                     text-align: right;
                     border: 2px solid #aaa;
+                    border-radius: 8px;
                     font-weight: 400;
                     font-size: 18px;
                     padding: 0;
                     padding-right: 5px;
                 }
             }
+
+            td:nth-child(3) {
+                font-size: 16px;
+                padding-left: 5px;
+
+            }
         }
 
         button {
-            font-size: 16px;
-            position: absolute;
-            right: 90px;
-            bottom: 25px;
+            font-size: 18px;
+            position: relative;
+            top: 90px;
+            margin: 0 auto;
+            width: 250px;
+            height: 60px;
+            display: block;
         }
     }
 }

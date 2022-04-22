@@ -20,7 +20,7 @@
 .btn-default {
     color: #fff;
     background-color: #15376c;
-    border: 0;
+    border-color: transparent;
 }
 .btn-default[disabled] {
     background-color: #707070;
@@ -95,25 +95,49 @@
 .btn-color-1 {
     color: #fff;
     background-color: var(--color-1);
-    border: 0;
+    border-color: transparent;
+
+    &:hover, &:focus {
+        box-shadow: rgba(159, 182, 255, 0.6) 0px 0px 1px 2px;
+    }
 }
 
 .btn-color-2 {
     color: #fff;
     background-color: var(--color-2);
-    border: 0;
+    border-color: transparent;
+
+    &:hover, &:focus {
+        box-shadow: rgba(159, 182, 255, 0.6) 0px 0px 1px 2px;
+    }
 }
 
 .btn-color-4 {
     color: black;
     background-color: var(--color-4);
-    border: 0;
+    border-color: transparent;
+}
+
+.btn-outline-1 {
+    background-color: transparent;
+    color: var(--color-1);
+    border-color: var(--color-1);
 }
 
 .btn-outline {
     background-color: transparent;
     color: black;
     border-color: var(--color-2);
+
+    &:hover, &:focus {
+        background-color: var(--color-2);
+        border-color: transparent;
+        color: white;
+    }
+
+    &:active {
+        box-shadow: rgba(159, 182, 255, 0.6) 0px 0px 1px 2px;
+    }
 }
 
 .btn-rounded {

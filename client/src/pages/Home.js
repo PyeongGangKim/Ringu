@@ -13,9 +13,8 @@ class Home extends Component {
         return (
             <Fragment>
                 <Helmet title={string.base}/>
-                <Header searchVisible={false} history={this.props.history}></Header>
+                <Header history={this.props.history}></Header>
                 <Main history={this.props.history}></Main>
-                <Footer></Footer>
             </Fragment>
         )
     }

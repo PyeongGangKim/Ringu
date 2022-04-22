@@ -17,15 +17,13 @@ class SignupHeader extends Component {
 
     render() {
         return (
-            <header>
-                <div id="signup-header" className="bottom-line">
-                    <h1 id="signup-logo">
-                        <Link to={URL.service.home}>
-                            <img src="/logo.png" height="70px"/>
-                        </Link>
-                    </h1>
-                </div>
-            </header>
+            <div id="signup-header" className="bottom-line">
+                <h1 id="signup-logo">
+                    <Link to={URL.service.home}>
+                        <img src="/logo.png" height="60px"/>
+                    </Link>
+                </h1>
+            </div>
         );
     }
 }

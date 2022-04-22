@@ -151,6 +151,11 @@
             background-image: url("/assets/img/write.png");
             transition: 0.2s;
             padding: 5px;
+            border-radius: 50%;
+
+            &:hover {
+                box-shadow: rgba(159, 182, 255, 1) 0 0 5px 2px;
+            }
         }
 
         label {
@@ -213,78 +218,13 @@
             .btn-wrap-vert {
                 button {
                     font-size: 20px;
+                    border-width: 2px;
                     width: 100%;
                     margin: 10px 0;
                     padding: 10px 0;
                 }
             }
 
-        }
-    }
-}
-
-.format-modal {
-    width: 400px;
-
-    .header{
-        font-size: 20px;
-        text-align: center;
-        margin-top: 50px;
-    }
-
-    .format {
-        margin: 40px auto 80px auto;
-        width: 300px;
-
-        .item {
-            margin: 30px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            .type {
-                display: flex;
-                align-items: center;
-
-                em {
-                    display: inline-block;
-                    width: 60px;
-                    height: 60px;
-                }
-
-                span {
-                    margin-left: 15px;
-                    font-size: 14px;
-                    font-weight: 600;
-                }
-
-            }
-
-            #word {
-                em {
-                    background-image: url(/assets/img/word.png);
-                }
-            }
-            #hangeul {
-                em {
-                    background-image: url(/assets/img/hangeul.png);
-                }
-            }
-
-            .download {
-                &:focus, &:hover {
-                    em {
-                        background-image: url(/assets/img/download-wide.png);
-                    }
-                }
-                em {
-                    background-size: cover;
-                    display: block;
-                    width: 50px;
-                    height: 27px;
-                    background-image: url(/assets/img/download-wide-empty.png);
-                }
-            }
         }
     }
 }

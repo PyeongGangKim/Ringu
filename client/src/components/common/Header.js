@@ -7,8 +7,11 @@ import '../../scss/common/common.scss'
 import '../../scss/common/header.scss';
 import '../../scss/common/input.scss';
 
+import Chip from '../../components/common/Chip'
+
 import URL from '../../helper/helper_url';
 import User from '../../utils/user';
+import API from '../../utils/apiutils';
 
 class Header extends Component {
     userInfo = User.getInfo();
@@ -18,16 +21,17 @@ class Header extends Component {
 
         var userInfo = this.userInfo;
 
+        this.search = props.search
+
         if (props.mypage && !userInfo) {
             alert("로그인이 필요합니다.")
             window.location.href = URL.service.home
         }
 
-        var searchParams = props.search
-
         var params = {
             display: false,
-            keyword: (!!searchParams && searchParams.has('keyword')) ? searchParams.get('keyword') : "",
+            keyword: (!!this.search && this.search.has('keyword')) ? this.search.get('keyword') : null,
+            isCategorySearch: !!this.search && !this.search.has('keyword') && this.search.has('category') ? true : false,
         }
 
         if (!!userInfo) {
@@ -36,18 +40,46 @@ class Header extends Component {
                 login : 'Y',
                 id : userInfo.id,
                 type: userInfo.type,
+                categories: [],
+                popup: false,
+                recommend: {},
+                recommendClear: !!params.keyword,
             }
         } else {
             this.state = {
                 ...params,
                 login: 'N',
                 id: '',
+                categories: [],
+                popup: false,
+                recommend: {},
+                recommendClear: !!params.keyword,
             }
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        var state = this.state;
 
+        try {
+            const res = await API.sendGet(URL.api.category.list)
+            if(res.status === 200) {
+                state.categories = res.data.categoryList;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
+
+        try {
+            const res = await API.sendGet(URL.api.book.recommend)
+            if(res.status === 200) {
+                state.recommend = res.data.recommend;
+                this.setState(state);
+            }
+        } catch(e) {
+            console.error(e)
+        }
     }
 
     handleKeywordChange = (evt) => {var state = this.state; state.keyword = evt.target.value; this.setState(state);}
@@ -58,16 +90,35 @@ class Header extends Component {
     }
     handleDisplay = (evt) =>{var state = this.state;state.display = !state.display;this.setState(state);}
     handleSearchClick = () => {
+        if(!!this.state.isCategorySearch) {
+            return;
+        }
         this.handleSearch()
     }
 
     handleSearch = () => {
-        if(!this.state.keyword) {
+        var state = this.state;
+
+        if(!state.recommendClear) {
+            window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(state.recommend.recommending_phrase)
+            return;
+        }
+
+        if(!state.keyword) {
             alert("검색어를 입력해주세요.")
             return;
         }
 
-        window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(this.state.keyword)
+        window.location = URL.service.search + '?' + encodeURIComponent('keyword') + '=' + encodeURIComponent(state.keyword)
+    }
+
+    handleRecommendClear = () => {
+        var state = this.state;
+        if(state.recommendClear === false) {
+            state.keyword = "";
+            state.recommendClear = true;
+            this.setState(state)
+        }
     }
 
     logOut = () => {
@@ -86,42 +137,98 @@ class Header extends Component {
         }
     };
 
+    toggleSearchPopup = (e, value) => {
+        if(value === false && !e.currentTarget.contains(e.relatedTarget) || value === true)
+            this.setState({popup: value})
+    }
+
+    removeChip = () => {
+        this.setState({isCategorySearch: false});
+    }
+
     render() {
         var state = this.state;
         const displayClass = state.display ? "display" : "";
 
         return (
             <header>
-                <div id="header" className={this.props.searchVisible ? "bottom-line" : ""}>
+                <div id="header-wrap" className={this.props.searchVisible ? "bottom-line" : ""}>
                     <h1 id="logo">
                         <Link to={URL.service.home}>
                             <img src="/logo.png" width="220px" height="70px"/>
                         </Link>
                     </h1>
-                    <div id="search-area">
-                        {
-                            this.props.searchVisible !== false &&
+                    <div style={{"flexGrow":1}}></div>
+                    {
+                        this.props.searchVisible !== false &&
+                        <div id="search-area" tabIndex={0} onFocus={(e) => this.toggleSearchPopup(e, true)} onBlur={(e) => this.toggleSearchPopup(e, false)}>
                             <div className="search">
-                                <input type="text" autoComplete="off" value={state.keyword} onChange={this.handleKeywordChange} onKeyPress={this.handleKeyPress}/>
+                                {
+                                    state.isCategorySearch && state.categories.length > 0
+                                    ?
+                                    <Chip label={state.categories.filter(x => x.id === parseInt(this.search.get('category')))[0].name} onRemove={this.removeChip}/>
+                                    :
+                                    <input 
+                                        type="text" 
+                                        autoComplete="off" 
+                                        style={state.recommendClear === false ? {color:"#888888"} : {}} 
+                                        value={state.recommendClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword}
+                                        onChange={this.handleKeywordChange} 
+                                        onKeyPress={this.handleKeyPress} 
+                                        onMouseDown={this.handleRecommendClear}
+                                    />
+                                }
+                                
                                 <button type="submit" onClick={this.handleSearchClick}> 검색 </button>
                             </div>
-                        }
-                    </div>
+                            {
+                                state.popup &&
+                                <div className="search-popup" tabindex={0}>
+                                    {/*<hr/>*/}
+                                    <div className="category-wrap">
+                                        <span>카테고리</span>
+                                        <div className="category-list">
+                                            {
+                                                state.categories.map(category => {
+                                                    return (
+                                                        <a href={URL.service.search + "?category=" + category.id}>
+                                                            <span className="category">
+                                                                {category.name}
+                                                            </span>
+                                                        </a>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }                    
 
                     <div id="user-area">
                         {
                             state.login == 'Y'
                             ?
-                            <div id="user-page">
-                                <Link to={URL.service.notification} id="notification-page">
+                            <div id="user-menu">
+                                <Link 
+                                    id="notification-page" 
+                                    className="menu-item"
+                                    to={URL.service.notification} 
+                                >
                                     <img src="/notification.png" />
                                     <span>알림</span>
                                 </Link>
                                 {
                                     state.type === 1 ?
-                                    <Link to={URL.service.author + this.state.id} onClick={() => {window.location.href=URL.service.author + this.state.id}} id="author-page">
+                                    <Link 
+                                        id="author-page" 
+                                        className={!!this.props.isHost ? "menu-item active" : "menu-item"}
+                                        to={URL.service.author + this.state.id} 
+                                        onClick={() => {window.location.href=URL.service.author + this.state.id}}
+                                    >
                                         {
-                                            this.props.isHost === true ?
+                                            !!this.props.isHost === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>
@@ -130,9 +237,13 @@ class Header extends Component {
                                         <span>작가 공간</span>
                                     </Link>
                                     :
-                                    <Link to={URL.service.register.author} id="author-page">
+                                    <Link 
+                                        id="author-page" 
+                                        className={!!this.props.author ? "menu-item active" : "menu-item"}
+                                        to={URL.service.register.author} 
+                                    >
                                         {
-                                            this.props.author === true ?
+                                            !!this.props.author === true ?
                                             <img src="/author_clicked.png"/>
                                             :
                                             <img src="/author.png"/>
@@ -143,14 +254,17 @@ class Header extends Component {
                                 }
 
 
-                                <div id="user-nb" onClick={this.handleDisplay}>
+                                <div id="user-nb" 
+                                    className={!!this.state.display || !!this.props.mypage ? "menu-item active" : "menu-item" }
+                                    onClick={this.handleDisplay}
+                                >
                                     {
-                                        this.state.display || this.props.mypage ?
-                                        <div id="nb-box">
+                                        !!this.state.display || !!this.props.mypage ?
+                                        <div className="box">
                                             <img src="/mypage-active.png" alt="마이페이지"/>
                                         </div>
                                         :
-                                        <div id="nb-box">
+                                        <div className="box">
                                             <img src="/mypage.png" alt="마이페이지"/>
                                         </div>
                                     }
@@ -158,21 +272,22 @@ class Header extends Component {
 
                                     <span>마이페이지</span>
                                     <ul className={"nb-menu " + displayClass}>
-                                        <li><Link to={URL.service.mypage.info}>계정관리</Link></li>
-                                        <li><Link to={URL.service.mypage.carts}>장바구니</Link></li>
-                                        <li><Link to={URL.service.mypage.fav_book}>찜한목록</Link></li>
-                                        <li><Link to={URL.service.mypage.purchases}>구매내역</Link></li>
-                                        <li><button onClick={this.logOut}>로그아웃</button></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.info}>계정관리</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.carts}>장바구니</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.fav_book}>찜한목록</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.purchases}>구매내역</Link></li>
+                                        <li className="nb-item"><div onClick={this.logOut}>로그아웃</div></li>
                                     </ul>
                                 </div>
                             </div>
                             :
-                            <div id="accounts">
-                                <Link to={URL.service.accounts.login} className="btn-login">
-                                    로그인
+                            <div id="account-menu">
+                                <Link to={URL.service.accounts.login} id="login">
+                                    <span className="">로그인</span>
                                 </Link>
-                                <Link to={URL.service.accounts.signup} className="btn-signup">
-                                    <div className="btn btn-rounded btn-color-2">회원가입</div>
+                                
+                                <Link to={URL.service.accounts.signup} id="register">
+                                    <button className="btn btn-rounded btn-color-2">회원가입</button>
                                 </Link>
                             </div>
                         }

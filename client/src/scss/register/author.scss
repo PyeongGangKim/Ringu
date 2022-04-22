@@ -1,4 +1,22 @@
 #register-author {
+
+    textarea {
+        &::-webkit-scrollbar {
+            display:block;
+            width: 12px;
+        }
+        &::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: #b2b2b2;
+        }
+        &::-webkit-scrollbar-button {
+            width: 0;
+            height: 0;
+        }
+    }
     .input-box {
         padding: 20px 0;
 

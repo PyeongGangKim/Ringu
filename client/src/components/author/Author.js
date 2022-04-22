@@ -1,8 +1,11 @@
 import React, { Component, Fragment } from 'react';
+import { Link } from 'react-scroll';
+import {Oval} from 'react-loader-spinner';
 
 import User from '../../utils/user';
-import Book from '../../components/book/Book'
-import Paging from '../../components/common/Paging'
+import Book from '../../components/book/Book';
+import Paging from '../../components/common/Paging';
+import ReviewTabInner from '../../components/common/ReviewTabInner';
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/common/common.scss';
@@ -25,13 +28,9 @@ class Author extends Component {
     constructor(props) {
         super(props)
 
-        this.introRef = React.createRef();
-        this.bookRef = React.createRef();
-        this.reviewRef = React.createRef();
-
         this.state = {
-            tab: 'intro',
-            tabChange: false,
+            tab: 1,
+            
             detailList: [],
             detailTotal: 0,
             bookList: {},
@@ -43,7 +42,7 @@ class Author extends Component {
             },
             active: 'a',
             activeReview: 0,
-            dock: false,
+            
             reviewList: [],
             reviewTitleList: [],
 
@@ -61,6 +60,10 @@ class Author extends Component {
             modalPos:{},
             host: false,
             book: {title:"", filename:"선택 파일 없음", file:null},
+
+            reviewLoading: false,
+            noMoreReview: false,
+            newReviewPage: 2,
         }
     }
 
@@ -68,6 +71,14 @@ class Author extends Component {
         var state = this.state;
 
         try {
+            const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
+            if(userRes.status === 200) {
+                var user = userRes.data.user
+
+                state.user = user
+                this.setState(state)
+            }
+            
             var params = {
                 author_id: this.props.authorId,
             }
@@ -78,7 +89,7 @@ class Author extends Component {
                 if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
                     state.host = true
                 }
-
+                
                 var waitingList = bookList.filter(book => {
                     return book.is_approved === 0
                 })
@@ -115,36 +126,24 @@ class Author extends Component {
                     state.bookList['pub'] = pubList
                 }
 
-                if(waitingList.length !== 0) {
+                if(waitingList.length !== 0 && state.user.id === parseInt(this.props.authorId)) {
                     state.bookList['wait'] = waitingList
                 }
 
                 this.setState(state)
             }
 
-            const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = {title: true, author_id: this.props.authorId})
+            const reviewRes = await API.sendGet(URL.api.review.getReviewList, params = {title: true, author_id: this.props.authorId})
 
             if(reviewRes.status === 200) {
                 var reviewData = reviewRes.data
 
                 state.reviewList = reviewData.reviewList
                 state.reviewTitleList = reviewData.reviewTitleList
+                if(state.reviewList.length > 5) {
+                    state.noMoreReview = true;
+                }
                 this.setState(state)
-            }
-
-            const userRes = await API.sendGet(URL.api.member.getById + this.props.authorId)
-            if(userRes.status === 200) {
-                var user = userRes.data.user
-
-                state.user = user
-                this.setState(state)
-            }
-
-            window.addEventListener('scroll', this.handleScroll)
-            if (window.scrollY > 100) {
-                state.dock = true;
-            } else {
-                state.dock = false;
             }
 
             this.setState(state)
@@ -152,69 +151,6 @@ class Author extends Component {
         } catch (e) {
             console.log(e)
         }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
-            window.addEventListener('scroll', this.handleScroll)
-            if (window.scrollY > 100) {
-                this.state.dock = true;
-            } else {
-                this.state.dock = false;
-            }
-
-            this.setState(this.state)
-        }
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll)
-    }
-
-    handleTabChange = (event, value) => {
-        this.setState({tab: value, tabChange: true})
-        window.removeEventListener('scroll', this.handleScroll)
-
-        if (value === 'intro') {
-            window.scrollTo({
-                top: this.introRef.current.offsetTop - tabHeight,
-            })
-        } else if (value === 'book') {
-            window.scrollTo({
-                top: this.bookRef.current.offsetTop - tabHeight,
-            })
-        } else {
-            window.scrollTo({
-                top: this.reviewRef.current.offsetTop - tabHeight,
-            })
-        }
-    }
-
-    handleScroll = (event) => {
-        var state = this.state;
-
-        const scrollTop = ('scroll', event.srcElement.scrollingElement.scrollTop);
-        if (scrollTop > 100) {
-            state.dock = true;
-        } else {
-            state.dock = false;
-        }
-
-        if(state.tabChange === true) {
-            state.tabChange = false
-            return;
-        }
-
-        if (scrollTop >= this.reviewRef.current.offsetTop - tabHeight) {
-            state.tab = 'review';
-        }
-        else if (scrollTop >= this.bookRef.current.offsetTop - tabHeight) {
-            state.tab = 'book';
-        } else {
-            state.tab = 'intro';
-        }
-
-        this.setState(state);
     }
 
     handleSubClick = (value) => {
@@ -249,9 +185,6 @@ class Author extends Component {
 
         state.selectedBook = book;
 
-        //var modalRoot = document.getElementById('modal-root')
-        //modalRoot.style.cssText = `top:${coordY}px; left:${coordX}px;`
-
         state.modalPos = {x: x, y: y}
 
         state.display = true
@@ -262,6 +195,8 @@ class Author extends Component {
     handleReviewTitleClick = async(title, book_id) => {
         var state = this.state;
         state.activeReview = title;
+        state.newReviewPage = 2;
+        state.noMoreReview = false;
         this.setState(state)
 
         var params = {
@@ -273,9 +208,13 @@ class Author extends Component {
             params['author_id'] = this.props.authorId;
         }
 
-        const reviewRes = await API.sendGet(URL.api.review.getReivewList, params = params)
+        const reviewRes = await API.sendGet(URL.api.review.getReviewList, params = params)
         if(reviewRes.status === 200){
             var reviewData = reviewRes.data
+            if(reviewData.length < 5){
+                state.noMoreReview = true;
+            }
+            
 
             state.reviewList = reviewData.reviewList
             this.setState(state)
@@ -325,13 +264,6 @@ class Author extends Component {
         }
     }
 
-    handleModifyClick = () => {
-        var state = this.state;
-        state.modify = true;
-
-        this.setState(state)
-    }
-
     handleModifyDetailClick = (idx, detail_id) => {
         var state = this.state;
         if(state.oldIdx >= 0) {
@@ -357,6 +289,13 @@ class Author extends Component {
         } else {
             alert("변경에 실패하였습니다.")
         }
+
+        this.setState(state)
+    }
+
+    handleModifyClick = () => {
+        var state = this.state;
+        state.modify = true;
 
         this.setState(state)
     }
@@ -589,10 +528,38 @@ class Author extends Component {
         }
     }
 
+    tabChange = (value) => {
+        this.setState({tab: value})
+    }
+
+    updateReviewList = async() => {
+        var state = this.state;
+        
+        this.setState({reviewLoading: true})
+        try {
+            const res = await API.sendGet(URL.api.review.getReviewList, {title: true, author_id: this.props.authorId, page: state.newReviewPage})
+            if(res.status === 200) {
+                var newReviewList = res.data.reviewList;
+                state.reviewList = state.reviewList.concat(newReviewList);
+                state.newReviewPage += 1;
+                if(newReviewList.length < 5) {
+                    state.noMoreReview = true;
+                }
+            } else if(res.status === 204) {
+                state.noMoreReview = true;
+            }
+            state.reviewLoading = false;
+        } catch(e) {
+            state.reviewLoading = false;
+            alert("리뷰를 불러오지 못 했습니다.")
+        }
+
+        this.setState(state)
+    }
+
     render() {
         var state = this.state;
         var bookList = state.bookList;
-        var selectedBook = state.selectedBook;
 
         return (
             <div id="author-page" className="page2">
@@ -719,14 +686,20 @@ class Author extends Component {
                     </Modal>
                 }
 
-                <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
+                <div className="tab-wrap">
                     <ul className="tab-nav">
-                        <li className={"tab-btn " + (state.tab === "intro" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'intro')}>소개</li>
-                        <li className={"tab-btn " + (state.tab === "book" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'book')}>작품</li>
-                        <li className={"tab-btn " + (state.tab === "review" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'review')}>리뷰</li>
+                        <Link to="intro-area" className={"tab-btn " + (state.tab === 1 ? "active" : "")} spy={true} smooth={true} onSetActive={() => this.tabChange(1)}>
+                            <li className="tab-item">소개</li>
+                        </Link>
+                        <Link to="book-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(2)}>
+                            <li className="tab-item">작품</li>
+                        </Link>
+                        <Link to="review-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(3)}>
+                            <li className="tab-item">리뷰</li>
+                        </Link>
                     </ul>
                     <div className="tab-inner">
-                        <div id="intro-area" className="inner-box" ref={this.introRef}>
+                        <div id="intro-area" className="inner-box">
                             <div className="inner-header">
                                 소개
                                 {
@@ -746,7 +719,7 @@ class Author extends Component {
                             </div>
                             <div className="inner-content">
                                 {
-                                    this.props.isHost === true ?
+                                    this.props.isHost === true && (state.modify === true) ?
                                     <textarea className="intro" value={state.user.description === null ? '' : state.user.description} onChange={this.handleDescriptionChange} disabled={!state.modify}/>
                                     :
                                     <div className="intro"> {state.user.description === null ? '' : state.user.description} </div>
@@ -754,7 +727,7 @@ class Author extends Component {
                             </div>
                         </div>
 
-                        <div id="book-area" className="inner-box" ref={this.bookRef}>
+                        <div id="book-area" className="inner-box">
                             <div className="inner-header">
                                 <span> 작품 </span>
                                 <div className="inner-subheader-wrap">
@@ -762,7 +735,11 @@ class Author extends Component {
                                     <div className={this.state.active === 'ser' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser')}> 연재중 </div>
                                     <div className={this.state.active === 'ser-ed' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('ser-ed')}> 연재완료 </div>
                                     <div className={this.state.active === 'pub' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('pub')}> 단행본</div>
-                                    <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 미승인 </div>
+                                    {
+                                        state.user.id === parseInt(this.props.authorId) &&
+                                        <div className={this.state.active === 'wait' ? "inner-subheader active" : "inner-subheader"} onClick={()=>this.handleSubClick('wait')}> 미승인 </div>
+                                    }
+                                    
                                 </div>
                             </div>
                             <div className="inner-content">
@@ -800,74 +777,10 @@ class Author extends Component {
                                 }
                             </div>
                         </div>
-                        {
-                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
-                                <div className="inner-header">
-                                    <span> 리뷰 </span>
-                                    {
-                                        this.state.reviewTitleList.length === 0 ?
-                                        null
-                                        :
-                                        <div className="inner-subheader-wrap">
-                                            <div className={"book-title " + (this.state.activeReview === 0 ? "active" : "")} onClick={() => this.handleReviewTitleClick(0, null)}> 전체 </div>
-                                            {
-                                                this.state.reviewTitleList.map((item, title_idx) => {
-                                                    return (
-                                                        <div key={item.book_id} className={"book-title " + (this.state.activeReview === (title_idx+1) ? "active" : "")} onClick={() => this.handleReviewTitleClick(title_idx+1, item.book_id)}> {item.book_title} </div>
-                                                    )
-                                                })
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                                <div className="inner-content">
-                                    {
-                                        this.state.reviewList.length === 0 ?
-                                        <div className="no-content">
-                                            작성된 리뷰가 없습니다.
-                                        </div>
-                                        :
-                                        <div className="review-area">
-                                            {
-                                                this.state.reviewList.map((item, review_idx) => {
-                                                    return (
-                                                        <div key={item.id} className="review-box">
-                                                            <div className="review-details">
-                                                                <strong className="title"> {item.book_title}</strong>
-                                                                <span className="user"> {item.nickname} </span>
-                                                                <span className="sep">  | </span>
-                                                                <span className="stars">
-                                                                    {"★".repeat(item.score)}
-                                                                </span>
-
-                                                                <span className="score"> {item.score ? parseFloat(item.score).toFixed(1) : parseFloat(0).toFixed(1)} </span>
-                                                            </div>
-                                                            {
-                                                                item.book_type === 1 &&
-                                                                <div className="review-subtitle">
-                                                                    {item.subtitle}
-                                                                </div>
-                                                            }
-
-                                                            <div className="review-content">
-                                                                {item.description}
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-
-                                            {
-                                                this.state.reviewList.length >= 5 &&
-                                                <div className="add-btn">
-                                                    <button className="add-btn btn btn-transparent"> + 더보기 </button>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
+                        <ReviewTabInner
+                            id={"review-area"}
+                            isAuthorReview={true}
+                            authorId={this.props.authorId}/>
                     </div>
                 </div>
             </div>

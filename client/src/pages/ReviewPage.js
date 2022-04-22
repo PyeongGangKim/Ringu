@@ -22,7 +22,6 @@ class ReviewPage extends Component {
                 <div id="wrap">
                     <Review book_detail={this.state.book_detail}/>
                 </div>
-                <Footer></Footer>
             </Fragment>
         )
     }

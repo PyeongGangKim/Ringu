@@ -1,0 +1,47 @@
+.skeleton {
+    background: #ddd;
+    margin: 10px 0;
+    border-radius: 4px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.skeleton-wrapper {
+    width: 90%;
+    height: 100%;
+    margin: 50px auto 20px auto;
+
+    .skeleton-profile {
+        .avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 20px auto;
+        }
+        
+        .title {
+            width: 90%;
+            height: 45px;
+            margin-bottom: 30px;
+        }
+    
+        .text {
+            width: 90%;
+            height: 20px;
+        }
+    
+        .button {
+            width: 95%;
+            height: 50px;
+        }
+    }
+
+    table {
+        margin: auto;
+        width: 80%;
+
+        tr {
+            height: 40px;
+        }
+    }
+}

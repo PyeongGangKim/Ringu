@@ -141,7 +141,7 @@ class ModifyBookSeries extends Component {
 
     handleBookDescriptionChange = evt => {
         var state = this.state;
-        state.bookDescription.val = evt.target.value;
+        state.bookDescription.val = evt.target.value
 
         this.setState(state);
     }
@@ -288,7 +288,7 @@ class ModifyBookSeries extends Component {
             data.append("book_id", this.props.bookId)
 
             var img = state.thumbnail.file;
-            if(typeof img !== 'string') {
+            if(typeof img !== 'string' && img !== null) {
                 var imgblob = img.slice(0, img.size, img.type);
                 var token = img.name.split('.')
                 var fieldName = token[token.length - 1]

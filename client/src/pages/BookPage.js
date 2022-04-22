@@ -54,7 +54,6 @@ class BookPage extends Component {
                     }
 
                 </div>
-                <Footer></Footer>
             </Fragment>
             : null
         )

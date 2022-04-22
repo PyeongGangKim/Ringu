@@ -56,9 +56,6 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 '$author.nickname$' : {
                     [Op.like] :  "%"+keyword+"%",
                 },
-                '$author.nickname$' : {
-                    [Op.like] :  "%"+keyword+"%",
-                },
                 '$book.description$' : {
                     [Op.like] :  "%"+keyword+"%",
                 },
@@ -95,6 +92,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
                 [sequelize.literal("favorite_books.id"), "favorite_book_id"], // 없으면 null, 있으면 id 반환
                 [sequelize.literal("SUM(`book_details->review_statistics`.score_amount) / SUM(`book_details->review_statistics`.person_number)"),"score" ],
                 [sequelize.literal("author.nickname"), "author_nickname"],
+                [sequelize.literal("author.id"), "author_id"],
                 [sequelize.literal("category.name"), "category"],
             ],
             where: where,
@@ -341,6 +339,7 @@ router.get('/detail/:bookId', async(req, res, next) => { //book_id로 원하는 
                 "file",
                 "id",
                 "round",
+                "created_date_time",
                 [sequelize.literal("`book->author`.nickname"), "author"],
                 [sequelize.literal("book.img"), "img"],
                 [sequelize.literal("book.price"), "price"],

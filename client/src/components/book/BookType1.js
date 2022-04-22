@@ -1,7 +1,7 @@
 // 연재본
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import { Link as ScrollLink } from 'react-scroll';
 
 
 import User from '../../utils/user';
@@ -11,6 +11,7 @@ import '../../scss/common/button.scss';
 import '../../scss/book/book.scss';
 
 import URL from '../../helper/helper_url';
+import date from '../../helper/date';
 import API from '../../utils/apiutils';
 
 // 연재본
@@ -18,10 +19,7 @@ class BookType1 extends Component {
     userInfo = User.getInfo();
     constructor(props) {
         super(props)
-        this.introRef = React.createRef();
-        this.authorRef = React.createRef();
-        this.seriesRef = React.createRef();
-        this.reviewRef = React.createRef();
+        
         this.perPage = 10;
 
         this.state = {
@@ -30,9 +28,8 @@ class BookType1 extends Component {
             detailList: [],
             detailTotal: 0,
             detailPage: 1,
-            tab: 'intro',
-            tabChange: false,
-            dock: false,
+            tab: 1,
+            
             selected: {},
             isAuthor: false,
             isFavorite: false,
@@ -65,37 +62,20 @@ class BookType1 extends Component {
             if (this.userInfo !== null && typeof this.userInfo !== "undefined" && this.userInfo.id === state.book.author_id) {
                 state.isAuthor = true;
             }
-            const res = await API.sendGet(URL.api.review.getReivewList, {title : false, book_id: state.book.book_id})
+            const res = await API.sendGet(URL.api.review.getReviewList, {title : false, book_id: state.book.book_id})
 
             if(res.status === 200) {
                 state.reviewList = res.data.reviewList
             }
 
             this.getDetailList();
-
-            window.addEventListener('scroll', this.handleScroll)
-
-            if (window.scrollY > 650) {
-                state.dock = true;
-            } else {
-                state.dock = false;
-            }
+            
 
             this.setState(state)
         }
         catch(e) {
             console.error(e)
         }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if(prevState.tab !== this.state.tab || prevState.tabChange !== this.state.tabChange) {
-            window.addEventListener('scroll', this.handleScroll)
-        }
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('scroll', this.handleScroll)
     }
 
     getDetailList = async(page = 1, order = 'ASC') => {
@@ -163,7 +143,7 @@ class BookType1 extends Component {
                 }
             } catch(e) {
                 var error = e.response;
-                if(error.status === 403) {
+                if(error.status === 401) {
                     if(window.confirm("로그인이 필요한 기능입니다. 로그인 페이지로 이동하시겠습니까?")) {
                         window.location.href = URL.service.accounts.login;
                     }
@@ -217,65 +197,6 @@ class BookType1 extends Component {
         }        
     }
 
-    handleTabChange = (event, value) => {
-        const tabHeight = 60;
-
-        this.setState({tab: value, tabChange: true})
-        window.removeEventListener('scroll', this.handleScroll)
-
-        if (value === 'intro') {
-            window.scrollTo({
-                top: this.introRef.current.offsetTop - tabHeight,
-            })
-        } else if (value === 'author') {
-            window.scrollTo({
-                top: this.authorRef.current.offsetTop - tabHeight,
-            })
-        } else if (value === 'series'){
-            window.scrollTo({
-                top: this.seriesRef.current.offsetTop - tabHeight,
-            })
-        }
-        else {
-            window.scrollTo({
-                top: this.reviewRef.current.offsetTop - tabHeight,
-            })
-        }
-    }
-
-    handleScroll = (event) => {
-        const tabHeight = 60;
-        var state = this.state;
-
-        const scrollTop = ('scroll', event.srcElement.scrollingElement.scrollTop);
-        if (scrollTop > 650) {
-            state.dock = true;
-        } else {
-            state.dock = false;
-        }
-
-        if(state.tabChange === true) {
-            state.tabChange = false
-            this.setState(state);
-            return;
-        }
-
-        if (scrollTop >= this.reviewRef.current.offsetTop - tabHeight) {
-            state.tab = 'review';
-        }
-        else if (scrollTop >= this.seriesRef.current.offsetTop - tabHeight) {
-            state.tab = 'series';
-        }
-        else if (scrollTop >= this.authorRef.current.offsetTop - tabHeight) {
-            state.tab = 'author';
-        }
-        else {
-            state.tab = 'intro';
-        }
-
-        this.setState(state);
-    }
-
     handleSelect = evt => {
         var state = this.state;
         var detailList = state.detailList;
@@ -322,6 +243,10 @@ class BookType1 extends Component {
         this.getDetailList(page, order);
     }
 
+    tabChange = (value) => {
+        this.setState({tab: value})
+    }
+
     render() {
         var state = this.state;
         var book = state.book;
@@ -342,27 +267,45 @@ class BookType1 extends Component {
 
                         <div className="book-detail-box">
                             <span className="book-detail">{book.author_nickname}</span>
+                            <span className="book-detail">연재 요일: {book.serialization_day}</span>
                         </div>
 
                         <h3 className="book-title">{book.book_title}</h3>
                     </div>
 
-                    <div className={state.dock === true ? "tab-wrap tab-dock-top" : "tab-wrap"}>
+                    <div className="tab-wrap">
                         <ul className="tab-nav">
-                            <li className={"tab-btn " + (state.tab === "intro" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'intro')}>책소개</li>
-                            <li className={"tab-btn " + (state.tab === "series" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'series')}>회차</li>
-                            <li className={"tab-btn " + (state.tab === "author" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'author')}>작가소개</li>
-                            <li className={"tab-btn " + (state.tab === "review" ? "active" : "")} onClick={(e) => this.handleTabChange(e, 'review')}>리뷰</li>
+                            <ScrollLink to="intro-area" className={"tab-btn " + (state.tab === 1 ? "active" : "")} spy={true} smooth={true} onSetActive={() => this.tabChange(1)}>
+                                <li className="tab-item">책소개</li>
+                            </ScrollLink>
+                            <ScrollLink to="series-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(2)}>
+                                <li className="tab-item">회차</li>
+                            </ScrollLink>
+                            <ScrollLink to="author-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(3)}>
+                                <li className="tab-item">작가소개</li>
+                            </ScrollLink>
+                            <ScrollLink to="review-area" className="tab-btn" activeClass="active" spy={true} smooth={true}  onSetActive={() => this.tabChange(4)}>
+                                <li className="tab-item">리뷰</li>
+                            </ScrollLink>
                         </ul>
                         <div className="tab-inner">
-                            <div id="intro-area" className="inner-box" ref={this.introRef}>
+                            <div id="intro-area" className="inner-box">
                                 <div className="inner-header"> 책소개</div>
                                 <div className="inner-content">
-                                    {book.book_description}
+                                    {
+                                        book.book_description.split("\n").map((line) => {
+                                            return (
+                                                <span>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </div>
 
-                            <div id="series-area" className="inner-box" ref={this.seriesRef}>
+                            <div id="series-area" className="inner-box">
                                 <div className="inner-header"> 회차</div>
                                 <div className="inner-content">
                                     <table>
@@ -373,7 +316,10 @@ class BookType1 extends Component {
                                                         <tr key={i}>
                                                             <td>
                                                                 {
-                                                                    (state.isAuthor === false && !item.purchased_id && item.round !== 1) ?
+                                                                    (item.round === 1) ? 
+                                                                    null
+                                                                    :
+                                                                    (state.isAuthor === false && !item.purchased_id) ?
                                                                     <label className="cb-container">
                                                                         <input type="checkbox" checked={!!state.selected[item.id]} onChange={this.handleSelect} value={i} />
                                                                         <span className="checkmark"/>
@@ -398,6 +344,11 @@ class BookType1 extends Component {
                                                                     {item.title}
                                                                 </td>
                                                             }
+                                                            <td>
+                                                                <em>
+                                                                    {date.format(item.created_date_time)}
+                                                                </em>
+                                                            </td>
                                                             {
                                                                 !state.isAuthor &&
                                                                 <td>
@@ -435,7 +386,7 @@ class BookType1 extends Component {
                                 </div>
                             </div>
 
-                            <div id="author-area" className="inner-box" ref={this.authorRef}>
+                            <div id="author-area" className="inner-box">
                                 <div className="inner-header"> 작가소개</div>
                                 <div className="inner-content">
                                     <div className="author-box">
@@ -456,7 +407,7 @@ class BookType1 extends Component {
                                 </div>
                             </div>
 
-                            <div id="review-area" className="inner-box" ref={this.reviewRef}>
+                            <div id="review-area" className="inner-box">
                                 <div className="inner-header"> 리뷰</div>
                                 {
                                     state.reviewList.length === 0 ?
