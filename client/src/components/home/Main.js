@@ -6,6 +6,7 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
+import CategoryItem from '../../components/home/CategoryItem'
 import BookSlider from '../../components/home/BookSlider'
 import IntroductionSlider from '../../components/home/IntroductionSlider'
 
@@ -82,31 +83,11 @@ class Main extends Component {
                         {
                             state.categories.map((category, idx) => {
                                 return(
-                                    <Link to={URL.service.search + `?category=${category.id}`}>
-                                        <div class="category" tabIndex={idx} onMouseOver={this.handle}>
-                                            <div class="category-box">
-                                                <table>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <span className="icon">
-                                                                    <img src={require("../../assets/img/" + category.img).default}/>
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <span>
-                                                                    {category.name}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                
-                                            </div>
-                                        </div>
-                                    </Link>
-
-                                    
+                                    <CategoryItem
+                                        category={category}
+                                        idx={idx}
+                                        key={category.id}
+                                    />
                                 )
                             })
                         }
