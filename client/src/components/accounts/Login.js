@@ -2,19 +2,14 @@ import React, { Component, Fragment } from 'react';
 import ReactDOM from "react-dom";
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
-
-import '../../scss/common/main.scss'
+import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/accounts/login.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-
-import FACEBOOK from '../../config/facebook_auth';
-
 
 var url = require('../../config/url')[process.env.REACT_APP_ENV];
 var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];

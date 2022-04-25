@@ -1,6 +1,6 @@
 import React, { Component} from 'react';
 
-import '../../scss/common/main.scss'
+import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/accounts/pwd.scss'

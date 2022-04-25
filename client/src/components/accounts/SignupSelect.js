@@ -1,15 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
 
 import helper_url from '../../helper/helper_url';
-import '../../scss/common/main.scss'
+import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/accounts/signup.scss'
-
-import URL from '../../helper/helper_url';
-import API from '../../utils/apiutils';
 
 var url = require('../../config/url')[process.env.REACT_APP_ENV];
 var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];

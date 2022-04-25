@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { Link } from 'react-router-dom';
 
-import '../../scss/common/main.scss'
+import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/accounts/pwd.scss'

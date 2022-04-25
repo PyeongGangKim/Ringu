@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import Timer from '../common/Timer';
 import Cookies from 'js-cookie';
 
-import '../../scss/common/main.scss'
+import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/accounts/signup.scss'
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
-import NAVER from '../../config/naver_auth';
 
 class SignupDetail extends Component {
     constructor(props) {
