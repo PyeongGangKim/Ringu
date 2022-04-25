@@ -15,19 +15,19 @@ const settings = {
     swipe: false,
 };
 
-const next = (slider) => {
-    slider.slickNext();
-}
-
-const previous = (slider) => {
-    slider.slickPrev();
-}
-
 function BookSlider({
     title,
     bookList
 }) {
     const slider = useRef()
+
+    const next = () => {
+        slider.current.slickNext();
+    }
+    
+    const previous = () => {
+        slider.current.slickPrev();
+    }
 
     return (
         <div className="book-slider slick-container">
@@ -39,10 +39,10 @@ function BookSlider({
                 bookList.length > 5 &&
                 <div className="slick--arrow">
                     <div className="slick-arrow-wrapper">
-                        <a className="slick-arrow arrow-left" onClick={() => previous(slider)}>
+                        <a className="slick-arrow arrow-left" onClick={previous}>
                             <em/>
                         </a>
-                        <a className="slick-arrow arrow-right" onClick={() => next(slider)}>
+                        <a className="slick-arrow arrow-right" onClick={next}>
                             <em/>
                         </a>
                     </div>
