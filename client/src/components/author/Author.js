@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-scroll';
-import {Oval} from 'react-loader-spinner';
 
 import User from '../../utils/user';
 import Book from '../../components/book/Book';

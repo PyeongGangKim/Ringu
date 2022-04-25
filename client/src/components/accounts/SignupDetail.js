@@ -462,7 +462,7 @@ class SignupDetail extends Component {
                                 <span>{state.password.msg}</span>
                             </div>
                         }
-                        <em class={state.passwordType1.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType1}/>
+                        <em className={state.passwordType1.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType1}/>
                     </div>
                     <div id="password-confirm" className="form-group">
                         <input type={state.passwordType2.type} name="password-check" autoComplete="off" className="input" placeholder="비밀 번호를 한 번 더 입력해주세요." value={state.passwordCheck.val} onChange={this.handlePasswordCheckChange}/>
@@ -472,7 +472,7 @@ class SignupDetail extends Component {
                                 <span>{state.passwordCheck.msg}</span>
                             </div>
                         }
-                        <em class={state.passwordType2.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType2}/>
+                        <em className={state.passwordType2.visible ? "eye-off" : "eye"} onClick={this.handlePasswordType2}/>
                     </div>
                 </div>
 

@@ -176,11 +176,11 @@ class NotificationBody extends Component {
                 {
                     notificationList.slice(0,totalCount).map((item,idx) => {
                         return(
-                            <div class="accordion" id="accordionExample">
-                                <div class="accordion-item">
-                                    <div class={ "accordion-header " + (item.id === spanNoti ? "" : "collapsed")} id={item.id}>
+                            <div className="accordion" id="accordionExample">
+                                <div className="accordion-item">
+                                    <div className={ "accordion-header " + (item.id === spanNoti ? "" : "collapsed")} id={item.id}>
                                     <input type="checkbox" onClick={() => this.handleCheckBox(idx)} checked = {this.state.data.selectedNotiList[idx]}/>
-                                    <button class={"accordion-button " } type="button" onClick = {() => this.handleSpanList(item.id,idx)}>
+                                    <button className={"accordion-button " } type="button" onClick = {() => this.handleSpanList(item.id,idx)}>
                                         <div className="title-outside">
                                             {
                                             (item.is_read === 0)  && <span className="span-new"> New </span>
