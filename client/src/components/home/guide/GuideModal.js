@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 
-import Modal from '../../components/modal/Modal';
-import AuthorGuide from '../../components/home/AuthorGuide';
-import ReaderGuide from '../../components/home/ReaderGuide';
+import Modal from '../../modal/Modal';
+import Guide from './Guide';
+import data from './data';
 
-import '../../scss/main/guide.scss';
+import '../../../scss/main/guide.scss';
 
 function GuideModal({
     
@@ -25,13 +25,13 @@ function GuideModal({
     if (typeof menu === 'undefined') {
         content = 
         <div className="menu-wrap">
-            <button className="menu" onClick={() => setMenu(0)}>작가님들에게</button>
-            <button className="menu fill" onClick={() => setMenu(1)}>책을 보시는 분들께</button>
+            <button className="menu" onClick={() => setMenu(0)}>글을 쓰시는 분들께</button>
+            <button className="menu" onClick={() => setMenu(1)}>글을 읽으시는 분들께</button>
         </div>
     } else if (menu === 0) {
-        content = <AuthorGuide toMenu={() => setMenu()}/>
+        content = <Guide toMenu={() => setMenu()} data={data['author']} close={() => setAlive(false)}/>
     } else {
-        content = <ReaderGuide toMenu={() => setMenu()}/>
+        content = <Guide toMenu={() => setMenu()} data={data['reader']} close={() => setAlive(false)}/>
     }
 
     return (

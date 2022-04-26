@@ -5,7 +5,7 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
-import GuideModal from '../../components/home/GuideModal'
+import GuideModal from '../../components/home/guide/GuideModal'
 import CategoryItem from '../../components/home/CategoryItem'
 import BookSlider from '../../components/home/BookSlider'
 import IntroductionSlider from '../../components/home/IntroductionSlider'
