@@ -79,6 +79,7 @@ class Main extends Component {
                 {
                     this.guide !== '1' &&
                     <GuideModal/>
+                    
                 }
                 
                 <IntroductionSlider
