@@ -120,18 +120,15 @@
             position: absolute;
             bottom: 50px;
             width: 200px;
-            height: 8px;
-
-            ul li.active:last-of-type {
-                border-top-right-radius: 6px;
-                border-bottom-right-radius: 6px;
-            }
-
+            height: 10px;
+            
             ul {
                 width: 100%;
                 height: 100%;
                 border-radius: 6px;
                 background-color: #e4e2fb;
+
+                
                 
                 li {
                     float: left;
@@ -141,21 +138,18 @@
 
                     &.active {
                         background-color: #aea6f2;
+                    }
 
-                        &:last-child {
-                            border-top-right-radius: 6px;
-                            border-bottom-right-radius: 6px;
-                        }
+                    &.last {
+                        background-color: #aea6f2;
+                        border-top-right-radius: 6px;
+                        border-bottom-right-radius: 6px;
                     }
 
                     &:nth-child(1) {
                         border-top-left-radius: 6px;
                         border-bottom-left-radius: 6px;
                     }
-                }
-
-                li.active:last-child {
-                    font-size: 20px;
                 }
             }
         }

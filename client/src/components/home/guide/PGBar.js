@@ -6,9 +6,9 @@ function PGBar({
     return (
         <div className="pgbar">
             <ul>
-                <li className={step > 0 ? "active" : ""}></li>
-                <li className={step > 1 ? "active" : ""}></li>
-                <li className={step > 2 ? "active" : ""}></li>
+                <li className={step > 0 ? step === 1 ? "last" : "active" : ""}></li>
+                <li className={step > 1 ? step === 2 ? "last" : "active" : ""}></li>
+                <li className={step > 2 ? step === 3 ? "last" : "active" : ""}></li>
                 <li></li>
             </ul>
         </div>
