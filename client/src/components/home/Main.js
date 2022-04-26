@@ -5,6 +5,7 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
+import GuideModal from '../../components/home/GuideModal'
 import CategoryItem from '../../components/home/CategoryItem'
 import BookSlider from '../../components/home/BookSlider'
 import IntroductionSlider from '../../components/home/IntroductionSlider'
@@ -15,6 +16,8 @@ import API from '../../utils/apiutils';
 
 class Main extends Component {
     user = User.getInfo();
+    guide = localStorage.getItem("guide");
+    
     constructor(props) {
         super(props);
 
@@ -73,6 +76,11 @@ class Main extends Component {
 
         return (
             <div id="wrap">
+                {
+                    this.guide !== '1' &&
+                    <GuideModal/>
+                }
+                
                 <IntroductionSlider
                     user={this.user}
                 />

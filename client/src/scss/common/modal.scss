@@ -9,9 +9,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 1000;
+        z-index: 2147483648;
         box-shadow:0 0px 30px rgba(0, 0, 0, 0.1);
-        border-radius: 16px;
         overflow: hidden;
 
         .modal-inner {
@@ -19,7 +18,6 @@
             overflow-y: auto;
             background-color: #fff;
             margin: 0 auto;
-            padding: 30px 60px;
             width: fit-content;
 
             .close {
@@ -41,7 +39,7 @@
                 border-width: 2px;
             }
 
-            button {
+            .modal-button {
                 border-radius: 6px;
                 font-weight: 500;
             }
