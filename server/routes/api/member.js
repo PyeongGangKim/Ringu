@@ -231,10 +231,8 @@ router.post('/certifications', async(req, res, next) => {
             method: 'get',
             headers: { 'Authorization': access_token }
         });
-        //console.log(getCertifications.data)
         const certificationsInfo = getCertifications.data.response;
-        //console.log(certificationsInfo)
-
+        
         if(certificationsInfo){
             res.status(StatusCodes.OK).json({
                 "certification" : certificationsInfo,

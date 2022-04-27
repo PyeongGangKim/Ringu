@@ -202,8 +202,7 @@ class SideMemberInfo extends Component {
 
     handleCloseClick = () => {
         var state = this.state;
-        console.log(55555555555)
-
+        
         state.modal = false;
         this.setState(state)
     }

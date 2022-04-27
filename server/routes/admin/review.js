@@ -63,7 +63,6 @@ router.get("/", async(req, res, next) => {
 
         const review_list = result.rows;
         const count = result.count;
-        console.log(review_list);
         var total_count = (count) ? count : 0;
         var pagination_html = helper_pagination.html(config_url.base_url + "admin/review/", page, limit, total_count, {member_id:member_id, book_id:book_id});
 

@@ -105,7 +105,6 @@ class NotificationBody extends Component {
         else{
             state.spanNotiList = itemId;
             if(state.data.notificationList[idx].is_read === 0){
-                console.log(state.data);
                 state.data.notificationList[idx].is_read = 1;
                 this.parentFunction();
             }
@@ -131,7 +130,6 @@ class NotificationBody extends Component {
         }
         for(let i = 0 ; i < state.data.selectedNotiList.length ; i++){
             if(state.data.selectedNotiList[i]){
-                console.log(state.data.selectedNotiList[i], i);
                 params.notificationIds.push(state.data.notificationList[i].id);
                 if(state.data.notificationList[i].is_read === 0){
                     this.parentFunction();

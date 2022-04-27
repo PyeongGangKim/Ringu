@@ -148,6 +148,5 @@ app.use(function(err, req, res, next) {
 
 app.use(passport.initialize());
 passportConfig();
-//console.log(passportConfig);
 
 module.exports = app;

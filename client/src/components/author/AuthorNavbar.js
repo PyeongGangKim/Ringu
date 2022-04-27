@@ -43,10 +43,6 @@ function AuthorNavbar(user, isHost, authorId, handleDisplayClick, handleUpdate )
                 return book.is_approved === 1
             })
 
-            console.log(bl.filter(book => {
-                return book.is_approved === 1
-            }))
-
             var serialList = bl.filter(book => {
                 return book.type === 1
             })

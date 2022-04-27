@@ -61,7 +61,6 @@ class FavAuthor extends Component {
                         <div id="favauthor-area">
                             {
                                 favoriteList.map(item => {
-                                    console.log(item)
                                     return (
                                         <div key={item.id} className="fa-box">
                                             <div className="profile">

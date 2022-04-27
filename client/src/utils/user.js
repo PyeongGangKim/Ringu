@@ -8,11 +8,9 @@ module.exports = {
             var userInfo = jwt.decode(token);
             var now = Math.floor(Date.now() / 1000);
             if( userInfo.exp < now ) {
-                // console.log( 'leave' )
                 Cookies.remove('RINGU_JWT');
                 return null;
             } else {
-                // console.log( 'stay' )
                 return userInfo;
             }
 

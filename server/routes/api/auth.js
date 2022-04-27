@@ -479,9 +479,6 @@ router.post('/email/code', async (req, res, next) => {//email 인증번호 보�
 
 router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변경 주소 메일 전송    
     const email = req.body.email;
-	console.log('3333333333')
-	console.log(member)
-	console.log(auth)
     
     try{
         const user = await member.findOne({
@@ -525,7 +522,6 @@ router.post('/email/change_pwd', async (req, res, next) => {//비밀번호 변�
             member_id: user.id,
             ttl: 1000,
         }
-	    console.log(auth)
         
         const Auth = await auth.findOne({
             where : {
@@ -601,7 +597,6 @@ router.post('/validate_token', async (req, res, next) => {//비밀번호 변경 
 });
 
 router.put('/reset_password/', async (req, res, next) => {
-    console.log(req.body)    
     try{
         const result = await auth.findOne({
             where: {

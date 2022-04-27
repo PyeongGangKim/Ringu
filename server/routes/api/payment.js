@@ -304,7 +304,6 @@ router.post('/kakaopay', /*isLoggedIn,*/ async(req, res, next) => {
         }
         else{
             if(response.statusCode == 200){
-                console.log(response.body.tid); // 저장 필요
                 let tid = response.body.tid;
                 try{
                     const payment_ret = await payment.create({

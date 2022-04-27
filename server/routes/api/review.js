@@ -94,7 +94,6 @@ router.get('/duplicate' ,isLoggedIn, async (req, res, next) => { // duplicate �
 });
 
 router.get('/', async (req, res, next) => { // 자기가 쓴 review api 가져오기 author name가져오는 거 구현 필요.
-    console.log(req.query)
     try{
         var member_id = ("member_id" in req.query && req.query.member_id !== null) ? req.query.member_id : null;
         var author_id = ("author_id" in req.query && req.query.author_id !== null) ? req.query.author_id : null;

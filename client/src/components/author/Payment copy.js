@@ -261,8 +261,6 @@ class Payment extends Component {
             this.filter2();
         }
 
-        console.log(state)
-
         this.setState(state);
     }
 
@@ -505,7 +503,6 @@ class Payment extends Component {
                                                 <tbody>
                                                     {
                                                         state.data.map((data, idx)=>{
-                                                            console.log(data)
                                                             return (
                                                                 <tr className="row">
                                                                     <td>{parse.numberWithCommas(data.value) + " 원"}</td>

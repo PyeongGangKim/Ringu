@@ -63,7 +63,6 @@ class Login extends Component {
             });
             let gauth = window.gapi.auth2.getAuthInstance();
 
-        // console.log(gauth.currentUser.get());
             gauth.signIn({
                 scope: "profile",
                 ux_mode : "redirect",

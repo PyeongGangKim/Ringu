@@ -278,7 +278,7 @@ class SeriesListModal extends Component {
 
     render() {
         var state = this.state;
-        console.log(this.props)
+
         return (
             <Modal
                 onClose={this.handleCloseClick}

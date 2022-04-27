@@ -9,13 +9,11 @@ function PaymentChartAll(year, author_id) {
     const [data, setData ] = useState([]);
 
     useEffect(() => {
-        console.log(33333333333333)
         update();
     }, []);
 
     const update = async() => {
         try {
-            console.log(333)
             var params = {
                 author_id: author_id,
                 year: year

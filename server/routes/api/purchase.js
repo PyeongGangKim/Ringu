@@ -370,8 +370,6 @@ router.get('/sales', isLoggedIn, isAuthor,async (req, res, next) => { //작가 �
             ],
         });
 
-        console.log(sales)
-
         if(sales.length == 0){
             res.status(StatusCodes.NO_CONTENT).send("No content");
         }

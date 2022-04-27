@@ -9,7 +9,6 @@ import Footer from '../components/common/Footer';
 class SignupDetailPage extends Component {
     constructor(props) {
         super(props);
-        console.log(props)
     }
 
     render() {

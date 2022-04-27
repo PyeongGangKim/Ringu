@@ -20,12 +20,8 @@ const TermsBody = (props) => {
     
     const [selectedArticle,setSelectedArticle] = React.useState(0);
     const articleRef = React.useRef([]);
-    console.log(one_line_number);
-    
-  
 
     function handleSelectedArticle ( article){
-        console.log(article);
         setSelectedArticle(article);
         
     };

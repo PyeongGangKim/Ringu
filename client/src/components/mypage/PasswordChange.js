@@ -65,7 +65,6 @@ class PasswordChange extends Component {
             const res = await API.sendPost(URL.api.member.passwordCheck, params)
             var status = res.status;
             if(status === 200) {
-                console.log(status)
                 var params = {
                     password: state.data.newPassword,
                 }
@@ -82,7 +81,6 @@ class PasswordChange extends Component {
                 }
 
             } else {
-                console.log(status);
                 alert("현재 비밀번호가 일치하지 않습니다.");
                 return;
             }
