@@ -2,10 +2,10 @@ import React, { Component, Fragment } from 'react';
 import Helmet from 'react-helmet';
 import {Oval} from 'react-loader-spinner'
 
-import '../../scss/search/search.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/loading.scss'
+import '../../scss/search/search.scss'
 
 import Book from '../../components/book/Book'
 
@@ -241,7 +241,7 @@ class Search extends Component {
                                             })
                                         }
                                     </ul>
-                                    <button className="btn btn-block btn-bottom" onClick={this.handleCategoryCompleteClick}>
+                                    <button className="btn btn-block btn-bottom btn-outline-1" onClick={this.handleCategoryCompleteClick}>
                                         완료
                                     </button>
                                 </div>

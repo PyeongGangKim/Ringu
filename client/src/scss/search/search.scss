@@ -78,18 +78,22 @@
 }
 
 .search-modal {
+    padding: 30px 60px;
+
     .header {
         position: absolute;
-        left: 20px;
+        left: 60px;
         top: 20px;
         font-size: 24px;
         font-weight: 500;
+        line-height: 1.5;
+        vertical-align: middle;
     }
 
     .category-box {
         width: 500px;
-        margin-top: 80px;
-        margin-bottom: 40px;
+        padding-top: 80px;
+        padding-bottom: 40px;
 
         flex-wrap: wrap;
 
@@ -112,22 +116,17 @@
     }
 
     .btn-bottom {
-        font-size: 20px;
-        margin: 0 auto;
-        padding: 10px 0;
-        color: var(--color-1);
-        width: 60%;
+        font-size: 20px !important;
+        font-weight: 600;
     }
 
     .filter-box {
         width: 300px;
-        margin-top: 80px;
-        margin-bottom: 40px;
+        margin-top: 60px;
+        margin-bottom: 30px;
 
         .radio-container {
             font-size: 20px;
         }
-
-
     }
 }
