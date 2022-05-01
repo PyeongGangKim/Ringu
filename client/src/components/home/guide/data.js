@@ -7,7 +7,7 @@ module.exports = {
         },
         2: {
             'header': '심플한 양식 제공!',
-            'text': '링구에서 제공하는 양식을 사용하여 자신만의 책을 만들어보세요!',
+            'text': '링구에서 제공하는 양식을 사용하여\n자신만의 책을 만들어보세요!',
             'img': require('../../../assets/img/guide_author_2.png').default,
         },
         3: {
@@ -29,12 +29,12 @@ module.exports = {
         },
         2: {
             'header': '원하는 전자책 선택',
-            'text': '다양한 전자책 중에 읽고싶은 책을\n선택해주세요!',
+            'text': '다양한 전자책 중에\n읽고싶은 책을 선택해주세요!',
             'img': require('../../../assets/img/guide_reader_2.png').default,
         },
         3: {
             'header':'미리보기 후 구매가능해요!',
-            'text':'모든 전자책은 무료로\n미리보기가 가능해요!',
+            'text':'모든 전자책은 \n무료로 미리보기가 가능해요!',
             'img': require('../../../assets/img/guide_reader_3.png').default,
         },
         4: {

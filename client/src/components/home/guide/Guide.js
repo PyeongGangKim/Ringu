@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { Textfit } from 'react-textfit';
 
 import PGBar from './PGBar';
 
@@ -14,10 +15,16 @@ function Guide({
             <div className="guide-wrap">
                 <div className="guide">
                     <div className="text-box">
-                        <div className="header">
+                        <Textfit className="header"
+                            mode="single"
+                            max={26}
+                            forceSingleModeWidth={false}
+                        >
                             {data[step]['header']}
-                        </div>
-                        <div className="text">
+                        </Textfit>
+                        <div className="text"
+                            style={step === 4 ? {"fontSize":"18px", "color":"var(--color-1)", "fontWeight":"500"} : {}}
+                        >
                             {data[step]['text']}
                         </div>
                     </div>
