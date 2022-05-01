@@ -49,11 +49,13 @@ function IntroductionSlider({
                 <IntroductionSliderItem
                     order = {1}
                     text = {"전자책만 따라해도 나도 고수!\n지금 바로 당신의 책을 만들어드립니다"}
+                    background = {{"background": "linear-gradient(to right, #c0e6ff, #c0c0ff)"}}
                     handleRegisterClick = {handleRegisterClick}
                 />
                 <IntroductionSliderItem
                     order = {2}
                     text = {"당신이 찾는 모든 것들의 공간"}
+                    background = {{"background": "linear-gradient(to right, #f1eefc, #ccc6f7)"}}
                     handleRegisterClick = {handleRegisterClick}
                 />
             </Slider>

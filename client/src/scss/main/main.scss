@@ -56,60 +56,50 @@
             position: absolute;
             display: flex;
             align-items: end;
-            top: 200px;
-            left: 80px;
-            height: 80px;
-            
-
-            .intro-text {
-                font-size: 32px;
-                white-space: pre-line;
-            }
-
-            .regi-button {
-                display:flex;
-                align-items: center;
-                text-align: left;
-                width: 240px;
-                margin-left: 25px;
-                border-radius: 12px;
-                font-size: 18px;
-                font-weight: 500;
-                padding: 6px 16px;
-                white-space:pre-wrap;
-
-                em {
-                    width: 15px;
-                    height: 15px;
-                    background-image:  url(/assets/img/right_arrow.png);
-                }
-            }
-        }
-
-        img {
-            position: absolute;
             width: 100%;
-        }
-        &.main2 {
-            
+            height: 100%;
 
-            
+            .content {
+                border-radius: 20px;
+                display: flex;
+                align-items: end;
+                width: 100%;
+                height: 200px;
+                padding-bottom: 60px;
+                padding-left: 80px;
 
-            .btn-wrapper {
-                display: inline-block;
-                position: absolute;
-                right: 200px;
-                bottom: 30px;
-                height: auto;
-                border: 1px solid var(--color-1);
-                padding: 5px;
-                border-radius: 30px;
-            }
+                .intro-text {
+                    font-size: 32px;
+                    white-space: pre-line;
+                }
+    
+                .regi-button {
+                    display:flex;
+                    align-items: center;
+                    text-align: left;
+                    width: 240px;
+                    margin-left: 25px;
+                    border-radius: 12px;
+                    font-size: 18px;
+                    font-weight: 500;
+                    padding: 6px 16px;
+                    white-space:pre-wrap;
+    
+                    em {
+                        width: 15px;
+                        height: 15px;
+                        background-image:  url(/assets/img/right_arrow.png);
+                    }
+                }
 
-            .register {
-                font-size: 22px;
-                padding: 10px 20px;
-                border-radius: 25px;
+                img {
+                    width: 300px;
+                    height: 300px;
+                    object-fit: contain;
+                    position: absolute;
+                    right: 50px;
+                    bottom: 0;
+                }
             }
         }
 
