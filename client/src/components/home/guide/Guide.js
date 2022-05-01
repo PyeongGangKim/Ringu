@@ -26,25 +26,11 @@ function Guide({
                         <img src={data[step]['img']}/>
                     </div>
                 </div>
-
-                {
-                    step === 4 ?
-                    <>
-                        <button className="btn btn-dark start" onClick={close}>
-                            시작하기
-                        </button>
-                        <span className="back" onClick={toMenu}> 처음으로 돌아가기</span>
-                    </>
-                    :
-                    <PGBar
-                        step={step}
-                    />
-                }
             </div>
 
             <div className="nav-wrap">
                 {
-                    step !== 4 &&
+                    step !== 4 ?
                     <>
                         <div className="prev">
                             <button onClick={step > 1 ? () => setStep(step-1) : toMenu}>
@@ -52,12 +38,23 @@ function Guide({
                             </button>
                         </div>
 
+                        <PGBar
+                            step={step}
+                        />
+
                         <div className="next">
                             <button onClick={() => setStep(step+1)}>
                                 <em/>
                             </button>
                         </div>
                     </>
+                    :
+                    <div>
+                        <button className="btn btn-dark start" onClick={close}>
+                            시작하기
+                        </button>
+                        <span className="back" onClick={toMenu}> 처음으로 돌아가기</span>
+                    </div>
                 }
             </div>
         </>
