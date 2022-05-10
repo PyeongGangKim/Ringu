@@ -7,18 +7,14 @@ import data from './data';
 import '../../../scss/main/guide.scss';
 
 function GuideModal({
-    
+    close
 }) {
     const [menu, setMenu] = useState();
     const [alive, setAlive] = useState(true);
 
     const checkNoGuide = () => {
         localStorage.setItem("guide", 1);
-        setAlive(false);
-    }
-
-    const close = () => {
-        setAlive(false);
+        close()
     }
 
     var content;
@@ -29,13 +25,12 @@ function GuideModal({
             <button className="menu" onClick={() => setMenu(1)}>글을 읽으시는 분들께</button>
         </div>
     } else if (menu === 0) {
-        content = <Guide toMenu={() => setMenu()} data={data['author']} close={() => setAlive(false)}/>
+        content = <Guide toMenu={() => setMenu()} data={data['author']} close={close}/>
     } else {
-        content = <Guide toMenu={() => setMenu()} data={data['reader']} close={() => setAlive(false)}/>
+        content = <Guide toMenu={() => setMenu()} data={data['reader']} close={close}/>
     }
 
     return (
-        alive &&
         <Modal
             overlay={true}
             fixed={true}

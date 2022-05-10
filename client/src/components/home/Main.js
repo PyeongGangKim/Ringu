@@ -6,6 +6,7 @@ import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
 import GuideModal from '../../components/home/guide/GuideModal'
+import GuideButton from '../../components/home/guide/GuideButton'
 import CategoryItem from '../../components/home/CategoryItem'
 import BookSlider from '../../components/home/BookSlider'
 import IntroductionSlider from '../../components/home/IntroductionSlider'
@@ -27,6 +28,7 @@ class Main extends Component {
             recommendBookList: [],
             latestBookList: [],
             categories: [],
+            guide: false,
         };
     }
 
@@ -71,15 +73,33 @@ class Main extends Component {
         this.setState(state);
     }
 
+    toggleGuide = () => {
+        var state = this.state;
+        var value;
+        console.log(state)
+        if(!!state.guide) {
+            value = false;
+        } else {
+            value = true;
+        }
+
+        this.setState({guide: value});
+    }
+
     render() {
         var state = this.state;
 
         return (
             <div id="wrap">
                 {
-                    this.guide !== '1' &&
-                    <GuideModal/>
-                    
+                    this.guide !== '1' || !!state.guide ?
+                    <GuideModal
+                        close={() => this.setState({guide: false})}
+                    />
+                    :
+                    <div className="guide-btn" onClick={this.toggleGuide}>
+                        <span>?</span>
+                    </div>
                 }
                 
                 <IntroductionSlider
