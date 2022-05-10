@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-scroll';
+import {Oval} from 'react-loader-spinner'
 
 import User from '../../utils/user';
 import Book from '../../components/book/Book';
@@ -60,7 +61,7 @@ class Author extends Component {
             host: false,
             book: {title:"", filename:"선택 파일 없음", file:null},
 
-            reviewLoading: false,
+            bookLoading: true,
             noMoreReview: false,
             newReviewPage: 2,
         }
@@ -128,7 +129,7 @@ class Author extends Component {
                 if(waitingList.length !== 0 && state.user.id === parseInt(this.props.authorId)) {
                     state.bookList['wait'] = waitingList
                 }
-
+                state.bookLoading = false;
                 this.setState(state)
             }
 
@@ -148,6 +149,8 @@ class Author extends Component {
             this.setState(state)
 
         } catch (e) {
+            state.bookLoading = false;
+            this.setState(state)
             console.log(e)
         }
     }
@@ -534,7 +537,6 @@ class Author extends Component {
     updateReviewList = async() => {
         var state = this.state;
         
-        this.setState({reviewLoading: true})
         try {
             const res = await API.sendGet(URL.api.review.getReviewList, {title: true, author_id: this.props.authorId, page: state.newReviewPage})
             if(res.status === 200) {
@@ -547,9 +549,7 @@ class Author extends Component {
             } else if(res.status === 204) {
                 state.noMoreReview = true;
             }
-            state.reviewLoading = false;
         } catch(e) {
-            state.reviewLoading = false;
             alert("리뷰를 불러오지 못 했습니다.")
         }
 
@@ -743,7 +743,20 @@ class Author extends Component {
                             </div>
                             <div className="inner-content">
                                 {
-                                    Object.keys(bookList).length === 0 || (state.active !== 'a' && !(state.active in bookList)) ?
+                                    state.bookLoading === true ?
+                                    <div className="loading-container" style={{'height': '200px'}}>
+                                        <Oval
+                                            ariaLabel="loading-indicator"
+                                            width={50}
+                                            height={50}
+                                            strokeWidth={2}
+                                            color="#c2c2c2"
+                                            secondaryColor="#d5d5d5"
+                                        />
+                                    </div>
+                                    :
+                                    Object.keys(bookList).length === 0 ||
+                                     (state.active !== 'a' && !(state.active in bookList)) ?
                                     <div className="no-content">
                                         등록된 작품이 없습니다.
                                     </div>
