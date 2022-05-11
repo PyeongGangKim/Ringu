@@ -5,6 +5,9 @@ import { Home, NotFound, MyPage, PasswordChangePage, NotificationChangePage, Lea
 import { LoginPage, SignupPage, SignupDetailPage, SignupCallbackPage, WelcomePage, ModifyBookPage, ModifyBookSeriesPage, TermsPage, FindEmailPage, ChangePasswordPage, ChangePasswordCompletePage } from '../pages';
 
 import { ReviewPage, PaymentPage } from '../pages';
+import { BrowserRouter } from 'react-router-dom';
+
+import { GuideProvider } from '../contexts/guideContext';
 
 class App extends Component {
 
@@ -15,6 +18,8 @@ class App extends Component {
     render() {
         return (
             <>
+            <GuideProvider>
+            <BrowserRouter>
                 <Switch>
                     <Route exact path="/" component={Home} />{}
                     <Route path="/mypage/password/update" component={PasswordChangePage} />{}
@@ -55,6 +60,8 @@ class App extends Component {
                     <Route component={NotFound} />
                 </Switch>
                 <Footer/>
+                </BrowserRouter>
+                </GuideProvider>
             </>
         );
     }

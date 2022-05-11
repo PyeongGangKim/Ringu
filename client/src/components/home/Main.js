@@ -1,11 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
-import GuideModal from '../../components/home/guide/GuideModal'
 import GuideButton from '../../components/home/guide/GuideButton'
 import CategoryItem from '../../components/home/CategoryItem'
 import BookSlider from '../../components/home/BookSlider'
@@ -17,7 +16,6 @@ import API from '../../utils/apiutils';
 
 class Main extends Component {
     user = User.getInfo();
-    guide = localStorage.getItem("guide");
     
     constructor(props) {
         super(props);
@@ -76,7 +74,7 @@ class Main extends Component {
     toggleGuide = () => {
         var state = this.state;
         var value;
-        console.log(state)
+
         if(!!state.guide) {
             value = false;
         } else {
@@ -88,19 +86,10 @@ class Main extends Component {
 
     render() {
         var state = this.state;
-
+        
         return (
             <div id="wrap">
-                {
-                    this.guide !== '1' || !!state.guide ?
-                    <GuideModal
-                        close={() => this.setState({guide: false})}
-                    />
-                    :
-                    <div className="guide-btn" onClick={this.toggleGuide}>
-                        <span>?</span>
-                    </div>
-                }
+                <GuideButton/>
                 
                 <IntroductionSlider
                     user={this.user}

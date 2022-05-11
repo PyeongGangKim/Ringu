@@ -1,21 +1,15 @@
 import React, {useState} from 'react';
 
+import { GuideContext } from '../../../contexts/guideContext';
 import Modal from '../../modal/Modal';
 import Guide from './Guide';
 import data from './data';
 
 import '../../../scss/main/guide.scss';
 
-function GuideModal({
-    close
-}) {
+function GuideModal() {    
     const [menu, setMenu] = useState();
-    const [alive, setAlive] = useState(true);
-
-    const checkNoGuide = () => {
-        localStorage.setItem("guide", 1);
-        close()
-    }
+    var { guide, closeGuide } = React.useContext(GuideContext);
 
     var content;
     if (typeof menu === 'undefined') {
@@ -29,21 +23,23 @@ function GuideModal({
     } else {
         content = <Guide toMenu={() => setMenu()} data={data['reader']} close={close}/>
     }
-
-    return (
-        <Modal
-            overlay={true}
-            fixed={true}
-        >
-            <div id="guide-modal">
-                <div className="button-wrap">
-                    <button className="button" onClick={checkNoGuide}>다시보지않기</button>
-                    <button className="button" onClick={close}>건너뛰기</button>
+    
+    if(guide) {
+        return (
+            <Modal
+                overlay={true}
+                fixed={true}
+            >
+                <div id="guide-modal">
+                    <div className="button-wrap">
+                        <button className="button" onClick={() => {localStorage.setItem("guide", 1); closeGuide();}}>다시보지않기</button>
+                        <button className="button" onClick={closeGuide}>건너뛰기</button>
+                    </div>
+                    {content}
                 </div>
-                {content}
-            </div>
-        </Modal>
-    )
+            </Modal>
+        )
+    } else return null;
 }
 
 export default GuideModal;

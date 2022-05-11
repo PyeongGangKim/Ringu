@@ -1,11 +1,14 @@
 import React from 'react';
 
+import { GuideContext } from '../../../contexts/guideContext';
+
 import '../../../scss/main/guide.scss'
 
-function GuideButton(toggle) {
-    console.log(toggle)
+function GuideButton() {
+    var { openGuide } = React.useContext(GuideContext);
+
     return (
-        <div className="guide-btn" onClick={toggle}>
+        <div className="guide-btn" onClick={openGuide}>
             <span>?</span>
         </div>
     )
