@@ -19,9 +19,9 @@ function GuideModal() {
             <button className="menu" onClick={() => setMenu(1)}>글을 읽으시는 분들께</button>
         </div>
     } else if (menu === 0) {
-        content = <Guide toMenu={() => setMenu()} data={data['author']} close={close}/>
+        content = <Guide toMenu={() => setMenu()} data={data['author']} close={closeGuide}/>
     } else {
-        content = <Guide toMenu={() => setMenu()} data={data['reader']} close={close}/>
+        content = <Guide toMenu={() => setMenu()} data={data['reader']} close={closeGuide}/>
     }
     
     if(guide) {

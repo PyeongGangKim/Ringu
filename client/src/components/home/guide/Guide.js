@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import { Textfit } from 'react-textfit';
-
 import PGBar from './PGBar';
 
 function Guide({
