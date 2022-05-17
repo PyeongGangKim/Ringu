@@ -6,7 +6,8 @@ import FavBook from '../components/mypage/FavBook';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
+import GuideButton from '../components/home/guide/GuideButton'
+
 class FavBookPage extends Component {
     constructor(props) {
         super(props);
@@ -26,6 +27,7 @@ class FavBookPage extends Component {
                     </div>
                     <FavBook/>
                 </div>
+                <GuideButton/>
             </Fragment>
         )
     }

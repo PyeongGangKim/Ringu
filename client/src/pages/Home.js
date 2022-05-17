@@ -1,9 +1,12 @@
 import React, { Component, Fragment } from 'react';
+import Helmet from 'react-helmet';
+
+import string from '../config/str';
+
 import Main from '../components/home/Main';
 import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
-import Helmet from 'react-helmet';
-import string from '../config/str';
+import GuideButton from '../components/home/guide/GuideButton'
+
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -15,6 +18,7 @@ class Home extends Component {
                 <Helmet title={string.base}/>
                 <Header history={this.props.history}></Header>
                 <Main history={this.props.history}></Main>
+                <GuideButton/>
             </Fragment>
         )
     }

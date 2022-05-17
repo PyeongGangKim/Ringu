@@ -1,9 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import Search from '../components/search/Search';
 import Header from '../components/common/Header';
-
-
-import Footer from '../components/common/Footer';
+import GuideButton from '../components/home/guide/GuideButton'
 
 class SearchPage extends Component {
     constructor(props) {
@@ -22,6 +20,7 @@ class SearchPage extends Component {
             <Fragment>
                 <Header search={this.search}></Header>
                 <Search search={this.search} history={this.props.history}/>
+                <GuideButton/>
             </Fragment>
         )
     }

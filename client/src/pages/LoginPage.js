@@ -3,7 +3,8 @@ import Login from '../components/accounts/Login';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
+import GuideButton from '../components/home/guide/GuideButton'
+
 class LoginPage extends Component {
     constructor(props) {
         super(props);
@@ -17,6 +18,7 @@ class LoginPage extends Component {
                 <div id="wrap">
                     <Login/>
                 </div>
+                <GuideButton/>
             </Fragment>
         )
     }

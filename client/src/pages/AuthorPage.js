@@ -5,7 +5,7 @@ import User from '../utils/user';
 import SideMemberInfo from '../components/common/SideMemberInfo';
 import Author from '../components/author/Author';
 import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
+import GuideButton from '../components/home/guide/GuideButton'
 
 class AuthorPage extends Component {
     valid = true;
@@ -62,6 +62,7 @@ class AuthorPage extends Component {
                     </div>
                     <Author authorId={state.authorId} isHost={this.isHost}/>
                 </div>
+                <GuideButton/>
             </Fragment>
         )
     }

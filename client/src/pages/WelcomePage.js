@@ -4,7 +4,6 @@ import SignupHeader from '../components/common/SignupHeader';
 import URL from '../helper/helper_url';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
 
 class WelcomePage extends Component {
     constructor(props) {

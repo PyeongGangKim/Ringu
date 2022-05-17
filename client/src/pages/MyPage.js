@@ -6,7 +6,8 @@ import MyInfo from '../components/mypage/MyInfo';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
+import GuideButton from '../components/home/guide/GuideButton'
+
 class MyPage extends Component {
     constructor(props) {
         super(props);
@@ -34,6 +35,7 @@ class MyPage extends Component {
                     </div>
                     <MyInfo handleNicknameChange={this.handleNicknameChange}/>
                 </div>
+                <GuideButton/>
             </Fragment>
         )
     }

@@ -5,7 +5,6 @@ import '../../scss/common/common.scss'
 import '../../scss/common/button.scss'
 import '../../scss/common/slick.scss'
 
-import GuideButton from '../../components/home/guide/GuideButton'
 import CategoryItem from '../../components/home/CategoryItem'
 import BookSlider from '../../components/home/BookSlider'
 import IntroductionSlider from '../../components/home/IntroductionSlider'
@@ -89,8 +88,6 @@ class Main extends Component {
         
         return (
             <div id="wrap">
-                <GuideButton/>
-                
                 <IntroductionSlider
                     user={this.user}
                 />

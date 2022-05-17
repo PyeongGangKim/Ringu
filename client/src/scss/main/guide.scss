@@ -202,11 +202,15 @@
     font-size: 32px;
     position: fixed;
     border-radius: 50%;
-    right: 40px;
+    left: calc(100vw - 100px);
     bottom: 40px;    
     background-color: black;
     color: white;
     padding: 5px 20px;
     z-index: 99999;
     cursor: pointer;
+
+    &:hover, &:focus, &:active {
+        box-shadow: rgba(159, 182, 255, 0.6) 0px 0px 1px 2px;
+    }
 }

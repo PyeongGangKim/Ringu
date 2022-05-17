@@ -6,7 +6,8 @@ import Leave from '../components/mypage/Leave';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
+import GuideButton from '../components/home/guide/GuideButton'
+
 class LeavePage extends Component {
     constructor(props) {
         super(props);
@@ -26,6 +27,7 @@ class LeavePage extends Component {
                   </div>
                   <Leave/>
                 </div>
+                <GuideButton/>
             </Fragment>
         )
     }

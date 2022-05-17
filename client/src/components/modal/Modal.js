@@ -17,7 +17,11 @@ function Modal({
     useEffect(() => {
         if(fixed) {
             document.body.style.overflow = 'hidden';
-            return ()=> document.body.style.overflow = 'auto';
+            document.body.style.paddingRight = '17px';
+            return ()=> {
+                document.body.style.overflow = 'auto'
+                document.body.style.paddingRight = '0';
+            };
         }
     }, []);
 

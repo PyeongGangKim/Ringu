@@ -4,8 +4,8 @@ import Buy from '../components/buy/Buy';
 import Header from '../components/common/Header';
 import Helmet from 'react-helmet';
 import string from '../config/str';
-import Footer from '../components/common/Footer';
-class Carts extends Component {
+
+class BuyPage extends Component {
     constructor(props) {
         super(props);
     }
@@ -23,4 +23,4 @@ class Carts extends Component {
     }
 }
 
-export default Carts;
+export default BuyPage;
