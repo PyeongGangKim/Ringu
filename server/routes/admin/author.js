@@ -9,7 +9,7 @@ var helper_date = require("../../helper/date");
 const { checkLogin }= require("../../helper/activity");
 const helper_security = require("../../helper/security");
 const logger = require('../../utils/winston_logger');
-const {member, author, Sequelize : { Op } } = require("../../models");
+const {member, author, Sequelize : { Op } , sequelize} = require("../../models");
 
 const { adminPageDirPath } = require("../../helper/baseDirectoryPath");
 
@@ -63,7 +63,7 @@ router.get("/",async (req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 router.get("/info/create/", (req, res, next) => {
@@ -75,7 +75,16 @@ router.post("/", async (req, res, next) => {
     checkLogin(req,res, "/admin/author");
     
     let fields = req.body;
+    const t = await sequelize.transaction();
     try{
+        await member.update({
+            type: 1,
+        },{
+            where: {
+                id: fields.member_id
+            },
+            transaction: t,
+        });
         const result = await author.create({
             name : fields.name,
             bank : fields.bank,
@@ -84,14 +93,14 @@ router.post("/", async (req, res, next) => {
             member_id : fields.member_id,
             tax_agreement : (fields.tax_agreement) ? 1 : 0,
             promotion_agency_agreement : (fields.promotion_agency_agreement) ? 1 : 0,
-        });
+        }, {transaction: t});
         res.render(author_dir + "view",{
             "author"                  : result,
             "helper_date"           : helper_date,
         })
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
     }
 })
 
@@ -117,7 +126,7 @@ router.get("/:authorId", async (req, res, next) => {
         });
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 
@@ -138,7 +147,7 @@ router.get("/delete/:authorId", async (req, res, next) => {
         res.redirect("/admin/author/");
     }
     catch(err){
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 

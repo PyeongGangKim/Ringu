@@ -46,7 +46,7 @@ router.post("/attempt/", async(req, res, next) => {
             return;
         }
     } catch(err) {
-        logger.error(err);
+        logger.error(err.stack);
     }
 });
 
