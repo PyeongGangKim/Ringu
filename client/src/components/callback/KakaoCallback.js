@@ -1,4 +1,5 @@
-import React, { Component, Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
@@ -95,4 +96,4 @@ const KakaoCallback = ({location, history, ...props}) => {
     return null;
 }
 
-export default KakaoCallback;
+export default withRouter(KakaoCallback);

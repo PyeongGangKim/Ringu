@@ -1,4 +1,5 @@
 import React, { Component} from 'react';
+import { withRouter } from 'react-router-dom';
 
 import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
@@ -189,4 +190,4 @@ class ChangePassword extends Component {
     }
 }
 
-export default ChangePassword;
+export default withRouter(ChangePassword);

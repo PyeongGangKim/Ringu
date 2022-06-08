@@ -19,7 +19,7 @@ class SearchPage extends Component {
         return (
             <Fragment>
                 <Header search={this.search}></Header>
-                <Search search={this.search} history={this.props.history}/>
+                <Search search={this.search}/>
                 <GuideButton/>
             </Fragment>
         )

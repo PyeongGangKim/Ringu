@@ -1,6 +1,6 @@
 // 단행본
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 
 import User from '../../utils/user';
@@ -13,7 +13,7 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
 // 단행본
-class BookType2 extends Component {
+class Book extends Component {
     constructor(props) {
         super(props)
 
@@ -409,4 +409,4 @@ class BookType2 extends Component {
     }
 }
 
-export default BookType2;
+export default withRouter(Book);

@@ -21,9 +21,7 @@ class RegisterPage extends Component {
                 <Helmet title={string.register + string.postfix}/>
                 <Header></Header>
                 <div id="wrap">
-                    {
-                        <RegisterBookSelect history={this.props.history}/>
-                    }
+                    <RegisterBookSelect/>
                 </div>
             </Fragment>
         )

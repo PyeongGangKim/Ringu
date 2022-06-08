@@ -1,6 +1,6 @@
 import React, { Component, Fragment, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
@@ -14,7 +14,6 @@ const GoogleCallback = ({location, history, ...props}) => {
         getUserProfile(code);
     
     }, []);
-
 
     const getUserProfile = async (code) => {
         try {
@@ -95,4 +94,4 @@ const GoogleCallback = ({location, history, ...props}) => {
     return null;
 }
 
-export default GoogleCallback;
+export default withRouter(GoogleCallback);

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withRouter } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import {Oval} from 'react-loader-spinner'
 
@@ -344,4 +345,4 @@ class Search extends Component {
     }
 }
 
-export default Search;
+export default withRouter(Search);

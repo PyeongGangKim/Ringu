@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import { Link, withRouter } from 'react-router-dom';
 
 import URL from '../../helper/helper_url';
 import parse from '../../helper/parse';
@@ -131,4 +130,4 @@ class BuyComplete extends Component {
     }
 }
 
-export default BuyComplete;
+export default withRouter(BuyComplete);

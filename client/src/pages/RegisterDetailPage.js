@@ -22,9 +22,7 @@ class RegisterDetailPage extends Component {
                 <Helmet title={string.register + string.postfix}/>
                 <Header></Header>
                 <div id="wrap">
-                    {
-                        <RegisterBook location={this.props.location}/>
-                    }
+                    <RegisterBook/>
                 </div>
             </Fragment>
         )

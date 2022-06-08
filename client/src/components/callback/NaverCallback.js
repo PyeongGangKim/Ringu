@@ -1,4 +1,5 @@
-import React, { Component, Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import URL from '../../helper/helper_url';
@@ -80,4 +81,4 @@ const NaverCallback = ({location, history, ...props}) => {
     return null;
 }
 
-export default NaverCallback;
+export default withRouter(NaverCallback);

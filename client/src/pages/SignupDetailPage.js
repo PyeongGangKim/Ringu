@@ -21,9 +21,9 @@ class SignupDetailPage extends Component {
                         <div className="signup-box">
                             {
                                 this.props.location.search !== '' ?
-                                <SignupDetailSNS history={this.props.history} location={this.props.location} />
+                                <SignupDetailSNS/>
                                 :
-                                <SignupDetail history={this.props.history} location={this.props.location} />
+                                <SignupDetail/>
                             }
                         </div>
                     </div>

@@ -23,7 +23,7 @@ class MyInfoPage extends Component {
     render() {
         return (
             <Fragment>
-                <Header mypage={true} history={this.props.history}></Header>
+                <Header mypage={true}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
                         <SideMemberInfo isAuthor={false} nickname={this.state.nickname}/>

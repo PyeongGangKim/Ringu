@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withRouter } from 'react-router-dom';
 import Select from 'react-select'
 
 import '../../scss/common/page.scss';
@@ -116,4 +117,4 @@ class RegisterBookSelect extends Component {
     }
 }
 
-export default RegisterBookSelect;
+export default withRouter(RegisterBookSelect);

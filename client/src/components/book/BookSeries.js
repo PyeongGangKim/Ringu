@@ -1,6 +1,6 @@
 // 연재본
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 
 
@@ -474,4 +474,4 @@ class BookSeries extends Component {
     }
 }
 
-export default BookSeries;
+export default withRouter(BookSeries);

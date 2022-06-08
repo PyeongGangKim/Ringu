@@ -49,9 +49,9 @@ class BookPage extends Component {
                 <div id="wrap" style={{display: "flex"}}>
                     {
                         this.state.book.type === 1 ?
-                        <BookSeries book={state.book}  history={this.props.history}/>
+                        <BookSeries book={state.book}/>
                         :
-                        <Book book={state.book} history={this.props.history}/>
+                        <Book book={state.book}/>
                     }
 
                 </div>

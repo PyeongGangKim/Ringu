@@ -16,8 +16,8 @@ class Home extends Component {
         return (
             <Fragment>
                 <Helmet title={string.base}/>
-                <Header history={this.props.history}></Header>
-                <Main history={this.props.history}></Main>
+                <Header></Header>
+                <Main></Main>
                 <GuideButton/>
             </Fragment>
         )
