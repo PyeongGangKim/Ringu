@@ -96,7 +96,7 @@ class Buy extends Component {
             if(res.status === 200) {
                 if(res.data.message === "duplicate") {
                     alert("이미 결제된 상품입니다. 구매 내역 페이지로 이동합니다.")
-                    window.location.href = URL.service.mypage.purchases;
+                    window.location.href = URL.service.mypage.purchase;
                     return;
                 }
             }

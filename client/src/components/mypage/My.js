@@ -1,7 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 
-//import Cart, FavAuthor, FavBook, Leave, MyInfo, NotificationChange, PasswordChange, Purchase } from '../components/mypage';
 import Cart from './Cart';
 import FavAuthor from './FavAuthor';
 import FavBook from './FavBook';
@@ -27,7 +26,7 @@ class My extends Component {
                 <Route path="/mypage/info" component={MyInfo} />
                 <Route path="/mypage/notification/update" component={NotificationChange} />
                 <Route path="/mypage/password/update" component={PasswordChange} />
-                <Route path="/mypage/purchases" component={Purchase} />
+                <Route path="/mypage/purchase" component={Purchase} />
             </div>
 
         )

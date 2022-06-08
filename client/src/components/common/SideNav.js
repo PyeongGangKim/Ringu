@@ -58,14 +58,14 @@ class SideNav extends Component {
                     </li>
 
                     <li>
-                        <Link to={URL.service.mypage.purchases}  className={"lnb-item" + (path.includes("purchases") ? " on" : "")}>
+                        <Link to={URL.service.mypage.purchase}  className={"lnb-item" + (path.includes("purchase") ? " on" : "")}>
                             <div id="purchase-icon" className="lnb-icon"/>
                                 구매내역
                         </Link>
                     </li>
 
                     <li>
-                        <Link to={URL.service.mypage.carts} className={"lnb-item" + (path === "/mypage/carts" ? " on" : "")}>
+                        <Link to={URL.service.mypage.cart} className={"lnb-item" + (path === "/mypage/cart" ? " on" : "")}>
                             <div id="cart-icon" className="lnb-icon"/>
                                 장바구니
                         </Link>

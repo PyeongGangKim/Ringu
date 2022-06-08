@@ -273,9 +273,9 @@ class Header extends Component {
                                     <span>마이페이지</span>
                                     <ul className={"nb-menu " + displayClass}>
                                         <li className="nb-item"><Link to={URL.service.mypage.info}>계정관리</Link></li>
-                                        <li className="nb-item"><Link to={URL.service.mypage.carts}>장바구니</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.cart}>장바구니</Link></li>
                                         <li className="nb-item"><Link to={URL.service.mypage.fav_book}>찜한목록</Link></li>
-                                        <li className="nb-item"><Link to={URL.service.mypage.purchases}>구매내역</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.purchase}>구매내역</Link></li>
                                         <li className="nb-item"><div onClick={this.logOut}>로그아웃</div></li>
                                     </ul>
                                 </div>

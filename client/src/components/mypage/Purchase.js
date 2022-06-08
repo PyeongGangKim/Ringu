@@ -65,7 +65,7 @@ class Purchase extends Component {
                 this.setState(state)
 
                 if(!init) {
-                    this.props.history.replace(URL.service.mypage.purchases + (year === 0 ? '' : `?period=${year}`))
+                    this.props.history.replace(URL.service.mypage.purchase + (year === 0 ? '' : `?period=${year}`))
                 }
             } else if(res.status === 204) {
                 state.data.purchaseList = []
@@ -73,7 +73,7 @@ class Purchase extends Component {
                 this.setState(state)
 
                 if(!init) {
-                    this.props.history.replace(URL.service.mypage.purchases + (year === 0 ? '' : `?period=${year}`))
+                    this.props.history.replace(URL.service.mypage.purchase + (year === 0 ? '' : `?period=${year}`))
                 }
             }
         } catch(e) {

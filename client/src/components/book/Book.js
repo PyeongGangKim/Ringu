@@ -53,7 +53,7 @@ class Book extends Component {
                 }
                 else if(res.data.message === 'duplicate') {
                     if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
-                        this.props.history.push(URL.service.mypage.purchases)
+                        this.props.history.push(URL.service.mypage.purchase)
                     }
                 }
             }
@@ -92,13 +92,13 @@ class Book extends Component {
 
                                 if(res.status === 201) {
                                     if(window.confirm(`${this.state.book.book_title}을/를 장바구니에 담았습니다.\n장바구니로 이동하시겠습니까?`)) {
-                                        this.props.history.push(URL.service.mypage.carts)
+                                        this.props.history.push(URL.service.mypage.cart)
                                     }
                                 }
                             }
                             else if(duplicate.data.message === 'duplicate') {
                                 if(window.confirm("이미 장바구니에 담긴 물품입니다.\n장바구니로 이동하시겠습니까?")) {
-                                    this.props.history.push(URL.service.mypage.carts)
+                                    this.props.history.push(URL.service.mypage.cart)
                                 }
                             }
                         }
@@ -109,7 +109,7 @@ class Book extends Component {
                 }
                 else if(res.data.message === 'duplicate') {
                     if(window.confirm("이미 구매한 작품입니다. 구매 내역으로 이동하시겠습니까?")) {
-                        this.props.history.push(URL.service.mypage.purchases)
+                        this.props.history.push(URL.service.mypage.purchase)
                     }
                 }
             }

@@ -52,7 +52,7 @@ class Review extends Component {
 
     handleBack = (evt) => {
 
-        window.location.href=URL.service.mypage.purchases
+        window.location.href=URL.service.mypage.purchase
     }
 
     handleSubmit = async() => {
@@ -95,7 +95,7 @@ class Review extends Component {
                 }
                 else if(duplicate.data.message === 'duplicate') {
                     alert("이미 리뷰를 작성하셨습니다.")
-                    window.location.href = URL.service.mypage.purchases
+                    window.location.href = URL.service.mypage.purchase
                 }
             }
         }
@@ -134,7 +134,7 @@ class Review extends Component {
                                 RINGU는 고객님들의 생생한 리뷰를 모아 신뢰할 수 있는 리뷰 서비스를 제공하기 위해 노력하겠습니다.
                             </div>
 
-                            <Link to={URL.service.mypage.purchases}>
+                            <Link to={URL.service.mypage.purchase}>
                                 <button className="btn btn-block btn-color-2">
                                     확인
                                 </button>

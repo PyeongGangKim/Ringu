@@ -49,7 +49,7 @@ class BuyComplete extends Component {
                             </Link>
 
                             <div className="txt">
-                                <span> <Link to={URL.service.mypage.purchases}>구매내역</Link>에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
+                                <span> <Link to={URL.service.mypage.purchase}>구매내역</Link>에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
                             </div>
                         </div>
 
