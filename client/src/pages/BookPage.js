@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
-import BookType1 from '../components/book/BookType1';
-import BookType2 from '../components/book/BookType2';
+import BookSeries from '../components/book/BookSeries';
+import Book from '../components/book/Book';
 import Header from '../components/common/Header';
 
 import URL from '../helper/helper_url';
@@ -49,9 +49,9 @@ class BookPage extends Component {
                 <div id="wrap" style={{display: "flex"}}>
                     {
                         this.state.book.type === 1 ?
-                        <BookType1 book={state.book}  history={this.props.history}/>
+                        <BookSeries book={state.book}  history={this.props.history}/>
                         :
-                        <BookType2 book={state.book} history={this.props.history}/>
+                        <Book book={state.book} history={this.props.history}/>
                     }
 
                 </div>

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import Slider from "react-slick";
 
-import Book from '../../components/book/Book'
+import BookCard from '../book/BookCard'
 
 import '../../scss/common/slick.scss'
 import '../../scss/book/slider.scss'
@@ -60,7 +60,7 @@ function BookSlider({
                                 status  = 'ser'
                             }
                             return (
-                                <Book
+                                <BookCard
                                     key={item.id}
                                     book={item}
                                     status={status}

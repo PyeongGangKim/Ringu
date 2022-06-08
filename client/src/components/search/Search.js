@@ -7,7 +7,7 @@ import '../../scss/common/button.scss'
 import '../../scss/common/loading.scss'
 import '../../scss/search/search.scss'
 
-import Book from '../../components/book/Book'
+import BookCard from '../book/BookCard'
 
 import User from '../../utils/user';
 import URL from '../../helper/helper_url';
@@ -326,7 +326,7 @@ class Search extends Component {
                                             status = "ser"
                                         }
                                         return (
-                                            <Book
+                                            <BookCard
                                                 key={item.id}
                                                 book={item}
                                                 status={status}

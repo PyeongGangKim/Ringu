@@ -1,18 +1,18 @@
 import React, { Component, Fragment } from 'react';
+import Helmet from 'react-helmet';
 
-import User from '../../utils/user';
-import Book from '../../components/book/Book'
+import BookCard from '../book/BookCard'
 import '../../scss/mypage/favorite.scss';
 import '../../scss/common/button.scss';
 import '../../scss/common/book.scss';
 
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
 class FavBook extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
 
         this.state = {
             ui: {
@@ -51,10 +51,10 @@ class FavBook extends Component {
 
     render() {
         var favoriteList = this.state.data.favoriteList
-        var state = this.state;
 
         return (
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.favorite + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">컨텐츠 찜</h2>
                 </div>
@@ -79,7 +79,7 @@ class FavBook extends Component {
                                             status = "ser"
                                         }
                                         return (
-                                            <Book
+                                            <BookCard
                                                 key={item.id}
                                                 book = {item}
                                                 status = {status}
@@ -102,7 +102,7 @@ class FavBook extends Component {
                 }
 
 
-            </div>
+            </>
         )
     }
 }

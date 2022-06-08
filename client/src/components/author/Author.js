@@ -3,7 +3,7 @@ import { Link } from 'react-scroll';
 import {Oval} from 'react-loader-spinner'
 
 import User from '../../utils/user';
-import Book from '../../components/book/Book';
+import BookCard from '../book/BookCard';
 import Paging from '../../components/common/Paging';
 import ReviewTabInner from '../../components/common/ReviewTabInner';
 import '../../scss/common/page.scss';
@@ -771,7 +771,7 @@ class Author extends Component {
                                                             item['status'] = status
 
                                                             return (
-                                                                <Book
+                                                                <BookCard
                                                                     key={item.id}
                                                                     book = {item}
                                                                     status = {status}

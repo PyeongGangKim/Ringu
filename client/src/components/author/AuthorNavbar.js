@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useInView } from "react-intersection-observer";
-
-import User from '../../utils/user';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
-import Book from '../../components/book/Book'
+import BookCard from '../../components/book/Book'
 
 function AuthorNavbar(user, isHost, authorId, handleDisplayClick, handleUpdate ) {
     const [section, setSection] = useState('a');
@@ -220,7 +218,7 @@ function AuthorNavbar(user, isHost, authorId, handleDisplayClick, handleUpdate )
                                                     item['status'] = status
 
                                                     return (
-                                                        <Book
+                                                        <BookCard
                                                             key={item.id}
                                                             book = {item}
                                                             user = {user}
