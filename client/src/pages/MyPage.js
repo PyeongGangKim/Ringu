@@ -21,7 +21,7 @@ class MyPage extends Component {
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
                         <SideMemberInfo />
-                        <SideNav path={this.props.location.pathname}/>
+                        <SideNav/>
                     </div>
                     <My/>
                 </div>
