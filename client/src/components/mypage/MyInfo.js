@@ -13,7 +13,6 @@ import API from '../../utils/apiutils';
 class MyInfo extends Component {
     constructor(props) {
         super(props)
-        console.log(33333333)
         this.bankOptions = []
 
         this.state = {
