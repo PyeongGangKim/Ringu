@@ -55,7 +55,7 @@ class AuthorPage extends Component {
         return (
             this.valid &&
             <Fragment>
-                <Header author history={this.props.history} isHost={this.isHost}></Header>
+                <Header author isHost={this.isHost}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
                         <SideMemberInfo isAuthor={true} authorId={this.props.match.params.author_id} isHost={this.isHost}/>

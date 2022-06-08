@@ -45,7 +45,7 @@ class BookPage extends Component {
             this.state.isSuccess ?
             <Fragment>
                 <Helmet title={`${state.book.title} ` + string.postfix}/>
-                <Header home={true} history={this.props.history}></Header>
+                <Header home={true}></Header>
                 <div id="wrap" style={{display: "flex"}}>
                     {
                         this.state.book.type === 1 ?

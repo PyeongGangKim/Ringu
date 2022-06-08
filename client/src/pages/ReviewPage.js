@@ -18,7 +18,7 @@ class ReviewPage extends Component {
         return (
             <Fragment>
                 <Helmet title={string.review + string.postfix}/>
-                <Header history={this.props.history}></Header>
+                <Header></Header>
                 <div id="wrap">
                     <Review book_detail={this.state.book_detail}/>
                 </div>

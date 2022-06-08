@@ -20,7 +20,7 @@ class RegisterDetailPage extends Component {
         return (
             <Fragment>
                 <Helmet title={string.register + string.postfix}/>
-                <Header history={this.props.history}></Header>
+                <Header></Header>
                 <div id="wrap">
                     {
                         <RegisterBook location={this.props.location}/>

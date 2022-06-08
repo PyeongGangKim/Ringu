@@ -15,7 +15,7 @@ class PaymentPage extends Component {
         return (
             <Fragment>
                 <Helmet title={string.payment + string.postfix}/>
-                <Header history={this.props.history}></Header>
+                <Header></Header>
                 <div id="wrap">
                     {
                         <Payment/>

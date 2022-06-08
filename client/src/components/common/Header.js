@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import jQuery from "jquery";
 import Cookies from 'js-cookie';
 
@@ -298,4 +298,4 @@ class Header extends Component {
     }
 }
 
-export default Header;
+export default withRouter(Header);

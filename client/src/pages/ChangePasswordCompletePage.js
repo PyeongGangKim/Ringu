@@ -14,7 +14,7 @@ class ChangePasswordCompletePage extends Component {
         return (
             <Fragment>
                 <Helmet title={string.base}/>
-                <Header searchVisible={false} history={this.props.history}></Header>
+                <Header searchVisible={false}></Header>
                 <ChangePasswordComplete/>
             </Fragment>
         )
