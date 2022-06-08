@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import Helmet from 'react-helmet';
 
 import '../../scss/mypage/favorite.scss';
 import '../../scss/common/button.scss';
 
-
 import parse from '../../helper/parse';
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
@@ -45,10 +46,10 @@ class FavAuthor extends Component {
 
     render() {
         var favoriteList = this.state.favoriteList
-        var state = this.state;
 
         return (
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.favorite + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">작가 찜</h2>
                 </div>
@@ -125,7 +126,7 @@ class FavAuthor extends Component {
                         </div>
                     </div>
                 }
-            </div>
+            </>
 
         )
     }

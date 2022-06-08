@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import Helmet from 'react-helmet';
 
 import User from '../../utils/user';
 import '../../scss/mypage/cart.scss';
 import '../../scss/common/button.scss';
 
 import parse from '../../helper/parse';
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
@@ -164,7 +165,8 @@ class Cart extends Component {
         var state = this.state;
 
         return (
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.cart + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">장바구니</h2>
                 </div>
@@ -244,7 +246,7 @@ class Cart extends Component {
                         </div>
                     </div>
                 }
-            </div>
+            </>
         )
     }
 }

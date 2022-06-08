@@ -13,6 +13,7 @@ import API from '../../utils/apiutils';
 class Purchase extends Component {
     limit = 5;
     constructor(props) {
+        console.log(props)
         super(props)
         var years = [2021]
 
@@ -108,7 +109,7 @@ class Purchase extends Component {
         var state = this.state;
         
         return (
-            <div id="mypage" className="page2">
+            <>
                 <div className="title-wrap">
                     <h2 className="title">구매 내역</h2>
                 </div>
@@ -216,7 +217,7 @@ class Purchase extends Component {
                         </div>
                     </div>
                 }
-            </div>
+            </>
         )
     }
 }

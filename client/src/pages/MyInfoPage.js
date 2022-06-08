@@ -2,28 +2,34 @@ import React, { Component, Fragment } from 'react';
 
 import SideMemberInfo from '../components/common/SideMemberInfo';
 import SideNav from '../components/common/SideNav';
-import My from '../components/mypage/My';
+import MyInfo from '../components/mypage/MyInfo';
 import Header from '../components/common/Header';
-import Helmet from 'react-helmet';
-import string from '../config/str';
+
 import GuideButton from '../components/home/guide/GuideButton'
 
-class MyPage extends Component {
+class MyInfoPage extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            nickname: null,
+        }
+
+        this.handleNicknameChange = (value) => {
+            this.setState({nickname:value})
+        }
     }
 
     render() {
         return (
             <Fragment>
-                <Helmet title={string.mypage + string.postfix}/>
-                <Header mypage={true}></Header>
+                <Header mypage={true} history={this.props.history}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
-                        <SideMemberInfo />
+                        <SideMemberInfo isAuthor={false} nickname={this.state.nickname}/>
                         <SideNav path={this.props.location.pathname}/>
                     </div>
-                    <My/>
+                    <MyInfo handleNicknameChange={this.hnadleNicknameChange}/>
                 </div>
                 <GuideButton/>
             </Fragment>
@@ -31,4 +37,4 @@ class MyPage extends Component {
     }
 }
 
-export default MyPage;
+export default MyInfoPage;

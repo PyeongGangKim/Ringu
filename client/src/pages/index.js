@@ -1,11 +1,7 @@
 export { default as Home } from './Home';
 export { default as NotFound } from './NotFound';
 export { default as MyPage } from './MyPage';
-export { default as Purchases } from './Purchases';
-export { default as Carts } from './Carts';
-export { default as FavBookPage } from './FavBookPage';
-export { default as FavAuthorPage } from './FavAuthorPage';
-export { default as LeavePage } from './LeavePage';
+export { default as MyInfoPage } from './MyInfoPage';
 export { default as AuthorRegisterPage } from './AuthorRegisterPage';
 export { default as AuthorRegisterDetailPage } from './AuthorRegisterDetailPage';
 export { default as AuthorPage } from './AuthorPage';
@@ -30,6 +26,4 @@ export { default as ChangePasswordCompletePage } from './ChangePasswordCompleteP
 export { default as FindEmailPage } from './FindEmailPage';
 
 export { default as ReviewPage } from './ReviewPage';
-export { default as PasswordChangePage } from './PasswordChangePage';
-export { default as NotificationChangePage } from './NotificationChangePage';
 export { default as NotificationPage } from './NotificationPage';
