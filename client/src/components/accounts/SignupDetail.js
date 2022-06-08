@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import Timer from '../common/Timer';
 import Cookies from 'js-cookie';
 
@@ -556,4 +556,4 @@ class SignupDetail extends Component {
     }
 }
 
-export default SignupDetail;
+export default withRouter(SignupDetail);

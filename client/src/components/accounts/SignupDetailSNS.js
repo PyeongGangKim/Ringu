@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import '../../scss/main/main.scss'
@@ -292,4 +292,4 @@ class SignupDetailSNS extends Component {
     }
 }
 
-export default SignupDetailSNS;
+export default withRouter(SignupDetailSNS);

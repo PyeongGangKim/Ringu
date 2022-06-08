@@ -53,9 +53,9 @@ class Signup extends Component {
                                 <SignupSelect />
                                 :
                                 search ?
-                                    <SignupDetailSNS history={this.props.history} location={location} />
+                                    <SignupDetailSNS/>
                                     :
-                                    <SignupDetail history={this.props.history}/>
+                                    <SignupDetail/>
                         }
                     </div>
                 }
