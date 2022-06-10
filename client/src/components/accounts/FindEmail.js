@@ -14,14 +14,6 @@ class FindEmail extends Component {
         super(props);
 
         this.ref = React.createRef();
-
-        this.state = {
-            
-        };
-    }
-
-    componentDidMount() {
-
     }
 
     handleEmailChange = (evt) => {
@@ -131,9 +123,7 @@ class FindEmail extends Component {
                         </form>
                     </div>
                 </div>
-
             </div>
-
         );
     }
 }

@@ -1,17 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
 import URL from '../../helper/helper_url';
 import parse from '../../helper/parse';
 import payment from '../../helper/payment';
-import User from '../../utils/user';
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
 class BuyComplete extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
 
         this.data = new URLSearchParams(this.props.search)
         
@@ -121,11 +119,8 @@ class BuyComplete extends Component {
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
-
             </div>
-
         )
     }
 }

@@ -41,10 +41,6 @@ class SignupDetail extends Component {
         };
     }
 
-    componentDidMount() {
-
-    }
-
     handleEmailChange = (evt) => {
         var state = JSON.parse(JSON.stringify(this.state));
 

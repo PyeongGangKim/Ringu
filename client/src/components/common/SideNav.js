@@ -1,7 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
-import User from '../../utils/user';
 import '../../scss/common/sideinfo.scss';
 
 import URL from '../../helper/helper_url';
@@ -83,7 +82,6 @@ class SideNav extends Component {
                         </ul>
                     </li>
                 </ul>
-
             </div>
         )
     }

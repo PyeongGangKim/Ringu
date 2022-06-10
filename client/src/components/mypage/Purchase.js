@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
 import Paging from '../../components/common/Paging'
@@ -41,7 +41,6 @@ class Purchase extends Component {
     }
 
     async componentDidMount() {
-        var state
         this.getPurchaseList(true);
     }
 

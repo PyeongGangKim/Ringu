@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import jQuery from "jquery";
 import Cookies from 'js-cookie';
 
 import '../../scss/common/common.scss'

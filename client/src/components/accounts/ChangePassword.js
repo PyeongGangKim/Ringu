@@ -33,10 +33,6 @@ class ChangePassword extends Component {
         };
     }
 
-    componentDidMount() {
-
-    }
-
     handlePasswordType1 = () => {
         var state = this.state;        
 
@@ -183,9 +179,7 @@ class ChangePassword extends Component {
                         </form>
                     </div>
                 </div>
-
             </div>
-
         );
     }
 }

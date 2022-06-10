@@ -38,14 +38,8 @@ class SignupDetailSNS extends Component {
             eventAgree: false,
             activeAgree: false,
         };
-
-
     }
-
-    componentDidMount() {
-
-    }
-
+    
     handleNicknameChange = evt => {
         var state = this.state;
         state.nickname.val = evt.target.value;
