@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import URL from '../../helper/helper_url';
@@ -7,7 +7,9 @@ import API from '../../utils/apiutils';
 var url = require('../../config/url')[process.env.REACT_APP_ENV];
 var NAVER = require('../../config/naver_auth')[process.env.REACT_APP_ENV];
 
-const NaverCallback = ({location, history, ...props}) => {
+const NaverCallback = () => {
+    const history = useHistory();
+
     useEffect(()=>{
         getUserProfile();
     }, []);
@@ -81,4 +83,4 @@ const NaverCallback = ({location, history, ...props}) => {
     return null;
 }
 
-export default withRouter(NaverCallback);
+export default NaverCallback;

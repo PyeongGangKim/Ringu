@@ -1,13 +1,15 @@
-import React, { Component, Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 let GOOGLE = require('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 
-const GoogleCallback = ({location, history, ...props}) => {
+const GoogleCallback = () => {
+    const history = useHistory();
+
     useEffect(()=>{
         let code = location.search.substring(6, location.search.length);
 
@@ -94,4 +96,4 @@ const GoogleCallback = ({location, history, ...props}) => {
     return null;
 }
 
-export default withRouter(GoogleCallback);
+export default GoogleCallback;

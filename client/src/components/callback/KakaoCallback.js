@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
@@ -10,7 +10,9 @@ var KAKAO = require('../../config/kakao_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
-const KakaoCallback = ({location, history, ...props}) => {
+const KakaoCallback = () => {
+    const history = useHistory();
+    
     useEffect(()=>{
         var code = location.search.substring(6, location.search.length);
         getUserProfile(code);
@@ -96,4 +98,4 @@ const KakaoCallback = ({location, history, ...props}) => {
     return null;
 }
 
-export default withRouter(KakaoCallback);
+export default KakaoCallback;
