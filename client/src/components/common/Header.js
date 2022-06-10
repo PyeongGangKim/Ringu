@@ -182,7 +182,7 @@ class Header extends Component {
                             </div>
                             {
                                 state.popup &&
-                                <div className="search-popup" tabindex={0}>
+                                <div className="search-popup" tabIndex={0}>
                                     {/*<hr/>*/}
                                     <div className="category-wrap">
                                         <span>카테고리</span>
