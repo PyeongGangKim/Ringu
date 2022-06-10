@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
@@ -12,7 +12,8 @@ const {Kakao} = window;
 
 const KakaoCallback = () => {
     const history = useHistory();
-    
+    const location = useLocation();
+
     useEffect(()=>{
         var code = location.search.substring(6, location.search.length);
         getUserProfile(code);
