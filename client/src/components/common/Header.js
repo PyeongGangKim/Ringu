@@ -2,23 +2,21 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
+import Chip from '../../components/common/Chip'
+
 import '../../scss/common/common.scss'
 import '../../scss/common/header.scss';
 import '../../scss/common/input.scss';
-
-import Chip from '../../components/common/Chip'
 
 import URL from '../../helper/helper_url';
 import User from '../../utils/user';
 import API from '../../utils/apiutils';
 
 class Header extends Component {
-    userInfo = User.getInfo();
-
     constructor(props) {
         super(props);
 
-        var userInfo = this.userInfo;
+        var userInfo = User.getInfo();
 
         this.search = props.search
 
@@ -171,7 +169,7 @@ class Header extends Component {
                                         type="text" 
                                         autoComplete="off" 
                                         style={state.recommendClear === false ? {color:"#888888"} : {}} 
-                                        value={state.recommendClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword}
+                                        value={(state.recommendClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword) || ""}
                                         onChange={this.handleKeywordChange} 
                                         onKeyPress={this.handleKeyPress} 
                                         onMouseDown={this.handleRecommendClear}
@@ -207,7 +205,7 @@ class Header extends Component {
 
                     <div id="user-area">
                         {
-                            state.login == 'Y'
+                            state.login === 'Y'
                             ?
                             <div id="user-menu">
                                 <Link 
