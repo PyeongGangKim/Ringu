@@ -110,8 +110,8 @@ class Buy extends Component {
         
         innopay.goPay({
             PayMethod: state.payMethod,
-            MID: pg.mid[process.env.REACT_APP_ENV],
-            MerchantKey: pg.mid[process.env.REACT_APP_ENV],
+            MID: PG.mid[process.env.REACT_APP_ENV],
+            MerchantKey: PG.mid[process.env.REACT_APP_ENV],
             GoodsName: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
             Amt: state.amount + '',
             BuyerName: state.user.nickname,
