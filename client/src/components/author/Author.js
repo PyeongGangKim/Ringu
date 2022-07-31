@@ -83,12 +83,17 @@ class Author extends Component {
                 author_id: this.props.authorId,
             }
 
+            if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
+                state.host = true
+            }
+
             const res = await API.sendGet(URL.api.book.list, params = params)
-            if(res.status === 200) {
+            if(res.status === 204) {
+                state.bookLoading = false;
+                this.setState(state)
+            }
+            else if(res.status === 200) {
                 var bookList = res.data.bookList
-                if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
-                    state.host = true
-                }
                 
                 var waitingList = bookList.filter(book => {
                     return book.is_approved === 0
