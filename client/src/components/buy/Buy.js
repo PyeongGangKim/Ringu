@@ -7,6 +7,8 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 import User from '../../utils/user';
 
+import PG from '../../config/pg';
+
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
@@ -108,8 +110,8 @@ class Buy extends Component {
         
         innopay.goPay({
             PayMethod: state.payMethod,
-            MID: 'testpay01m',
-            MerchantKey: 'Ma29gyAFhvv/+e4/AHpV6pISQIvSKziLIbrNoXPbRS5nfTx2DOs8OJve+NzwyoaQ8p9Uy1AN4S1I0Um5v7oNUg==',
+            MID: pg.mid[process.env.REACT_APP_ENV],
+            MerchantKey: pg.mid[process.env.REACT_APP_ENV],
             GoodsName: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
             Amt: state.amount + '',
             BuyerName: state.user.nickname,
