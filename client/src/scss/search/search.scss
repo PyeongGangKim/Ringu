@@ -80,6 +80,10 @@
 .search-modal {
     padding: 30px 60px;
 
+    .close {
+        top: 15px !important;
+    }
+
     .header {
         position: absolute;
         left: 60px;
