@@ -7,17 +7,17 @@ function FormatDownloadModal({
     handleCloseClick
 }) {
     const downloadFormat = (format) => {
-        if (format === 0) {            
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%ec%97%b0%ec%9e%ac%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ec%9b%8c%eb%93%9c).docx')
+        if (format === 0) {
+            window.location.assign(encodeURI('https://ringuimage.s3.ap-northeast-2.amazonaws.com/링구 연재본 포맷(워드).docx'))
         }
         else if(format === 1) {
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%eb%8b%a8%ed%96%89%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ec%9b%8c%eb%93%9c).docx')
+            window.location.assign(encodeURI('https://ringuimage.s3.ap-northeast-2.amazonaws.com/링구 단행본 포맷(워드).docx'))
         } 
         else if(format === 2) {
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%ec%97%b0%ec%9e%ac%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ed%95%9c%ea%b8%80).hwp')
+            window.location.assign(encodeURI('https://ringuimage.s3.ap-northeast-2.amazonaws.com/링구 연재본 포맷(한글).hwp'))
         }
         else {
-            window.location.assign('https://ringuimage.s3.ap-northeast-2.amazonaws.com/%eb%a7%81%ea%b5%ac+%eb%8b%a8%ed%96%89%eb%b3%b8+%ed%8f%ac%eb%a7%b7(%ed%95%9c%ea%b8%80).hwp')
+            window.location.assign(encodeURI('https://ringuimage.s3.ap-northeast-2.amazonaws.com/링구 단행본 포맷(한글).hwp'))
         }
     }
 
