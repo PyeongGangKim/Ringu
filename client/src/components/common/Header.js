@@ -188,11 +188,11 @@ class Header extends Component {
                                             {
                                                 state.categories.map(category => {
                                                     return (
-                                                        <a href={URL.service.search + "?category=" + category.id}>
+                                                        <Link to={URL.service.search + "?category=" + category.id}>
                                                             <span className="category">
                                                                 {category.name}
                                                             </span>
-                                                        </a>
+                                                        </Link>
                                                     )
                                                 })
                                             }
