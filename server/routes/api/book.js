@@ -28,8 +28,8 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         let is_approved = ("is_approved" in req.query && typeof req.query.is_approved !== 'undefined') ? req.query.is_approved : ['0','1'];
         let is_picked = ("is_picked" in req.query && typeof req.query.is_picked !== 'undefined') ? req.query.is_picked : null;
         let is_recommending_phrase = ("is_recommending_phrase" in req.query && typeof req.query.is_recommending_phrase !== 'undefined') ? req.query.is_recommending_phrase : null;
-        order = ("is_picked" in req.query && req.query.is_picked) ? "rank" : order;
-        orderBy = ("is_picked" in req.query && req.query.is_picked) ? "ASC" : orderBy;
+        order = ("is_picked" in req.query && req.query.is_picked) ? 'rank' : order;
+        orderBy = ("is_picked" in req.query && req.query.is_picked) ? 'ASC' : orderBy;
 
         let orderParams = [
             [sequelize.literal(order), orderBy]
