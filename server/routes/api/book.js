@@ -32,7 +32,7 @@ router.get('/', async(req, res, next) => { // 커버만 가져오는 api, 검색
         orderBy = ("is_picked" in req.query && req.query.is_picked) ? 'ASC' : orderBy;
 
         let orderParams = [
-            [sequelize.literal(order), orderBy]
+            [sequelize.literal('book.'+order), orderBy]
         ]
 
         if ("order" in req.query && typeof req.query.order !== undefined && order !== 'create_date_time') {

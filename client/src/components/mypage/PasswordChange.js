@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import Helmet from 'react-helmet';
 
-import User from '../../utils/user';
 import '../../scss/mypage/mypage.scss';
 import '../../scss/common/button.scss';
 
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
@@ -92,7 +91,8 @@ class PasswordChange extends Component {
 
     render() {
         return (
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.pwdchange + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">비밀번호 변경</h2>
                 </div>
@@ -136,8 +136,7 @@ class PasswordChange extends Component {
                         </button>
                     </div>
                 </div>
-            </div>
-
+            </>
         )
     }
 }

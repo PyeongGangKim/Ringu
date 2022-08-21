@@ -1,25 +1,22 @@
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import jQuery from "jquery";
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
+
+import Chip from '../../components/common/Chip'
 
 import '../../scss/common/common.scss'
 import '../../scss/common/header.scss';
 import '../../scss/common/input.scss';
-
-import Chip from '../../components/common/Chip'
 
 import URL from '../../helper/helper_url';
 import User from '../../utils/user';
 import API from '../../utils/apiutils';
 
 class Header extends Component {
-    userInfo = User.getInfo();
-
     constructor(props) {
         super(props);
 
-        var userInfo = this.userInfo;
+        var userInfo = User.getInfo();
 
         this.search = props.search
 
@@ -172,7 +169,7 @@ class Header extends Component {
                                         type="text" 
                                         autoComplete="off" 
                                         style={state.recommendClear === false ? {color:"#888888"} : {}} 
-                                        value={state.recommendClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword}
+                                        value={(state.recommendClear === false && !!state.recommend ? state.recommend.recommending_phrase : state.keyword) || ""}
                                         onChange={this.handleKeywordChange} 
                                         onKeyPress={this.handleKeyPress} 
                                         onMouseDown={this.handleRecommendClear}
@@ -183,7 +180,7 @@ class Header extends Component {
                             </div>
                             {
                                 state.popup &&
-                                <div className="search-popup" tabindex={0}>
+                                <div className="search-popup" tabIndex={0}>
                                     {/*<hr/>*/}
                                     <div className="category-wrap">
                                         <span>카테고리</span>
@@ -191,11 +188,11 @@ class Header extends Component {
                                             {
                                                 state.categories.map(category => {
                                                     return (
-                                                        <a href={URL.service.search + "?category=" + category.id}>
+                                                        <Link to={URL.service.search + "?category=" + category.id}>
                                                             <span className="category">
                                                                 {category.name}
                                                             </span>
-                                                        </a>
+                                                        </Link>
                                                     )
                                                 })
                                             }
@@ -208,7 +205,7 @@ class Header extends Component {
 
                     <div id="user-area">
                         {
-                            state.login == 'Y'
+                            state.login === 'Y'
                             ?
                             <div id="user-menu">
                                 <Link 
@@ -273,9 +270,9 @@ class Header extends Component {
                                     <span>마이페이지</span>
                                     <ul className={"nb-menu " + displayClass}>
                                         <li className="nb-item"><Link to={URL.service.mypage.info}>계정관리</Link></li>
-                                        <li className="nb-item"><Link to={URL.service.mypage.carts}>장바구니</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.cart}>장바구니</Link></li>
                                         <li className="nb-item"><Link to={URL.service.mypage.fav_book}>찜한목록</Link></li>
-                                        <li className="nb-item"><Link to={URL.service.mypage.purchases}>구매내역</Link></li>
+                                        <li className="nb-item"><Link to={URL.service.mypage.purchase}>구매내역</Link></li>
                                         <li className="nb-item"><div onClick={this.logOut}>로그아웃</div></li>
                                     </ul>
                                 </div>
@@ -298,4 +295,4 @@ class Header extends Component {
     }
 }
 
-export default Header;
+export default withRouter(Header);

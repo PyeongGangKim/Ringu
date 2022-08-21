@@ -1,18 +1,15 @@
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 
 import URL from '../../helper/helper_url';
 import parse from '../../helper/parse';
 import payment from '../../helper/payment';
-import User from '../../utils/user';
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
 class BuyComplete extends Component {
     constructor(props) {
         super(props)
-        let userInfo = User.getInfo();
 
         this.data = new URLSearchParams(this.props.search)
         
@@ -50,7 +47,7 @@ class BuyComplete extends Component {
                             </Link>
 
                             <div className="txt">
-                                <span> <Link to={URL.service.mypage.purchases}>구매내역</Link>에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
+                                <span> <Link to={URL.service.mypage.purchase}>구매내역</Link>에서 결제하신 상품을 다운로드 받으실 수 있습니다 </span>
                             </div>
                         </div>
 
@@ -122,13 +119,10 @@ class BuyComplete extends Component {
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
-
             </div>
-
         )
     }
 }
 
-export default BuyComplete;
+export default withRouter(BuyComplete);

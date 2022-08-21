@@ -3,7 +3,7 @@ import { Link } from 'react-scroll';
 import {Oval} from 'react-loader-spinner'
 
 import User from '../../utils/user';
-import Book from '../../components/book/Book';
+import BookCard from '../book/BookCard';
 import Paging from '../../components/common/Paging';
 import ReviewTabInner from '../../components/common/ReviewTabInner';
 import '../../scss/common/page.scss';
@@ -83,12 +83,17 @@ class Author extends Component {
                 author_id: this.props.authorId,
             }
 
+            if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
+                state.host = true
+            }
+
             const res = await API.sendGet(URL.api.book.list, params = params)
-            if(res.status === 200) {
+            if(res.status === 204) {
+                state.bookLoading = false;
+                this.setState(state)
+            }
+            else if(res.status === 200) {
                 var bookList = res.data.bookList
-                if(User.getInfo() !== null && this.props.authorId === User.getInfo().id) {
-                    state.host = true
-                }
                 
                 var waitingList = bookList.filter(book => {
                     return book.is_approved === 0
@@ -771,7 +776,7 @@ class Author extends Component {
                                                             item['status'] = status
 
                                                             return (
-                                                                <Book
+                                                                <BookCard
                                                                     key={item.id}
                                                                     book = {item}
                                                                     status = {status}

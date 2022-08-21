@@ -1,4 +1,5 @@
 import React, { Component} from 'react';
+import { withRouter } from 'react-router-dom';
 
 import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
@@ -13,14 +14,6 @@ class FindEmail extends Component {
         super(props);
 
         this.ref = React.createRef();
-
-        this.state = {
-            
-        };
-    }
-
-    componentDidMount() {
-
     }
 
     handleEmailChange = (evt) => {
@@ -130,11 +123,9 @@ class FindEmail extends Component {
                         </form>
                     </div>
                 </div>
-
             </div>
-
         );
     }
 }
 
-export default FindEmail;
+export default withRouter(FindEmail);

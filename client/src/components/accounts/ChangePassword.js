@@ -1,4 +1,5 @@
 import React, { Component} from 'react';
+import { withRouter } from 'react-router-dom';
 
 import '../../scss/main/main.scss'
 import '../../scss/common/common.scss'
@@ -30,10 +31,6 @@ class ChangePassword extends Component {
             }
             
         };
-    }
-
-    componentDidMount() {
-
     }
 
     handlePasswordType1 = () => {
@@ -182,11 +179,9 @@ class ChangePassword extends Component {
                         </form>
                     </div>
                 </div>
-
             </div>
-
         );
     }
 }
 
-export default ChangePassword;
+export default withRouter(ChangePassword);

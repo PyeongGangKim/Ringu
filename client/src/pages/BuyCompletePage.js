@@ -14,9 +14,9 @@ class BuyCompletePage extends Component {
         return (
             <Fragment>
                 <Helmet title={string.buy + string.postfix}/>
-                <Header history={this.props.history}></Header>
+                <Header></Header>
                 <div id="wrap">
-                    <BuyComplete history={this.props.history} search={this.props.location.search}/>
+                    <BuyComplete search={this.props.location.search}/>
                 </div>
             </Fragment>
         )

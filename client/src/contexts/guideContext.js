@@ -11,7 +11,7 @@ const GuideProvider = ({children}) => {
     }
 
     var closeGuide = () => {
-        setGuide(false);    
+        setGuide(false);
     }
 
     return (

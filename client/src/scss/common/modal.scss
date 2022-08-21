@@ -12,6 +12,7 @@
         z-index: 2147483648;
         box-shadow:0 0px 30px rgba(0, 0, 0, 0.1);
         overflow: hidden;
+        background-color: white;
 
         .modal-inner {
             border-radius: 16px;
@@ -25,7 +26,7 @@
                 border-radius: 50%;
                 padding: 2px;
                 right: 22px;
-                top: 17px;
+                top: 0;
                 font-size: 36px;
                 font-weight: 600;
                 color: black;

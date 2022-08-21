@@ -7,6 +7,8 @@ import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 import User from '../../utils/user';
 
+import PG from '../../config/pg';
+
 import '../../scss/buy/buy.scss';
 import '../../scss/common/button.scss';
 
@@ -96,7 +98,7 @@ class Buy extends Component {
             if(res.status === 200) {
                 if(res.data.message === "duplicate") {
                     alert("이미 결제된 상품입니다. 구매 내역 페이지로 이동합니다.")
-                    window.location.href = URL.service.mypage.purchases;
+                    window.location.href = URL.service.mypage.purchase;
                     return;
                 }
             }
@@ -108,8 +110,8 @@ class Buy extends Component {
         
         innopay.goPay({
             PayMethod: state.payMethod,
-            MID: 'testpay01m',
-            MerchantKey: 'Ma29gyAFhvv/+e4/AHpV6pISQIvSKziLIbrNoXPbRS5nfTx2DOs8OJve+NzwyoaQ8p9Uy1AN4S1I0Um5v7oNUg==',
+            MID: PG[process.env.REACT_APP_ENV].mid,
+            MerchantKey: PG[process.env.REACT_APP_ENV].merchantkey,
             GoodsName: state.purchaseList[0].book_title + (state.purchaseList.length > 1 ? `외 ${state.purchaseList.length-1} 건` : ''),
             Amt: state.amount + '',
             BuyerName: state.user.nickname,

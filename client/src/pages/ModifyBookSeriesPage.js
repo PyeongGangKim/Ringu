@@ -15,7 +15,7 @@ class ModifyBookPage extends Component {
     render() {
         return (
             <Fragment>
-                <Header history={this.props.history}></Header>
+                <Header></Header>
                 <div id="wrap">
                     <ModifyBookSeries bookId={this.props.match.params.bookId}/>
                 </div>

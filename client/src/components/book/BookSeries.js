@@ -1,11 +1,11 @@
 // 연재본
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 
 
 import User from '../../utils/user';
-import Paging from '../../components/common/Paging'
+import Paging from '../common/Paging'
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 import '../../scss/book/book.scss';
@@ -15,7 +15,7 @@ import date from '../../helper/date';
 import API from '../../utils/apiutils';
 
 // 연재본
-class BookType1 extends Component {
+class BookSeries extends Component {
     userInfo = User.getInfo();
     constructor(props) {
         super(props)
@@ -474,4 +474,4 @@ class BookType1 extends Component {
     }
 }
 
-export default BookType1;
+export default withRouter(BookSeries);

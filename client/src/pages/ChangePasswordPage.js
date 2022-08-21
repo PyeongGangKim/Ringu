@@ -52,8 +52,8 @@ class ChangePasswordPage extends Component {
             !state.isLoading &&
             <Fragment>
                 <Helmet title={string.base}/>
-                <Header searchVisible={false} history={this.props.history}></Header>
-                <ChangePassword history={this.props.history} token={this.state.token}/>
+                <Header searchVisible={false}></Header>
+                <ChangePassword token={this.state.token}/>
             </Fragment>
         )
     }

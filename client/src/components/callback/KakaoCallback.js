@@ -1,4 +1,5 @@
-import React, { Component, Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
@@ -9,7 +10,10 @@ var KAKAO = require('../../config/kakao_auth')[process.env.REACT_APP_ENV];
 
 const {Kakao} = window;
 
-const KakaoCallback = ({location, history, ...props}) => {
+const KakaoCallback = () => {
+    const history = useHistory();
+    const location = useLocation();
+
     useEffect(()=>{
         var code = location.search.substring(6, location.search.length);
         getUserProfile(code);

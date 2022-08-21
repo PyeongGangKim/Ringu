@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import User from '../../utils/user';
 import '../../scss/common/sideinfo.scss';
@@ -31,8 +30,7 @@ class SideMemberInfo extends Component {
     }
 
     async componentDidMount() {
-        try {
-            var state = this.state;
+        var state = this.state;
             var favoriteBookList = []
             var favoriteAuthorList = []
             var purchaseList = []
@@ -40,7 +38,23 @@ class SideMemberInfo extends Component {
             var reviewStats = {};
             var user = {};
 
-            if (this.props.isAuthor === false) {
+        if ('isAuthor' in this.props && this.props.isAuthor === true ) {
+            try {
+                var params = {
+                    group: "author_id",
+                    id: this.props.authorId,
+                }
+                const res = await API.sendGet(URL.api.review.stats, params)
+                if(res.status === 200) {
+                    
+                    reviewStats = res.data.stats[0]
+                }
+            }
+            catch(e) {
+                console.error(e)
+            }
+        } else {
+            try {
                 const fav1 = await API.sendGet(URL.api.favorite.book.list)
 
                 if(fav1.status === 200) {
@@ -48,30 +62,39 @@ class SideMemberInfo extends Component {
                 }
 
                 const fav2 = await API.sendGet(URL.api.favorite.author.list)
+                
                 if(fav2.status === 200) {
                     favoriteAuthorList = fav2.data.favoriteAuthorList
                 }
+            }
+            catch(e) {
+                console.error(e)
+            }
 
+            try {
                 const purchases = await API.sendGet(URL.api.purchase.list)
+            
                 if(purchases.status === 200) {
                     purchaseList = purchases.data.purchaseList
                 }
-
+            }
+            catch(e) {
+                console.error(e)
+            }
+            
+            try {
                 const carts = await API.sendGet(URL.api.cart.list)
+            
                 if(carts.status === 200) {
                     cartList = carts.data.cartList
                 }
-            } else {
-                var params = {
-                    group: "author_id",
-                    id: this.props.authorId,
-                }
-                const res = await API.sendGet(URL.api.review.stats, params)
-                if(res.status === 200) {
-                    reviewStats = res.data.stats[0]
-                }
             }
+            catch(e) {
+                console.error(e)
+            }
+        }
 
+        try {            
             var id;
             // 작가 페이지일 때 페이지 주인의 정보를 가져온다
             if("authorId" in this.props && this.props.authorId !== undefined) {
@@ -81,11 +104,15 @@ class SideMemberInfo extends Component {
             else {
                 id = state.user.id
             }
+        }
+        catch(e) {
+            console.error(e)
+        }
 
+        try {
             if (this.props.isHost === false && state.user !== null) {
                 const res = await API.sendGet(URL.api.favorite.author.get + this.props.authorId)
                 if(res.status === 200) {
-                    //var fa = res.data.favoriteAuthor;
                     state.isFavorite = true;
                 }
             }
@@ -94,7 +121,7 @@ class SideMemberInfo extends Component {
             if(userRes.status === 200) {
                 user = userRes.data.user
             }
-
+            
             state.favorites = favoriteBookList.length + favoriteAuthorList.length;
             state.purchases = purchaseList.length;
             state.carts = cartList.length;
@@ -104,9 +131,9 @@ class SideMemberInfo extends Component {
             state.isLoading = false;
         } catch(e) {
             state.isLoading = false;
-            console.error(e)
+            console.error(e.stack)
         }
-
+        
         this.setState(state)
     }
 
@@ -142,7 +169,7 @@ class SideMemberInfo extends Component {
 
     handleFavoriteClick = async() => {
         var state = this.state;
-
+        
         if(state.isFavorite) {
             try {
                 const res = await API.sendGet(URL.api.favorite.author.get + this.props.authorId)
@@ -209,7 +236,7 @@ class SideMemberInfo extends Component {
 
     render() {
         var state = this.state
-
+        
         return (
             !!state.isLoading ?
             <div className="side-info">
@@ -226,16 +253,18 @@ class SideMemberInfo extends Component {
                             </div>
                             :
                             <table>
-                                <tr>
-                                    <td><div className="skeleton text"/></td>
-                                    <td><div className="skeleton text"/></td>
-                                    <td><div className="skeleton text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><div className="skeleton text"/></td>
-                                    <td><div className="skeleton text"/></td>
-                                    <td><div className="skeleton text"/></td>
-                                </tr>
+                                <tbody>
+                                    <tr>
+                                        <td><div className="skeleton text"/></td>
+                                        <td><div className="skeleton text"/></td>
+                                        <td><div className="skeleton text"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div className="skeleton text"/></td>
+                                        <td><div className="skeleton text"/></td>
+                                        <td><div className="skeleton text"/></td>
+                                    </tr>
+                                </tbody>
                             </table>
                         }
                     </div>
@@ -266,7 +295,7 @@ class SideMemberInfo extends Component {
                                 state.host.profile === null || !state.host.profile ?
                                 <img src="/blank.jpg"/>
                                 :
-                                <img src={state.host.profile}/>
+                                <img src={encodeURI(state.host.profile)}/>
                             }
                         </div>
                         :
@@ -354,10 +383,6 @@ class SideMemberInfo extends Component {
             
         )
     }
-}
-
-SideMemberInfo.propTypes = {
-    isAuthor: PropTypes.bool.isRequired,
 }
 
 export default SideMemberInfo;

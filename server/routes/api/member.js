@@ -292,7 +292,6 @@ router.post("/upload_profile", isLoggedIn, uploadFile, async(req, res, next) => 
     let id = req.user.id;
 
     let profile = req.files.img[0].key;
-
     try{
         const result = await member.update({
             profile : profile,

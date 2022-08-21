@@ -16,14 +16,15 @@ const s3 = new AWS.S3({
 
 const storage = multerS3({
     s3: s3,
-
+    
     bucket: function(req,file, cb){
         let fieldName = file.fieldname;
         if(fieldName === "img"){
             cb(null, aws_config.IMG_BUCKET);
         }
-        else cb(null, aws_config.MAIN_BUCKET+ "/" + file.fieldname);
-
+        else {
+            cb(null, aws_config.MAIN_BUCKET+ "/" + file.fieldname);
+        }
     },
 
     contentType: function(req, file, cb){
@@ -66,7 +67,6 @@ const upload = multer({
 ]);
 
 const uploadFile = (req,res, next) => {
-    
     upload(req,res,(error) => {
         if (error instanceof multer.MulterError){
             logger.warn(error.stack);
@@ -75,8 +75,7 @@ const uploadFile = (req,res, next) => {
                 errorMessage: error.message,
                 errorCode: error.code
             })
-        } 
-            
+        }
         
         if (error){
             logger.error(error.stack);
@@ -89,8 +88,7 @@ const uploadFile = (req,res, next) => {
         console.log('Upload successful.')
         next()
     })
-} 
-
+}
 
 const deleteFile = async (req, res, next) =>{
     let id = req.params.bookId;

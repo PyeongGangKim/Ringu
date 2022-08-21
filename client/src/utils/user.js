@@ -13,7 +13,6 @@ module.exports = {
             } else {
                 return userInfo;
             }
-
         } else {
             return null;
         }

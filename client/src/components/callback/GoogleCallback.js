@@ -1,20 +1,22 @@
-import React, { Component, Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 let GOOGLE = require('../../config/google_auth')[process.env.REACT_APP_ENV];
 
 
-const GoogleCallback = ({location, history, ...props}) => {
+const GoogleCallback = () => {
+    const history = useHistory();
+    const location = useLocation();
+
     useEffect(()=>{
         let code = location.search.substring(6, location.search.length);
 
         getUserProfile(code);
     
     }, []);
-
 
     const getUserProfile = async (code) => {
         try {

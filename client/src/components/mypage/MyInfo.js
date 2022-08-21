@@ -1,20 +1,18 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
 import Select from 'react-select'
-
+import Helmet from 'react-helmet';
 
 import User from '../../utils/user';
 import '../../scss/mypage/mypage.scss';
 import '../../scss/common/button.scss';
 
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
 class MyInfo extends Component {
     constructor(props) {
         super(props)
-
         this.bankOptions = []
 
         this.state = {
@@ -246,8 +244,8 @@ class MyInfo extends Component {
         var state = this.state;
 
         return (
-
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.mypage + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">나의 정보</h2>
                 </div>
@@ -363,7 +361,7 @@ class MyInfo extends Component {
                         </div>
                     }
                 </div>
-            </div>
+            </>
 
         )
     }

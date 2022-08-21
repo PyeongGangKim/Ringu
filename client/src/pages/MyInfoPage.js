@@ -2,30 +2,34 @@ import React, { Component, Fragment } from 'react';
 
 import SideMemberInfo from '../components/common/SideMemberInfo';
 import SideNav from '../components/common/SideNav';
-import FavBook from '../components/mypage/FavBook';
+import MyInfo from '../components/mypage/MyInfo';
 import Header from '../components/common/Header';
-import Helmet from 'react-helmet';
-import string from '../config/str';
+
 import GuideButton from '../components/home/guide/GuideButton'
 
-class FavBookPage extends Component {
+class MyInfoPage extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            nickname: null,
+        }
+
+        this.handleNicknameChange = (value) => {
+            this.setState({nickname:value})
+        }
     }
 
     render() {
-        const display = this.props.location.pathname == "/favorite/book" ? true : false;
-
         return (
             <Fragment>
-                <Helmet title={string.favorite + string.postfix}/>
-                <Header mypage={true} history={this.props.history}></Header>
+                <Header mypage={true}></Header>
                 <div id="wrap" style={{display:"flex"}}>
                     <div className="side">
-                        <SideMemberInfo isAuthor={false}/>
-                        <SideNav display2={display} path={this.props.location.pathname}/>
+                        <SideMemberInfo isAuthor={false} nickname={this.state.nickname}/>
+                        <SideNav path={this.props.location.pathname}/>
                     </div>
-                    <FavBook/>
+                    <MyInfo handleNicknameChange={this.hnadleNicknameChange}/>
                 </div>
                 <GuideButton/>
             </Fragment>
@@ -33,4 +37,4 @@ class FavBookPage extends Component {
     }
 }
 
-export default FavBookPage;
+export default MyInfoPage;

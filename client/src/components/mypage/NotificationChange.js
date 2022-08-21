@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
+import Helmet from 'react-helmet';
 
-import User from '../../utils/user';
 import '../../scss/mypage/mypage.scss';
 import '../../scss/common/button.scss';
 
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
@@ -64,7 +64,8 @@ class NotificationChange extends Component {
 
     render() {
         return (
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.notification + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">알림 설정 변경</h2>
                 </div>
@@ -93,9 +94,7 @@ class NotificationChange extends Component {
                     </div>
 
                 </div>
-            </div>
-
-
+            </>
         )
     }
 }

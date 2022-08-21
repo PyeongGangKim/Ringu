@@ -39,6 +39,7 @@ router.post("/signup", async (req, res, next) => {
         const token = jwt.sign({
             id: result.id,
             type: result.type,
+            nickname: result.nickname,
         }, secretKey, {
             expiresIn: '12h',
             issuer: 'ringu',
@@ -75,6 +76,7 @@ router.post("/signup/sns", async (req, res, next) => {
         const token = jwt.sign({
             id: result.id,
             type: result.type,
+            nickname: result.nickname,
         }, secretKey, {
             expiresIn: '12h',
             issuer: 'ringu',
@@ -172,6 +174,7 @@ router.get('/google', function(req, res, next){
                 const token = jwt.sign({
                     id: user.id,
                     type: user.type,
+                    nickname: user.nickname,
                 }, secretKey, {
                     expiresIn: '12h',
                     issuer: 'ringu',
@@ -190,6 +193,7 @@ router.get( '/google/callback',passport.authenticate('google', { failureRedirect
         const token = jwt.sign({
              id: req.user.id,
              type: req.user.type,
+             nickname: req.user.nickname,
             }, secretKey, {
                 expiresIn: '12h',
                 issuer: 'ringu',
@@ -223,6 +227,7 @@ router.get('/naver', function(req, res, next) {
                  const token = jwt.sign({
                      id: user.id,
                      type: user.type,
+                     nickname: user.nickname,
                  }, secretKey, {
                      expiresIn: '12h',
                      issuer: 'ringu',
@@ -286,6 +291,7 @@ router.get('/kakao', function(req, res, next) {
                  const token = jwt.sign({
                      id: user.id,
                      type: user.type,
+                     nickname: user.nickname,
                  }, secretKey, {
                      expiresIn: '12h',
                      issuer: 'ringu',
@@ -303,6 +309,7 @@ router.get( '/kakao/callback',passport.authenticate('kakao', { failureRedirect: 
       const token = jwt.sign({
            id: req.user.id,
            type: req.user.type,
+           nickname: req.user.nickname,
           }, secretKey, {
               expiresIn: '12h',
               issuer: 'ringu',
@@ -336,7 +343,6 @@ router.post("/login", async (req, res, next) => {
     try {
         passport.authenticate("local", { session: false },(passportError, user, info) => {
             if(passportError || !user){
-                console.log(passportError);
                 res.status(StatusCodes.BAD_REQUEST).json({message: info.message});
                 return;
             }
@@ -348,6 +354,7 @@ router.post("/login", async (req, res, next) => {
                 const token = jwt.sign({
                     id: user.id,
                     type: user.type,
+                    nickname: user.nickname,
                 }, secretKey, {
                     expiresIn: '12h',
                     issuer: 'ringu',

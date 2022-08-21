@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import Select from 'react-select'
 
 import User from '../../utils/user';
@@ -592,4 +592,4 @@ class RegisterBook extends Component {
     }
 }
 
-export default RegisterBook;
+export default withRouter(RegisterBook);

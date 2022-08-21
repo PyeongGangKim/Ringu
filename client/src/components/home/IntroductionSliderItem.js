@@ -8,6 +8,12 @@ function IntroductionSliderItem({
 }) {
     return (
         <div className="slider-wrap">
+            <div className="paging">
+                <span>
+                    {order} / 2
+                </span>
+            </div>
+            
             <div className="introduction">
                 <div className="content" style={background}>
                     <span className="intro-text">

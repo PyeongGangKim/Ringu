@@ -1,4 +1,5 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import {Oval} from 'react-loader-spinner'
 
@@ -7,7 +8,7 @@ import '../../scss/common/button.scss'
 import '../../scss/common/loading.scss'
 import '../../scss/search/search.scss'
 
-import Book from '../../components/book/Book'
+import BookCard from '../book/BookCard'
 
 import User from '../../utils/user';
 import URL from '../../helper/helper_url';
@@ -326,7 +327,7 @@ class Search extends Component {
                                             status = "ser"
                                         }
                                         return (
-                                            <Book
+                                            <BookCard
                                                 key={item.id}
                                                 book={item}
                                                 status={status}
@@ -344,4 +345,4 @@ class Search extends Component {
     }
 }
 
-export default Search;
+export default withRouter(Search);

@@ -10,7 +10,7 @@
             margin: 0;
             list-style: none;
             text-align: center;
-            left: 140px;
+            left: 80px;
             bottom: 40px;
             background: #abbaf4;
             border-radius: 6px;
@@ -50,6 +50,16 @@
         max-height: 300px;
         border-radius: 25px;
         position: relative;
+
+        .paging {
+            color: #999;
+            position: absolute;
+            bottom: 33px;
+            left: 260px;
+            z-index: 2;
+            font-size: 18px;
+            font-weight: 500;
+        }
 
         .introduction {
             position: absolute;
@@ -162,8 +172,8 @@
         display:flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 50px;
-        padding-top: 50px;
+        margin-bottom: 20px;
+        padding-top: 20px;
 
         .category {
             width:200px;

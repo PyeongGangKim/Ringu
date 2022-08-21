@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
-import Switch from '@material-ui/core/Switch';
 import Cookies from 'js-cookie';
+import Helmet from 'react-helmet';
 
-import User from '../../utils/user';
 import '../../scss/common/page.scss';
 import '../../scss/common/button.scss';
 
+import string from '../../config/str';
 import URL from '../../helper/helper_url';
 import API from '../../utils/apiutils';
 
@@ -82,7 +81,8 @@ class Leave extends Component {
         var state = this.state;
 
         return (
-            <div id="mypage" className="page2">
+            <>
+                <Helmet title={string.leave + string.postfix}/>
                 <div className="title-wrap">
                     <h2 className="title">회원 탈퇴</h2>
                 </div>
@@ -116,7 +116,7 @@ class Leave extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         )
     }
 }
